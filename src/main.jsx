@@ -1,5 +1,6 @@
 import React,{useState,useEffect,useRef}from'react';
 import{createRoot}from'react-dom/client';
+import{Helmet,HelmetProvider}from'react-helmet-async';
 import{ArrowUpRight,Menu,X,ChevronRight,ChevronDown,ChevronLeft,Leaf,Users,Award,Microscope,Quote,Sparkles,ShieldCheck,Brain,MoveRight,Play,Heart,Radio,Globe2,BookOpen}from'lucide-react';
 import'./style.css';
 
@@ -12,10 +13,46 @@ const pages={
 '/resilient-minds':{k:'RESILIENT MINDS',title:'To See What Is Hidden.',accent:'Climate resilience must include mental health.',intro:'Support, research and care pathways addressing the emotional and psychological costs of climate disruption.',type:'minds'},
 '/honours':{k:'CLIMATE HONOURS',title:'Amplify the Untold.',accent:'Recognising women moving Africa’s climate future forward.',intro:'An annual platform documenting, celebrating and connecting women whose climate leadership deserves to be seen.',type:'honours'},
 '/leadership':{k:'LEADERSHIP',title:'Driving Inclusive Climate Action with Technology.',accent:'Women-led. Africa-rooted. Future-facing.',intro:'A multidisciplinary leadership team connecting climate science, technology, research, community practice and storytelling.',type:'leadership'},
-'/funding':{k:'FUNDING SUPPORT',title:'Grant Application Support Programme 2026',accent:'Make strong climate work easier to fund.',intro:'Structured application support for African women founders building credible, investable and grant-ready climate initiatives.',type:'funding'},
+'/funding':{k:'FUNDING SUPPORT',title:'2027 Climate Funding Readiness',accent:'Build a stronger case for climate capital.',intro:'Grant-readiness support for African women founders building credible climate initiatives.',type:'funding'},
 '/womateer':{k:'WOMATEER',title:'Elevate Your Impact as a WOMATEER',accent:'Volunteer talent. Serious climate impact.',intro:'Contribute professional skill to a women-led climate organisation building knowledge, visibility and resilience across Africa.',type:'volunteer'},
 '/merchandise':{k:'THE VAULT',title:'Wear the work.',accent:'WOMATE objects for climate community.',intro:'Limited pieces that carry the identity, conversations and conviction of women leading climate action.',type:'merch'}
 };
+
+const seo={
+'/':{title:'WOMATE | African Women Leading Climate Action',description:"WOMATE advances African women's leadership in climate action through sustainable technology, research, community, capacity building and storytelling."},
+'/she-leads':{title:'She Leads Climate Mentorship | WOMATE',description:'She Leads equips young African women with climate knowledge, leadership skills and practical pathways to lead credible climate action.'},
+'/wok-action':{title:'WoK—Action | Women’s Climate Knowledge | WOMATE',description:"WoK—Action documents, protects and activates women's local and indigenous climate knowledge for community resilience and adaptation."},
+'/circle':{title:'The WOMATE Circle | Climate Community for Women',description:'Join a professional climate community connecting African women to learning, opportunities, peer networks, visibility and long-term climate leadership.'},
+'/research':{title:'Climate Research & Gender Intelligence | WOMATE',description:'WOMATE provides gender-responsive climate research, evidence, programme design, MEL and strategic intelligence for institutions working across Africa.'},
+'/resilient-minds':{title:'Resilient Minds | Climate, Wellbeing & Women | WOMATE',description:'Resilient Minds connects climate resilience with mental health, care, restoration and pathways to dignity for vulnerable young women.'},
+'/honours':{title:'Climate Honours | African Women Climate Leaders | WOMATE',description:"WOMATE Climate Honours documents, celebrates and connects women whose leadership is shaping Africa's climate future."},
+'/leadership':{title:'Leadership & Organisation | WOMATE',description:'Meet the WOMATE leadership team connecting climate action, sustainable technology, research, programmes, advocacy and community practice.'},
+'/funding':{title:'2027 Climate Funding Readiness | WOMATE',description:'WOMATE supports African women founders to strengthen climate funding applications, grant readiness, documentation and competitive positioning.'},
+'/womateer':{title:'Become a WOMATEER | Volunteer with WOMATE',description:'Contribute your professional skills to WOMATE and help advance women-led climate action, research, technology and community impact across Africa.'},
+'/merchandise':{title:'The Vault | WOMATE Merchandise',description:'Explore WOMATE merchandise created for the community of women, allies and leaders advancing climate action across Africa.'}
+};
+
+function PageSEO({path}){
+const data=seo[path]||seo['/'];
+const canonical=`https://www.womate.org${path==='/'?'':path}`;
+return <Helmet>
+<title>{data.title}</title>
+<meta name="description" content={data.description}/>
+<link rel="canonical" href={canonical}/>
+<meta property="og:type" content="website"/>
+<meta property="og:site_name" content="WOMATE"/>
+<meta property="og:title" content={data.title}/>
+<meta property="og:description" content={data.description}/>
+<meta property="og:url" content={canonical}/>
+<meta property="og:image" content="https://www.womate.org/assets/hero/home-africa-map.png"/>
+<meta property="og:image:alt" content="WOMATE — African women leading climate action"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:title" content={data.title}/>
+<meta name="twitter:description" content={data.description}/>
+<meta name="twitter:image" content="https://www.womate.org/assets/hero/home-africa-map.png"/>
+</Helmet>
+}
+
 const nav=[['She Leads','/she-leads'],['WoK-Action','/wok-action'],['Circle','/circle'],['Research','/research'],['Resilient Minds','/resilient-minds'],['Honours','/honours']];
 function Link({to,children,className=''}){return <a className={className} href={to}>{children}</a>}
 function Header(){const[open,setOpen]=useState(false);return <><header className="globalHeader"><Link to="/" className="brand"><img src="/assets/img/logo.svg"/></Link><nav className="desktopNav"><div className="navGroup"><button className="navTrigger">Our work <ChevronDown size={15}/></button><div className="megaMenu workMenu"><div className="megaIntro"><span>WOMATE ECOSYSTEM</span><strong>Women leading climate action.</strong><p>Knowledge, evidence, community and recognition designed around African women.</p></div><div className="megaLinks"><div><span className="megaLabel">LEARN & LEAD</span><Link to="/she-leads"><b>She Leads</b><small>Climate mentorship & leadership</small></Link><Link to="/circle"><b>The WOMATE Circle</b><small>Community & professional network</small></Link></div><div><span className="megaLabel">KNOWLEDGE & CARE</span><Link to="/wok-action"><b>WoK—Action</b><small>Women’s local climate knowledge</small></Link><Link to="/research"><b>Research</b><small>Gender-responsive evidence</small></Link><Link to="/resilient-minds"><b>Resilient Minds</b><small>Climate & mental-health support</small></Link></div></div><Link to="/honours" className="megaFeature"><span>CLIMATE HONOURS</span><strong>Amplify the Untold.</strong><ArrowUpRight size={18}/></Link></div></div><Link to="/honours" className="desktopDirect">Climate Honours</Link><div className="navGroup"><button className="navTrigger">Organisation <ChevronDown size={15}/></button><div className="megaMenu orgMenu"><div className="megaIntro"><span>ABOUT WOMATE</span><strong>Africa-rooted. Future-facing.</strong><p>Meet the people, partnerships and opportunities behind the work.</p></div><div className="orgLinks"><Link to="/leadership"><b>Our organisation</b><small>Leadership & institutional direction</small></Link><Link to="/funding"><b>Funding support</b><small>Grant application programme</small></Link><Link to="/womateer"><b>WOMATEER</b><small>Volunteer your professional skill</small></Link><Link to="/merchandise"><b>The Vault</b><small>WOMATE merchandise</small></Link></div></div></div></nav><div className="headright"><Link to="/circle" className="headerJoin">Join the community <ArrowUpRight size={16}/></Link></div><button className="menu" aria-label="Open navigation" onClick={()=>setOpen(!open)}>{open?<X/>:<Menu/>}</button></header>{open&&<div className="mobileNav">{[...nav,['Leadership','/leadership'],['Funding','/funding'],['WOMATEER','/womateer'],['The Vault','/merchandise']].map(n=><Link key={n[1]} to={n[1]}>{n[0]}<ChevronRight/></Link>)}</div>}</>}
@@ -90,7 +127,7 @@ circle:{items:['Membership activation','Member pathways','Community access','Cli
 research:{items:['Climate & gender intelligence','MEL and impact analysis','Evidence support','Community co-creation','Programme design','Knowledge management','Wellbeing & protection','Institutional capacity'],title:'Research made useful, legible and actionable.',aside:'Commission research'},
 minds:{items:['Rescue','Restore','Resilience','Peer support pathways','Climate wellbeing research','Guardianship contribution'],title:'The human nervous system belongs in climate strategy.',aside:'Support the programme'},
 honours:{items:['The Spotlight','The Circle','The Honour','2025 archive — 18 women','2026 nominations','Journey to October 2026'],title:'Recognition that creates memory, credibility and connection.',aside:'Submit a nomination'},
-funding:{items:['Professional application review','Application streamlining','Grant-writing webinar','Technical capacity building','WOMATE community access','Competitive positioning'],title:'From strong idea to stronger application.',aside:'GHS 200 registration'},
+funding:{items:['Professional application review','Application streamlining','Grant-writing webinar','Technical capacity building','WOMATE community access','Competitive positioning'],title:'From strong idea to stronger application.',aside:'2027 interest register'},
 volunteer:{items:['Visual Strategist','Digital Systems Lead','Impact Storyteller','Community Impact Lead','Research support','Programme operations'],title:'Bring your professional edge to climate work that matters.',aside:'Apply to volunteer'},
 merch:{items:['Signature WOMATE T-shirt','Climate action edition','Circle member edition','Limited programme drops'],title:'The Vault',aside:'Shop WOMATE'},
 leadership:{items:['Phillipa Aidoo','Asaa Gyebi-Adjei','Ruby Damenshie-Brown','Hamza Abubakar'],title:'Leadership across climate, technology, research and community.',aside:'Partnership invitation'}};
@@ -362,5 +399,22 @@ function MerchandisePage(){
 function Store(){return null}
 function Application({type}){return <section className="application"><div><h3>{type==='honours'?'Tell us whose work deserves to be seen.':'Your next step starts here.'}</h3><p>Complete the short form. WOMATE will review your submission and follow up through the contact details you provide.</p></div><form onSubmit={e=>{e.preventDefault();alert('Submission received.')}}><input required placeholder="Full name"/><input required type="email" placeholder="Email address"/><input placeholder="Country"/><textarea placeholder="Tell us briefly about your interest"/><button className="pill darkbtn">Submit <ArrowUpRight/></button></form></section>}
 function Footer(){return <footer className="globalFooter"><div className="footerLead"><div className="footerIdentity"><img src="/assets/img/logo.svg"/><h3>Driving inclusive climate action through sustainable technology and community leadership.</h3></div><div className="footerAction"><span>BUILD WITH WOMATE</span><p>Partner with a women-led climate ecosystem connecting knowledge, evidence, community and leadership across Africa.</p><a href="mailto:womatead@gmail.com" className="footerCta">Start a conversation <ArrowUpRight size={18}/></a></div></div><div className="footerDirectory"><div className="footerOffice"><span className="footerLabel">GLOBAL NETWORK</span><strong>Accra, Ghana<br/>Africa · connected globally</strong><a href="mailto:womatead@gmail.com">womatead@gmail.com</a><a href="https://www.linkedin.com/company/womeninclimategh" target="_blank" rel="noreferrer">LinkedIn <ArrowUpRight size={13}/></a></div><div><span className="footerLabel">PROGRAMMES</span><Link to="/she-leads">She Leads</Link><Link to="/wok-action">WoK—Action</Link><Link to="/circle">The WOMATE Circle</Link><Link to="/research">Research</Link><Link to="/resilient-minds">Resilient Minds</Link><Link to="/honours">Climate Honours</Link></div><div><span className="footerLabel">ORGANISATION</span><Link to="/leadership">Our organisation</Link><Link to="/funding">Funding support</Link><Link to="/womateer">WOMATEER</Link><Link to="/merchandise">The Vault</Link></div><div><span className="footerLabel">TAKE PART</span><Link to="/circle">Join the community</Link><Link to="/honours">Nominate a leader</Link><Link to="/womateer">Volunteer</Link><a href="mailto:womatead@gmail.com">Partner with WOMATE</a></div></div><div className="footerBottom"><span>© 2026 WOMATE · Women in Climate</span><div><span>Knowledge</span><span>Technology</span><span>Community</span></div><span>African women leading climate action.</span></div></footer>}
-function App(){let path=window.location.pathname.replace(/\/$/,'')||'/';let p=pages[path]||pages['/'];useEffect(()=>window.scrollTo(0,0),[]);return <><Header/>{p.type==='home'?<Home/>:p.type==='she'?<SheLeads/>:p.type==='wok'?<WokAction/>:p.type==='research'?<ResearchPage/>:p.type==='circle'?<CirclePage/>:p.type==='minds'?<ResilientMinds/>:p.type==='honours'?<HonoursPage/>:p.type==='leadership'?<LeadershipPage/>:p.type==='volunteer'?<WomateerPage/>:p.type==='merch'?<MerchandisePage/>:p.type==='funding'?<FundingPage/>:<Standard p={p}/>}<Footer/></>}
-createRoot(document.getElementById('root')).render(<App/>);
+function App(){
+let path=window.location.pathname.replace(/\/$/,'')||'/';
+let p=pages[path]||pages['/'];
+useEffect(()=>window.scrollTo(0,0),[]);
+return <>
+<PageSEO path={path}/>
+<Header/>
+{p.type==='home'?<Home/>:p.type==='she'?<SheLeads/>:p.type==='wok'?<WokAction/>:p.type==='research'?<ResearchPage/>:p.type==='circle'?<CirclePage/>:p.type==='minds'?<ResilientMinds/>:p.type==='honours'?<HonoursPage/>:p.type==='leadership'?<LeadershipPage/>:p.type==='volunteer'?<WomateerPage/>:p.type==='merch'?<MerchandisePage/>:p.type==='funding'?<FundingPage/>:<Standard p={p}/>}
+<Footer/>
+</>
+}
+
+createRoot(document.getElementById('root')).render(
+<React.StrictMode>
+<HelmetProvider>
+<App/>
+</HelmetProvider>
+</React.StrictMode>
+);
