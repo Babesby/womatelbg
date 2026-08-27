@@ -1,1 +1,60 @@
-{ "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }] }
+{
+  "redirects": [
+    {
+      "source": "/She-leads.html",
+      "destination": "/she-leads",
+      "permanent": true
+    },
+    {
+      "source": "/wok.html",
+      "destination": "/wok-action",
+      "permanent": true
+    },
+    {
+      "source": "/research.html",
+      "destination": "/research",
+      "permanent": true
+    },
+    {
+      "source": "/circle.html",
+      "destination": "/circle",
+      "permanent": true
+    },
+    {
+      "source": "/heal.html",
+      "destination": "/resilient-minds",
+      "permanent": true
+    },
+    {
+      "source": "/CH.html",
+      "destination": "/honours",
+      "permanent": true
+    },
+    {
+      "source": "/team.html",
+      "destination": "/leadership",
+      "permanent": true
+    },
+    {
+      "source": "/womateer.html",
+      "destination": "/womateer",
+      "permanent": true
+    },
+    {
+      "source": "/merch.html",
+      "destination": "/merchandise",
+      "permanent": true
+    },
+    {
+      "source": "/Funding.html",
+      "destination": "/funding",
+      "permanent": true
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
