@@ -181,12 +181,80 @@ const shePillars=[
 ['06','Climate Careers & Professional Pathways','Exploring career opportunities, mentorship pathways, and professional growth in climate and sustainability fields.']
 ];
 const SHE_FORM='https://docs.google.com/forms/d/e/1FAIpQLSdwc1l7vlWD4VC6v9cPF_-UdO3VLGDVLRiVJiwmiGE3Aqjs4w/viewform?embedded=true';
+const SHE_SPEAKER_FORM='https://forms.gle/LnpwUBAKkyz3zvdPA';
+const SHE_COORDINATOR_FORM='https://forms.gle/dT5a1NzoWz44FU1x6';
+const SHE_SPEAKER_ART='/assets/img/she-leads-speaker.png';
+const SHE_COORDINATOR_ART='/assets/img/she-leads-coordinator.png';
+
 function SheLeads(){const[formOpen,setFormOpen]=useState(false);const scrollPillars=()=>document.getElementById('she-pillars')?.scrollIntoView({behavior:'smooth',block:'start'});useEffect(()=>{if(!formOpen)return;const onKey=e=>e.key==='Escape'&&setFormOpen(false);window.addEventListener('keydown',onKey);document.body.style.overflow='hidden';return()=>{window.removeEventListener('keydown',onKey);document.body.style.overflow=''}},[formOpen]);return <>
 <section className="hero hero-she sheHero"><div className="heroTop"><div className="heroCopy"><h1>She Leads Climate Mentorship.</h1><div className="actions"><button className="pill lime" onClick={()=>setFormOpen(true)}>Join next cohort <ArrowUpRight size={16}/></button><button className="pill ghost" onClick={scrollPillars}>Explore <ChevronDown size={17}/></button></div></div><HeroVisual type="she"/></div></section>
 <main id="content" className="shePage">
 <section className="sheIntro"><div className="sheIntroMark">SHE<br/>LEADS</div><div><h2>Where young women gain the knowledge, skills and courage to lead climate action.</h2></div><p>Climate leadership is not a title. It is the ability to understand the system, find your voice, build with others and enter decision-making spaces prepared.</p></section>
 <section id="she-pillars" className="shePillars"><header><span>THE LEARNING ARCHITECTURE</span><h2>Six Core Learning Pillars</h2><p>Equipping young women with knowledge, skills and pathways for climate leadership.</p></header><div className="shePillarGrid">{shePillars.map(([n,t,d])=><article key={n}><div className="pillarTop"><span>{n}</span><Leaf size={20}/></div><h3>{t}</h3><p>{d}</p><div className="pillarLine"/></article>)}</div></section>
 <section className="shePrestige"><div className="prestigeCopy"><span>THE 2026 SEAL OF EXCELLENCE</span><h2>The Prestige Awaits You.</h2><p>A digital credential validating rounded climate leadership—not passive attendance. Learning, practice, community contribution and a visible next step.</p><div className="prestigeProof"><ShieldCheck size={18}/> Credential · leadership evidence · professional signal</div></div><div className="prestigeCert"><img src="/assets/img/she-leads-certificate-reveal.png" alt="She Leads 2026 Certificate of Participation"/></div></section>
+<style>{`
+.sheRecruitment{padding:88px 5vw;background:#083f3e;color:#fff;overflow:hidden}
+.sheRecruitmentHead{max-width:760px;margin-bottom:42px}
+.sheRecruitmentHead>span,.sheRecruitEyebrow{font-size:12px;letter-spacing:.16em;font-weight:800;color:#c6ff52}
+.sheRecruitmentHead h2{font-size:clamp(38px,6vw,78px);line-height:.95;margin:14px 0 18px}
+.sheRecruitmentHead p{max-width:680px;color:rgba(255,255,255,.72);font-size:18px}
+.sheRecruitmentGrid{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.sheRecruitCard{position:relative;min-height:620px;border-radius:30px;overflow:hidden;background:linear-gradient(145deg,#0b4d4a 0%,#062f2e 100%);border:1px solid rgba(198,255,82,.16);display:grid;grid-template-columns:1.05fr .95fr;align-items:end}
+.sheRecruitCard.coordinator{background:linear-gradient(145deg,#073c3a 0%,#0c5752 100%)}
+.sheRecruitCopy{position:relative;z-index:2;padding:42px 0 42px 42px}
+.sheRecruitCopy h3{font-size:clamp(32px,3.7vw,54px);line-height:1;margin:16px 0 18px}
+.sheRecruitCopy p{color:rgba(255,255,255,.76);font-size:16px;line-height:1.6}
+.sheRecruitTags{display:flex;flex-wrap:wrap;gap:8px;margin:24px 0 28px}
+.sheRecruitTags span{font-size:12px;padding:8px 11px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12)}
+.sheRecruitVisual{align-self:end;display:flex;align-items:flex-end;justify-content:flex-end;height:100%}
+.sheRecruitVisual img{display:block;width:118%;max-width:none;object-fit:contain;object-position:bottom right;filter:drop-shadow(0 24px 38px rgba(0,0,0,.22))}
+@media(max-width:980px){
+  .sheRecruitmentGrid{grid-template-columns:1fr}
+  .sheRecruitCard{grid-template-columns:1fr 1fr;min-height:560px}
+}
+@media(max-width:680px){
+  .sheRecruitment{padding:64px 20px}
+  .sheRecruitCard{grid-template-columns:1fr;min-height:0}
+  .sheRecruitCopy{padding:30px 26px 0}
+  .sheRecruitVisual{height:420px}
+  .sheRecruitVisual img{width:108%;margin-left:auto}
+}
+`}</style>
+<section className="sheRecruitment">
+  <div className="sheRecruitmentHead">
+    <span>HELP SHAPE COHORT 2</span>
+    <h2>One cohort. Two ways to lead.</h2>
+    <p>Contribute expertise as a guest speaker or help deliver the cohort experience as the programme coordinator.</p>
+  </div>
+  <div className="sheRecruitmentGrid">
+    <article className="sheRecruitCard">
+      <div className="sheRecruitCopy">
+        <span className="sheRecruitEyebrow">SPEAKER EXPRESSION OF INTEREST · 3 SLOTS LEFT</span>
+        <h3>Lead one high-value virtual session.</h3>
+        <p>We are inviting experienced practitioners, researchers and leaders to contribute to Africa’s next generation of climate leaders.</p>
+        <div className="sheRecruitTags">
+          <span>Climate science</span><span>Policy & advocacy</span><span>Technology & innovation</span><span>Community practice</span>
+        </div>
+        <a className="pill lime" href={SHE_SPEAKER_FORM} target="_blank" rel="noreferrer">Express interest to speak <ArrowUpRight size={16}/></a>
+      </div>
+      <div className="sheRecruitVisual"><img src={SHE_SPEAKER_ART} alt="She Leads climate mentorship speaker"/></div>
+    </article>
+
+    <article className="sheRecruitCard coordinator">
+      <div className="sheRecruitCopy">
+        <span className="sheRecruitEyebrow">COHORT COORDINATOR · 1 SLOT LEFT</span>
+        <h3>Help deliver a rigorous, human-centred cohort.</h3>
+        <p>Support weekly sessions, speakers and learners, participation tracking and the community experience that holds the cohort together.</p>
+        <div className="sheRecruitTags">
+          <span>Weekly sessions</span><span>Speaker support</span><span>Participation tracking</span><span>Cohort community</span>
+        </div>
+        <a className="pill lime" href={SHE_COORDINATOR_FORM} target="_blank" rel="noreferrer">Apply to coordinate <ArrowUpRight size={16}/></a>
+      </div>
+      <div className="sheRecruitVisual"><img src={SHE_COORDINATOR_ART} alt="She Leads cohort coordinator"/></div>
+    </article>
+  </div>
+</section>
+
 <section className="sheFellows"><div><span>THE COMMUNITY AFTER THE CLASSROOM</span><h2>The cohort becomes a network.</h2><p>Women leave with more than climate knowledge: they leave with peers across African countries, shared language for leadership, and a community that continues beyond the programme.</p><button className="pill darkbtn" onClick={()=>setFormOpen(true)}>Join next cohort <ArrowUpRight size={16}/></button></div><figure><img src="/assets/img/she.png" alt="She Leads Climate outstanding fellows"/></figure></section>
 <Partner/>
 </main>
