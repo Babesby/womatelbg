@@ -32,6 +32,27 @@ const seo={
 '/merchandise':{title:'The Vault | WOMATE Merchandise',description:'Explore WOMATE merchandise created for the community of women, allies and leaders advancing climate action across Africa.'}
 };
 
+const WOMATE_OG_IMAGE='https://www.womate.org/og-womate.png';
+
+const organizationSchema={
+'@context':'https://schema.org',
+'@type':'Organization',
+name:'WOMATE',
+alternateName:'Women in Climate',
+url:'https://www.womate.org/',
+logo:'https://www.womate.org/favicon.png',
+image:WOMATE_OG_IMAGE,
+email:'womatead@gmail.com',
+slogan:'Driving inclusive climate action with technology',
+description:"WOMATE advances African women's leadership in climate action through sustainable technology, research, community, capacity building and storytelling.",
+areaServed:'Africa',
+sameAs:[
+'https://www.instagram.com/women_in_climate',
+'https://web.facebook.com/people/Womate/61593879721366/',
+'https://www.linkedin.com/company/womeninclimategh'
+]
+};
+
 function PageSEO({path}){
 const data=seo[path]||seo['/'];
 const canonical=`https://www.womate.org${path==='/'?'':path}`;
@@ -44,12 +65,13 @@ return <Helmet>
 <meta property="og:title" content={data.title}/>
 <meta property="og:description" content={data.description}/>
 <meta property="og:url" content={canonical}/>
-<meta property="og:image" content="https://www.womate.org/assets/hero/home-africa-map.png"/>
+<meta property="og:image" content={WOMATE_OG_IMAGE}/>
 <meta property="og:image:alt" content="WOMATE — African women leading climate action"/>
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:title" content={data.title}/>
 <meta name="twitter:description" content={data.description}/>
-<meta name="twitter:image" content="https://www.womate.org/assets/hero/home-africa-map.png"/>
+<meta name="twitter:image" content={WOMATE_OG_IMAGE}/>
+<script type="application/ld+json">{JSON.stringify(organizationSchema)}</script>
 </Helmet>
 }
 
