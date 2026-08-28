@@ -181,12 +181,12 @@ const shePillars=[
 ['06','Climate Careers & Professional Pathways','Exploring career opportunities, mentorship pathways, and professional growth in climate and sustainability fields.']
 ];
 const SHE_FORM='https://docs.google.com/forms/d/e/1FAIpQLSdwc1l7vlWD4VC6v9cPF_-UdO3VLGDVLRiVJiwmiGE3Aqjs4w/viewform?embedded=true';
-const SHE_SPEAKER_FORM='https://forms.gle/LnpwUBAKkyz3zvdPA';
-const SHE_COORDINATOR_FORM='https://forms.gle/dT5a1NzoWz44FU1x6';
+const SHE_SPEAKER_FORM='https://docs.google.com/forms/d/e/1FAIpQLSfoi7Ln4j0FeNvQpxCALLs6TQnz0ghtck1QhBJOKQ44OR2EcQ/viewform?embedded=true';
+const SHE_COORDINATOR_FORM='https://docs.google.com/forms/d/e/1FAIpQLSfsIa5zHPltMRpwzLfkchWPrINvb5abex0AEn_TS1Vzu7d0yg/viewform?embedded=true';
 const SHE_SPEAKER_ART='/assets/img/she-leads-speaker.png';
 const SHE_COORDINATOR_ART='/assets/img/she-leads-coordinator.png';
 
-function SheLeads(){const[formOpen,setFormOpen]=useState(false);const scrollPillars=()=>document.getElementById('she-pillars')?.scrollIntoView({behavior:'smooth',block:'start'});useEffect(()=>{if(!formOpen)return;const onKey=e=>e.key==='Escape'&&setFormOpen(false);window.addEventListener('keydown',onKey);document.body.style.overflow='hidden';return()=>{window.removeEventListener('keydown',onKey);document.body.style.overflow=''}},[formOpen]);return <>
+function SheLeads(){const[formOpen,setFormOpen]=useState(false);const[recruitForm,setRecruitForm]=useState(null);const scrollPillars=()=>document.getElementById('she-pillars')?.scrollIntoView({behavior:'smooth',block:'start'});useEffect(()=>{const hash=window.location.hash.replace('#','');if(hash){requestAnimationFrame(()=>document.getElementById(hash)?.scrollIntoView({behavior:'smooth',block:'center'}))}},[]);useEffect(()=>{if(!formOpen&&!recruitForm)return;const onKey=e=>{if(e.key==='Escape'){setFormOpen(false);setRecruitForm(null)}};window.addEventListener('keydown',onKey);document.body.style.overflow='hidden';return()=>{window.removeEventListener('keydown',onKey);document.body.style.overflow=''}},[formOpen,recruitForm]);return <>
 <section className="hero hero-she sheHero"><div className="heroTop"><div className="heroCopy"><h1>She Leads Climate Mentorship.</h1><div className="actions"><button className="pill lime" onClick={()=>setFormOpen(true)}>Join next cohort <ArrowUpRight size={16}/></button><button className="pill ghost" onClick={scrollPillars}>Explore <ChevronDown size={17}/></button></div></div><HeroVisual type="she"/></div></section>
 <main id="content" className="shePage">
 <section className="sheIntro"><div className="sheIntroMark">SHE<br/>LEADS</div><div><h2>Where young women gain the knowledge, skills and courage to lead climate action.</h2></div><p>Climate leadership is not a title. It is the ability to understand the system, find your voice, build with others and enter decision-making spaces prepared.</p></section>
@@ -201,11 +201,11 @@ function SheLeads(){const[formOpen,setFormOpen]=useState(false);const scrollPill
 .sheRecruitmentGrid{display:grid;grid-template-columns:1fr 1fr;gap:22px}
 .sheRecruitCard{position:relative;min-height:620px;border-radius:30px;overflow:hidden;background:linear-gradient(145deg,#0b4d4a 0%,#062f2e 100%);border:1px solid rgba(198,255,82,.16);display:grid;grid-template-columns:1.05fr .95fr;align-items:end}
 .sheRecruitCard.coordinator{background:linear-gradient(145deg,#073c3a 0%,#0c5752 100%)}
-.sheRecruitCopy{position:relative;z-index:2;padding:42px 0 42px 42px}
-.sheRecruitCopy h3{font-size:clamp(32px,3.7vw,54px);line-height:1;margin:16px 0 18px}
-.sheRecruitCopy p{color:rgba(255,255,255,.76);font-size:16px;line-height:1.6}
-.sheRecruitTags{display:flex;flex-wrap:wrap;gap:8px;margin:24px 0 28px}
-.sheRecruitTags span{font-size:12px;padding:8px 11px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12)}
+
+
+
+
+
 .sheRecruitVisual{align-self:end;display:flex;align-items:flex-end;justify-content:flex-end;height:100%}
 .sheRecruitVisual img{display:block;width:118%;max-width:none;object-fit:contain;object-position:bottom right;filter:drop-shadow(0 24px 38px rgba(0,0,0,.22))}
 @media(max-width:980px){
@@ -215,40 +215,41 @@ function SheLeads(){const[formOpen,setFormOpen]=useState(false);const scrollPill
 @media(max-width:680px){
   .sheRecruitment{padding:64px 20px}
   .sheRecruitCard{grid-template-columns:1fr;min-height:0}
-  .sheRecruitCopy{padding:30px 26px 0}
+  
   .sheRecruitVisual{height:420px}
   .sheRecruitVisual img{width:108%;margin-left:auto}
 }
+
+.sheRecruitCopy{position:relative;z-index:2;padding:42px 0 42px 42px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center}
+.sheRecruitCopy h3{font-size:clamp(34px,4vw,58px);line-height:.98;margin:16px 0 28px;max-width:520px}
+.sheRecruitFormPanel{width:min(920px,94vw);height:min(92vh,980px);padding:0;overflow:hidden;background:#fff}
+.sheRecruitFormTop{padding:26px 64px 18px 28px;background:#083f3e;color:#fff}
+.sheRecruitFormTop span{font-size:11px;letter-spacing:.16em;font-weight:800;color:#c6ff52}
+.sheRecruitFormTop h3{margin:7px 0 0;font-size:24px;line-height:1.1}
+.sheRecruitIframe{display:block;width:100%;height:calc(100% - 104px);border:0;background:#fff}
+@media(max-width:680px){.sheRecruitFormPanel{width:100vw;height:100vh;max-height:none;border-radius:0}.sheRecruitFormTop{padding:22px 58px 16px 20px}.sheRecruitFormTop h3{font-size:20px}.sheRecruitIframe{height:calc(100% - 94px)}}
+
+#speaker,#coordinator,#speaker-application,#coordinator-application{scroll-margin-top:120px}
 `}</style>
 <section className="sheRecruitment">
   <div className="sheRecruitmentHead">
     <span>HELP SHAPE COHORT 2</span>
     <h2>One cohort. Two ways to lead.</h2>
-    <p>Contribute expertise as a guest speaker or help deliver the cohort experience as the programme coordinator.</p>
   </div>
   <div className="sheRecruitmentGrid">
-    <article className="sheRecruitCard">
+    <article id="speaker" className="sheRecruitCard sheRecruitSpeaker">
       <div className="sheRecruitCopy">
         <span className="sheRecruitEyebrow">SPEAKER EXPRESSION OF INTEREST · 3 SLOTS LEFT</span>
         <h3>Lead one high-value virtual session.</h3>
-        <p>We are inviting experienced practitioners, researchers and leaders to contribute to Africa’s next generation of climate leaders.</p>
-        <div className="sheRecruitTags">
-          <span>Climate science</span><span>Policy & advocacy</span><span>Technology & innovation</span><span>Community practice</span>
-        </div>
-        <a className="pill lime" href={SHE_SPEAKER_FORM} target="_blank" rel="noreferrer">Express interest to speak <ArrowUpRight size={16}/></a>
+        <button id="speaker-application" className="pill lime sheSpeakerButton" onClick={()=>setRecruitForm('speaker')}>Express interest to speak <ArrowUpRight size={16}/></button>
       </div>
       <div className="sheRecruitVisual"><img src={SHE_SPEAKER_ART} alt="She Leads climate mentorship speaker"/></div>
     </article>
-
-    <article className="sheRecruitCard coordinator">
+    <article id="coordinator" className="sheRecruitCard coordinator sheRecruitCoordinator">
       <div className="sheRecruitCopy">
         <span className="sheRecruitEyebrow">COHORT COORDINATOR · 1 SLOT LEFT</span>
         <h3>Help deliver a rigorous, human-centred cohort.</h3>
-        <p>Support weekly sessions, speakers and learners, participation tracking and the community experience that holds the cohort together.</p>
-        <div className="sheRecruitTags">
-          <span>Weekly sessions</span><span>Speaker support</span><span>Participation tracking</span><span>Cohort community</span>
-        </div>
-        <a className="pill lime" href={SHE_COORDINATOR_FORM} target="_blank" rel="noreferrer">Apply to coordinate <ArrowUpRight size={16}/></a>
+        <button id="coordinator-application" className="pill lime sheCoordinatorButton" onClick={()=>setRecruitForm('coordinator')}>Apply to coordinate <ArrowUpRight size={16}/></button>
       </div>
       <div className="sheRecruitVisual"><img src={SHE_COORDINATOR_ART} alt="She Leads cohort coordinator"/></div>
     </article>
@@ -258,6 +259,7 @@ function SheLeads(){const[formOpen,setFormOpen]=useState(false);const scrollPill
 <section className="sheFellows"><div><span>THE COMMUNITY AFTER THE CLASSROOM</span><h2>The cohort becomes a network.</h2><p>Women leave with more than climate knowledge: they leave with peers across African countries, shared language for leadership, and a community that continues beyond the programme.</p><button className="pill darkbtn" onClick={()=>setFormOpen(true)}>Join next cohort <ArrowUpRight size={16}/></button></div><figure><img src="/assets/img/she.png" alt="She Leads Climate outstanding fellows"/></figure></section>
 <Partner/>
 </main>
+{recruitForm&&<div className="sheFormModal" role="dialog" aria-modal="true" aria-label={recruitForm==='speaker'?'Speaker expression of interest':'Coordinator application'} onClick={()=>setRecruitForm(null)}><div className="sheFormPanel sheRecruitFormPanel" onClick={e=>e.stopPropagation()}><button className="sheFormClose" aria-label="Close form" onClick={()=>setRecruitForm(null)}>×</button><div className="sheRecruitFormTop"><span>{recruitForm==='speaker'?'SPEAKER EXPRESSION OF INTEREST':'COHORT COORDINATOR APPLICATION'}</span><h3>{recruitForm==='speaker'?'She Leads Climate Mentorship 2026':'Help deliver She Leads Cohort 2'}</h3></div><iframe className="sheRecruitIframe" src={recruitForm==='speaker'?SHE_SPEAKER_FORM:SHE_COORDINATOR_FORM} title={recruitForm==='speaker'?'She Leads Speaker Expression of Interest':'She Leads Coordinator Application'} loading="lazy">Loading…</iframe></div></div>}
 {formOpen&&<div className="formModal" role="dialog" aria-modal="true" aria-label="Join the next She Leads cohort"><button className="formBackdrop" aria-label="Close form" onClick={()=>setFormOpen(false)}/><div className="formPanel"><div className="formPanelHead"><div><span>SHE LEADS · NEXT COHORT</span><strong>Join the next cohort</strong></div><button onClick={()=>setFormOpen(false)} aria-label="Close"><X size={22}/></button></div><iframe src={SHE_FORM} title="She Leads cohort interest form" loading="lazy">Loading…</iframe></div></div>}
 </>}
 
