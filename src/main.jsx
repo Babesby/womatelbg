@@ -398,6 +398,162 @@ return <>
  .researchServices.iconPillarSection .iconPillarGlyph{width:56px!important;height:56px!important;flex-basis:56px!important;border-radius:17px!important}
 }
 
+
+
+/* WOMATEER open pathways — lock to the same proven icon UI as She Leads / WoK / Research */
+.womateerRoles.iconPillarSection{
+  display:block!important;
+  padding:clamp(54px,6vw,82px) clamp(18px,5vw,72px) clamp(60px,7vw,92px)!important;
+  background:linear-gradient(180deg,#f5f8f6 0%,#fff 100%)!important;
+}
+.womateerRoles.iconPillarSection .iconPillarHead{
+  display:block!important;
+  width:100%!important;
+  max-width:1100px!important;
+  margin:0 auto clamp(28px,4vw,44px)!important;
+  padding:0!important;
+  text-align:center!important;
+  grid-template-columns:none!important;
+  grid-template-rows:none!important;
+}
+.womateerRoles.iconPillarSection .iconPillarHead>span{
+  display:block!important;
+  margin:0 0 10px!important;
+  padding:0!important;
+  font-family:inherit!important;
+  font-size:10px!important;
+  line-height:1.2!important;
+  font-weight:800!important;
+  letter-spacing:.17em!important;
+  text-transform:uppercase!important;
+  color:#6c8b89!important;
+}
+.womateerRoles.iconPillarSection .iconPillarHead h2{
+  display:block!important;
+  margin:0 auto!important;
+  padding:0!important;
+  max-width:15ch!important;
+  font-family:inherit!important;
+  font-size:clamp(40px,5.1vw,70px)!important;
+  line-height:.98!important;
+  letter-spacing:-.048em!important;
+  font-weight:700!important;
+  color:#0e4d4a!important;
+  text-wrap:balance!important;
+}
+.womateerRoles.iconPillarSection .iconPillarTray{
+  display:block!important;
+  width:100%!important;
+  max-width:920px!important;
+  margin:0 auto!important;
+  padding:clamp(18px,2vw,26px)!important;
+  border:1px solid rgba(14,77,74,.08)!important;
+  border-radius:34px!important;
+  background:rgba(255,255,255,.78)!important;
+  box-shadow:0 20px 60px rgba(6,58,55,.065)!important;
+  backdrop-filter:blur(12px);
+}
+.womateerRoles.iconPillarSection .iconPillarGrid{
+  display:grid!important;
+  width:100%!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:10px!important;
+}
+.womateerRoles.iconPillarSection .iconPillarCard{
+  appearance:none!important;
+  -webkit-appearance:none!important;
+  position:relative!important;
+  min-width:0!important;
+  width:auto!important;
+  min-height:150px!important;
+  margin:0!important;
+  padding:18px 10px 16px!important;
+  border:0!important;
+  outline:0;
+  border-radius:24px!important;
+  background:transparent!important;
+  color:#0e4d4a!important;
+  box-shadow:none!important;
+  cursor:pointer!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:13px!important;
+  text-align:center!important;
+  font:inherit!important;
+  line-height:1!important;
+  overflow:visible!important;
+}
+.womateerRoles.iconPillarSection .iconPillarCard:hover,
+.womateerRoles.iconPillarSection .iconPillarCard:focus-visible{
+  transform:translateY(-3px)!important;
+  background:rgba(14,77,74,.035)!important;
+  box-shadow:none!important;
+}
+.womateerRoles.iconPillarSection .iconPillarNo{
+  position:absolute!important;
+  top:11px!important;
+  left:12px!important;
+  display:block!important;
+  font-size:9px!important;
+  line-height:1!important;
+  font-weight:850!important;
+  letter-spacing:.14em!important;
+  color:#78918f!important;
+}
+.womateerRoles.iconPillarSection .iconPillarGlyph{
+  width:66px!important;
+  height:66px!important;
+  flex:0 0 66px!important;
+  border-radius:21px!important;
+  display:grid!important;
+  place-items:center!important;
+  background:#edf5f1!important;
+  color:#0e4d4a!important;
+  box-shadow:0 9px 25px rgba(6,58,55,.065)!important;
+}
+.womateerRoles.iconPillarSection .iconPillarCard:nth-child(2n) .iconPillarGlyph{background:#f1edf8!important}
+.womateerRoles.iconPillarSection .iconPillarCard:nth-child(3n) .iconPillarGlyph{background:#edf5f1!important}
+.womateerRoles.iconPillarSection .iconPillarCard:nth-child(4n) .iconPillarGlyph{background:#f7efe4!important}
+.womateerRoles.iconPillarSection .iconPillarCard:hover .iconPillarGlyph,
+.womateerRoles.iconPillarSection .iconPillarCard:focus-visible .iconPillarGlyph{
+  transform:scale(1.04)!important;
+  background:#c6ff52!important;
+}
+.womateerRoles.iconPillarSection .iconPillarCard strong{
+  display:block!important;
+  margin:0!important;
+  padding:0!important;
+  max-width:12ch!important;
+  font-family:inherit!important;
+  font-size:13px!important;
+  line-height:1.08!important;
+  font-weight:700!important;
+  letter-spacing:-.015em!important;
+  color:#0e4d4a!important;
+}
+.womateerRoles.iconPillarSection .iconPillarHint{
+  display:block!important;
+  margin:16px auto 0!important;
+  padding:0!important;
+  text-align:center!important;
+  font-size:9px!important;
+  line-height:1.2!important;
+  font-weight:600!important;
+  letter-spacing:.13em!important;
+  text-transform:uppercase!important;
+  color:#78918f!important;
+}
+@media(max-width:760px){
+ .womateerRoles.iconPillarSection .iconPillarHead{text-align:left!important;margin-bottom:24px!important}
+ .womateerRoles.iconPillarSection .iconPillarHead h2{margin-left:0!important;font-size:clamp(30px,8vw,42px)!important;max-width:18ch!important}
+ .womateerRoles.iconPillarSection .iconPillarTray{padding:11px!important;border-radius:25px!important}
+ .womateerRoles.iconPillarSection .iconPillarGrid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:5px!important}
+ .womateerRoles.iconPillarSection .iconPillarCard{min-height:116px!important;border-radius:18px!important;padding:15px 8px 12px!important}
+ .womateerRoles.iconPillarSection .iconPillarGlyph{width:56px!important;height:56px!important;flex-basis:56px!important;border-radius:17px!important}
+}
+
 /* WOMATEER open pathways — icon-first, detail on intent */
 .womateerPathwayTray{max-width:920px}
 .womateerPathwayGrid{grid-template-columns:repeat(4,minmax(0,1fr))}
