@@ -759,6 +759,129 @@ input,select,textarea{width:100%;min-height:var(--field-h);font:inherit}textarea
 @media(hover:hover){.program:hover,.sheRecruitCard:hover{transform:translateY(-4px)}.voiceCard:hover{transform:translateY(-2px)}}
 @media(max-width:768px){.heroTop{min-height:auto}.actions{gap:10px}.actions .pill{min-height:48px}.programGrid,.circleTierGrid,.healTierGrid,.fundingSupportGrid{grid-template-columns:1fr!important}.partner,.researchInquiry,.healInquiry,.leadershipPartner,.womateerInquiry{grid-template-columns:1fr!important}.megaMenu{display:none!important}}
 @media(max-width:430px){.heroCopy h1{font-size:clamp(42px,13vw,64px)}.actions{width:100%;align-items:stretch}.actions .pill{width:100%;justify-content:center}.statbar{grid-template-columns:repeat(2,1fr)!important}.footerDirectory{grid-template-columns:1fr!important}.footerBottom{gap:14px;align-items:flex-start!important}}
+
+
+/* GLOBAL — WoK + Research icon navigation. Kept outside route components so styles render on every page. */
+.wokPillars.iconPillarSection,
+.researchServices.iconPillarSection{
+  padding:clamp(54px,6vw,82px) clamp(18px,5vw,72px) clamp(60px,7vw,92px)!important;
+  background:linear-gradient(180deg,#f5f8f6 0%,#fff 100%)!important;
+}
+.wokPillars.iconPillarSection .iconPillarHead,
+.researchServices.iconPillarSection .iconPillarHead{
+  display:block!important;width:100%!important;max-width:1100px!important;
+  margin:0 auto clamp(28px,4vw,44px)!important;padding:0!important;
+  text-align:center!important;grid-template-columns:none!important;
+}
+.wokPillars.iconPillarSection .iconPillarHead>span,
+.researchServices.iconPillarSection .iconPillarHead>span{
+  display:block!important;margin:0 0 10px!important;padding:0!important;
+  font-family:inherit!important;font-size:10px!important;line-height:1.2!important;
+  font-weight:800!important;letter-spacing:.17em!important;text-transform:uppercase!important;color:#6c8b89!important;
+}
+.wokPillars.iconPillarSection .iconPillarHead h2,
+.researchServices.iconPillarSection .iconPillarHead h2{
+  display:block!important;margin:0 auto!important;padding:0!important;
+  max-width:15ch!important;font-family:inherit!important;
+  font-size:clamp(40px,5.1vw,70px)!important;line-height:.98!important;
+  letter-spacing:-.048em!important;font-weight:700!important;color:#0e4d4a!important;
+  text-wrap:balance!important;
+}
+.wokPillars.iconPillarSection .iconPillarTray,
+.researchServices.iconPillarSection .iconPillarTray{
+  width:100%!important;max-width:1240px!important;margin:0 auto!important;
+  padding:clamp(18px,2vw,26px)!important;border:1px solid rgba(14,77,74,.08)!important;
+  border-radius:34px!important;background:rgba(255,255,255,.82)!important;
+  box-shadow:0 20px 60px rgba(6,58,55,.065)!important;backdrop-filter:blur(12px)!important;
+}
+.wokPillars.iconPillarSection .iconPillarGrid,
+.researchServices.iconPillarSection .iconPillarGrid{
+  display:grid!important;width:100%!important;gap:10px!important;
+}
+.wokPillars.iconPillarSection .iconPillarGrid.six{grid-template-columns:repeat(6,minmax(0,1fr))!important}
+.researchServices.iconPillarSection .iconPillarGrid.eight{grid-template-columns:repeat(8,minmax(0,1fr))!important}
+.wokPillars.iconPillarSection button.iconPillarCard,
+.researchServices.iconPillarSection button.iconPillarCard{
+  appearance:none!important;-webkit-appearance:none!important;
+  position:relative!important;min-width:0!important;width:100%!important;min-height:150px!important;
+  margin:0!important;padding:18px 10px 16px!important;border:0!important;outline:0!important;
+  border-radius:24px!important;background:transparent!important;color:#0e4d4a!important;
+  box-shadow:none!important;cursor:pointer!important;display:flex!important;flex-direction:column!important;
+  align-items:center!important;justify-content:center!important;gap:13px!important;text-align:center!important;
+  font:inherit!important;line-height:1!important;overflow:visible!important;
+}
+.wokPillars.iconPillarSection button.iconPillarCard:hover,
+.wokPillars.iconPillarSection button.iconPillarCard:focus-visible,
+.researchServices.iconPillarSection button.iconPillarCard:hover,
+.researchServices.iconPillarSection button.iconPillarCard:focus-visible{
+  transform:translateY(-3px)!important;background:rgba(14,77,74,.035)!important;box-shadow:none!important;
+}
+.wokPillars.iconPillarSection .iconPillarNo,
+.researchServices.iconPillarSection .iconPillarNo{
+  position:absolute!important;top:12px!important;left:14px!important;display:block!important;
+  font-size:9px!important;line-height:1!important;font-weight:850!important;letter-spacing:.15em!important;color:#77918f!important;
+}
+.wokPillars.iconPillarSection .iconPillarGlyph,
+.researchServices.iconPillarSection .iconPillarGlyph{
+  width:70px!important;height:70px!important;flex:0 0 70px!important;border-radius:22px!important;
+  display:grid!important;place-items:center!important;background:#edf5f1!important;color:#0e4d4a!important;
+  box-shadow:0 10px 28px rgba(6,58,55,.07)!important;
+}
+.wokPillars.iconPillarSection .iconPillarCard:nth-child(2) .iconPillarGlyph,
+.researchServices.iconPillarSection .iconPillarCard:nth-child(2) .iconPillarGlyph{background:#f1edf8!important}
+.wokPillars.iconPillarSection .iconPillarCard:nth-child(3) .iconPillarGlyph,
+.researchServices.iconPillarSection .iconPillarCard:nth-child(3) .iconPillarGlyph{background:#eaf4ec!important}
+.wokPillars.iconPillarSection .iconPillarCard:nth-child(4) .iconPillarGlyph,
+.researchServices.iconPillarSection .iconPillarCard:nth-child(4) .iconPillarGlyph{background:#f7efe4!important}
+.wokPillars.iconPillarSection .iconPillarCard:nth-child(5) .iconPillarGlyph,
+.researchServices.iconPillarSection .iconPillarCard:nth-child(5) .iconPillarGlyph{background:#e8f2f2!important}
+.wokPillars.iconPillarSection .iconPillarCard:nth-child(6) .iconPillarGlyph,
+.researchServices.iconPillarSection .iconPillarCard:nth-child(6) .iconPillarGlyph{background:#eff6df!important}
+.wokPillars.iconPillarSection button.iconPillarCard:hover .iconPillarGlyph,
+.wokPillars.iconPillarSection button.iconPillarCard:focus-visible .iconPillarGlyph,
+.researchServices.iconPillarSection button.iconPillarCard:hover .iconPillarGlyph,
+.researchServices.iconPillarSection button.iconPillarCard:focus-visible .iconPillarGlyph{
+  transform:scale(1.06)!important;background:#c6ff52!important;box-shadow:0 14px 32px rgba(6,58,55,.12)!important;
+}
+.wokPillars.iconPillarSection button.iconPillarCard strong,
+.researchServices.iconPillarSection button.iconPillarCard strong{
+  display:block!important;margin:0!important;padding:0!important;max-width:13ch!important;
+  font-family:inherit!important;font-size:14px!important;line-height:1.08!important;font-weight:700!important;
+  letter-spacing:-.02em!important;color:#0e4d4a!important;
+}
+.wokPillars.iconPillarSection .iconPillarHint,
+.researchServices.iconPillarSection .iconPillarHint{
+  display:block!important;margin:18px auto 0!important;padding:0!important;text-align:center!important;
+  font-size:10px!important;line-height:1.2!important;font-weight:600!important;letter-spacing:.13em!important;
+  text-transform:uppercase!important;color:#78918f!important;
+}
+.iconPillarModal{position:fixed!important;inset:0!important;z-index:9999!important;display:grid!important;place-items:center!important;padding:18px!important}
+.iconPillarBackdrop{position:absolute!important;inset:0!important;border:0!important;background:rgba(2,30,29,.78)!important;backdrop-filter:blur(12px)!important}
+.iconPillarDialog{position:relative!important;z-index:1!important;width:min(700px,94vw)!important;padding:clamp(32px,5vw,58px)!important;border-radius:32px!important;background:#083f3e!important;color:#fff!important;box-shadow:0 36px 100px rgba(0,0,0,.4)!important;border:1px solid rgba(198,255,82,.18)!important}
+.iconPillarDialog:before{content:'';position:absolute;left:0;top:36px;width:5px;height:68px;border-radius:0 5px 5px 0;background:#c6ff52}
+.iconPillarDialog>button{position:absolute!important;top:16px!important;right:16px!important;width:42px!important;height:42px!important;min-height:42px!important;padding:0!important;border-radius:50%!important;border:1px solid rgba(255,255,255,.16)!important;background:rgba(255,255,255,.07)!important;color:#fff!important;display:grid!important;place-items:center!important}
+.iconPillarDialogIcon{width:58px!important;height:58px!important;border-radius:18px!important;display:grid!important;place-items:center!important;background:#c6ff52!important;color:#083f3e!important;margin-bottom:22px!important}
+.iconPillarDialog>span{font-size:11px!important;font-weight:850!important;letter-spacing:.16em!important;color:#c6ff52!important}
+.iconPillarDialog h3{margin:14px 46px 18px 0!important;font-size:clamp(34px,6vw,58px)!important;line-height:.96!important;letter-spacing:-.045em!important;max-width:14ch!important;color:#fff!important}
+.iconPillarDialog p{margin:0!important;max-width:54ch!important;font-size:clamp(15px,1.6vw,18px)!important;line-height:1.7!important;color:rgba(255,255,255,.82)!important}
+.iconPillarDialogTags{display:flex!important;flex-wrap:wrap!important;gap:8px!important;margin-top:24px!important}
+.iconPillarDialogTags span{padding:8px 11px!important;border-radius:999px!important;background:rgba(255,255,255,.08)!important;border:1px solid rgba(255,255,255,.12)!important;color:#fff!important;font-size:11px!important;letter-spacing:.02em!important}
+@media(max-width:1100px){
+ .wokPillars.iconPillarSection .iconPillarGrid.six,
+ .researchServices.iconPillarSection .iconPillarGrid.eight{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+}
+@media(max-width:760px){
+ .wokPillars.iconPillarSection,.researchServices.iconPillarSection{padding:46px 16px 58px!important}
+ .wokPillars.iconPillarSection .iconPillarHead,.researchServices.iconPillarSection .iconPillarHead{text-align:left!important;margin-bottom:24px!important}
+ .wokPillars.iconPillarSection .iconPillarHead h2,.researchServices.iconPillarSection .iconPillarHead h2{margin-left:0!important;font-size:clamp(34px,9vw,48px)!important;max-width:16ch!important}
+ .wokPillars.iconPillarSection .iconPillarTray,.researchServices.iconPillarSection .iconPillarTray{padding:11px!important;border-radius:25px!important}
+ .wokPillars.iconPillarSection .iconPillarGrid.six,.researchServices.iconPillarSection .iconPillarGrid.eight{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:5px!important}
+ .wokPillars.iconPillarSection button.iconPillarCard,.researchServices.iconPillarSection button.iconPillarCard{min-height:116px!important;border-radius:18px!important;padding:15px 8px 12px!important}
+ .wokPillars.iconPillarSection .iconPillarGlyph,.researchServices.iconPillarSection .iconPillarGlyph{width:56px!important;height:56px!important;flex-basis:56px!important;border-radius:17px!important}
+ .wokPillars.iconPillarSection button.iconPillarCard strong,.researchServices.iconPillarSection button.iconPillarCard strong{font-size:12px!important}
+ .iconPillarDialog{border-radius:24px!important;padding:28px 22px 30px!important}
+}
+
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}.voiceTrack{animation:none!important}}
 `;
 function UIPolish(){return <style>{uiPolish}</style>}
