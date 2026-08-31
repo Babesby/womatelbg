@@ -190,37 +190,34 @@ return <>
 <main id="content" className="shePage">
 <section className="sheIntro"><div className="sheIntroMark">SHE<br/>LEADS</div><div><h2>Where young women gain the knowledge, skills and courage to lead climate action.</h2></div><p>Climate leadership is not a title. It is the ability to understand the system, find your voice, build with others and enter decision-making spaces prepared.</p></section>
 <style>{`
-.shePillars{padding:clamp(48px,6vw,78px) clamp(18px,5vw,72px)}
-.shePillars header{max-width:780px;margin-bottom:clamp(24px,3vw,36px)}
-.shePillars header h2{margin:6px 0 0;font-size:clamp(34px,4.6vw,58px);letter-spacing:-.04em}
-.shePillars header p{display:none}
-.shePillarGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
-.sheFlipCard{position:relative;height:190px;perspective:1000px;border:0;background:transparent;padding:0;text-align:left;cursor:pointer;border-radius:22px}
-.sheFlipInner{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .48s cubic-bezier(.2,.75,.25,1)}
-.sheFlipCard:hover .sheFlipInner,.sheFlipCard:focus-visible .sheFlipInner{transform:rotateY(180deg)}
-.sheFlipFace{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:space-between;padding:22px;border-radius:22px;backface-visibility:hidden;-webkit-backface-visibility:hidden;border:1px solid rgba(14,77,74,.14);box-shadow:0 14px 34px rgba(4,48,46,.07)}
-.sheFlipFront{background:#fff;color:#083f3e}
-.sheFlipBack{background:#083f3e;color:#fff;transform:rotateY(180deg)}
-.sheFlipTop{display:flex;justify-content:space-between;align-items:center}
-.sheFlipTop span{font-size:12px;font-weight:800;letter-spacing:.12em;color:#0e4d4a}
-.sheFlipBack .sheFlipTop span{color:#c6ff52}
-.sheFlipFront h3{margin:0;max-width:17ch;font-size:clamp(20px,2vw,26px);line-height:1.02;letter-spacing:-.025em}
-.sheFlipBack p{margin:0;font-size:14px;line-height:1.55;color:rgba(255,255,255,.82)}
-.sheFlipHint{font-size:10px;letter-spacing:.12em;text-transform:uppercase;opacity:.56}
-.shePrestige{padding-top:clamp(42px,5vw,68px)!important}
+.shePillars{padding:clamp(46px,5.5vw,72px) clamp(18px,5vw,72px);background:linear-gradient(180deg,#f5f8f6 0%,#fff 100%)}
+.shePillars header{max-width:760px;margin-bottom:clamp(20px,2.6vw,30px)}
+.shePillars header>span{display:block;font-size:11px;font-weight:800;letter-spacing:.14em;color:#6c8b89}
+.shePillars header h2{margin:7px 0 0;font-size:clamp(32px,4.2vw,52px);line-height:1;letter-spacing:-.045em;color:#0e4d4a}
+.shePillarGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.shePillarCard{position:relative;min-height:126px;padding:18px 18px 17px;border-radius:18px;border:1px solid rgba(14,77,74,.12);background:rgba(255,255,255,.92);color:#0e4d4a;text-align:left;cursor:pointer;display:grid;grid-template-columns:auto 1fr auto;grid-template-rows:auto 1fr;column-gap:14px;row-gap:14px;box-shadow:0 7px 20px rgba(6,58,55,.045);overflow:hidden}
+.shePillarCard:before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:#c6ff52;transform:scaleY(0);transform-origin:bottom;transition:transform .22s var(--ease-womate)}
+.shePillarCard:hover,.shePillarCard:focus-visible{transform:translateY(-2px);border-color:rgba(14,77,74,.24);box-shadow:0 14px 34px rgba(6,58,55,.08)}
+.shePillarCard:hover:before,.shePillarCard:focus-visible:before{transform:scaleY(1)}
+.shePillarNo{font-size:11px;font-weight:850;letter-spacing:.16em;color:#0e4d4a;align-self:start}
+.shePillarCard h3{grid-column:1/3;align-self:end;margin:0;max-width:23ch;font-size:clamp(18px,1.55vw,23px);line-height:1.03;letter-spacing:-.03em;font-weight:700}
+.shePillarOpen{grid-column:3;grid-row:1/3;align-self:center;justify-self:end;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:#f0f5f2;color:#0e4d4a;transition:transform .2s var(--ease-womate),background .2s var(--ease-womate)}
+.shePillarCard:hover .shePillarOpen,.shePillarCard:focus-visible .shePillarOpen{transform:scale(1.06);background:#c6ff52}
+.shePrestige{padding-top:clamp(38px,4.5vw,58px)!important}
 .shePrestige .prestigeCopy p{display:none}
 .shePillarModal{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;padding:18px}
-.shePillarBackdrop{position:absolute;inset:0;border:0;background:rgba(2,30,29,.84);backdrop-filter:blur(10px)}
-.shePillarDialog{position:relative;z-index:1;width:min(620px,94vw);padding:clamp(28px,5vw,52px);border-radius:28px;background:#083f3e;color:#fff;box-shadow:0 34px 90px rgba(0,0,0,.36);transform:scale(1);animation:shePop .22s ease-out}
-.shePillarDialog>button{position:absolute;top:16px;right:16px;width:42px;height:42px;border-radius:50%;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:#fff;display:grid;place-items:center;cursor:pointer}
-.shePillarDialog span{font-size:12px;font-weight:800;letter-spacing:.14em;color:#c6ff52}
-.shePillarDialog h3{margin:16px 44px 16px 0;font-size:clamp(34px,6vw,56px);line-height:.98;letter-spacing:-.04em}
-.shePillarDialog p{margin:0;max-width:48ch;font-size:17px;line-height:1.7;color:rgba(255,255,255,.8)}
-@keyframes shePop{from{opacity:0;transform:scale(.93)}to{opacity:1;transform:scale(1)}}
-@media(max-width:900px){.shePillarGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:580px){.shePillarGrid{grid-template-columns:1fr}.sheFlipCard{height:160px}.sheFlipFace{padding:20px}.sheFlipCard:hover .sheFlipInner{transform:none}.sheFlipCard:focus-visible .sheFlipInner{transform:none}.sheFlipBack{display:none}}
+.shePillarBackdrop{position:absolute;inset:0;border:0;background:rgba(2,30,29,.78);backdrop-filter:blur(12px)}
+.shePillarDialog{position:relative;z-index:1;width:min(660px,94vw);padding:clamp(30px,5vw,56px);border-radius:30px;background:#083f3e;color:#fff;box-shadow:0 36px 100px rgba(0,0,0,.4);animation:shePop .2s cubic-bezier(.2,.75,.25,1);border:1px solid rgba(198,255,82,.18)}
+.shePillarDialog:before{content:'';position:absolute;left:0;top:34px;width:5px;height:64px;border-radius:0 5px 5px 0;background:#c6ff52}
+.shePillarDialog>button{position:absolute;top:16px;right:16px;width:42px;height:42px;border-radius:50%;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.07);color:#fff;display:grid;place-items:center;cursor:pointer}
+.shePillarDialog span{font-size:11px;font-weight:850;letter-spacing:.16em;color:#c6ff52}
+.shePillarDialog h3{margin:18px 46px 18px 0;font-size:clamp(34px,6vw,58px);line-height:.96;letter-spacing:-.045em;max-width:13ch}
+.shePillarDialog p{margin:0;max-width:50ch;font-size:clamp(15px,1.6vw,18px);line-height:1.7;color:rgba(255,255,255,.8)}
+@keyframes shePop{from{opacity:0;transform:scale(.94) translateY(8px)}to{opacity:1;transform:scale(1) translateY(0)}}
+@media(max-width:900px){.shePillarGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.shePillarCard{min-height:120px}}
+@media(max-width:580px){.shePillars{padding:42px 15px 50px}.shePillarGrid{grid-template-columns:1fr;gap:9px}.shePillarCard{min-height:96px;padding:15px 15px 14px;border-radius:16px;grid-template-columns:auto 1fr auto;column-gap:12px;row-gap:8px}.shePillarCard h3{font-size:19px;max-width:none}.shePillarOpen{width:30px;height:30px}.shePillarDialog{padding:32px 24px 30px;border-radius:24px}.shePillarDialog h3{font-size:clamp(32px,10vw,46px)}}
 `}</style>
-<section id="she-pillars" className="shePillars"><header><span>THE LEARNING ARCHITECTURE</span><h2>Six Core Learning Pillars</h2></header><div className="shePillarGrid">{shePillars.map(([n,t,d])=><button type="button" className="sheFlipCard" key={n} onClick={()=>setSelectedPillar({n,t,d})} aria-label={`${t}. Open full description`}><div className="sheFlipInner"><article className="sheFlipFace sheFlipFront"><div className="sheFlipTop"><span>{n}</span><Leaf size={18}/></div><h3>{t}</h3><small className="sheFlipHint">Hover to reveal · click to open</small></article><article className="sheFlipFace sheFlipBack"><div className="sheFlipTop"><span>{n}</span><Leaf size={18}/></div><p>{d}</p><small className="sheFlipHint">Click for full view</small></article></div></button>)}</div></section>
+<section id="she-pillars" className="shePillars"><header><span>THE LEARNING ARCHITECTURE</span><h2>Six Core Learning Pillars</h2></header><div className="shePillarGrid">{shePillars.map(([n,t,d])=><button type="button" className="shePillarCard" key={n} onClick={()=>setSelectedPillar({n,t,d})} aria-label={`${t}. Open full description`}><span className="shePillarNo">{n}</span><h3>{t}</h3><span className="shePillarOpen" aria-hidden="true"><ArrowUpRight size={15}/></span></button>)}</div></section>
 <section className="shePrestige"><div className="prestigeCopy"><h2>The Prestige Awaits You.</h2><div className="prestigeProof"><ShieldCheck size={18}/> Credential · leadership evidence · professional signal</div></div><div className="prestigeCert"><img src="/assets/img/she-leads-certificate-reveal.png" alt="She Leads 2026 Certificate of Participation"/></div></section>
 <section className="sheFellows"><div><h2>The cohort becomes a network.</h2><p>Women leave with more than climate knowledge: they leave with peers across African countries, shared language for leadership, and a community that continues beyond the programme.</p><button className="pill darkbtn" onClick={()=>setFormOpen(true)}>Join next cohort <ArrowUpRight size={16}/></button></div><figure><img src="/assets/img/she.png" alt="She Leads Climate outstanding fellows"/></figure></section>
 </main>
