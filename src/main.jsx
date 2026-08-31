@@ -179,177 +179,52 @@ const shePillars=[
 ['06','Climate Careers & Professional Pathways','Exploring career opportunities, mentorship pathways, and professional growth in climate and sustainability fields.']
 ];
 const SHE_FORM='https://docs.google.com/forms/d/e/1FAIpQLSdwc1l7vlWD4VC6v9cPF_-UdO3VLGDVLRiVJiwmiGE3Aqjs4w/viewform?embedded=true';
-const SHE_SPEAKER_FORM='https://docs.google.com/forms/d/e/1FAIpQLSfoi7Ln4j0FeNvQpxCALLs6TQnz0ghtck1QhBJOKQ44OR2EcQ/viewform?embedded=true';
-const SHE_COORDINATOR_FORM='https://docs.google.com/forms/d/e/1FAIpQLSfsIa5zHPltMRpwzLfkchWPrINvb5abex0AEn_TS1Vzu7d0yg/viewform?embedded=true';
-const SHE_SPEAKER_ART='/assets/img/she-leads-speaker.png';
-const SHE_COORDINATOR_ART='/assets/img/she-leads-coordinator.png';
 
-function SheLeads(){const[formOpen,setFormOpen]=useState(false);const[recruitForm,setRecruitForm]=useState(null);const scrollPillars=()=>document.getElementById('she-pillars')?.scrollIntoView({behavior:'smooth',block:'start'});useEffect(()=>{const hash=window.location.hash.replace('#','');if(hash){setTimeout(()=>document.getElementById(hash)?.scrollIntoView({behavior:'smooth',block:'center'}),120)}},[]);useEffect(()=>{if(!formOpen&&!recruitForm)return;const onKey=e=>{if(e.key==='Escape'){setFormOpen(false);setRecruitForm(null)}};window.addEventListener('keydown',onKey);document.body.style.overflow='hidden';return()=>{window.removeEventListener('keydown',onKey);document.body.style.overflow=''}},[formOpen,recruitForm]);return <>
+function SheLeads(){
+const[formOpen,setFormOpen]=useState(false);
+const[selectedPillar,setSelectedPillar]=useState(null);
+const scrollPillars=()=>document.getElementById('she-pillars')?.scrollIntoView({behavior:'smooth',block:'start'});
+useEffect(()=>{if(!formOpen&&!selectedPillar)return;const onKey=e=>{if(e.key==='Escape'){setFormOpen(false);setSelectedPillar(null)}};window.addEventListener('keydown',onKey);document.body.style.overflow='hidden';return()=>{window.removeEventListener('keydown',onKey);document.body.style.overflow=''}},[formOpen,selectedPillar]);
+return <>
 <section className="hero hero-she sheHero"><div className="heroTop"><div className="heroCopy"><h1>She Leads Climate Mentorship.</h1><div className="actions"><button className="pill lime" onClick={()=>setFormOpen(true)}>Join next cohort <ArrowUpRight size={16}/></button><button className="pill ghost" onClick={scrollPillars}>Explore <ChevronDown size={17}/></button></div></div><HeroVisual type="she"/></div></section>
 <main id="content" className="shePage">
 <section className="sheIntro"><div className="sheIntroMark">SHE<br/>LEADS</div><div><h2>Where young women gain the knowledge, skills and courage to lead climate action.</h2></div><p>Climate leadership is not a title. It is the ability to understand the system, find your voice, build with others and enter decision-making spaces prepared.</p></section>
-<section id="she-pillars" className="shePillars"><header><span>THE LEARNING ARCHITECTURE</span><h2>Six Core Learning Pillars</h2><p>Equipping young women with knowledge, skills and pathways for climate leadership.</p></header><div className="shePillarGrid">{shePillars.map(([n,t,d])=><article key={n}><div className="pillarTop"><span>{n}</span><Leaf size={20}/></div><h3>{t}</h3><p>{d}</p><div className="pillarLine"/></article>)}</div></section>
-<section className="shePrestige"><div className="prestigeCopy"><h2>The Prestige Awaits You.</h2><p>A digital credential validating rounded climate leadership, not passive attendance. Learning, practice, community contribution and a visible next step.</p><div className="prestigeProof"><ShieldCheck size={18}/> Credential · leadership evidence · professional signal</div></div><div className="prestigeCert"><img src="/assets/img/she-leads-certificate-reveal.png" alt="She Leads 2026 Certificate of Participation"/></div></section>
 <style>{`
-.sheRecruitment{
-  padding:clamp(56px,7vw,96px) clamp(18px,5vw,72px);
-  background:#083f3e;
-  color:#fff;
-  overflow:hidden;
-}
-.sheRecruitmentHead{
-  max-width:900px;
-  margin:0 0 clamp(28px,4vw,48px);
-}
-.sheRecruitmentHead h2{
-  margin:0;
-  font-size:clamp(36px,5.8vw,76px);
-  line-height:.96;
-  letter-spacing:-.045em;
-}
-.sheRecruitmentGrid{
-  display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:clamp(16px,2vw,28px);
-}
-.sheRecruitCard{
-  position:relative;
-  min-width:0;
-  min-height:clamp(430px,42vw,620px);
-  border-radius:clamp(22px,2vw,32px);
-  overflow:hidden;
-  background:linear-gradient(145deg,#0b4d4a 0%,#062f2e 100%);
-  border:1px solid rgba(198,255,82,.16);
-}
-.sheRecruitCard.coordinator{
-  background:linear-gradient(145deg,#073c3a 0%,#0c5752 100%);
-}
-.sheRecruitCopy{
-  position:relative;
-  z-index:3;
-  width:min(60%,520px);
-  padding:clamp(28px,4vw,52px);
-  display:flex;
-  flex-direction:column;
-  align-items:flex-start;
-  gap:clamp(22px,3vw,34px);
-}
-.sheRecruitCopy h3{
-  margin:0;
-  font-size:clamp(30px,3.5vw,54px);
-  line-height:.98;
-  letter-spacing:-.04em;
-  max-width:10ch;
-}
-.sheRecruitCopy .pill{
-  position:relative;
-  z-index:5;
-  white-space:normal;
-  text-align:left;
-  min-height:48px;
-}
-.sheRecruitVisual{
-  position:absolute;
-  inset:auto -2% 0 auto;
-  width:58%;
-  height:88%;
-  display:flex;
-  align-items:flex-end;
-  justify-content:flex-end;
-  pointer-events:none;
-}
-.sheRecruitVisual img{
-  display:block;
-  width:100%;
-  height:100%;
-  object-fit:contain;
-  object-position:right bottom;
-  filter:drop-shadow(0 24px 38px rgba(0,0,0,.22));
-}
-#speaker,#coordinator,#speaker-application,#coordinator-application{
-  scroll-margin-top:120px;
-}
-@media(max-width:980px){
-  .sheRecruitmentGrid{grid-template-columns:1fr}
-  .sheRecruitCard{min-height:520px}
-  .sheRecruitCopy{width:58%}
-  .sheRecruitVisual{width:52%;height:90%}
-}
-@media(max-width:640px){
-  .sheRecruitment{padding:52px 16px}
-  .sheRecruitmentHead{margin-bottom:22px}
-  .sheRecruitmentHead h2{font-size:clamp(34px,11vw,52px)}
-  .sheRecruitmentGrid{gap:16px}
-  .sheRecruitCard{
-    min-height:560px;
-    display:flex;
-    flex-direction:column;
-  }
-  .sheRecruitCopy{
-    width:100%;
-    padding:26px 22px 0;
-    gap:20px;
-  }
-  .sheRecruitCopy h3{
-    font-size:clamp(32px,10vw,46px);
-    max-width:9ch;
-  }
-  .sheRecruitCopy .pill{
-    width:auto;
-    max-width:100%;
-  }
-  .sheRecruitVisual{
-    position:absolute;
-    width:82%;
-    height:62%;
-    right:-7%;
-    bottom:-2%;
-  }
-}
+.shePillars{padding:clamp(48px,6vw,78px) clamp(18px,5vw,72px)}
+.shePillars header{max-width:780px;margin-bottom:clamp(24px,3vw,36px)}
+.shePillars header h2{margin:6px 0 0;font-size:clamp(34px,4.6vw,58px);letter-spacing:-.04em}
+.shePillars header p{display:none}
+.shePillarGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.sheFlipCard{position:relative;height:190px;perspective:1000px;border:0;background:transparent;padding:0;text-align:left;cursor:pointer;border-radius:22px}
+.sheFlipInner{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .48s cubic-bezier(.2,.75,.25,1)}
+.sheFlipCard:hover .sheFlipInner,.sheFlipCard:focus-visible .sheFlipInner{transform:rotateY(180deg)}
+.sheFlipFace{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:space-between;padding:22px;border-radius:22px;backface-visibility:hidden;-webkit-backface-visibility:hidden;border:1px solid rgba(14,77,74,.14);box-shadow:0 14px 34px rgba(4,48,46,.07)}
+.sheFlipFront{background:#fff;color:#083f3e}
+.sheFlipBack{background:#083f3e;color:#fff;transform:rotateY(180deg)}
+.sheFlipTop{display:flex;justify-content:space-between;align-items:center}
+.sheFlipTop span{font-size:12px;font-weight:800;letter-spacing:.12em;color:#0e4d4a}
+.sheFlipBack .sheFlipTop span{color:#c6ff52}
+.sheFlipFront h3{margin:0;max-width:17ch;font-size:clamp(20px,2vw,26px);line-height:1.02;letter-spacing:-.025em}
+.sheFlipBack p{margin:0;font-size:14px;line-height:1.55;color:rgba(255,255,255,.82)}
+.sheFlipHint{font-size:10px;letter-spacing:.12em;text-transform:uppercase;opacity:.56}
+.shePrestige{padding-top:clamp(42px,5vw,68px)!important}
+.shePrestige .prestigeCopy p{display:none}
+.shePillarModal{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;padding:18px}
+.shePillarBackdrop{position:absolute;inset:0;border:0;background:rgba(2,30,29,.84);backdrop-filter:blur(10px)}
+.shePillarDialog{position:relative;z-index:1;width:min(620px,94vw);padding:clamp(28px,5vw,52px);border-radius:28px;background:#083f3e;color:#fff;box-shadow:0 34px 90px rgba(0,0,0,.36);transform:scale(1);animation:shePop .22s ease-out}
+.shePillarDialog>button{position:absolute;top:16px;right:16px;width:42px;height:42px;border-radius:50%;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:#fff;display:grid;place-items:center;cursor:pointer}
+.shePillarDialog span{font-size:12px;font-weight:800;letter-spacing:.14em;color:#c6ff52}
+.shePillarDialog h3{margin:16px 44px 16px 0;font-size:clamp(34px,6vw,56px);line-height:.98;letter-spacing:-.04em}
+.shePillarDialog p{margin:0;max-width:48ch;font-size:17px;line-height:1.7;color:rgba(255,255,255,.8)}
+@keyframes shePop{from{opacity:0;transform:scale(.93)}to{opacity:1;transform:scale(1)}}
+@media(max-width:900px){.shePillarGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:580px){.shePillarGrid{grid-template-columns:1fr}.sheFlipCard{height:160px}.sheFlipFace{padding:20px}.sheFlipCard:hover .sheFlipInner{transform:none}.sheFlipCard:focus-visible .sheFlipInner{transform:none}.sheFlipBack{display:none}}
 `}</style>
-<section className="sheRecruitment">
-  <div className="sheRecruitmentHead">
-    <h2>Help shape Cohort 2.</h2>
-  </div>
-  <div className="sheRecruitmentGrid">
-    <article id="speaker" className="sheRecruitCard sheRecruitSpeaker">
-      <div className="sheRecruitCopy">
-        <h3>Lead one high-value virtual session.</h3>
-        <button id="speaker-application" type="button" className="pill lime sheSpeakerButton" onClick={()=>setRecruitForm('speaker')}>Express interest to speak <ArrowUpRight size={16}/></button>
-      </div>
-      <div className="sheRecruitVisual"><img src={SHE_SPEAKER_ART} alt="She Leads climate mentorship speaker"/></div>
-    </article>
-
-    <article id="coordinator" className="sheRecruitCard coordinator sheRecruitCoordinator">
-      <div className="sheRecruitCopy">
-        <h3>Help deliver a rigorous, human-centred cohort.</h3>
-        <button id="coordinator-application" type="button" className="pill lime sheCoordinatorButton" onClick={()=>setRecruitForm('coordinator')}>Apply to coordinate <ArrowUpRight size={16}/></button>
-      </div>
-      <div className="sheRecruitVisual"><img src={SHE_COORDINATOR_ART} alt="She Leads cohort coordinator"/></div>
-    </article>
-  </div>
-</section>
-
+<section id="she-pillars" className="shePillars"><header><span>THE LEARNING ARCHITECTURE</span><h2>Six Core Learning Pillars</h2></header><div className="shePillarGrid">{shePillars.map(([n,t,d])=><button type="button" className="sheFlipCard" key={n} onClick={()=>setSelectedPillar({n,t,d})} aria-label={`${t}. Open full description`}><div className="sheFlipInner"><article className="sheFlipFace sheFlipFront"><div className="sheFlipTop"><span>{n}</span><Leaf size={18}/></div><h3>{t}</h3><small className="sheFlipHint">Hover to reveal · click to open</small></article><article className="sheFlipFace sheFlipBack"><div className="sheFlipTop"><span>{n}</span><Leaf size={18}/></div><p>{d}</p><small className="sheFlipHint">Click for full view</small></article></div></button>)}</div></section>
+<section className="shePrestige"><div className="prestigeCopy"><h2>The Prestige Awaits You.</h2><div className="prestigeProof"><ShieldCheck size={18}/> Credential · leadership evidence · professional signal</div></div><div className="prestigeCert"><img src="/assets/img/she-leads-certificate-reveal.png" alt="She Leads 2026 Certificate of Participation"/></div></section>
 <section className="sheFellows"><div><h2>The cohort becomes a network.</h2><p>Women leave with more than climate knowledge: they leave with peers across African countries, shared language for leadership, and a community that continues beyond the programme.</p><button className="pill darkbtn" onClick={()=>setFormOpen(true)}>Join next cohort <ArrowUpRight size={16}/></button></div><figure><img src="/assets/img/she.png" alt="She Leads Climate outstanding fellows"/></figure></section>
-
 </main>
-{recruitForm&&<div className="formModal" role="dialog" aria-modal="true" aria-label={recruitForm==='speaker'?'Speaker expression of interest':'Coordinator application'}>
-  <button className="formBackdrop" aria-label="Close form" onClick={()=>setRecruitForm(null)}/>
-  <div className="formPanel">
-    <div className="formPanelHead">
-      <div>
-        <strong>{recruitForm==='speaker'?'Speaker Expression of Interest':'Cohort Coordinator Application'}</strong>
-      </div>
-      <button type="button" onClick={()=>setRecruitForm(null)} aria-label="Close"><X size={22}/></button>
-    </div>
-    <iframe
-      src={recruitForm==='speaker'?SHE_SPEAKER_FORM:SHE_COORDINATOR_FORM}
-      title={recruitForm==='speaker'?'She Leads Speaker Expression of Interest':'She Leads Coordinator Application'}
-      loading="eager"
-      style={{width:'100%',height:'100%',border:0,display:'block'}}
-    >Loading…</iframe>
-  </div>
-</div>}
+{selectedPillar&&<div className="shePillarModal" role="dialog" aria-modal="true" aria-labelledby="she-pillar-title"><button className="shePillarBackdrop" aria-label="Close pillar description" onClick={()=>setSelectedPillar(null)}/><article className="shePillarDialog"><button type="button" aria-label="Close" onClick={()=>setSelectedPillar(null)}><X size={20}/></button><span>{selectedPillar.n} · SHE LEADS LEARNING PILLAR</span><h3 id="she-pillar-title">{selectedPillar.t}</h3><p>{selectedPillar.d}</p></article></div>}
 {formOpen&&<div className="formModal" role="dialog" aria-modal="true" aria-label="Join the next She Leads cohort"><button className="formBackdrop" aria-label="Close form" onClick={()=>setFormOpen(false)}/><div className="formPanel"><div className="formPanelHead"><div><span>SHE LEADS · NEXT COHORT</span><strong>Join the next cohort</strong></div><button onClick={()=>setFormOpen(false)} aria-label="Close"><X size={22}/></button></div><iframe src={SHE_FORM} title="She Leads cohort interest form" loading="lazy">Loading…</iframe></div></div>}
 </>}
 
