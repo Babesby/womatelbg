@@ -214,6 +214,197 @@ return <>
 .iconPillarDialogTags{display:flex;flex-wrap:wrap;gap:8px;margin-top:24px}.iconPillarDialogTags em{font-style:normal;font-size:10px;font-weight:750;letter-spacing:.06em;padding:8px 11px;border:1px solid rgba(198,255,82,.25);border-radius:999px;color:#dfffa0}
 @media(max-width:1100px){.iconPillarGrid.six,.iconPillarGrid.eight{grid-template-columns:repeat(4,minmax(0,1fr))}}
 @media(max-width:760px){.iconPillarHead{text-align:left!important;margin-bottom:24px!important}.iconPillarHead h2{margin-left:0!important;font-size:clamp(30px,8vw,42px)!important}.iconPillarTray{padding:11px;border-radius:25px}.iconPillarGrid.six,.iconPillarGrid.eight{grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}.iconPillarCard{min-height:116px;border-radius:18px}.iconPillarGlyph{width:56px;height:56px;border-radius:17px}.iconPillarDialog{padding:30px 23px 28px;border-radius:25px}}
+
+/* WoK + Research icon sections — lock to the proven She Leads visual system */
+.wokPillars.iconPillarSection,
+.researchServices.iconPillarSection{
+  display:block!important;
+  padding:clamp(54px,6vw,82px) clamp(18px,5vw,72px) clamp(60px,7vw,92px)!important;
+  background:linear-gradient(180deg,#f5f8f6 0%,#fff 100%)!important;
+}
+.wokPillars.iconPillarSection .iconPillarHead,
+.researchServices.iconPillarSection .iconPillarHead{
+  display:block!important;
+  width:100%!important;
+  max-width:1100px!important;
+  margin:0 auto clamp(28px,4vw,44px)!important;
+  padding:0!important;
+  text-align:center!important;
+  grid-template-columns:none!important;
+  grid-template-rows:none!important;
+}
+.wokPillars.iconPillarSection .iconPillarHead>span,
+.researchServices.iconPillarSection .iconPillarHead>span{
+  display:block!important;
+  margin:0 0 10px!important;
+  padding:0!important;
+  font-family:inherit!important;
+  font-size:10px!important;
+  line-height:1.2!important;
+  font-weight:800!important;
+  letter-spacing:.17em!important;
+  text-transform:uppercase!important;
+  color:#6c8b89!important;
+}
+.wokPillars.iconPillarSection .iconPillarHead h2,
+.researchServices.iconPillarSection .iconPillarHead h2{
+  display:block!important;
+  margin:0 auto!important;
+  padding:0!important;
+  max-width:15ch!important;
+  font-family:inherit!important;
+  font-size:clamp(40px,5.1vw,70px)!important;
+  line-height:.98!important;
+  letter-spacing:-.048em!important;
+  font-weight:700!important;
+  color:#0e4d4a!important;
+  text-wrap:balance!important;
+}
+.wokPillars.iconPillarSection .iconPillarTray,
+.researchServices.iconPillarSection .iconPillarTray{
+  display:block!important;
+  width:100%!important;
+  max-width:1240px!important;
+  margin:0 auto!important;
+  padding:clamp(18px,2vw,26px)!important;
+  border:1px solid rgba(14,77,74,.08)!important;
+  border-radius:34px!important;
+  background:rgba(255,255,255,.78)!important;
+  box-shadow:0 20px 60px rgba(6,58,55,.065)!important;
+  backdrop-filter:blur(12px);
+}
+.wokPillars.iconPillarSection .iconPillarGrid,
+.researchServices.iconPillarSection .iconPillarGrid{
+  display:grid!important;
+  width:100%!important;
+  gap:10px!important;
+}
+.wokPillars.iconPillarSection .iconPillarGrid.six{grid-template-columns:repeat(6,minmax(0,1fr))!important}
+.researchServices.iconPillarSection .iconPillarGrid.eight{grid-template-columns:repeat(8,minmax(0,1fr))!important}
+.wokPillars.iconPillarSection .iconPillarCard,
+.researchServices.iconPillarSection .iconPillarCard{
+  appearance:none!important;
+  -webkit-appearance:none!important;
+  position:relative!important;
+  min-width:0!important;
+  width:auto!important;
+  min-height:150px!important;
+  margin:0!important;
+  padding:18px 10px 16px!important;
+  border:0!important;
+  outline:0;
+  border-radius:24px!important;
+  background:transparent!important;
+  color:#0e4d4a!important;
+  box-shadow:none!important;
+  cursor:pointer!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:13px!important;
+  text-align:center!important;
+  font:inherit!important;
+  line-height:1!important;
+  overflow:visible!important;
+}
+.wokPillars.iconPillarSection .iconPillarCard:hover,
+.wokPillars.iconPillarSection .iconPillarCard:focus-visible,
+.researchServices.iconPillarSection .iconPillarCard:hover,
+.researchServices.iconPillarSection .iconPillarCard:focus-visible{
+  transform:translateY(-3px)!important;
+  background:rgba(14,77,74,.035)!important;
+  box-shadow:none!important;
+}
+.wokPillars.iconPillarSection .iconPillarNo,
+.researchServices.iconPillarSection .iconPillarNo{
+  position:absolute!important;
+  top:11px!important;
+  left:12px!important;
+  display:block!important;
+  font-size:9px!important;
+  line-height:1!important;
+  font-weight:850!important;
+  letter-spacing:.14em!important;
+  color:#78918f!important;
+}
+.wokPillars.iconPillarSection .iconPillarGlyph,
+.researchServices.iconPillarSection .iconPillarGlyph{
+  width:66px!important;
+  height:66px!important;
+  flex:0 0 66px!important;
+  border-radius:21px!important;
+  display:grid!important;
+  place-items:center!important;
+  background:#edf5f1!important;
+  color:#0e4d4a!important;
+  box-shadow:0 9px 25px rgba(6,58,55,.065)!important;
+}
+.wokPillars.iconPillarSection .iconPillarCard:nth-child(2n) .iconPillarGlyph,
+.researchServices.iconPillarSection .iconPillarCard:nth-child(2n) .iconPillarGlyph{background:#f1edf8!important}
+.wokPillars.iconPillarSection .iconPillarCard:nth-child(3n) .iconPillarGlyph,
+.researchServices.iconPillarSection .iconPillarCard:nth-child(3n) .iconPillarGlyph{background:#edf5f1!important}
+.wokPillars.iconPillarSection .iconPillarCard:nth-child(4n) .iconPillarGlyph,
+.researchServices.iconPillarSection .iconPillarCard:nth-child(4n) .iconPillarGlyph{background:#f7efe4!important}
+.wokPillars.iconPillarSection .iconPillarCard:hover .iconPillarGlyph,
+.wokPillars.iconPillarSection .iconPillarCard:focus-visible .iconPillarGlyph,
+.researchServices.iconPillarSection .iconPillarCard:hover .iconPillarGlyph,
+.researchServices.iconPillarSection .iconPillarCard:focus-visible .iconPillarGlyph{
+  transform:scale(1.04)!important;
+  background:#c6ff52!important;
+}
+.wokPillars.iconPillarSection .iconPillarCard strong,
+.researchServices.iconPillarSection .iconPillarCard strong{
+  display:block!important;
+  margin:0!important;
+  padding:0!important;
+  max-width:12ch!important;
+  font-family:inherit!important;
+  font-size:13px!important;
+  line-height:1.08!important;
+  font-weight:700!important;
+  letter-spacing:-.015em!important;
+  color:#0e4d4a!important;
+}
+.wokPillars.iconPillarSection .iconPillarHint,
+.researchServices.iconPillarSection .iconPillarHint{
+  display:block!important;
+  margin:16px auto 0!important;
+  padding:0!important;
+  text-align:center!important;
+  font-size:9px!important;
+  line-height:1.2!important;
+  font-weight:600!important;
+  letter-spacing:.13em!important;
+  text-transform:uppercase!important;
+  color:#78918f!important;
+}
+@media(max-width:1100px){
+ .wokPillars.iconPillarSection .iconPillarGrid.six,
+ .researchServices.iconPillarSection .iconPillarGrid.eight{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+}
+@media(max-width:760px){
+ .wokPillars.iconPillarSection .iconPillarHead,
+ .researchServices.iconPillarSection .iconPillarHead{text-align:left!important;margin-bottom:24px!important}
+ .wokPillars.iconPillarSection .iconPillarHead h2,
+ .researchServices.iconPillarSection .iconPillarHead h2{margin-left:0!important;font-size:clamp(30px,8vw,42px)!important;max-width:18ch!important}
+ .wokPillars.iconPillarSection .iconPillarTray,
+ .researchServices.iconPillarSection .iconPillarTray{padding:11px!important;border-radius:25px!important}
+ .wokPillars.iconPillarSection .iconPillarGrid.six,
+ .researchServices.iconPillarSection .iconPillarGrid.eight{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:5px!important}
+ .wokPillars.iconPillarSection .iconPillarCard,
+ .researchServices.iconPillarSection .iconPillarCard{min-height:116px!important;border-radius:18px!important;padding:15px 8px 12px!important}
+ .wokPillars.iconPillarSection .iconPillarGlyph,
+ .researchServices.iconPillarSection .iconPillarGlyph{width:56px!important;height:56px!important;flex-basis:56px!important;border-radius:17px!important}
+}
+
+/* WOMATEER open pathways — icon-first, detail on intent */
+.womateerPathwayTray{max-width:920px}
+.womateerPathwayGrid{grid-template-columns:repeat(4,minmax(0,1fr))}
+.womateerPathwayCard{min-height:150px}
+.womateerPathwayDialog .womateerPathwayApply{position:static;width:auto;height:auto;margin-top:28px;padding:12px 18px;border-radius:999px;border:0;background:#c6ff52;color:#083f3e;display:inline-flex;font-weight:800}
+@media(max-width:760px){.womateerPathwayGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.womateerPathwayCard{min-height:116px}}
+
 .shePillars{padding:clamp(54px,6vw,82px) clamp(18px,5vw,72px) clamp(60px,7vw,92px);background:linear-gradient(180deg,#f5f8f6 0%,#fff 100%)}
 .shePillars header{display:block!important;width:100%!important;max-width:1100px!important;margin:0 auto clamp(28px,4vw,44px)!important;padding:0!important;text-align:center!important;grid-template-columns:none!important;grid-template-rows:none!important}
 .shePillars header>span{display:block!important;margin:0 0 10px!important;padding:0!important;font-family:inherit!important;font-size:10px!important;line-height:1.2!important;font-weight:800!important;letter-spacing:.17em!important;text-transform:uppercase!important;color:#6c8b89!important}
@@ -472,20 +663,23 @@ const womateerRoles=[
  {n:'03',title:'Impact Storyteller',role:'Social Media & Video Lead',desc:'Craft narratives that move beyond awareness into action. Produce ethical, high-quality content that communicates WOMATE’s mission clearly and globally.',skills:['Social media','Video','Impact narratives']},
  {n:'04',title:'Community Impact Lead',role:'Community Engagement Coordinator',desc:'Serve as the bridge between strategy and grassroots action. Coordinate programmes, partnerships and outreach that translate vision into measurable impact.',skills:['Community engagement','Coordination','Partnership delivery']}
 ];
+const womateerRoleIcons=[Sparkles,Globe2,Radio,Users];
+const womateerRoleLabels=['Design','Digital','Storytelling','Community'];
 function WomateerPage(){
- const rolesRef=useRef(null);const[applyOpen,setApplyOpen]=useState(false);const[status,setStatus]=useState('');
+ const rolesRef=useRef(null);const[applyOpen,setApplyOpen]=useState(false);const[selectedWomateerRole,setSelectedWomateerRole]=useState(null);const[status,setStatus]=useState('');
  const goRoles=()=>rolesRef.current?.scrollIntoView({behavior:'smooth',block:'start'});
  const submitInquiry=async(e)=>{e.preventDefault();const data=Object.fromEntries(new FormData(e.currentTarget));setStatus('sending');try{if(!WOMATEER_INQUIRY_ENDPOINT){window.location.href=`mailto:womatead@gmail.com?subject=${encodeURIComponent('WOMATEER enquiry — '+(data.name||''))}&body=${encodeURIComponent(`Name: ${data.name||''}\nEmail: ${data.email||''}\nRole: ${data.role||''}\n\n${data.message||''}`)}`;setStatus('ready');return}const r=await fetch(WOMATEER_INQUIRY_ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...data,source:'WOMATEER'})});if(!r.ok)throw new Error();setStatus('sent');e.currentTarget.reset()}catch{setStatus('error')}};
  return <>
   <section className="hero hero-volunteer"><div className="heroTop"><div className="heroCopy"><h1>Elevate Your Impact as a WOMATEER</h1><div className="actions"><button className="pill lime" onClick={()=>setApplyOpen(true)}>Apply to become a WOMATEER</button><button className="pill ghost" onClick={goRoles}>Explore roles</button></div></div><HeroVisual type="volunteer"/></div></section>
   <main className="womateerPage">
    <section className="womateerIntro"><span>WOMATEER · 2026 COHORT</span><div><h2>Where purpose meets professional excellence.</h2><p>WOMATEER is WOMATE’s skill-driven volunteer ecosystem for professionals who want their expertise to create measurable climate and social impact. This is not volunteering as an add-on. It is structured contribution—designers, developers, storytellers and community coordinators working alongside a women-led climate organisation.</p></div></section>
-   <section className="womateerRoles" ref={rolesRef}><div className="womateerSectionHead"><span>OPEN PATHWAYS</span><h2>Four disciplines. One shared mission.</h2><p>Choose the pathway that best matches the professional skill you can contribute consistently.</p></div><div className="womateerRoleGrid">{womateerRoles.map(r=><article key={r.n}><div className="womateerRoleTop"><span>{r.n}</span><small>{r.role}</small></div><h3>{r.title}</h3><p>{r.desc}</p><div className="womateerSkills">{r.skills.map(x=><span key={x}>{x}</span>)}</div><button onClick={()=>setApplyOpen(true)}>Apply for this pathway</button></article>)}</div></section>
+   <section className="womateerRoles iconPillarSection" ref={rolesRef}><div className="womateerSectionHead iconPillarHead"><span>OPEN PATHWAYS</span><h2>Four disciplines. One shared mission.</h2></div><div className="iconPillarTray womateerPathwayTray"><div className="iconPillarGrid womateerPathwayGrid">{womateerRoles.map((r,i)=>{const Icon=womateerRoleIcons[i];return <button type="button" className="iconPillarCard womateerPathwayCard" key={r.n} onClick={()=>setSelectedWomateerRole({...r,i})} aria-label={`${r.title}. Open pathway details`}><span className="iconPillarNo">{r.n}</span><span className="iconPillarGlyph"><Icon size={27} strokeWidth={1.8}/></span><strong>{womateerRoleLabels[i]}</strong></button>})}</div><span className="iconPillarHint">Select a pathway to explore</span></div></section>
    <section className="womateerStandard"><div><span>WHAT COMMITMENT LOOKS LIKE</span><h2>Bring the skill. Bring the discipline.</h2></div><div className="womateerCommitGrid"><article><b>01</b><h3>Professional contribution</h3><p>You are joining to apply an existing or developing professional skill to live organisational work—not simply observe.</p></article><article><b>02</b><h3>Remote readiness</h3><p>The application checks remote-work comfort and access to a working laptop because collaboration happens across locations.</p></article><article><b>03</b><h3>Reliable availability</h3><p>Applicants identify weekly availability and preferred commitment period so responsibilities can be matched realistically.</p></article><article><b>04</b><h3>Values alignment</h3><p>Strong WOMATEERs combine technical quality with dignity, inclusion, responsible storytelling and respect for communities.</p></article></div></section>
    <section className="womateerJourney"><div className="womateerSectionHead"><span>THE JOURNEY</span><h2>Apply with intention.</h2></div><div className="womateerJourneyGrid"><div><b>01</b><strong>Choose your role</strong><p>Identify where your strongest skill can create value.</p></div><div><b>02</b><strong>Submit your application</strong><p>Share your experience, availability and practical working preferences.</p></div><div><b>03</b><strong>Alignment review</strong><p>WOMATE reviews fit across skills, needs, commitment and values.</p></div><div><b>04</b><strong>Contribute to live work</strong><p>Selected WOMATEERs join a collaborative, values-led working ecosystem.</p></div></div><button className="pill lime" onClick={()=>setApplyOpen(true)}>Start your application</button></section>
    <section className="womateerWhy"><div className="womateerWhyMark">W</div><div><span>WHY WOMATEER</span><h2>Meaningful work should leave evidence.</h2><p>Your contribution should strengthen a programme, system, story, campaign or community process. WOMATEER is designed around work that can be seen, used and built upon.</p></div><div className="womateerProof"><span>Climate resilience</span><span>Women’s empowerment</span><span>Social equity</span><span>Community leadership</span></div></section>
    <section className="womateerInquiry"><div><span>BEFORE YOU APPLY</span><h2>Need to clarify fit?</h2><p>If you have a specialist skill or an application question that does not fit the four pathways cleanly, contact the WOMATE team.</p></div><form onSubmit={submitInquiry}><label>Full name<input name="name" required autoComplete="name"/></label><label>Email address<input name="email" type="email" required autoComplete="email"/></label><select name="role"><option value="">Area of interest</option>{womateerRoles.map(r=><option key={r.title}>{r.title}</option>)}<option>Other specialist skill</option></select><textarea name="message" required placeholder="Tell us briefly what you can contribute or what you need clarified."/><button className="pill darkbtn" disabled={status==='sending'}>{status==='sending'?'Sending…':'Send enquiry'}</button>{status==='sent'&&<small>Thank you. Your enquiry has been received.</small>}{status==='ready'&&<small>Your email app has been opened with the enquiry prepared.</small>}{status==='error'&&<small>Submission failed. Please try again.</small>}</form></section>
   </main>
+  {selectedWomateerRole&&(()=>{const Icon=womateerRoleIcons[selectedWomateerRole.i];return <div className="iconPillarModal" role="dialog" aria-modal="true" aria-labelledby="womateer-pathway-title"><button className="iconPillarBackdrop" aria-label="Close" onClick={()=>setSelectedWomateerRole(null)}/><article className="iconPillarDialog womateerPathwayDialog"><button type="button" aria-label="Close" onClick={()=>setSelectedWomateerRole(null)}><X size={20}/></button><div className="iconPillarDialogIcon"><Icon size={28} strokeWidth={1.8}/></div><span>{selectedWomateerRole.n} · {selectedWomateerRole.role}</span><h3 id="womateer-pathway-title">{selectedWomateerRole.title}</h3><p>{selectedWomateerRole.desc}</p><div className="iconPillarDialogTags">{selectedWomateerRole.skills.map(x=><em key={x}>{x}</em>)}</div><button className="pill lime womateerPathwayApply" onClick={()=>{setSelectedWomateerRole(null);setApplyOpen(true)}}>Apply for this pathway</button></article></div>})()}
   {applyOpen&&<div className="womateerModal" role="dialog" aria-modal="true" aria-label="WOMATEER application"><button className="womateerBackdrop" onClick={()=>setApplyOpen(false)} aria-label="Close application"/><div className="womateerModalPanel"><div className="womateerModalHead"><div><span>WOMATEER 2026</span><h2>Apply with Intention</h2><p>Complete the secure WOMATE volunteer recruitment form.</p></div><button onClick={()=>setApplyOpen(false)} aria-label="Close"><X/></button></div><iframe src={WOMATEER_FORM} title="WOMATE Volunteer Recruitment Form">Loading…</iframe></div></div>}
  </>
 }
