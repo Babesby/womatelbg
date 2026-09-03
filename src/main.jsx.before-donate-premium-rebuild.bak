@@ -32,7 +32,7 @@ const seo={
 '/funding':{title:'2027 Climate Funding Readiness | WOMATE',description:'WOMATE supports African women founders to strengthen climate funding applications, grant readiness, documentation and competitive positioning.'},
 '/womateer':{title:'Become a WOMATEER | Volunteer with WOMATE',description:'Contribute your professional skills to WOMATE and help advance women-led climate action, research, technology and community impact across Africa.'},
 '/merchandise':{title:'The Vault | WOMATE Merchandise',description:'Explore WOMATE merchandise created for the community of women, allies and leaders advancing climate action across Africa.'},
-'/donate':{title:'Donate to WOMATE | Support Women in Climate',description:'Support WOMATE, an organization equipping African women with technology, training, research, community and climate leadership opportunities.'}
+'/donate':{title:'Donate to WOMATE | Support Women in Climate',description:'Support WOMATE, a nonprofit organisation equipping African women with technology, training, research, community and climate leadership opportunities.'}
 };
 
 const WOMATE_OG_IMAGE='https://www.womate.org/og-womate.png';
@@ -975,39 +975,12 @@ function DonationPage(){
  ['04','Leadership','Help women access training, mentorship, visibility, professional pathways and opportunities to lead.']
  ];
  return <main className="donatePage">
-  <section className="donateHero">
-    <div className="donateHeroCopy">
-      <h1>Back women-led climate leadership.</h1>
-      <p>Support research, climate action, health and leadership programmes designed around women as actors, builders and decision-makers.</p>
-      <div className="donateHeroActions">
-        <a className="pill lime" href={donateUrl} target="_blank" rel="noreferrer">Make a donation <ArrowUpRight size={17}/></a>
-        <a className="donateTextLink" href="#donate-impact">See where support goes</a>
-      </div>
-    </div>
-    <div className="donateHeroVisual" aria-label="Women-led climate action">
-      <img src="/assets/donate/fund-hero.png" alt="African woman holding a living climate landscape"/>
-    </div>
-  </section>
+  <section className="donateHero"><div className="donateHeroCopy"><span>SUPPORT WOMATE</span><h1>Give access. Grow leadership.</h1><p>WOMATE is an organization that equips African women with technology, training and community support to move from climate participation to climate leadership.</p><div className="donateHeroActions"><a className="pill lime" href={donateUrl} target="_blank" rel="noreferrer">Donate now <ArrowUpRight size={17}/></a><a className="donateTextLink" href="#donate-impact">See where your support goes <ChevronRight size={16}/></a></div></div><aside className="donatePromise"><span>EVERY CEDI COUNTS</span><strong>Every cedi goes into supporting women.</strong><p>Your contribution strengthens WOMATE’s research, climate, health and leadership programmes across Africa.</p></aside></section>
   <section className="donateStatement"><span>WHY GIVE</span><h2>Support that keeps access open and turns learning into leadership.</h2></section>
   <section className="donateImpactGrid" id="donate-impact">{impact.map(([n,title,copy])=><article key={n}><b>{n}</b><div><h3>{title}</h3><p>{copy}</p></div></article>)}</section>
-  
+  <section className="donateModel"><div><span>HOW WOMATE SUSTAINS ACCESS</span><h2>Free foundations. Affordable advancement. Supported access.</h2></div><div className="donateModelRail"><article><strong>FREE</strong><h3>Foundational learning</h3><p>Core climate literacy and leadership learning can remain free and accessible.</p></article><article><strong>AFFORDABLE</strong><h3>Advanced skills</h3><p>Selected advanced professional courses can carry a small, accessible fee to support sustainable delivery.</p></article><article><strong>SPONSORED</strong><h3>Scholarships & programmes</h3><p>Donations and partners help WOMATE widen access for women who need additional support.</p></article></div></section>
   <section className="donateFinal"><div><span>BACK WOMEN-LED CLIMATE ACTION</span><h2>Help keep the first door open.</h2><p>Support research, climate action, health and leadership programmes designed around women as actors, builders and decision-makers.</p></div><a className="pill lime" href={donateUrl} target="_blank" rel="noreferrer">Make a donation <ArrowUpRight size={17}/></a></section>
- 
-<section className="donateFaq">
-  <div className="donateFaqIntro"><span>DONATION FAQ</span><h2>Before you give.</h2><p>Clear answers about supporting WOMATE.</p></div>
-  <div className="donateFaqList">
-    <details><summary>What does my donation support?</summary><p>Donations support WOMATE’s work across climate learning, research, women’s leadership, wellbeing and community programmes.</p></details>
-    <details><summary>Can I choose how much to give?</summary><p>Yes. You can choose an amount that is comfortable for you through WOMATE’s secure donation checkout.</p></details>
-    <details><summary>Can organisations or partners support WOMATE?</summary><p>Yes. Organisations interested in larger, programme or strategic support can contact WOMATE through the partnership pathway.</p></details>
-    <details><summary>Is a small donation still useful?</summary><p>Yes. Small contributions add up and help WOMATE widen access to programmes, learning and community resources.</p></details>
-  </div>
-</section>
-<aside className="donateMicroCampaign" aria-label="Small donations matter">
-  <span>START SMALL</span>
-  <strong>Even GH₵5 can join a bigger impact.</strong>
-  <p>Small contributions, combined, help widen access to WOMATE programmes and resources.</p>
-  <a href="https://paystack.shop/pay/donateadollar" target="_blank" rel="noreferrer">Give to WOMATE <ArrowUpRight size={15}/></a>
-</aside></main>
+ </main>
 }
 
 function Application({type}){const[status,setStatus]=useState('idle');return <section className="application"><div><h3>{type==='honours'?'Tell us whose work deserves to be seen.':'Your next step starts here.'}</h3><p>Complete the short form. WOMATE will review your submission and follow up through the contact details you provide.</p></div><form className="premiumForm" onSubmit={e=>submitWomateForm(e,`${type} interest`,setStatus)}><label>Full name<input required name="name" autoComplete="name"/></label><label>Email address<input required name="email" type="email" autoComplete="email"/></label><label>Country<input name="country" autoComplete="country-name"/></label><label>Tell us briefly about your interest<textarea name="message"/></label><button className="pill darkbtn" disabled={status==='sending'}>{status==='sending'?'Sending…':'Submit'} {status!=='sending'&&<ArrowUpRight/>}</button>{status==='success'&&<p role="status">Thank you. Your submission has been sent.</p>}{status==='error'&&<p role="alert">We could not send this. Please try again or email womatead@gmail.com.</p>}</form></section>}

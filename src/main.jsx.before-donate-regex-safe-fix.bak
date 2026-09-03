@@ -32,7 +32,7 @@ const seo={
 '/funding':{title:'2027 Climate Funding Readiness | WOMATE',description:'WOMATE supports African women founders to strengthen climate funding applications, grant readiness, documentation and competitive positioning.'},
 '/womateer':{title:'Become a WOMATEER | Volunteer with WOMATE',description:'Contribute your professional skills to WOMATE and help advance women-led climate action, research, technology and community impact across Africa.'},
 '/merchandise':{title:'The Vault | WOMATE Merchandise',description:'Explore WOMATE merchandise created for the community of women, allies and leaders advancing climate action across Africa.'},
-'/donate':{title:'Donate to WOMATE | Support Women in Climate',description:'Support WOMATE, an organization equipping African women with technology, training, research, community and climate leadership opportunities.'}
+'/donate':{title:'Donate to WOMATE | Support Women in Climate',description:'Support WOMATE, a nonprofit organisation equipping African women with technology, training, research, community and climate leadership opportunities.'}
 };
 
 const WOMATE_OG_IMAGE='https://www.womate.org/og-womate.png';
@@ -975,19 +975,7 @@ function DonationPage(){
  ['04','Leadership','Help women access training, mentorship, visibility, professional pathways and opportunities to lead.']
  ];
  return <main className="donatePage">
-  <section className="donateHero">
-    <div className="donateHeroCopy">
-      <h1>Back women-led climate leadership.</h1>
-      <p>Support research, climate action, health and leadership programmes designed around women as actors, builders and decision-makers.</p>
-      <div className="donateHeroActions">
-        <a className="pill lime" href={donateUrl} target="_blank" rel="noreferrer">Make a donation <ArrowUpRight size={17}/></a>
-        <a className="donateTextLink" href="#donate-impact">See where support goes</a>
-      </div>
-    </div>
-    <div className="donateHeroVisual" aria-label="Women-led climate action">
-      <img src="/assets/donate/fund-hero.png" alt="African woman holding a living climate landscape"/>
-    </div>
-  </section>
+  <section className="donateVisualStory" aria-label="Women-led climate action"><img src="/assets/donate/fund-hero.png" alt="African woman holding a living climate landscape"/></section>
   <section className="donateStatement"><span>WHY GIVE</span><h2>Support that keeps access open and turns learning into leadership.</h2></section>
   <section className="donateImpactGrid" id="donate-impact">{impact.map(([n,title,copy])=><article key={n}><b>{n}</b><div><h3>{title}</h3><p>{copy}</p></div></article>)}</section>
   
