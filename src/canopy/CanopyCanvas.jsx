@@ -46,7 +46,7 @@ const actions=[
 const tones=['Clear & factual','Hopeful','Urgent but responsible','Community-centred','Professional'];
 const formats=['Square post','Portrait post','Landscape card'];
 const buttonShapes=['Pill','Rectangle'];
-const MESSAGE_LIMIT=50;
+const MESSAGE_LIMIT=60;
 
 const palettes=[
   {id:'canopy',label:'Canopy Green',css:'#0E4D4A',type:'solid',colors:['#0E4D4A'],text:'#FFFFFF',accent:'#C6FF52'},
@@ -218,7 +218,7 @@ export default function CanopyCanvas(){
 
         <label>Message
           <textarea rows="5" value={form.message} maxLength={MESSAGE_LIMIT} onChange={e=>update('message',e.target.value.slice(0,MESSAGE_LIMIT))} placeholder={suggestion}/>
-          <div className="cc-message-meta"><span className="cc-message-helper"><Sparkles size={14}/> Tone suggestion: {suggestion}</span><b>{form.message.length}/{MESSAGE_LIMIT}</b></div>
+          <div className="cc-message-meta"><span className="cc-message-helper"><Sparkles size={14}/> Tone suggestion: {suggestion.slice(0,60)}</span><b>{form.message.length}/{MESSAGE_LIMIT}</b></div>
           <button type="button" className="cc-use-suggestion" onClick={useSuggestion}>Use tone suggestion</button>
         </label>
 
@@ -265,6 +265,8 @@ export default function CanopyCanvas(){
     </div>
   </section>
 }
+
+
 
 
 
