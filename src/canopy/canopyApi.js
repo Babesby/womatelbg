@@ -156,6 +156,24 @@ export async function setLearnerEnrollmentStatus(session,userId,status){
 }
 
 
+export async function submitLearnerComplaint(session,{subject,message}){
+  const s=await refreshSession(session||getStoredSession());
+  if(!s?.access_token)throw new Error('Your Canopy session has expired. Sign in again.');
+  return rest('canopy_manager_actions',{token:s.access_token,method:'POST',prefer:'return=representation',body:{
+    learner_id:s.user.id,
+    action_type:'complaint',
+    subject:subject.trim(),
+    message:message.trim(),
+    status:'open',
+    created_by:s.user.id
+  }});
+}
+
+export async function getLearnerComplaints(session){
+  const s=await refreshSession(session||getStoredSession());if(!s?.access_token)return[];
+  return rest(`canopy_manager_actions?select=*&learner_id=eq.${s.user.id}&action_type=eq.complaint&order=created_at.desc`,{token:s.access_token});
+}
+
 export async function getManagerActions(session){
   const s=await refreshSession(session||getStoredSession());if(!s?.access_token)return[];
   return rest('canopy_manager_actions?select=*&order=created_at.desc',{token:s.access_token});
@@ -210,6 +228,12 @@ export async function savePuzzleCompletion(session,weekKey){
 export async function getCanopyNotifications(session){
   const s=await refreshSession(session||getStoredSession());if(!s?.access_token)return[];
   return rest(`canopy_notifications?select=*&user_id=eq.${s.user.id}&order=created_at.desc&limit=100`,{token:s.access_token});
+}
+
+export async function getUnreadNotificationCount(session){
+  const s=await refreshSession(session||getStoredSession());if(!s?.access_token)return 0;
+  const rows=await rest(`canopy_notifications?select=id&user_id=eq.${s.user.id}&read_at=is.null&limit=100`,{token:s.access_token});
+  return Array.isArray(rows)?rows.length:0;
 }
 export async function markNotificationRead(session,id){
   const s=await refreshSession(session||getStoredSession());

@@ -776,3 +776,40 @@
 .canopyReviewEmpty svg{color:var(--canopy);width:30px;height:30px}.canopyReviewEmpty h3{color:var(--canopy-ink);margin:10px 0 5px}.canopyReviewEmpty p{margin:0}
 @media(max-width:900px){.canopyReviewEvidence{grid-template-columns:1fr}.canopyReviewAuto{grid-template-columns:1fr 1fr}.canopyReviewAuto .wide{grid-column:1/-1}}
 @media(max-width:640px){.canopyReviewCard{padding:16px;border-radius:18px}.canopyReviewCard>header,.canopyManualReviewHead,.canopyManualReviewFoot{display:grid}.canopyReviewStatus{justify-self:start}.canopyReviewAuto,.canopyManualReviewGrid{grid-template-columns:1fr}.canopyManualReviewGrid label.wide,.canopyReviewAuto .wide{grid-column:auto}.canopyReviewFilters{overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px}.canopyReviewFilters button{flex:0 0 auto}}
+
+
+/* CANOPY TOP NAV NOTIFICATIONS */
+.canopyTopNotification{position:relative;width:42px;height:42px;border:1px solid var(--canopy-line);background:#fff;border-radius:50%;display:grid;place-items:center;color:var(--canopy);flex:0 0 auto}
+.canopyTopNotification:hover{background:#f3f7f4}
+.canopyNotificationBadge{position:absolute;top:-5px;right:-5px;min-width:20px;height:20px;padding:0 5px;border-radius:999px;background:#d92d20;color:#fff!important;font-size:10px!important;font-weight:900!important;line-height:20px;text-align:center;border:2px solid #fff;box-shadow:0 2px 8px rgba(217,45,32,.25)}
+@media(max-width:620px){.canopyTopNotification{width:38px;height:38px}.canopyNotificationBadge{top:-4px;right:-4px}}
+
+
+/* CANOPY LEARNER HELP & COMPLAINTS */
+.canopyHelp{padding:clamp(24px,4vw,54px);max-width:1320px;margin:0 auto}
+.canopyHelpGrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(320px,.72fr);gap:20px;align-items:start}
+.canopyHelpForm,.canopyHelpHistory{background:#fff;border:1px solid var(--canopy-line);border-radius:22px;padding:clamp(20px,3vw,30px)}
+.canopyHelpForm{display:grid;gap:16px}
+.canopyHelpForm>div:first-child>span,.canopyHelpHistory>div:first-child>span{font-size:10px;letter-spacing:.11em;font-weight:900;color:var(--canopy)}
+.canopyHelpForm h2,.canopyHelpHistory h2{font-size:25px;margin:5px 0 6px}
+.canopyHelpForm>div:first-child p{margin:0;color:var(--canopy-muted);font-size:13px;line-height:1.55}
+.canopyHelpForm label{display:grid;gap:7px;font-size:12px;font-weight:900;color:#405652}
+.canopyHelpForm input,.canopyHelpForm textarea{width:100%;border:1px solid #cbd9d5;border-radius:12px;padding:13px 14px;background:#fff;color:var(--canopy-ink);font:inherit;outline:none}
+.canopyHelpForm textarea{resize:vertical;min-height:150px}
+.canopyHelpForm input:focus,.canopyHelpForm textarea:focus{border-color:var(--canopy);box-shadow:0 0 0 3px rgba(14,77,74,.07)}
+.canopyHelpSubmit{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.canopyHelpSubmit small{color:var(--canopy-muted);font-size:10px}
+.canopyHelpMessage{margin:0;background:#edf6f1;border-radius:12px;padding:12px 14px;color:var(--canopy);font-size:12px;font-weight:800}
+.canopyHelpHistory{display:grid;gap:12px}
+.canopyHelpHistory article{border-top:1px solid var(--canopy-line);padding-top:15px}
+.canopyHelpHistory article header{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}
+.canopyHelpHistory article h3{font-size:15px;margin:4px 0}
+.canopyHelpHistory article small{font-size:10px;color:var(--canopy-muted)}
+.canopyHelpHistory article p{font-size:12px;line-height:1.55;color:#405652;white-space:pre-wrap}
+.canopyHelpStatus{border-radius:999px;padding:6px 9px;background:#fff1dc;color:#875108;font-size:9px;font-weight:900;text-transform:capitalize;white-space:nowrap}
+.canopyHelpStatus.is-resolved,.canopyHelpStatus.is-closed{background:rgba(198,255,82,.24);color:#244b36}
+.canopyHelpEmpty{border:1px dashed #cbd9d5;border-radius:14px;padding:25px;text-align:center;color:var(--canopy-muted)}
+.canopyHelpEmpty svg{color:var(--canopy);margin-bottom:5px}
+.canopyHelpEmpty p{margin:0;font-size:12px}
+@media(max-width:900px){.canopyHelpGrid{grid-template-columns:1fr}}
+@media(max-width:620px){.canopyHelpForm,.canopyHelpHistory{padding:18px;border-radius:18px}.canopyHelpSubmit{align-items:flex-end}.canopyHelpSubmit .canopyPrimary{min-height:44px}}
