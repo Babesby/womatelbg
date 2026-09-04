@@ -914,3 +914,14 @@
  .canopyComplaintAdmin>article{padding:17px}
  .canopyComplaintAdmin>article>header{display:grid}
 }
+
+
+/* CANOPY GOOGLE AUTH */
+.canopySocialAuth{display:grid;gap:14px;margin:0 0 18px}
+.canopyGoogleAuth{width:100%;min-height:48px;border:1px solid #cbd9d5;border-radius:12px;background:#fff;color:#173b39;display:flex;align-items:center;justify-content:center;gap:11px;font:inherit;font-size:13px;font-weight:850;cursor:pointer;transition:.18s ease}
+.canopyGoogleAuth:hover{border-color:#8eaaa5;background:#f8fbfa;transform:translateY(-1px)}
+.canopyGoogleAuth:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.canopyGoogleMark{width:23px;height:23px;border-radius:50%;display:grid;place-items:center;border:1px solid #d8e0de;background:#fff;font-size:13px;font-weight:900;color:#174ea6}
+.canopyAuthDivider{display:flex;align-items:center;gap:12px;color:#71827f;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.07em}
+.canopyAuthDivider:before,.canopyAuthDivider:after{content:"";height:1px;background:#dce5e2;flex:1}
+.canopyAuthDivider span{white-space:nowrap}

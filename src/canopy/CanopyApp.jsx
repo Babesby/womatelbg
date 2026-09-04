@@ -8,7 +8,7 @@ import {CANOPY_ASSIGNMENT_SCHEDULE,CANOPY_ACCESS_DATE} from './canopySchedule';
 import{ArrowLeft,ArrowRight,BookOpen,Check,ChevronRight,ClipboardCheck,Clock,FileText,GraduationCap,Leaf,Lock,LogOut,Menu,PlayCircle,Sparkles,UserRound,X,BookMarked,UsersRound,PenLine,TrendingUp,Eye,EyeOff,MessageSquare,ShieldAlert,Award,BarChart3,Bell} from 'lucide-react';
 import'./canopy.css';
 import{CANOPY_BRAND,modules,resources}from'./canopyData';
-import{canopyConfigured,consumeAuthCallback,getStoredSession,getViewer,getProgress,getManagerSnapshot,markLesson,requestPasswordReset,resendConfirmation,saveQuiz,signIn,signOut,signUp,updatePassword,setLearnerEnrollmentStatus,createManagerAction,updateManagerAction,reviewWeeklyAssignment,getUnreadNotificationCount,submitLearnerComplaint,getLearnerComplaints,getWeeklyAssignmentSubmissions,issueCanopyCertificate} from './canopyApi';
+import{canopyConfigured,consumeAuthCallback,getStoredSession,getViewer,getProgress,getManagerSnapshot,markLesson,requestPasswordReset,resendConfirmation,saveQuiz,signIn,signOut,signUp,updatePassword,setLearnerEnrollmentStatus,createManagerAction,updateManagerAction,reviewWeeklyAssignment,getUnreadNotificationCount,submitLearnerComplaint,getLearnerComplaints,getWeeklyAssignmentSubmissions,issueCanopyCertificate,signInWithGoogle} from './canopyApi';
 
 const route=()=>window.location.pathname.replace(/\/$/,'')||'/canopy';
 function go(path){window.history.pushState({},'',path);window.dispatchEvent(new PopStateEvent('popstate'));window.scrollTo({top:0,behavior:'smooth'})}
@@ -74,7 +74,7 @@ function Auth({mode='login'}){
      <p>{mode==='login'?'Sign in to continue your She Leads learning journey.':'Create your secure Canopy account to begin.'}</p>
      {!canopyConfigured&&<p className="canopyConfigWarn">Canopy backend is not configured on this deployment yet. Add the Supabase environment variables before testing accounts.</p>}
     </div>
-    <form onSubmit={submit}>
+    <div className="canopySocialAuth"><button type="button" className="canopyGoogleAuth" disabled={busy} onClick={async()=>{setBusy(true);feedback('');try{await signInWithGoogle()}catch(err){feedback(err.message||'Unable to continue with Google.','error');setBusy(false)}}}><span className="canopyGoogleMark" aria-hidden="true">G</span><span>Continue with Google</span></button><div className="canopyAuthDivider"><span>or continue with email</span></div></div><form onSubmit={submit}>
      {mode==='signup'&&<div className="canopyAuthTwoCol"><label>Full name<input required autoComplete="name" placeholder="Your full name" value={form.full_name} onChange={e=>setForm({...form,full_name:e.target.value})}/></label><label>Country<input required autoComplete="country-name" placeholder="Country" value={form.country} onChange={e=>setForm({...form,country:e.target.value})}/></label></div>}
      <label>Email address<input required type="email" autoComplete="email" placeholder="you@example.com" value={form.email} onChange={e=>setForm({...form,email:e.target.value})}/></label>
      <label>Password<div className="canopyPasswordField"><input required type={showPassword?'text':'password'} autoComplete={mode==='login'?'current-password':'new-password'} minLength="8" placeholder="Minimum 8 characters" value={form.password} onChange={e=>setForm({...form,password:e.target.value})}/><button type="button" onClick={()=>setShowPassword(v=>!v)} aria-label={showPassword?'Hide password':'Show password'}>{showPassword?<EyeOff/>:<Eye/>}</button></div></label>

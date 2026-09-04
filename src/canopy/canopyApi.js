@@ -16,6 +16,13 @@ async function parse(r){const txt=await r.text();let data=null;try{data=txt?JSON
 const callbackUrl=()=>`${window.location.origin}/canopy/auth/callback`;
 const recoveryUrl=()=>`${window.location.origin}/canopy/auth/callback`;
 
+export async function signInWithGoogle(){
+  if(!canopyConfigured)throw new Error('Canopy authentication is not configured yet.');
+  const redirectTo=callbackUrl();
+  const authorize=`${URL}/auth/v1/authorize?provider=google&redirect_to=${encodeURIComponent(redirectTo)}`;
+  window.location.assign(authorize);
+}
+
 export async function signIn(email,password){
   if(!canopyConfigured)throw new Error('Canopy authentication is not configured yet.');
   const r=await fetch(`${URL}/auth/v1/token?grant_type=password`,{method:'POST',headers:headers(),body:JSON.stringify({email:email.trim(),password})});
