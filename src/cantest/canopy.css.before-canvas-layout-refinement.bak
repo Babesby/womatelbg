@@ -719,3 +719,6 @@
 @media(max-width:900px){.cc-preview-upgraded{position:relative;top:auto}.cc-palette-grid,.cc-texture-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:620px){.cc-icon-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.cc-watermark{right:18px;bottom:16px;width:120px}}
 
+
+/* CANTEST MODE */
+.canopyAppTop:before{content:'CANTEST · TIMING OFF';display:inline-flex;align-items:center;padding:5px 9px;border-radius:999px;background:#C6FF52;color:#0E4D4A;font-size:9px;font-weight:900;letter-spacing:.08em;white-space:nowrap}
