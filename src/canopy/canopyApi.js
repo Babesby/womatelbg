@@ -105,25 +105,18 @@ export async function saveQuiz(session,moduleId,score,total){
   const s=await refreshSession(session||getStoredSession());
   return rest('canopy_quiz_attempts',{token:s.access_token,method:'POST',prefer:'return=representation',body:{user_id:s.user.id,module_id:moduleId,score,total}});
 }
-export async function getSubmissions(session){
-  const s=await refreshSession(session||getStoredSession());if(!s?.access_token)return[];
-  return rest(`canopy_submissions?select=*&user_id=eq.${s.user.id}&order=submitted_at.desc`,{token:s.access_token});
-}
-export async function submitAssignment(session,moduleId,title,response){
-  const s=await refreshSession(session||getStoredSession());
-  return rest('canopy_submissions',{token:s.access_token,method:'POST',prefer:'return=representation',body:{user_id:s.user.id,module_id:moduleId,title,response,status:'submitted'}});
-}
 export async function getManagerSnapshot(session){
   const s=await refreshSession(session||getStoredSession());if(!s?.access_token)return null;
   try{await rest('rpc/canopy_refresh_learning_automation',{token:s.access_token,method:'POST',body:{}})}catch{}
-  const [profiles,enrollments,progress,submissions,actions]=await Promise.all([
+  const [profiles,enrollments,progress,submissions,actions,certificates]=await Promise.all([
     rest('canopy_profiles?select=user_id,full_name,country,role&order=full_name.asc',{token:s.access_token}),
     rest('canopy_enrollments?select=*&order=created_at.asc',{token:s.access_token}),
     rest('canopy_lesson_progress?select=*',{token:s.access_token}),
     rest('rpc/canopy_manager_weekly_submissions',{token:s.access_token,method:'POST',body:{}}),
-    rest('canopy_manager_actions?select=*&order=created_at.desc',{token:s.access_token})
+    rest('canopy_manager_actions?select=*&order=created_at.desc',{token:s.access_token}),
+    rest('canopy_certificates?select=*&order=issued_at.desc',{token:s.access_token})
   ]);
-  return {profiles:profiles||[],enrollments:enrollments||[],progress:progress||[],submissions:submissions||[],actions:actions||[]};
+  return {profiles:profiles||[],enrollments:enrollments||[],progress:progress||[],submissions:submissions||[],actions:actions||[],certificates:certificates||[]};
 }
 
 
@@ -132,27 +125,14 @@ export async function setLearnerEnrollmentStatus(session,userId,status){
   if(!s?.access_token)throw new Error('Your Canopy session has expired. Sign in again.');
   if(!['active','inactive','paused'].includes(status))throw new Error('Invalid enrolment status.');
   const dbStatus=status==='inactive'?'paused':status;
-
-  const existing=await rest(
-    `canopy_enrollments?select=*&user_id=eq.${encodeURIComponent(userId)}&order=created_at.desc&limit=1`,
-    {token:s.access_token}
-  );
-
+  const existing=await rest(`canopy_enrollments?select=*&user_id=eq.${encodeURIComponent(userId)}&course_slug=eq.she-leads&order=created_at.desc&limit=1`,{token:s.access_token});
   if(!existing?.length){
-    throw new Error('This learner does not yet have a Canopy enrolment record. Create the learner enrolment in Supabase first, then activate it here.');
+    const cohorts=await rest(`canopy_cohorts?select=id&course_slug=eq.she-leads&name=eq.${encodeURIComponent('Cohort 2 · 2026')}&order=created_at.desc&limit=1`,{token:s.access_token});
+    if(!cohorts?.length)throw new Error('She Leads Cohort 2 is missing from Canopy. Run the launch hardening SQL before activating learners.');
+    return rest('canopy_enrollments',{token:s.access_token,method:'POST',prefer:'return=representation',body:{user_id:userId,cohort_id:cohorts[0].id,course_slug:'she-leads',status:dbStatus}});
   }
-
-  const row=existing[0];
-  const key=row.id ? `id=eq.${encodeURIComponent(row.id)}` : `user_id=eq.${encodeURIComponent(userId)}`;
-  return rest(
-    `canopy_enrollments?${key}`,
-    {
-      token:s.access_token,
-      method:'PATCH',
-      prefer:'return=representation',
-      body:{status:dbStatus}
-    }
-  );
+  const row=existing[0],key=row.id?`id=eq.${encodeURIComponent(row.id)}`:`user_id=eq.${encodeURIComponent(userId)}`;
+  return rest(`canopy_enrollments?${key}`,{token:s.access_token,method:'PATCH',prefer:'return=representation',body:{status:dbStatus}});
 }
 
 
@@ -235,9 +215,19 @@ export async function getUnreadNotificationCount(session){
   const rows=await rest(`canopy_notifications?select=id&user_id=eq.${s.user.id}&read_at=is.null&limit=100`,{token:s.access_token});
   return Array.isArray(rows)?rows.length:0;
 }
+export async function markAllNotificationsRead(session){
+  const s=await refreshSession(session||getStoredSession());if(!s?.access_token)return[];
+  return rest(`canopy_notifications?user_id=eq.${s.user.id}&read_at=is.null`,{token:s.access_token,method:'PATCH',prefer:'return=representation',body:{read_at:new Date().toISOString()}});
+}
 export async function markNotificationRead(session,id){
   const s=await refreshSession(session||getStoredSession());
   return rest(`canopy_notifications?id=eq.${encodeURIComponent(id)}&user_id=eq.${s.user.id}`,{token:s.access_token,method:'PATCH',prefer:'return=representation',body:{read_at:new Date().toISOString()}});
+}
+export async function issueCanopyCertificate(session,{userId,driveUrl}){
+  const s=await refreshSession(session||getStoredSession());
+  if(!s?.access_token)throw new Error('Your Canopy session has expired. Sign in again.');
+  if(!/^https:\/\//i.test(String(driveUrl||'').trim()))throw new Error('Add the viewable Google Drive certificate link.');
+  return rest('rpc/canopy_manager_issue_certificate',{token:s.access_token,method:'POST',body:{p_user_id:userId,p_drive_url:String(driveUrl).trim()}});
 }
 export async function getCertificates(session){
   const s=await refreshSession(session||getStoredSession());if(!s?.access_token)return[];

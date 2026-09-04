@@ -1,1 +1,0 @@
-CANTEST ONLY. Applies CanopyCanvas layout refinements to src/cantest and leaves src/canopy untouched.

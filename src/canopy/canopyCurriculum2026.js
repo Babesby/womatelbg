@@ -309,7 +309,7 @@ export const canopyModules2026 = [
       {
         id:'04.4',title:'CanopyCanvas and campaign measurement',minutes:16,
         body:[
-          'CanopyCanvas guides participants through cause selection, an optional verified observance, audience, desired action, message, tone, format and a live campaign preview. The tool is intentionally focused: it supports climate and climate-wellbeing awareness rather than unrestricted graphic design.',
+          'CanopyCanvas guides participants through cause selection, audience, desired action, message, tone, format, background, texture and a live campaign preview. The tool is intentionally focused: it supports climate and climate-wellbeing awareness rather than unrestricted graphic design.',
           'Participants download the finished campaign graphic to their own device, upload it to their own Google Drive, make the file viewable by link and attach that link to their Canopy assignment.',
           'Campaign evaluation should match the objective. Reach and impressions describe exposure; comments and shares can indicate engagement; link clicks or registrations can indicate response; a policy commitment or completed community action can indicate deeper influence. Vanity metrics alone do not prove impact.'
         ],

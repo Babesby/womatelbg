@@ -3,6 +3,9 @@
 // The speaker/LinkedIn task unlocks Thursday after the live session.
 // Everything required for that week is due Sunday 23:59 GMT.
 
+export const CANOPY_ACCESS_OPENS_AT='2026-09-20T00:00:00Z';
+export const CANOPY_ACCESS_DATE='20 September 2026';
+
 export const CANOPY_ASSIGNMENT_SCHEDULE = [
   {
     weekKey:'module-01', moduleId:'01', title:'Understanding Climate Change',

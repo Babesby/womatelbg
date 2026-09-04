@@ -185,7 +185,7 @@
 
 /* 1. Hero remains light */
 
-/* 2. SHE LEADS · COHORT 3 becomes deep green */
+/* 2. SHE LEADS · COHORT 2 becomes deep green */
 .canopyCourseIntroEditorial{
   position:relative!important;
   overflow:hidden!important;
@@ -813,3 +813,104 @@
 .canopyHelpEmpty p{margin:0;font-size:12px}
 @media(max-width:900px){.canopyHelpGrid{grid-template-columns:1fr}}
 @media(max-width:620px){.canopyHelpForm,.canopyHelpHistory{padding:18px;border-radius:18px}.canopyHelpSubmit{align-items:flex-end}.canopyHelpSubmit .canopyPrimary{min-height:44px}}
+
+/* ================================================================
+   CANOPY LAUNCH HARDENING · 20 SEPTEMBER 2026
+   Green learning environment inspired by the approved Canopy direction.
+   No new/generated imagery is required by this treatment.
+   ================================================================ */
+.canopyAccessNotice{display:flex!important;align-items:center;gap:8px;margin:18px 0 0!important;font-size:12px!important;font-weight:800;color:#48645e!important}
+.canopyAccessNotice svg{color:var(--canopy)}
+
+/* Course + module environment */
+.canopyCoursePage{max-width:none!important;margin:0!important;min-height:calc(100vh - 72px);background:
+ radial-gradient(circle at 78% 18%,rgba(198,255,82,.08),transparent 31%),
+ repeating-radial-gradient(ellipse at 72% 30%,transparent 0 36px,rgba(198,255,82,.055) 37px 38px,transparent 39px 68px),
+ linear-gradient(145deg,#073b3a 0%,#0b4a46 52%,#063432 100%);color:#fff;padding:clamp(28px,4vw,58px)!important}
+.canopyCoursePage .canopyCourseHero{max-width:1280px;margin:0 auto;background:rgba(4,45,43,.48);border:1px solid rgba(255,255,255,.1);box-shadow:0 30px 70px rgba(0,0,0,.14);backdrop-filter:blur(5px)}
+.canopyCoursePage .canopyCourseHero .canopyEyebrow,.canopyCoursePage .canopySectionHead span{color:var(--canopy-lime)}
+.canopyCoursePage .canopyCourseHero h1{color:#fff}
+.canopyCoursePage .canopyCourseHero p{color:#cfe0dc}
+.canopyCoursePage .canopyMeta span{border-color:rgba(255,255,255,.16);color:#eaf3f0;background:rgba(255,255,255,.04)}
+.canopyCoursePage .canopyCourseStat strong{color:var(--canopy-lime)}
+.canopyCoursePage .canopyCourseStat span{color:#cfe0dc}
+.canopyCoursePage .canopyCurriculum{max-width:1280px;margin:38px auto 0;background:rgba(3,36,35,.34);border:1px solid rgba(255,255,255,.08);border-radius:26px;padding:clamp(22px,3vw,36px)}
+.canopyCoursePage .canopySectionHead h2{color:#fff}
+.canopyCoursePage .canopyCurriculum article{border-color:rgba(255,255,255,.09)}
+.canopyCoursePage .canopyModuleRow{padding:22px 18px;border-radius:18px;color:#fff;transition:background .18s ease,transform .18s ease}
+.canopyCoursePage .canopyModuleRow:not(:disabled):hover{background:rgba(255,255,255,.07);transform:translateX(2px)}
+.canopyCoursePage .canopyModuleRow:disabled{opacity:.6;cursor:not-allowed}
+.canopyCoursePage .canopyModuleNo{width:46px;height:46px;display:grid;place-items:center;border:1px solid rgba(198,255,82,.58);border-radius:50%;color:var(--canopy-lime);font-size:15px}
+.canopyCoursePage .canopyModuleRow h3{color:#fff}
+.canopyCoursePage .canopyModuleRow small,.canopyCoursePage .canopyModuleRow p{color:#bcd2cd}
+.canopyCoursePage .canopyModuleRow div>span{color:var(--canopy-lime)}
+.canopyCoursePage .canopyModuleArrow{border-color:rgba(255,255,255,.2);color:var(--canopy-lime);position:relative}
+.canopyCoursePage .canopyModuleOpenDate{position:absolute;right:48px;width:max-content;max-width:160px;text-align:right;color:#bcd2cd!important;font-size:10px!important}
+
+.canopyLesson{max-width:none!important;margin:0!important;min-height:calc(100vh - 72px);background:
+ radial-gradient(circle at 84% 12%,rgba(198,255,82,.06),transparent 28%),
+ repeating-radial-gradient(ellipse at 82% 20%,transparent 0 42px,rgba(198,255,82,.045) 43px 44px,transparent 45px 78px),
+ linear-gradient(145deg,#073b3a 0%,#0b4a46 56%,#063432 100%);color:#fff;padding:clamp(24px,4vw,48px)!important}
+.canopyLessonCrumb{max-width:1180px;margin:0 auto 20px}
+.canopyLessonCrumb button,.canopyLessonCrumb>span{color:#d8e7e3}
+.canopyLessonLayout{max-width:1180px;margin:0 auto;grid-template-columns:280px minmax(0,820px);gap:26px}
+.canopyLessonLayout>aside{background:rgba(3,39,37,.62);border-color:rgba(255,255,255,.1);box-shadow:0 24px 55px rgba(0,0,0,.12)}
+.canopyLessonLayout>aside>span{color:var(--canopy-lime);font-size:46px;line-height:1;font-weight:900}
+.canopyLessonLayout>aside h2{color:#fff}
+.canopyLessonLayout>aside button{color:#b9d0cb}
+.canopyLessonLayout>aside button:hover{background:rgba(255,255,255,.05);color:#fff}
+.canopyLessonLayout>aside button.active{background:rgba(198,255,82,.12);color:#fff}
+.canopyLessonLayout>aside button>span{border-color:rgba(198,255,82,.45);color:var(--canopy-lime)}
+.canopyLessonLayout>article{background:rgba(255,255,255,.97);border:0;box-shadow:0 34px 70px rgba(0,0,0,.18);color:#183a36}
+.canopyLessonLayout>article header small{color:var(--canopy)}
+.canopyLessonLayout>article h1{color:#123b37}
+.canopyLessonBody p{color:#304a46}
+.canopyTakeaway{background:#eff6f0}
+
+/* Notification UX */
+.cn-head{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;margin-bottom:8px}
+.cn-head h1{margin-bottom:0}
+.canopyTopNotification{cursor:pointer}
+.canopyNotificationBadge{pointer-events:none}
+
+/* Assignment review visibility */
+.ca-status>div small{display:block;margin-top:5px;color:#d8e8e3;font-size:10px}
+.ca-revision{background:rgba(255,208,84,.08);border:1px solid rgba(255,208,84,.2);border-radius:12px;padding:12px}
+
+/* Learner Help + complaint resolution */
+.canopyHelpResponse{margin:12px 0;background:#eff6f1;border-left:3px solid var(--canopy);border-radius:10px;padding:12px 14px}
+.canopyHelpResponse b{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--canopy)}
+.canopyHelpResponse p{margin:5px 0 0!important;color:#38534e!important}
+.canopyComplaintAdmin{display:grid;gap:16px}
+.canopyComplaintAdmin>article{background:#fff;border:1px solid var(--canopy-line);border-radius:20px;padding:22px}
+.canopyComplaintAdmin>article>header{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;border-bottom:1px solid var(--canopy-line);padding-bottom:15px}
+.canopyComplaintAdmin header small{font-size:10px;font-weight:900;letter-spacing:.08em;color:var(--canopy)}
+.canopyComplaintAdmin header h3{font-size:20px;margin:5px 0}
+.canopyComplaintAdmin header time{font-size:10px;color:var(--canopy-muted)}
+.canopyComplaintMessage{white-space:pre-wrap;color:#38534e;line-height:1.65;margin:18px 0}
+.canopyComplaintResponse{background:#eff6f1;border-radius:12px;padding:14px;margin:14px 0}
+.canopyComplaintResponse b{font-size:10px;letter-spacing:.08em;color:var(--canopy);text-transform:uppercase}
+.canopyComplaintResponse p{margin:6px 0 0;white-space:pre-wrap}
+.canopyComplaintReply{display:grid;gap:12px;border-top:1px solid var(--canopy-line);padding-top:16px}
+.canopyComplaintReply label{display:grid;gap:7px;font-size:12px;font-weight:900;color:#405652}
+.canopyComplaintReply textarea{width:100%;border:1px solid #cbd9d5;border-radius:12px;padding:12px 13px;font:inherit;resize:vertical;min-height:110px}
+.canopyComplaintReply .canopyPrimary{width:max-content}
+
+@media(max-width:900px){
+ .canopyCoursePage,.canopyLesson{min-height:100vh}
+ .canopyLessonLayout{grid-template-columns:1fr}
+ .canopyCoursePage .canopyModuleOpenDate{position:static;right:auto;width:auto;text-align:left;margin-bottom:4px}
+}
+@media(max-width:620px){
+ .canopyAccessNotice{align-items:flex-start}
+ .canopyCoursePage{padding:18px 13px!important}
+ .canopyCoursePage .canopyCourseHero,.canopyCoursePage .canopyCurriculum{border-radius:20px}
+ .canopyCoursePage .canopyCurriculum{padding:15px}
+ .canopyCoursePage .canopyModuleRow{grid-template-columns:44px minmax(0,1fr) 30px;padding:17px 6px;gap:10px}
+ .canopyCoursePage .canopyModuleNo{width:38px;height:38px;font-size:13px}
+ .canopyLesson{padding:18px 12px!important}
+ .canopyLessonLayout>aside>span{font-size:34px}
+ .cn-head{display:grid}
+ .canopyComplaintAdmin>article{padding:17px}
+ .canopyComplaintAdmin>article>header{display:grid}
+}
