@@ -719,3 +719,6 @@
 @media(max-width:900px){.cc-preview-upgraded{position:relative;top:auto}.cc-palette-grid,.cc-texture-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:620px){.cc-icon-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.cc-watermark{right:18px;bottom:16px;width:120px}}
 
+
+/* CANOPY MOBILE BACK WHITE PANEL */
+@media (max-width:760px){.canopyAuthPanelWrap{background:#fff!important;position:relative!important}.canopyAuthPanelWrap .canopyBack{position:static!important;inset:auto!important;transform:none!important;display:inline-flex!important;align-items:center!important;gap:7px!important;width:auto!important;margin:16px 18px 4px!important;padding:8px 0!important;color:#0E4D4A!important;background:transparent!important;border:0!important;box-shadow:none!important;z-index:2!important}.canopyAuthPanelWrap .canopyBack svg{width:17px!important;height:17px!important}}
