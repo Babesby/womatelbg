@@ -31,16 +31,16 @@ const audiences=[
 ];
 
 const actions=[
-  'Learn one practical action and share it with someone else.',
-  'Join or support a local climate initiative.',
-  'Share this message with your community.',
-  'Ask a decision-maker for a specific climate action.',
-  'Reduce one source of waste this week.',
-  'Protect water and use it more responsibly.',
-  'Support women-led climate solutions.',
-  'Start a conversation about climate and wellbeing.',
-  'Choose a cleaner transport option where possible.',
-  'Take one measurable climate action today.'
+  'Learn and share one action.',
+  'Join a local climate effort.',
+  'Share with your community.',
+  'Ask leaders to take action.',
+  'Cut one source of waste.',
+  'Protect and conserve water.',
+  'Support women-led solutions.',
+  'Start a climate conversation.',
+  'Choose cleaner transport.',
+  'Take one climate action today.'
 ];
 
 const tones=['Clear & factual','Hopeful','Urgent but responsible','Community-centred','Professional'];
@@ -69,17 +69,6 @@ const textures=[
   {id:'grid',label:'Fine grid'},
   {id:'waves',label:'Climate waves'},
   {id:'grain',label:'Paper grain'}
-];
-
-const iconOptions=[
-  {id:'leaf',label:'Leaf',Icon:Leaf},
-  {id:'sun',label:'Sun',Icon:Sun},
-  {id:'water',label:'Water',Icon:Droplets},
-  {id:'globe',label:'Globe',Icon:Globe2},
-  {id:'megaphone',label:'Advocacy',Icon:Megaphone},
-  {id:'wind',label:'Wind',Icon:Wind},
-  {id:'trees',label:'Trees',Icon:Trees},
-  {id:'wellbeing',label:'Wellbeing',Icon:HeartPulse}
 ];
 
 const toneTemplates={
@@ -147,7 +136,7 @@ async function loadImage(src){
 }
 
 export default function CanopyCanvas(){
-  const initial={cause:causes[0],observance:'',audience:audiences[0],actionTarget:actions[0],tone:tones[0],format:formats[0],palette:'canopy',texture:'none',icons:['leaf'],buttonShape:'Pill',message:''};
+  const initial={cause:causes[0],observance:'',audience:audiences[0],actionTarget:actions[0],tone:tones[0],format:formats[0],palette:'canopy',texture:'none',buttonShape:'Pill',message:''};
   const [form,setForm]=useState(initial);
   const [note,setNote]=useState('');
   const lastSuggested=useRef('');
@@ -165,8 +154,6 @@ export default function CanopyCanvas(){
     });
   };
   const useSuggestion=()=>{lastSuggested.current=suggestion;update('message',suggestion)};
-  const toggleIcon=(id)=>setForm(f=>({...f,icons:f.icons.includes(id)?f.icons.filter(x=>x!==id):(f.icons.length>=3?[...f.icons.slice(1),id]:[...f.icons,id])}));
-
   const makeBlob=()=>new Promise(async resolve=>{
     const [w,h]=dims,c=document.createElement('canvas');c.width=w;c.height=h;const ctx=c.getContext('2d');
     fillBackground(ctx,w,h,palette);drawTexture(ctx,w,h,form.texture,palette.text);
@@ -180,9 +167,6 @@ export default function CanopyCanvas(){
     const btnText=form.actionTarget,btnFont=Math.round(w*.020);ctx.font=`700 ${btnFont}px Arial`;const maxBtnW=w*.72,measured=Math.min(maxBtnW,ctx.measureText(btnText).width+w*.07);const btnH=Math.max(54,h*.062),btnX=pad,btnY=h*.78-btnH/2;ctx.fillStyle=palette.accent;const radius=form.buttonShape==='Pill'?btnH/2:Math.max(8,w*.008);ctx.beginPath();ctx.roundRect(btnX,btnY,measured,btnH,radius);ctx.fill();ctx.fillStyle='#0E4D4A';ctx.textBaseline='middle';ctx.fillText(btnText,btnX+w*.035,btnY+btnH/2);ctx.textBaseline='alphabetic';
 
     if(form.observance){ctx.fillStyle=palette.text;ctx.globalAlpha=.85;ctx.font=`500 ${Math.round(w*.017)}px Arial`;ctx.fillText(form.observance,pad,h*.94);ctx.globalAlpha=1}
-
-    form.icons.forEach((id,i)=>drawSimpleIcon(ctx,id,w*.78+i*w*.06,h*.105,w*.058,palette.accent));
-
     const logo=await loadImage('/assets/canopy/auth/canopy-logo-white.png');
     if(logo){
       const maxW=w*.18,maxH=h*.07,ratio=Math.min(maxW/logo.width,maxH/logo.height);
@@ -237,11 +221,6 @@ export default function CanopyCanvas(){
           <div className="cc-texture-grid">{textures.map(t=><button type="button" key={t.id} className={`cc-texture-chip ${form.texture===t.id?'active':''}`} onClick={()=>update('texture',t.id)}><i className={`cc-texture-swatch texture-${t.id}`}/><b>{t.label}</b></button>)}</div>
         </div>
 
-        <div className="cc-choice-block">
-          <span>Icons <small>Choose up to 3</small></span>
-          <div className="cc-icon-grid">{iconOptions.map(({id,label,Icon})=><button type="button" key={id} className={form.icons.includes(id)?'active':''} onClick={()=>toggleIcon(id)}><Icon/><b>{label}</b></button>)}</div>
-        </div>
-
         <div className="cc-brand-note">
           <img src="/assets/canopy/auth/canopy-logo-white.png" alt="Canopy"/>
           <p>The Canopy mark is applied automatically as a small campaign watermark.</p>
@@ -252,19 +231,20 @@ export default function CanopyCanvas(){
       </div>
 
       <div className={`cc-preview cc-preview-upgraded format-${form.format.toLowerCase().replace(/\s+/g,'-')} tone-${form.tone.toLowerCase().replace(/[^a-z]+/g,'-')}`}
-           style={{background:palette.css,color:palette.text,'--cc-accent':palette.accent}}>
+           style={{background:palette.css,color:palette.text,'--cc-accent':palette.accent,width:'100%',height:'auto',aspectRatio:form.format==='Square post'?'1 / 1':form.format==='Portrait post'?'4 / 5':'16 / 9'}}>
         <div className={`cc-texture-layer texture-${form.texture}`}/>
-        <div className="cc-preview-icons">{form.icons.map(id=>{const Item=iconOptions.find(x=>x.id===id);return Item?<Item.Icon key={id}/>:null})}</div>
         <small>{form.cause}</small>
         <h2>{form.message||suggestion}</h2>
         <p>For {form.audience}</p>
-        <button type="button" className={`cc-action-button ${form.buttonShape==='Pill'?'is-pill':'is-rectangle'}`}>{form.actionTarget}</button>
+        <button type="button" className={`cc-action-button ${form.buttonShape==='Pill'?'is-pill':'is-rectangle'}`} style={{borderRadius:form.buttonShape==='Pill'?'999px':'8px'}}>{form.actionTarget}</button>
         {form.observance&&<em>{form.observance}</em>}
         <img className="cc-watermark" src="/assets/canopy/auth/canopy-logo-white.png" alt=""/>
       </div>
     </div>
   </section>
 }
+
+
 
 
 
