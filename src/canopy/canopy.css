@@ -725,3 +725,54 @@
 
 /* CANOPYCANVAS RESPONSIVE CTA */
 .cc-action-button{display:inline-flex!important;align-items:center!important;justify-content:center!important;width:auto!important;max-width:100%!important;margin:clamp(14px,2.2vw,28px) 0 0!important;padding:clamp(10px,1.2vw,14px) clamp(18px,2.4vw,30px)!important;min-height:44px!important;line-height:1.2!important;white-space:normal!important;text-align:center!important;box-sizing:border-box!important}.cc-action-button.is-pill{border-radius:999px!important}.cc-action-button.is-rectangle{border-radius:8px!important}@media(max-width:760px){.cc-action-button{margin-top:14px!important;padding:10px 18px!important;max-width:100%!important;font-size:14px!important}}
+
+
+/* CANOPY MANAGER — ASSIGNMENT REVIEW */
+.canopyReviewWorkspace{display:grid;gap:20px}
+.canopyReviewToolbar{background:#fff;border:1px solid rgba(14,77,74,.1);border-radius:20px;padding:18px 20px;display:grid;gap:16px}
+.canopyReviewToolbar>div:first-child{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.canopyReviewToolbar>div:first-child>span{font-size:11px;letter-spacing:.12em;font-weight:900;color:var(--canopy)}
+.canopyReviewToolbar>div:first-child>strong{font-size:13px}
+.canopyReviewFilters{display:flex;gap:8px;flex-wrap:wrap}
+.canopyReviewFilters button{border:1px solid var(--canopy-line);background:#fff;color:#536965;border-radius:999px;min-height:38px;padding:7px 11px;display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:800}
+.canopyReviewFilters button small{min-width:22px;height:22px;border-radius:999px;background:#eef4f1;display:grid;place-items:center;font-size:10px}
+.canopyReviewFilters button.active{background:var(--canopy);border-color:var(--canopy);color:#fff}
+.canopyReviewFilters button.active small{background:rgba(255,255,255,.16);color:var(--canopy-lime)}
+.canopyReviewList{display:grid;gap:18px}
+.canopyReviewCard{background:#fff;border:1px solid rgba(14,77,74,.1);border-radius:24px;padding:22px;box-shadow:0 12px 36px rgba(14,77,74,.04)}
+.canopyReviewCard>header{display:flex;justify-content:space-between;gap:22px;align-items:flex-start;padding-bottom:18px;border-bottom:1px solid var(--canopy-line)}
+.canopyReviewCard>header small{font-size:11px;font-weight:800;color:var(--canopy);letter-spacing:.02em}
+.canopyReviewCard>header h3{margin:6px 0 3px;font-size:21px}
+.canopyReviewCard>header p{margin:0;color:var(--canopy-muted);font-size:12px}
+.canopyReviewStatus{display:inline-flex;align-items:center;white-space:nowrap;border-radius:999px;padding:7px 10px;font-size:10px;font-weight:900;text-transform:capitalize;background:#eef4f1;color:var(--canopy)}
+.canopyReviewStatus.is-auto_reviewed,.canopyReviewStatus.is-completed{background:rgba(198,255,82,.24);color:#244b36}
+.canopyReviewStatus.is-revision_required{background:#fff1dc;color:#875108}
+.canopyReviewStatus.is-needs_manual_review{background:#f5e9ff;color:#6d378d}
+.canopyReviewStatus.is-awaiting_automation{background:#eef2f1;color:#60716e}
+.canopyReviewEvidence{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(220px,.55fr);gap:14px;margin-top:16px}
+.canopyReviewEvidence>section{background:#f7faf8;border-radius:16px;padding:16px}
+.canopyReviewEvidence span,.canopyReviewAuto span,.canopyManualReviewHead span,.canopyManualReviewFoot span{display:block;font-size:10px;letter-spacing:.08em;font-weight:900;color:var(--canopy);margin-bottom:7px}
+.canopyReviewEvidence p{white-space:pre-wrap;margin:0;color:#38504c;line-height:1.65;font-size:13px}
+.canopyReviewLinks{display:grid;gap:9px}
+.canopyReviewLinks a{display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid var(--canopy-line);border-radius:12px;padding:11px 12px;background:#fff;color:var(--canopy);font-size:12px;font-weight:900;text-decoration:none}
+.canopyReviewAuto{display:grid;grid-template-columns:160px 180px minmax(0,1fr);gap:10px;margin:12px 0 0}
+.canopyReviewAuto>div{border:1px solid var(--canopy-line);border-radius:14px;padding:13px 14px}
+.canopyReviewAuto strong{font-size:18px}
+.canopyReviewAuto p{margin:0;color:var(--canopy-muted);font-size:12px;line-height:1.55}
+.canopyManualReview{margin-top:16px;border-top:1px solid var(--canopy-line);padding-top:18px}
+.canopyManualReviewHead{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.canopyManualReviewHead h4{font-size:18px;margin:3px 0 0}
+.canopyManualReviewHead small{color:var(--canopy-muted);font-size:11px}
+.canopyManualReviewGrid{display:grid;grid-template-columns:180px minmax(220px,1fr);gap:12px;margin-top:14px}
+.canopyManualReviewGrid label{display:grid;gap:7px;font-size:11px;font-weight:900;color:#405652}
+.canopyManualReviewGrid label.wide{grid-column:1/-1}
+.canopyManualReviewGrid input,.canopyManualReviewGrid select,.canopyManualReviewGrid textarea{width:100%;border:1px solid #cbd9d5;border-radius:12px;padding:12px 13px;background:#fff;color:var(--canopy-ink);font:inherit;outline:none}
+.canopyManualReviewGrid textarea{resize:vertical;min-height:94px}
+.canopyManualReviewGrid input:focus,.canopyManualReviewGrid select:focus,.canopyManualReviewGrid textarea:focus{border-color:var(--canopy);box-shadow:0 0 0 3px rgba(14,77,74,.07)}
+.canopyManualReviewFoot{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin-top:14px}
+.canopyManualReviewFoot b{display:block;font-size:14px}
+.canopyManualReviewFoot small{display:block;margin-top:3px;color:var(--canopy-muted);font-size:10px}
+.canopyReviewEmpty{background:#fff;border:1px dashed #cbd9d5;border-radius:20px;padding:48px 24px;text-align:center;color:var(--canopy-muted)}
+.canopyReviewEmpty svg{color:var(--canopy);width:30px;height:30px}.canopyReviewEmpty h3{color:var(--canopy-ink);margin:10px 0 5px}.canopyReviewEmpty p{margin:0}
+@media(max-width:900px){.canopyReviewEvidence{grid-template-columns:1fr}.canopyReviewAuto{grid-template-columns:1fr 1fr}.canopyReviewAuto .wide{grid-column:1/-1}}
+@media(max-width:640px){.canopyReviewCard{padding:16px;border-radius:18px}.canopyReviewCard>header,.canopyManualReviewHead,.canopyManualReviewFoot{display:grid}.canopyReviewStatus{justify-self:start}.canopyReviewAuto,.canopyManualReviewGrid{grid-template-columns:1fr}.canopyManualReviewGrid label.wide,.canopyReviewAuto .wide{grid-column:auto}.canopyReviewFilters{overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px}.canopyReviewFilters button{flex:0 0 auto}}

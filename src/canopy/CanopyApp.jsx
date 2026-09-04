@@ -8,7 +8,7 @@ import {CANOPY_ASSIGNMENT_SCHEDULE} from './canopySchedule';
 import{ArrowLeft,ArrowRight,BookOpen,Check,ChevronRight,ClipboardCheck,Clock,FileText,GraduationCap,Leaf,Lock,LogOut,Menu,PlayCircle,Sparkles,UserRound,X,BookMarked,UsersRound,PenLine,TrendingUp,Eye,EyeOff,MessageSquare,ShieldAlert,Award,BarChart3,Bell} from 'lucide-react';
 import'./canopy.css';
 import{CANOPY_BRAND,modules,resources}from'./canopyData';
-import{canopyConfigured,consumeAuthCallback,getStoredSession,getViewer,getProgress,getSubmissions,getManagerSnapshot,markLesson,requestPasswordReset,resendConfirmation,saveQuiz,signIn,signOut,signUp,submitAssignment,updatePassword,setLearnerEnrollmentStatus,createManagerAction,updateManagerAction} from './canopyApi';
+import{canopyConfigured,consumeAuthCallback,getStoredSession,getViewer,getProgress,getSubmissions,getManagerSnapshot,markLesson,requestPasswordReset,resendConfirmation,saveQuiz,signIn,signOut,signUp,submitAssignment,updatePassword,setLearnerEnrollmentStatus,createManagerAction,updateManagerAction,reviewWeeklyAssignment} from './canopyApi';
 
 const route=()=>window.location.pathname.replace(/\/$/,'')||'/canopy';
 function go(path){window.history.pushState({},'',path);window.dispatchEvent(new PopStateEvent('popstate'));window.scrollTo({top:0,behavior:'smooth'})}
@@ -129,7 +129,7 @@ function Profile({viewer}){const p=viewer.profile||{};return <main className="ca
 
 function ManagerNotice({children}){return children?<p className="canopyFormMsg" role="status">{children}</p>:null}
 function ManagerOperations({snapshot,session,onReload,view='overview'}){
- const[busy,setBusy]=useState('');const[msg,setMsg]=useState('');const[form,setForm]=useState({learner_id:'',action_type:'reminder',subject:'',message:''});
+ const[busy,setBusy]=useState('');const[msg,setMsg]=useState('');const[form,setForm]=useState({learner_id:'',action_type:'reminder',subject:'',message:''});const[reviewFilter,setReviewFilter]=useState('all');const[reviewDrafts,setReviewDrafts]=useState({});
  if(!snapshot)return <main className="canopyManager"><div className="canopyPageHead"><h1>Canopy operations</h1><p>Loading operational data…</p></div></main>;
  const learners=snapshot.profiles.filter(p=>p.role==='learner');
  const actions=snapshot.actions||[];
@@ -140,6 +140,13 @@ function ManagerOperations({snapshot,session,onReload,view='overview'}){
  const resolve=async(a,status='resolved')=>{setBusy(a.id);setMsg('');try{await updateManagerAction(session,a.id,{status,resolved_at:new Date().toISOString()});setMsg('Record updated.');await onReload?.()}catch(e){setMsg(e.message)}finally{setBusy('')}};
  const sectionTitle={overview:'Operations',access:'Manage cohort',reviews:'Assess submissions',communications:'Warnings & feedback',reminders:'Reminders',complaints:'Complaints',certificates:'Certificates',reports:'Reports'}[view]||'Operations';
  const filtered=type=>actions.filter(a=>a.action_type===type);
+ const reviewStatuses=[['all','All'],['awaiting_automation','Awaiting automation'],['auto_reviewed','Auto reviewed'],['needs_manual_review','Needs manual review'],['revision_required','Revision required'],['completed','Completed']];
+ const reviewStatusOf=s=>s?.assessment_status||'awaiting_automation';
+ const reviewRows=(snapshot.submissions||[]).filter(s=>reviewFilter==='all'||reviewStatusOf(s)===reviewFilter);
+ const moduleLabel=s=>{const schedule=CANOPY_ASSIGNMENT_SCHEDULE.find(x=>x.weekKey===s.week_key);const module=modules.find(m=>m.id===schedule?.moduleId);return module?`Module ${module.number} · ${module.title}`:(s.week_key||'Weekly assignment')};
+ const draftFor=s=>reviewDrafts[s.id]||{score:s.final_score??s.auto_score??'',feedback:s.final_feedback||s.feedback_hint||'',decision:reviewStatusOf(s)==='revision_required'?'revision_required':'completed'};
+ const setReviewDraft=(id,patch)=>setReviewDrafts(x=>({...x,[id]:{...draftFor((snapshot.submissions||[]).find(s=>s.id===id)||{}),...patch}}));
+ const reviewSubmission=async s=>{const d=draftFor(s);const score=Number(d.score);if(!Number.isFinite(score)||score<0||score>100){setMsg('Enter a score from 0 to 100.');return}setBusy('review-'+s.id);setMsg('');try{await reviewWeeklyAssignment(session,{submissionId:s.id,score,feedback:d.feedback,decision:d.decision});setMsg(d.decision==='revision_required'?'Review saved. The learner has been notified that a revision is required.':'Review saved and delivered to the learner in Canopy.');await onReload?.()}catch(e){setMsg(e.message)}finally{setBusy('')}};
  return <main className="canopyManager canopyOps">
   <div className="canopyPageHead"><span className="canopyEyebrow">WOMATE · CANOPY</span><h1>{sectionTitle}</h1><p>{view==='overview'?'Operational control for She Leads Climate Mentorship · Cohort 2 · 2026.':'Manage this workstream from one authorised WOMATE account.'}</p></div>
   <ManagerNotice>{msg}</ManagerNotice>
@@ -155,7 +162,22 @@ function ManagerOperations({snapshot,session,onReload,view='overview'}){
    </section>
   </>}
   {view==='access'&&<section className="canopyManagerTable canopyManagerAccessTable"><header><b>Participant</b><b>Country</b><b>Access</b><b>Action</b></header>{learners.map(p=>{const e=enrolFor(p.user_id),active=e?.status==='active';return <div key={p.user_id}><span>{p.full_name||'Unnamed learner'}</span><span>{p.country||'—'}</span><span><b className={'canopyAccessStatus '+(active?'isActive':'isWaiting')}>{active?'Active':'Waiting'}</b></span><span><button className={active?'canopySecondary':'canopyPrimary'} disabled={busy===p.user_id} onClick={()=>activate(p.user_id,active?'inactive':'active')}>{busy===p.user_id?'Updating…':active?'Deactivate':'Activate access'}</button></span></div>})}</section>}
-  {view==='reviews'&&<section className="canopyOpsList">{snapshot.submissions.length?snapshot.submissions.map(s=><article key={s.id||s.user_id+s.module_id}><div><small>{nameFor(s.user_id)} · {s.module_id}</small><h3>{s.title||'Assignment submission'}</h3><p>{s.response||'Submission recorded.'}</p></div><span className="canopyAccessStatus isWaiting">{s.status||'submitted'}</span></article>):<p>No submissions yet.</p>}</section>}
+  {view==='reviews'&&<section className="canopyReviewWorkspace">
+   <div className="canopyReviewToolbar">
+    <div><span>SUBMISSION REVIEW</span><strong>{snapshot.submissions.length} total</strong></div>
+    <div className="canopyReviewFilters">{reviewStatuses.map(([value,label])=><button type="button" key={value} className={reviewFilter===value?'active':''} onClick={()=>setReviewFilter(value)}>{label}<small>{value==='all'?snapshot.submissions.length:snapshot.submissions.filter(s=>reviewStatusOf(s)===value).length}</small></button>)}</div>
+   </div>
+   <div className="canopyReviewList">{reviewRows.length?reviewRows.map(s=>{const d=draftFor(s);const status=reviewStatusOf(s);const manual=s.review_source==='manual';return <article className="canopyReviewCard" key={s.id}>
+    <header><div><small>{nameFor(s.user_id)} · {moduleLabel(s)} · Attempt {s.attempt_no}</small><h3>{manual?'Manually reviewed':'Automated review'}</h3><p>Submitted {new Date(s.submitted_at).toLocaleString()}</p></div><span className={`canopyReviewStatus is-${status}`}>{status.replaceAll('_',' ')}</span></header>
+    <div className="canopyReviewEvidence"><section><span>Paragraph response</span><p>{s.paragraph_response}</p></section><section><span>Evidence</span><div className="canopyReviewLinks"><a href={s.canvas_link} target="_blank" rel="noreferrer">Open CanopyCanvas <ArrowRight size={14}/></a><a href={s.linkedin_link} target="_blank" rel="noreferrer">Open LinkedIn task <ArrowRight size={14}/></a></div></section></div>
+    <div className="canopyReviewAuto"><div><span>Automated score</span><strong>{s.auto_score!=null?`${s.auto_score}/100`:'—'}</strong></div><div><span>Band</span><strong>{s.score_band||'—'}</strong></div><div className="wide"><span>Automated feedback</span><p>{s.feedback_hint||'No automated feedback yet.'}</p></div></div>
+    <form className="canopyManualReview" onSubmit={e=>{e.preventDefault();reviewSubmission(s)}}>
+     <div className="canopyManualReviewHead"><div><span>WOMATE REVIEW</span><h4>{manual?'Update manual decision':'Review or override'}</h4></div>{manual&&<small>Manual review is authoritative.</small>}</div>
+     <div className="canopyManualReviewGrid"><label>Final score<input type="number" min="0" max="100" required value={d.score} onChange={e=>setReviewDraft(s.id,{score:e.target.value})}/></label><label>Decision<select value={d.decision} onChange={e=>setReviewDraft(s.id,{decision:e.target.value})}><option value="completed">Completed</option><option value="revision_required">Revision required</option><option value="needs_manual_review">Needs manual review</option></select></label><label className="wide">Feedback<textarea rows="4" value={d.feedback} onChange={e=>setReviewDraft(s.id,{feedback:e.target.value})} placeholder="Give the learner clear, useful feedback."/></label></div>
+     <div className="canopyManualReviewFoot"><div><span>Current final</span><b>{s.final_score!=null?`${s.final_score}/100 · ${s.score_band||''}`:'Not finalised'}</b>{s.review_source&&<small>{s.review_source==='manual'?'Manual WOMATE review':'Automated formative baseline'}</small>}</div><button className="canopyPrimary" disabled={busy==='review-'+s.id}>{busy==='review-'+s.id?'Saving…':manual?'Update review':'Save review'} <ArrowRight size={15}/></button></div>
+    </form>
+   </article>}):<div className="canopyReviewEmpty"><FileText/><h3>No submissions in this view.</h3><p>Change the filter or wait for participant work to arrive.</p></div>}</div>
+  </section>}
   {view==='communications'&&<><ManagerActionForm form={form} setForm={setForm} learners={learners} busy={busy} onSubmit={sendAction} types={['warning','feedback','reminder']}/><ManagerActionList actions={actions.filter(a=>['warning','feedback','reminder'].includes(a.action_type))} nameFor={nameFor} busy={busy} onResolve={resolve}/></>}
   {view==='complaints'&&<><ManagerActionForm form={{...form,action_type:'complaint'}} setForm={x=>setForm({...x,action_type:'complaint'})} learners={learners} busy={busy} onSubmit={sendAction} types={['complaint']}/><ManagerActionList actions={filtered('complaint')} nameFor={nameFor} busy={busy} onResolve={resolve}/></>}
   {view==='certificates'&&<><ManagerActionForm form={{...form,action_type:'certificate'}} setForm={x=>setForm({...x,action_type:'certificate'})} learners={learners} busy={busy} onSubmit={sendAction} types={['certificate']}/><ManagerActionList actions={filtered('certificate')} nameFor={nameFor} busy={busy} onResolve={resolve}/></>}

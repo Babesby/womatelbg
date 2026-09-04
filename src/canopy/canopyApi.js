@@ -115,12 +115,12 @@ export async function submitAssignment(session,moduleId,title,response){
 }
 export async function getManagerSnapshot(session){
   const s=await refreshSession(session||getStoredSession());if(!s?.access_token)return null;
+  try{await rest('rpc/canopy_refresh_learning_automation',{token:s.access_token,method:'POST',body:{}})}catch{}
   const [profiles,enrollments,progress,submissions,actions]=await Promise.all([
     rest('canopy_profiles?select=user_id,full_name,country,role&order=full_name.asc',{token:s.access_token}),
     rest('canopy_enrollments?select=*&order=created_at.asc',{token:s.access_token}),
     rest('canopy_lesson_progress?select=*',{token:s.access_token}),
-    rest('canopy_submissions?select=*&order=submitted_at.desc',{token:s.access_token})
-  ,
+    rest('rpc/canopy_manager_weekly_submissions',{token:s.access_token,method:'POST',body:{}}),
     rest('canopy_manager_actions?select=*&order=created_at.desc',{token:s.access_token})
   ]);
   return {profiles:profiles||[],enrollments:enrollments||[],progress:progress||[],submissions:submissions||[],actions:actions||[]};
@@ -169,6 +169,18 @@ export async function updateManagerAction(session,id,body){
   const s=await refreshSession(session||getStoredSession());
   if(!s?.access_token)throw new Error('Your Canopy session has expired. Sign in again.');
   return rest(`canopy_manager_actions?id=eq.${encodeURIComponent(id)}`,{token:s.access_token,method:'PATCH',prefer:'return=representation',body});
+}
+
+
+export async function reviewWeeklyAssignment(session,{submissionId,score,feedback,decision}){
+  const s=await refreshSession(session||getStoredSession());
+  if(!s?.access_token)throw new Error('Your Canopy session has expired. Sign in again.');
+  return rest('rpc/canopy_manager_review_assignment',{token:s.access_token,method:'POST',body:{
+    p_submission_id:submissionId,
+    p_score:Number(score),
+    p_feedback:feedback||'',
+    p_decision:decision||'completed'
+  }});
 }
 
 
