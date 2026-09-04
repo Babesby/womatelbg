@@ -722,3 +722,6 @@
 
 /* CANOPY MOBILE BACK WHITE PANEL */
 @media (max-width:760px){.canopyAuthPanelWrap{background:#fff!important;position:relative!important}.canopyAuthPanelWrap .canopyBack{position:static!important;inset:auto!important;transform:none!important;display:inline-flex!important;align-items:center!important;gap:7px!important;width:auto!important;margin:16px 18px 4px!important;padding:8px 0!important;color:#0E4D4A!important;background:transparent!important;border:0!important;box-shadow:none!important;z-index:2!important}.canopyAuthPanelWrap .canopyBack svg{width:17px!important;height:17px!important}}
+
+/* CANOPYCANVAS RESPONSIVE CTA */
+.cc-action-button{display:inline-flex!important;align-items:center!important;justify-content:center!important;width:auto!important;max-width:100%!important;margin:clamp(14px,2.2vw,28px) 0 0!important;padding:clamp(10px,1.2vw,14px) clamp(18px,2.4vw,30px)!important;min-height:44px!important;line-height:1.2!important;white-space:normal!important;text-align:center!important;box-sizing:border-box!important}.cc-action-button.is-pill{border-radius:999px!important}.cc-action-button.is-rectangle{border-radius:8px!important}@media(max-width:760px){.cc-action-button{margin-top:14px!important;padding:10px 18px!important;max-width:100%!important;font-size:14px!important}}

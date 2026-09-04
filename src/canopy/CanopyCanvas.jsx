@@ -6,16 +6,6 @@ const causes=[
   'Sustainable cities','Climate & wellbeing','Women in climate leadership'
 ];
 
-const observances=[
-  {label:'None',value:''},
-  {label:'International Womenâ€™s Day Â· 8 March',value:'International Womenâ€™s Day â€” 8 March'},
-  {label:'International Day of Forests Â· 21 March',value:'International Day of Forests â€” 21 March'},
-  {label:'World Water Day Â· 22 March',value:'World Water Day â€” 22 March'},
-  {label:'International Mother Earth Day Â· 22 April',value:'International Mother Earth Day â€” 22 April'},
-  {label:'World Environment Day Â· 5 June',value:'World Environment Day â€” 5 June'},
-  {label:'World Mental Health Day Â· 10 October',value:'World Mental Health Day â€” 10 October'}
-];
-
 const audiences=[
   'Young people and early-career professionals',
   'Students and campus communities',
@@ -44,7 +34,7 @@ const actions=[
 ];
 
 const tones=['Clear & factual','Hopeful','Urgent but responsible','Community-centred','Professional'];
-const formats=['Square post','Portrait post','Landscape card'];
+const formats=['Square post','Portrait post'];
 const buttonShapes=['Pill','Rectangle'];
 const MESSAGE_LIMIT=60;
 
@@ -136,12 +126,12 @@ async function loadImage(src){
 }
 
 export default function CanopyCanvas(){
-  const initial={cause:causes[0],observance:'',audience:audiences[0],actionTarget:actions[0],tone:tones[0],format:formats[0],palette:'canopy',texture:'none',buttonShape:'Pill',message:''};
+  const initial={cause:causes[0],audience:audiences[0],actionTarget:actions[0],tone:tones[0],format:formats[0],palette:'canopy',texture:'none',buttonShape:'Pill',message:''};
   const [form,setForm]=useState(initial);
   const [note,setNote]=useState('');
   const lastSuggested=useRef('');
   const palette=palettes.find(x=>x.id===form.palette)||palettes[0];
-  const dims=useMemo(()=>form.format==='Square post'?[1200,1200]:form.format==='Portrait post'?[1080,1350]:[1600,900],[form.format]);
+  const dims=useMemo(()=>form.format==='Square post'?[1200,1200]:[1080,1350],[form.format]);
   const suggestion=useMemo(()=>toneTemplates[form.tone]({cause:form.cause,audience:form.audience,action:form.actionTarget}),[form.tone,form.cause,form.audience,form.actionTarget]);
 
   const update=(k,v)=>setForm(f=>({...f,[k]:v}));
@@ -161,13 +151,10 @@ export default function CanopyCanvas(){
 
     const pad=w*.065;
     ctx.fillStyle=palette.accent;ctx.font=`700 ${Math.round(w*.022)}px Arial`;ctx.fillText(form.cause.toUpperCase(),pad,h*.19);
-    ctx.fillStyle=palette.text;const msg=(form.message||suggestion).slice(0,MESSAGE_LIMIT);const portrait=form.format==='Portrait post',landscape=form.format==='Landscape card';const base=landscape?.043:portrait?.058:.052;const lengthScale=msg.length>145?.80:msg.length>105?.90:1;ctx.font=`700 ${Math.round(w*base*lengthScale)}px Arial`;const messageY=landscape?h*.27:portrait?h*.255:h*.265;const messageW=landscape?w*.72:w*.84;wrap(ctx,msg,pad,messageY,messageW,h*(landscape?.067:.061),portrait?7:6);
+    ctx.fillStyle=palette.text;const msg=(form.message||suggestion).slice(0,MESSAGE_LIMIT);const portrait=form.format==='Portrait post';const base=portrait?.058:.052;const lengthScale=msg.length>145?.80:msg.length>105?.90:1;ctx.font=`700 ${Math.round(w*base*lengthScale)}px Arial`;const messageY=portrait?h*.255:h*.265;const messageW=w*.84;wrap(ctx,msg,pad,messageY,messageW,h*.061,portrait?7:6);
 
     ctx.globalAlpha=.82;ctx.fillStyle=palette.text;ctx.font=`500 ${Math.round(w*.022)}px Arial`;wrap(ctx,`For ${form.audience}`,pad,h*.72,w*.82,h*.035,2);ctx.globalAlpha=1;
-    const btnText=form.actionTarget,btnFont=Math.round(w*.020);ctx.font=`700 ${btnFont}px Arial`;const maxBtnW=w*.72,measured=Math.min(maxBtnW,ctx.measureText(btnText).width+w*.07);const btnH=Math.max(54,h*.062),btnX=pad,btnY=h*.78-btnH/2;ctx.fillStyle=palette.accent;const radius=form.buttonShape==='Pill'?btnH/2:Math.max(8,w*.008);ctx.beginPath();ctx.roundRect(btnX,btnY,measured,btnH,radius);ctx.fill();ctx.fillStyle='#0E4D4A';ctx.textBaseline='middle';ctx.fillText(btnText,btnX+w*.035,btnY+btnH/2);ctx.textBaseline='alphabetic';
-
-    if(form.observance){ctx.fillStyle=palette.text;ctx.globalAlpha=.85;ctx.font=`500 ${Math.round(w*.017)}px Arial`;ctx.fillText(form.observance,pad,h*.94);ctx.globalAlpha=1}
-    const logo=await loadImage('/assets/canopy/auth/canopy-logo-white.png');
+    const btnText=form.actionTarget,btnFont=Math.round(w*.020);ctx.font=`700 ${btnFont}px Arial`;const maxBtnW=w*.72,measured=Math.min(maxBtnW,ctx.measureText(btnText).width+w*.07);const btnH=Math.max(54,h*.062),btnX=pad,btnY=h*.78-btnH/2;ctx.fillStyle=palette.accent;const radius=form.buttonShape==='Pill'?btnH/2:Math.max(8,w*.008);ctx.beginPath();ctx.roundRect(btnX,btnY,measured,btnH,radius);ctx.fill();ctx.fillStyle='#0E4D4A';ctx.textBaseline='middle';ctx.fillText(btnText,btnX+w*.035,btnY+btnH/2);ctx.textBaseline='alphabetic';    const logo=await loadImage('/assets/canopy/auth/canopy-logo-white.png');
     if(logo){
       const maxW=w*.18,maxH=h*.07,ratio=Math.min(maxW/logo.width,maxH/logo.height);
       ctx.globalAlpha=.62;ctx.drawImage(logo,w-maxW-pad,h-maxH-pad*.35,logo.width*ratio,logo.height*ratio);ctx.globalAlpha=1;
@@ -194,7 +181,7 @@ export default function CanopyCanvas(){
     <div className="cc-grid cc-grid-upgraded">
       <div className="cc-form">
         <label>Cause<select value={form.cause} onChange={e=>choose('cause',e.target.value)}>{causes.map(x=><option key={x}>{x}</option>)}</select></label>
-        <label>Verified observance<select value={form.observance} onChange={e=>update('observance',e.target.value)}>{observances.map(x=><option key={x.label} value={x.value}>{x.label}</option>)}</select></label>
+        
         <div className="cc-two">
           <label>Audience<select value={form.audience} onChange={e=>choose('audience',e.target.value)}>{audiences.map(x=><option key={x}>{x}</option>)}</select></label>
           <label>Desired action<select value={form.actionTarget} onChange={e=>choose('actionTarget',e.target.value)}>{actions.map(x=><option key={x}>{x}</option>)}</select></label>
@@ -231,18 +218,19 @@ export default function CanopyCanvas(){
       </div>
 
       <div className={`cc-preview cc-preview-upgraded format-${form.format.toLowerCase().replace(/\s+/g,'-')} tone-${form.tone.toLowerCase().replace(/[^a-z]+/g,'-')}`}
-           style={{background:palette.css,color:palette.text,'--cc-accent':palette.accent,width:'100%',height:'auto',aspectRatio:form.format==='Square post'?'1 / 1':form.format==='Portrait post'?'4 / 5':'16 / 9'}}>
+           style={{background:palette.css,color:palette.text,'--cc-accent':palette.accent,width:'100%',height:'auto',aspectRatio:form.format==='Square post'?'1 / 1':'4 / 5'}}>
         <div className={`cc-texture-layer texture-${form.texture}`}/>
         <small>{form.cause}</small>
         <h2>{form.message||suggestion}</h2>
         <p>For {form.audience}</p>
         <button type="button" className={`cc-action-button ${form.buttonShape==='Pill'?'is-pill':'is-rectangle'}`} style={{borderRadius:form.buttonShape==='Pill'?'999px':'8px'}}>{form.actionTarget}</button>
-        {form.observance&&<em>{form.observance}</em>}
         <img className="cc-watermark" src="/assets/canopy/auth/canopy-logo-white.png" alt=""/>
       </div>
     </div>
   </section>
 }
+
+
 
 
 
