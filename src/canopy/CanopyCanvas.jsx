@@ -83,11 +83,11 @@ const iconOptions=[
 ];
 
 const toneTemplates={
-  'Clear & factual':({cause,audience,action})=>`${cause} affects people, systems and communities. For ${audience.toLowerCase()}, informed choices matter. ${action}`,
-  'Hopeful':({cause,audience,action})=>`Progress on ${cause.toLowerCase()} is possible when people act together. ${action}`,
-  'Urgent but responsible':({cause,audience,action})=>`${cause} needs attention now, but credible action matters more than alarm. ${action}`,
-  'Community-centred':({cause,audience,action})=>`Climate action grows stronger when communities shape the response. ${action}`,
-  'Professional':({cause,audience,action})=>`${cause} requires evidence, participation and practical implementation. ${action}`
+  'Clear & factual':()=>`Know the facts. Choose climate action that makes an impact.`,
+  'Hopeful':()=>`Small climate actions can build a stronger future together.`,
+  'Urgent but responsible':()=>`The climate needs action now. Choose a step that counts.`,
+  'Community-centred':()=>`Climate action is stronger when communities act together.`,
+  'Professional':()=>`Lead with evidence. Turn climate knowledge into action.` 
 };
 
 function wrap(ctx,text,x,y,maxWidth,lineHeight,maxLines=8){
@@ -218,7 +218,7 @@ export default function CanopyCanvas(){
 
         <label>Message
           <textarea rows="5" value={form.message} maxLength={MESSAGE_LIMIT} onChange={e=>update('message',e.target.value.slice(0,MESSAGE_LIMIT))} placeholder={suggestion}/>
-          <div className="cc-message-meta"><span className="cc-message-helper"><Sparkles size={14}/> Tone suggestion: {suggestion.slice(0,60)}</span><b>{form.message.length}/{MESSAGE_LIMIT}</b></div>
+          <div className="cc-message-meta"><span className="cc-message-helper"><Sparkles size={14}/> Tone suggestion: {suggestion}</span><b>{form.message.length}/{MESSAGE_LIMIT}</b></div>
           <button type="button" className="cc-use-suggestion" onClick={useSuggestion}>Use tone suggestion</button>
         </label>
 
@@ -265,6 +265,8 @@ export default function CanopyCanvas(){
     </div>
   </section>
 }
+
+
 
 
 
