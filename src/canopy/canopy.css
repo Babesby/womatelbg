@@ -985,3 +985,13 @@
     display:none;
   }
 }
+
+
+/* CANOPY TESTER MODE — isolated account only */
+.canopyTesterWelcome{border:1px solid rgba(198,255,82,.45)}
+.canopyTesterStatus{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem;margin:1rem 0 1.25rem}
+.canopyTesterStatus article{display:flex;align-items:center;gap:.8rem;padding:1rem 1.05rem;border:1px solid rgba(14,77,74,.12);border-radius:18px;background:#fff}
+.canopyTesterStatus article>div{display:grid;gap:.2rem}
+.canopyTesterStatus small{font-size:.66rem;letter-spacing:.1em;opacity:.58}
+.canopyTesterStatus strong{font-size:.92rem}
+@media(max-width:760px){.canopyTesterStatus{grid-template-columns:1fr}}

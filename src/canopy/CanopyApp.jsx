@@ -11,6 +11,9 @@ import{CANOPY_BRAND,modules,resources}from'./canopyData';
 import{canopyConfigured,consumeAuthCallback,getStoredSession,getViewer,getProgress,getManagerSnapshot,markLesson,requestPasswordReset,resendConfirmation,saveQuiz,signIn,signOut,signUp,updatePassword,setLearnerEnrollmentStatus,createManagerAction,updateManagerAction,reviewWeeklyAssignment,getUnreadNotificationCount,submitLearnerComplaint,getLearnerComplaints,getWeeklyAssignmentSubmissions,issueCanopyCertificate,signInWithGoogle} from './canopyApi';
 
 const route=()=>window.location.pathname.replace(/\/$/,'')||'/canopy';
+
+const CANOPY_TESTER_EMAIL='p.viewmultimedia@gmail.com';
+function isCanopyTester(viewer){return String(viewer?.user?.email||'').trim().toLowerCase()===CANOPY_TESTER_EMAIL}
 function go(path){window.history.pushState({},'',path);window.dispatchEvent(new PopStateEvent('popstate'));window.scrollTo({top:0,behavior:'smooth'})}
 const totalLessons=modules.reduce((n,m)=>n+m.lessons.length,0);
 const canopyDisplayWeek=w=>String(w).replace(/Weeks?\s*1(?:–|–|-)2/i,'Week 1 & 2').replace(/Weeks?\s*5(?:–|–|-)6/i,'Week 5 & 6').replace(/Weeks?\s*7(?:–|–|-)8/i,'Week 7 & 8');
@@ -93,19 +96,21 @@ function ResetPassword(){const[p1,setP1]=useState('');const[p2,setP2]=useState('
 
 function CourseNav({open,setOpen,viewer}){
  const manager=['manager','admin'].includes(viewer?.profile?.role);
+ const tester=isCanopyTester(viewer);
  const learnerItems=[['/canopy/classroom','Home',BookOpen],['/canopy/course/she-leads','Course',GraduationCap],['/canopy/assignments','Assignments',FileText],['/canopy/progress','Progress',ClipboardCheck],['/canopy/resources','Resources',Sparkles],['/canopy/canvas','CanopyCanvas',PenLine],['/canopy/notifications','Notifications',MessageSquare],['/canopy/help','Help',ShieldAlert],['/canopy/certificate','Certificates',Award]];
  const managerItems=[['/canopy/manage','Operations',ClipboardCheck],['/canopy/manage/access','Manage cohort',UsersRound],['/canopy/manage/reviews','Assess submissions',FileText],['/canopy/manage/communications','Warnings & feedback',MessageSquare],['/canopy/manage/reminders','Reminders',Bell],['/canopy/manage/complaints','Complaints',ShieldAlert],['/canopy/manage/certificates','Certificates',Award],['/canopy/manage/reports','Reports',BarChart3]];
  const items=manager?managerItems:learnerItems;
  return <aside className={'canopySidebar '+(open?'open':'')}>
   <div className="canopySideTop"><Brand compact/><button className="canopySideClose" onClick={()=>setOpen(false)}><X/></button></div>
   <nav>{items.map(([p,n,I])=><button key={p} className={route()===p?'active':''} onClick={()=>{go(p);setOpen(false)}}><I size={18}/><span>{n}</span></button>)}</nav>
-  <div className="canopySideBottom"><small>{manager?'WOMATE OPERATIONS':CANOPY_BRAND.programme}</small><b>{manager?'She Leads Climate Mentorship · Cohort 2 · 2026':CANOPY_BRAND.cohort}</b></div>
+  <div className="canopySideBottom"><small>{manager?'WOMATE OPERATIONS':tester?'CANOPY TEST MODE':CANOPY_BRAND.programme}</small><b>{manager?'She Leads Climate Mentorship · Cohort 2 · 2026':tester?'All modules · all assignments · unrestricted':CANOPY_BRAND.cohort}</b></div>
  </aside>
 }
 function LearnerShell({viewer,progress,children,onReload}){
  const[open,setOpen]=useState(false);
  const[unread,setUnread]=useState(0);
  const manager=['manager','admin'].includes(viewer?.profile?.role);
+ const tester=isCanopyTester(viewer);
  const name=viewer?.profile?.full_name||viewer?.user?.user_metadata?.full_name||viewer?.user?.email?.split('@')[0]||(manager?'WOMATE':'Learner');
  useEffect(()=>{
   let live=true;
@@ -131,21 +136,42 @@ function Dashboard({viewer,progress}){
 }
 
 
+function TesterDashboard({viewer,progress}){
+ const done=new Set(progress.filter(x=>x.completed).map(x=>x.lesson_id));
+ const completed=done.size,pct=Math.round(completed/totalLessons*100);
+ let next=null;
+ for(const m of modules){for(const l of m.lessons){if(!done.has(l.id)){next={m,l};break}}if(next)break}
+ return <main className="canopyDashboard canopyTesterDashboard">
+  <section className="canopyWelcome canopyTesterWelcome"><div><span className="canopyEyebrow">CANOPY TESTER</span><h1>Everything is open for testing.</h1><p>This account bypasses cohort dates only for WOMATE testing. Participant and admin access rules stay unchanged.</p></div><div className="canopyProgressRing" style={{'--p':`${pct*3.6}deg`}}><div><strong>{pct}%</strong><span>complete</span></div></div></section>
+  <section className="canopyTesterStatus">
+   <article><Lock size={18}/><div><small>MODULE ACCESS</small><strong>All 5 modules open</strong></div></article>
+   <article><FileText size={18}/><div><small>ASSIGNMENTS</small><strong>All assignments open</strong></div></article>
+   <article><Sparkles size={18}/><div><small>GRADING</small><strong>Immediate automated score</strong></div></article>
+  </section>
+  <section className="canopyContinue"><div><span>TEST LEARNER JOURNEY</span><h2>{next?next.m.title:'All lessons completed'}</h2><p>{next?next.l.title:'Every learner route remains available for continued testing.'}</p></div><button className="canopyPrimary" onClick={()=>go(next?`/canopy/course/she-leads/${next.m.id}/${next.l.id}`:'/canopy/course/she-leads')}>{next?'Continue testing':'Open course'} <ArrowRight size={17}/></button></section>
+  <section className="canopyDashGrid">
+   <article><small>COURSE</small><h3>Full curriculum</h3><p>No module date locks apply to this tester account.</p><button onClick={()=>go('/canopy/course/she-leads')}>Open all modules <ArrowRight size={15}/></button></article>
+   <article><small>ASSIGNMENTS</small><h3>Immediate grading sandbox</h3><p>Submit any module assignment and receive its automated test result immediately.</p><button onClick={()=>go('/canopy/assignments')}>Test assignments <ArrowRight size={15}/></button></article>
+  </section>
+ </main>
+}
+
+
 function canopyModuleSchedule(m){return CANOPY_ASSIGNMENT_SCHEDULE.find(x=>x.moduleId===m.id)||null}
 function canopyModuleIsOpen(m,now=new Date()){const item=canopyModuleSchedule(m);return !!item&&now>=new Date(item.weekStartsAt)}
 function canopyModuleOpenLabel(m){const item=canopyModuleSchedule(m);if(!item)return 'Scheduled';return new Intl.DateTimeFormat('en-GB',{weekday:'short',day:'numeric',month:'short',timeZone:'UTC'}).format(new Date(item.weekStartsAt))}
 
-function CourseOverview({progress}){
+function CourseOverview({progress,tester=false}){
  const done=new Set(progress.filter(x=>x.completed).map(x=>x.lesson_id));
- return <main className="canopyCoursePage"><section className="canopyCourseHero"><div><span className="canopyEyebrow">SHE LEADS · {CANOPY_BRAND.cohort}</span><h1>From Climate Knowledge to Climate Leadership</h1><p>Five foundational modules designed to help emerging women leaders understand the climate challenge, participate in decision-making, communicate what matters and identify where they can go next.</p><Meta/></div><div className="canopyCourseStat"><strong>{modules.length}</strong><span>modules</span><strong>{totalLessons}</strong><span>short lessons</span></div></section><section className="canopyCurriculum"><div className="canopySectionHead"><span>CURRICULUM</span><h2>Your learning path</h2></div>{modules.map(m=>{const n=m.lessons.filter(l=>done.has(l.id)).length;const locked=!canopyModuleIsOpen(m);return <article key={m.id}><button className="canopyModuleRow" disabled={locked} onClick={()=>!locked&&go(`/canopy/course/she-leads/${m.id}/${m.lessons[0].id}`)}><span className="canopyModuleNo">{m.number}</span><div><small>{canopyDisplayWeek(m.week)}</small><h3>{m.title}</h3><p>{m.question}</p><span>{n}/{m.lessons.length} lessons complete</span></div><div className="canopyModuleArrow">{locked?<><span className="canopyModuleOpenDate">Opens {canopyModuleOpenLabel(m)}</span><Lock/></>:<ArrowRight/>}</div></button></article>})}</section></main>
+ return <main className="canopyCoursePage"><section className="canopyCourseHero"><div><span className="canopyEyebrow">SHE LEADS · {CANOPY_BRAND.cohort}</span><h1>From Climate Knowledge to Climate Leadership</h1><p>Five foundational modules designed to help emerging women leaders understand the climate challenge, participate in decision-making, communicate what matters and identify where they can go next.</p><Meta/></div><div className="canopyCourseStat"><strong>{modules.length}</strong><span>modules</span><strong>{totalLessons}</strong><span>short lessons</span></div></section><section className="canopyCurriculum"><div className="canopySectionHead"><span>CURRICULUM</span><h2>Your learning path</h2></div>{modules.map(m=>{const n=m.lessons.filter(l=>done.has(l.id)).length;const locked=!tester&&!canopyModuleIsOpen(m);return <article key={m.id}><button className="canopyModuleRow" disabled={locked} onClick={()=>!locked&&go(`/canopy/course/she-leads/${m.id}/${m.lessons[0].id}`)}><span className="canopyModuleNo">{m.number}</span><div><small>{canopyDisplayWeek(m.week)}</small><h3>{m.title}</h3><p>{m.question}</p><span>{n}/{m.lessons.length} lessons complete</span></div><div className="canopyModuleArrow">{locked?<><span className="canopyModuleOpenDate">Opens {canopyModuleOpenLabel(m)}</span><Lock/></>:<ArrowRight/>}</div></button></article>})}</section></main>
 }
 
 function YouTube({id,title}){if(!id)return <div className="canopyVideoPlaceholder"><PlayCircle/><div><b>Module video slot</b><span>The module video will appear here when WOMATE publishes it.</span></div></div>;return <div className="canopyVideo"><iframe src={`https://www.youtube-nocookie.com/embed/${id}?rel=0&modestbranding=1`} title={title} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowFullScreen/></div>}
 
-function Lesson({moduleId,lessonId,progress,session,reload}){
+function Lesson({moduleId,lessonId,progress,session,reload,tester=false}){
  const m=modules.find(x=>x.id===moduleId);
  if(!m)return <main className="canopyLockedModule"><Lock/><h1>Module not found.</h1><p>Return to the course and choose an available module.</p><button className="canopySecondary" onClick={()=>go('/canopy/course/she-leads')}>Back to course</button></main>;
- if(!canopyModuleIsOpen(m))return <main className="canopyLockedModule"><Lock/><h1>This module opens with the cohort.</h1><p>Canopy releases learning week by week so everyone moves through the programme together. This module opens {canopyModuleOpenLabel(m)}.</p><button className="canopySecondary" onClick={()=>go('/canopy/course/she-leads')}>Back to course</button></main>;
+ if(!tester&&!canopyModuleIsOpen(m))return <main className="canopyLockedModule"><Lock/><h1>This module opens with the cohort.</h1><p>Canopy releases learning week by week so everyone moves through the programme together. This module opens {canopyModuleOpenLabel(m)}.</p><button className="canopySecondary" onClick={()=>go('/canopy/course/she-leads')}>Back to course</button></main>;
  const index=m.lessons.findIndex(x=>x.id===lessonId);
  if(index<0)return <main className="canopyLockedModule"><BookOpen/><h1>Lesson not found.</h1><p>Return to the module and choose an available lesson.</p><button className="canopySecondary" onClick={()=>go('/canopy/course/she-leads')}>Back to course</button></main>;
  const lesson=m.lessons[index];const done=progress.some(x=>x.lesson_id===lesson.id&&x.completed);const next=m.lessons[index+1];const prev=m.lessons[index-1];
@@ -153,10 +179,10 @@ function Lesson({moduleId,lessonId,progress,session,reload}){
  return <main className="canopyLesson"><div className="canopyLessonCrumb"><button onClick={()=>go('/canopy/course/she-leads')}><ArrowLeft/> Course</button><span>Module {m.number}</span></div><div className="canopyLessonLayout"><aside><span>{m.number}</span><h2>{m.title}</h2><div>{m.lessons.map((l,i)=><button key={l.id} className={l.id===lesson.id?'active':''} onClick={()=>go(`/canopy/course/she-leads/${m.id}/${l.id}`)}><span>{progress.some(x=>x.lesson_id===l.id&&x.completed)?<Check/>:i+1}</span><b>{l.title}</b></button>)}<button className="quiz" onClick={()=>go(`/canopy/course/she-leads/${m.id}/quiz`)}><ClipboardCheck/><b>Knowledge check</b></button></div></aside><article><header><small>{canopyDisplayWeek(m.week)} · {lesson.minutes} MIN READ</small><h1>{lesson.title}</h1></header>{index===0&&<YouTube id={m.youtubeId} title={`${m.title} video`}/>}<div className="canopyLessonBody">{lesson.body.map((p,i)=><p key={i}>{p}</p>)}<div className="canopyTakeaway"><Leaf/><div><span>KEY TAKEAWAY</span><p>{lesson.takeaway}</p></div></div></div><footer><button className="canopySecondary" disabled={!prev} onClick={()=>prev&&go(`/canopy/course/she-leads/${m.id}/${prev.id}`)}><ArrowLeft/> Previous</button><button className="canopyPrimary" onClick={complete}>{done?'Completed':'Mark complete'} {next?<ArrowRight/>:<Check/>}</button></footer></article></div></main>
 }
 
-function Quiz({moduleId,session}){
+function Quiz({moduleId,session,tester=false}){
  const m=modules.find(x=>x.id===moduleId);
  if(!m)return <main className="canopyLockedModule"><Lock/><h1>Module not found.</h1><button className="canopySecondary" onClick={()=>go('/canopy/course/she-leads')}>Back to course</button></main>;
- if(!canopyModuleIsOpen(m))return <main className="canopyLockedModule"><Lock/><h1>This module opens with the cohort.</h1><p>Knowledge checks become available with their scheduled module.</p><button className="canopySecondary" onClick={()=>go('/canopy/course/she-leads')}>Back to course</button></main>;
+ if(!tester&&!canopyModuleIsOpen(m))return <main className="canopyLockedModule"><Lock/><h1>This module opens with the cohort.</h1><p>Knowledge checks become available with their scheduled module.</p><button className="canopySecondary" onClick={()=>go('/canopy/course/she-leads')}>Back to course</button></main>;
  const[answers,setAnswers]=useState({});const[result,setResult]=useState(null);const submit=async e=>{e.preventDefault();let score=0;m.quiz.forEach((q,i)=>{if(Number(answers[i])===q.answer)score++});setResult({score,total:m.quiz.length});try{await saveQuiz(session,m.id,score,m.quiz.length)}catch(err){console.error('Canopy quiz save failed:',err)}};
  return <main className="canopyQuiz"><button className="canopyBack" onClick={()=>go(`/canopy/course/she-leads/${m.id}/${m.lessons[m.lessons.length-1].id}`)}><ArrowLeft/> Back to module</button><section><span className="canopyEyebrow">MODULE {m.number} · KNOWLEDGE CHECK</span><h1>{m.title}</h1><p>Check your understanding. You can review the module and try again.</p><form onSubmit={submit}>{m.quiz.map((q,i)=><fieldset key={q.q}><legend>{i+1}. {q.q}</legend>{q.options.map((o,j)=><label key={o}><input type="radio" name={`q${i}`} value={j} checked={String(answers[i])===String(j)} onChange={e=>setAnswers({...answers,[i]:e.target.value})}/><span>{o}</span></label>)}</fieldset>)}<button className="canopyPrimary" disabled={Object.keys(answers).length!==m.quiz.length}>Check answers</button></form>{result&&<div className="canopyQuizResult"><strong>{result.score}/{result.total}</strong><div><h3>{result.score===result.total?'Strong work.':'Keep building the foundation.'}</h3><p>{result.score===result.total?'You answered every question correctly.':'Review any concepts you missed, then try again when ready.'}</p><button className="canopyTextBtn" onClick={()=>go('/canopy/assignments')}>Go to assignments <ArrowRight/></button></div></div>}</section></main>
 }
@@ -169,7 +195,7 @@ function Progress({progress,submissions=[]}){
 
 function Resources(){return <main className="canopyResources"><div className="canopyPageHead"><span className="canopyEyebrow">KEEP LEARNING</span><h1>Resources</h1><p>Selected starting points for learners who want to continue beyond the foundational course.</p></div><section>{resources.map(r=><a key={r.url} href={r.url} target="_blank" rel="noreferrer"><FileText/><div><small>{r.type}</small><h3>{r.title}</h3></div><ArrowRight/></a>)}</section></main>}
 
-function Profile({viewer}){const p=viewer.profile||{};return <main className="canopyProfile"><div className="canopyPageHead"><span className="canopyEyebrow">LEARNER PROFILE</span><h1>{p.full_name||viewer.user?.user_metadata?.full_name||'Your profile'}</h1><p>Your Canopy identity is connected to your WOMATE learning account.</p></div><section><div><small>Email</small><b>{viewer.user?.email}</b></div><div><small>Country</small><b>{p.country||viewer.user?.user_metadata?.country||'—'}</b></div><div><small>Role</small><b>{p.role||'learner'}</b></div><div><small>Course access</small><b>{viewer.enrollments?.some(e=>e.status==='active')?'Active':'Awaiting enrolment'}</b></div></section></main>}
+function Profile({viewer}){const p=viewer.profile||{};return <main className="canopyProfile"><div className="canopyPageHead"><span className="canopyEyebrow">LEARNER PROFILE</span><h1>{p.full_name||viewer.user?.user_metadata?.full_name||'Your profile'}</h1><p>Your Canopy identity is connected to your WOMATE learning account.</p></div><section><div><small>Email</small><b>{viewer.user?.email}</b></div><div><small>Country</small><b>{p.country||viewer.user?.user_metadata?.country||'—'}</b></div><div><small>Role</small><b>{isCanopyTester(viewer)?'tester':(p.role||'learner')}</b></div><div><small>Course access</small><b>{isCanopyTester(viewer)?'Unrestricted test access':(viewer.enrollments?.some(e=>e.status==='active')?'Active':'Awaiting enrolment')}</b></div></section></main>}
 
 function CanopyHelp({viewer}){
  const[subject,setSubject]=useState('');const[message,setMessage]=useState('');const[busy,setBusy]=useState(false);const[msg,setMsg]=useState('');const[complaints,setComplaints]=useState([]);
@@ -284,12 +310,13 @@ export default function CanopyApp(){
  if(loading)return <div className="canopyLoading"><Leaf/><span>Opening Canopy…</span></div>;
  if(!viewer){go('/canopy/login');return null}
  const manager=['manager','admin'].includes(viewer.profile?.role);
+ const tester=isCanopyTester(viewer);
  if(manager&&!path.startsWith('/canopy/manage')&&!['/canopy/profile','/canopy/notifications'].includes(path)){go('/canopy/manage');return null}
- const active=viewer.enrollments?.some(e=>e.status==='active');let content;
+ const active=tester||viewer.enrollments?.some(e=>e.status==='active');let content;
  if(manager&&path.startsWith('/canopy/manage')){const sub=path.split('/').pop();const view=path==='/canopy/manage'?'overview':sub;content=<ManagerOperations snapshot={snapshot} session={viewer.session} onReload={load} view={view}/>}
- else if(path==='/canopy/classroom')content=<Dashboard viewer={viewer} progress={progress}/>;
+ else if(path==='/canopy/classroom')content=tester?<TesterDashboard viewer={viewer} progress={progress}/>:<Dashboard viewer={viewer} progress={progress}/>;
  else if(!active&&!['/canopy/profile','/canopy/notifications','/canopy/help','/canopy/certificate'].includes(path))content=<Dashboard viewer={viewer} progress={progress}/>;
- else if(path==='/canopy/course/she-leads')content=<CourseOverview progress={progress}/>;
+ else if(path==='/canopy/course/she-leads')content=<CourseOverview progress={progress} tester={tester}/>;
  else if(path==='/canopy/canvas')content=<CanopyCanvas viewer={viewer}/>;
  else if(path==='/canopy/notifications')content=<CanopyNotifications viewer={viewer}/>;
  else if(path==='/canopy/help')content=<CanopyHelp viewer={viewer}/>;
@@ -298,6 +325,6 @@ export default function CanopyApp(){
  else if(path==='/canopy/progress')content=<Progress progress={progress} submissions={submissions}/>;
  else if(path==='/canopy/resources')content=<Resources/>;
  else if(path==='/canopy/profile')content=<Profile viewer={viewer}/>;
- else{const match=path.match(/^\/canopy\/course\/she-leads\/([^/]+)\/([^/]+)$/);if(match){const[,moduleId,last]=match;content=last==='quiz'?<Quiz moduleId={moduleId} session={viewer.session} reload={load}/>:<Lesson moduleId={moduleId} lessonId={last} progress={progress} session={viewer.session} reload={load}/>}else content=<Dashboard viewer={viewer} progress={progress}/>}
+ else{const match=path.match(/^\/canopy\/course\/she-leads\/([^/]+)\/([^/]+)$/);if(match){const[,moduleId,last]=match;content=last==='quiz'?<Quiz moduleId={moduleId} session={viewer.session} reload={load} tester={tester}/>:<Lesson moduleId={moduleId} lessonId={last} progress={progress} session={viewer.session} reload={load} tester={tester}/>}else content=tester?<TesterDashboard viewer={viewer} progress={progress}/>:<Dashboard viewer={viewer} progress={progress}/>}
  return <><Helmet><title>{manager?'Canopy Operations':'My Canopy'} | WOMATE</title></Helmet><LearnerShell viewer={viewer} progress={progress}>{content}</LearnerShell></>
 }

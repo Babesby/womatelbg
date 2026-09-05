@@ -123,7 +123,15 @@ export async function getManagerSnapshot(session){
     rest('canopy_manager_actions?select=*&order=created_at.desc',{token:s.access_token}),
     rest('canopy_certificates?select=*&order=issued_at.desc',{token:s.access_token})
   ]);
-  return {profiles:profiles||[],enrollments:enrollments||[],progress:progress||[],submissions:submissions||[],actions:actions||[],certificates:certificates||[]};
+  const testerIds=new Set((profiles||[]).filter(p=>p.role==='tester').map(p=>p.user_id));
+  return {
+    profiles:(profiles||[]).filter(p=>!testerIds.has(p.user_id)),
+    enrollments:(enrollments||[]).filter(x=>!testerIds.has(x.user_id)),
+    progress:(progress||[]).filter(x=>!testerIds.has(x.user_id)),
+    submissions:(submissions||[]).filter(x=>!testerIds.has(x.user_id)),
+    actions:(actions||[]).filter(x=>!testerIds.has(x.learner_id)),
+    certificates:(certificates||[]).filter(x=>!testerIds.has(x.user_id))
+  };
 }
 
 
@@ -201,6 +209,14 @@ export async function getWeeklyAssignmentSubmissions(session){
 export async function submitWeeklyAssignment(session,weekKey,payload){
   const s=await refreshSession(session||getStoredSession());if(!s?.access_token)throw new Error('Your Canopy session has expired. Sign in again.');
   return rest('rpc/canopy_submit_weekly_assignment',{token:s.access_token,method:'POST',body:{
+    p_week_key:weekKey,p_paragraph_response:payload.paragraph_response,p_canvas_link:payload.canvas_link,p_linkedin_link:payload.linkedin_link
+  }});
+}
+
+export async function submitTesterWeeklyAssignment(session,weekKey,payload){
+  const s=await refreshSession(session||getStoredSession());if(!s?.access_token)throw new Error('Your Canopy session has expired. Sign in again.');
+  if(String(s.user?.email||'').trim().toLowerCase()!=='p.viewmultimedia@gmail.com')throw new Error('Tester access is restricted to the designated WOMATE tester account.');
+  return rest('rpc/canopy_tester_submit_weekly_assignment',{token:s.access_token,method:'POST',body:{
     p_week_key:weekKey,p_paragraph_response:payload.paragraph_response,p_canvas_link:payload.canvas_link,p_linkedin_link:payload.linkedin_link
   }});
 }

@@ -1,6 +1,6 @@
 import React,{useEffect,useState} from 'react';
-import {formatCanopyDate,openAssignments,speakerChallengeOpen} from './canopySchedule';
-import {getWeeklyAssignmentSubmissions,submitWeeklyAssignment,getPuzzleProgress,savePuzzleCompletion,refreshLearningAutomation} from './canopyApi';
+import {CANOPY_ASSIGNMENT_SCHEDULE,formatCanopyDate,openAssignments,speakerChallengeOpen} from './canopySchedule';
+import {getWeeklyAssignmentSubmissions,submitWeeklyAssignment,submitTesterWeeklyAssignment,getPuzzleProgress,savePuzzleCompletion,refreshLearningAutomation} from './canopyApi';
 
 function scramble(word){
   return word.split('').map((c,i)=>({c,k:(i*17+word.charCodeAt(i))%97})).sort((a,b)=>a.k-b.k).map(x=>x.c).join('');
@@ -33,7 +33,8 @@ export default function CanopyAssignmentsV2({viewer}){
   const[busy,setBusy]=useState('');
   const[message,setMessage]=useState('');
   const[now,setNow]=useState(()=>new Date());
-  const available=openAssignments(now);
+  const tester=String(viewer?.user?.email||'').trim().toLowerCase()==='p.viewmultimedia@gmail.com';
+  const available=tester?CANOPY_ASSIGNMENT_SCHEDULE:openAssignments(now);
 
   async function load(){
     try{await refreshLearningAutomation(viewer.session)}catch{}
@@ -45,7 +46,7 @@ export default function CanopyAssignmentsV2({viewer}){
 
   const latest=weekKey=>subs.filter(x=>x.week_key===weekKey).sort((a,b)=>b.attempt_no-a.attempt_no)[0];
   const attempts=weekKey=>subs.filter(x=>x.week_key===weekKey).length;
-  const scoreVisible=s=>s&&(s.final_score!=null||s.auto_score!=null)&&now>=new Date(s.release_at);
+  const scoreVisible=s=>s&&(s.final_score!=null||s.auto_score!=null)&&(tester||now>=new Date(s.release_at));
   const finalScore=s=>s?.final_score??s?.auto_score;
   const finalFeedback=s=>s?.final_feedback||s?.feedback_hint||'';
   const reviewLabel=s=>s?.review_source==='manual'?'WOMATE review':'Automated formative baseline';
@@ -57,10 +58,10 @@ export default function CanopyAssignmentsV2({viewer}){
     const linkedin=(d.linkedin_link||'').trim();
     if(paragraph.split(/\s+/).filter(Boolean).length<80){setMessage('Your paragraph needs at least 80 words. Add enough detail to show what you learned and how you would apply it.');return}
     if(!/^https:\/\/(drive|docs)\.google\.com\//i.test(canvas)){setMessage('Upload your downloaded CanopyCanvas graphic to Google Drive, make it viewable by link, then paste the Drive link here.');return}
-    if(!speakerChallengeOpen(item,now)){setMessage('Parts 01 and 02 are open now. The speaker challenge opens after Thursday’s live session.');return}
+    if(!tester&&!speakerChallengeOpen(item,now)){setMessage('Parts 01 and 02 are open now. The speaker challenge opens after Thursday’s live session.');return}
     if(!/^https:\/\/(www\.)?linkedin\.com\//i.test(linkedin)){setMessage('Paste the LinkedIn post link for the speaker challenge.');return}
     setBusy(item.weekKey);setMessage('');
-    try{await submitWeeklyAssignment(viewer.session,item.weekKey,{paragraph_response:paragraph,canvas_link:canvas,linkedin_link:linkedin});setDrafts(x=>({...x,[item.weekKey]:{}}));await load();setMessage('Assignment submitted successfully.')}
+    try{await (tester?submitTesterWeeklyAssignment:submitWeeklyAssignment)(viewer.session,item.weekKey,{paragraph_response:paragraph,canvas_link:canvas,linkedin_link:linkedin});setDrafts(x=>({...x,[item.weekKey]:{}}));await load();setMessage('Assignment submitted successfully.')}
     catch(e){setMessage(e?.message||'Submission failed. Try again.')}
     finally{setBusy('')}
   }
@@ -71,9 +72,9 @@ export default function CanopyAssignmentsV2({viewer}){
     <div className="ca-stack">
       {available.map(item=>{
         const sub=latest(item.weekKey),count=attempts(item.weekKey),d=drafts[item.weekKey]||{};
-        const mayResubmit=count<3&&now<=new Date(item.resubmitUntil);
+        const mayResubmit=tester||(count<3&&now<=new Date(item.resubmitUntil));
         const puzzleDone=puzzles.some(p=>p.week_key===item.weekKey&&p.completed);
-        const speakerOpen=speakerChallengeOpen(item,now);
+        const speakerOpen=tester||speakerChallengeOpen(item,now);
         const visible=scoreVisible(sub),score=finalScore(sub),status=(sub?.assessment_status||sub?.status||'submitted').replaceAll('_',' ');
         return <article className="ca-card" key={item.weekKey}>
           <div className="ca-card-head"><div><small>MODULE {item.moduleId}</small><h2>{item.title}</h2></div><div className="ca-dates"><span>Due {formatCanopyDate(item.dueAt)}</span>{count>0&&<strong>Attempt {count} of 3</strong>}</div></div>
@@ -94,7 +95,7 @@ export default function CanopyAssignmentsV2({viewer}){
             <label>CanopyCanvas Google Drive link<input inputMode="url" value={d.canvas_link||''} onChange={e=>setDrafts(x=>({...x,[item.weekKey]:{...d,canvas_link:e.target.value}}))} placeholder="https://drive.google.com/…"/></label>
             {speakerOpen&&<label>LinkedIn speaker-task post link<input inputMode="url" value={d.linkedin_link||''} onChange={e=>setDrafts(x=>({...x,[item.weekKey]:{...d,linkedin_link:e.target.value}}))} placeholder="https://www.linkedin.com/posts/…"/></label>}
             <button type="button" disabled={busy===item.weekKey||!speakerOpen} onClick={()=>send(item)}>{!speakerOpen?'Final submission opens Thursday':busy===item.weekKey?'Submitting…':sub?'Submit revision':'Submit assignment'}</button>
-            {sub&&<small>{Math.max(0,3-count)} resubmission{3-count===1?'':'s'} remaining.</small>}
+            {sub&&!tester&&<small>{Math.max(0,3-count)} resubmission{3-count===1?'':'s'} remaining.</small>}{sub&&tester&&<small>Tester mode has no date or attempt lock.</small>}
           </div>}
           {sub&&!mayResubmit&&<p className="ca-locked">Submission window closed or all three attempts have been used.</p>}
           <WordPuzzle viewer={viewer} item={item} completed={puzzleDone} onComplete={load}/>
