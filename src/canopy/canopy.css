@@ -925,3 +925,63 @@
 .canopyAuthDivider{display:flex;align-items:center;gap:12px;color:#71827f;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.07em}
 .canopyAuthDivider:before,.canopyAuthDivider:after{content:"";height:1px;background:#dce5e2;flex:1}
 .canopyAuthDivider span{white-space:nowrap}
+
+
+/* CANOPY participant profile moved to top header */
+.canopyProfileTrigger{
+  appearance:none;
+  border:0;
+  background:transparent;
+  color:inherit;
+  font:inherit;
+  display:inline-flex;
+  align-items:center;
+  gap:.65rem;
+  padding:.35rem .55rem;
+  margin:-.35rem -.55rem;
+  border-radius:14px;
+  cursor:pointer;
+  text-align:left;
+  transition:background .18s ease,transform .18s ease;
+}
+.canopyProfileTrigger>span{
+  display:grid;
+  gap:.05rem;
+}
+.canopyProfileTrigger small{
+  font-size:.62rem;
+  line-height:1;
+  letter-spacing:.12em;
+  opacity:.55;
+}
+.canopyProfileTrigger b{
+  line-height:1.15;
+}
+.canopyProfileTrigger:hover{
+  background:rgba(14,77,74,.07);
+}
+.canopyProfileTrigger:active{
+  transform:translateY(1px);
+}
+.canopyProfileTrigger:focus-visible{
+  outline:2px solid #0E4D4A;
+  outline-offset:3px;
+}
+@media (max-width:700px){
+  .canopyProfileTrigger{
+    gap:.45rem;
+    max-width:min(54vw,220px);
+  }
+  .canopyProfileTrigger>span{
+    min-width:0;
+  }
+  .canopyProfileTrigger b{
+    display:block;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  .canopyProfileTrigger small{
+    display:none;
+  }
+}
