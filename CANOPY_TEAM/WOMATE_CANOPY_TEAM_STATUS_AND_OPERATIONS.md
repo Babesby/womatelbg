@@ -205,29 +205,11 @@ The manager selects the learner and supplies a viewable Google Drive certificate
 
 Certificate eligibility remains a **WOMATE manager decision**. Canopy does not autonomously certify participants.
 
-### Important programme-standard check
+### Final programme standard
 
-The approved 2026 programme brief states that certificate eligibility requires attendance at **at least five of the six live learning sessions**, satisfactory completion of required weekly assignments and participation in graduation. Canopy does not yet maintain live Zoom attendance itself, so the programme team must verify attendance from the programme attendance record before issuing a certificate.
+The **five-module Canopy curriculum is the authoritative She Leads Climate Mentorship · Cohort 2 · 2026 learning architecture**. It contains **5 modules and 20 lessons**. Leadership, community engagement, careers and professional pathways are integrated into Module 05. Any earlier six-module or six-session curriculum documentation is retired and must not be used for learner onboarding, delivery, assessment or certificate decisions.
 
-## 10. Important programme architecture discrepancy to resolve internally
-
-The **approved She Leads Climate Mentorship 2026 Programme Brief** describes **six live learning sessions / six learning areas**:
-
-1. Climate Change Foundations
-2. Gender & Climate Justice
-3. Climate Governance & Policy
-4. Advocacy, Storytelling, Technology & Communications
-5. Leadership & Community Engagement
-6. Climate Careers & Professional Pathways
-
-The current Canopy course architecture uses **five integrated modules**, with leadership/community engagement and professional pathways integrated into Module 05. The existing Canopy pacing currently runs through the 22 October Module 05 live point, while the approved brief also lists a separate **29 October Climate Careers & Professional Pathways** session before 5 November graduation.
-
-This package deliberately **does not silently rewrite the current Canopy module schedule**, because the launch instruction is to maintain it. WOMATE’s founders/programme team should make one explicit programme decision before participant onboarding materials and certificate communications are finalised:
-
-- keep the five integrated Canopy modules and treat 29 October as a separate closing/career masterclass/reflection event; **or**
-- formally restore a sixth Canopy module/session and align the digital assignment/certificate rules accordingly.
-
-Until that decision is recorded, the programme brief remains the authoritative source for the six-live-session attendance standard, while the digital course remains the current five-module Canopy architecture.
+Certificate eligibility remains a **WOMATE manager decision** based on the final five-module programme requirements, satisfactory completion of required assignments and the programme attendance record.
 
 ## 11. Data and access model
 

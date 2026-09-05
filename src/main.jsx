@@ -201,7 +201,6 @@ const shePillars=[
 ['03','Climate Governance & Policy','Learning how climate institutions, policies, and decision-making spaces function—and how women can engage and lead.'],
 ['04','Advocacy, Storytelling & Comms','Building skills to communicate climate issues clearly, influence change, and mobilise communities.'],
 ['05','Leadership & Community Engagement','Strengthening leadership confidence, collaboration, and community-based climate action.'],
-['06','Climate Careers & Professional Pathways','Exploring career opportunities, mentorship pathways, and professional growth in climate and sustainability fields.']
 ];
 const shePillarIcons=[Globe2,ShieldCheck,BookOpen,Quote,Users,Sparkles];
 const shePillarLabels=['Foundations','Justice','Policy','Advocacy','Leadership','Careers'];
