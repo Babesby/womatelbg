@@ -19,11 +19,17 @@ const envVideo=(...keys)=>{
   return '';
 };
 
+const MODULE_VIDEO_URLS={
+  '01':'https://share.synthesia.io/embeds/videos/78a7b03f-3a6b-4cf2-9fc8-20e00fb50bee'
+};
+
 const videoFor=(moduleId)=>envVideo(
   `VITE_CANOPY_VIDEO_MODULE_${Number(moduleId)}`,
   `VITE_CANOPY_MODULE_${moduleId}_VIDEO_ID`,
   `VITE_CANOPY_VIDEO_${moduleId}`
 );
+
+const videoUrlFor=(moduleId)=>MODULE_VIDEO_URLS[moduleId]||'';
 
 export const modules=canopyModules2026.map((m)=>({
   id:m.id,
@@ -37,6 +43,7 @@ export const modules=canopyModules2026.map((m)=>({
   summary:m.overview,
   outcomes:m.outcomes,
   youtubeId:videoFor(m.id),
+  videoUrl:videoUrlFor(m.id),
   lessons:m.lessons.map((l)=>({
     id:l.id,
     title:l.title,
