@@ -1,0 +1,403 @@
+﻿.selectedPage{
+  --green:#17382b;
+  --deep:#10231b;
+  --lime:#caff58;
+  --cream:#f4f1e8;
+  min-height:100vh;
+  background:var(--cream);
+  color:var(--deep);
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+}
+
+.selectedPage *{
+  box-sizing:border-box;
+}
+
+.selectedTop{
+  height:92px;
+  padding:0 clamp(22px,5vw,72px);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:30px;
+  border-bottom:
+    1px solid rgba(23,56,43,.12);
+}
+
+.selectedBrand{
+  display:flex;
+  align-items:center;
+}
+
+.selectedBrand img{
+  width:150px;
+  height:54px;
+  object-fit:contain;
+  object-position:left center;
+}
+
+.selectedTop>span,
+.selectedIntro>span,
+.selectedVerifyCopy>small,
+.selectedControls>small{
+  font-size:12px;
+  line-height:1;
+  font-weight:800;
+  letter-spacing:.17em;
+}
+
+.selectedTop>span{
+  color:#50685e;
+}
+
+.selectedMain{
+  max-width:1440px;
+  margin:0 auto;
+  padding:
+    clamp(45px,7vw,100px)
+    clamp(22px,5vw,72px)
+    90px;
+}
+
+.selectedIntro{
+  max-width:900px;
+  margin-bottom:56px;
+}
+
+.selectedIntro>span{
+  color:#587066;
+}
+
+.selectedIntro h1{
+  max-width:1050px;
+  margin:15px 0 24px;
+  color:var(--green);
+  font-size:clamp(55px,8vw,112px);
+  line-height:.91;
+  letter-spacing:-.06em;
+  font-weight:700;
+}
+
+.selectedIntro p{
+  max-width:760px;
+  margin:0;
+  color:#425a50;
+  font-size:clamp(18px,2vw,24px);
+  line-height:1.5;
+}
+
+.selectedVerify{
+  display:grid;
+  grid-template-columns:
+    minmax(0,1.05fr)
+    minmax(360px,.95fr);
+  gap:70px;
+  padding:clamp(30px,5vw,66px);
+  background:var(--green);
+  color:#fff;
+  border-radius:34px;
+}
+
+.selectedVerifyCopy h2,
+.selectedControls h2{
+  margin:13px 0 20px;
+  font-size:clamp(34px,4vw,58px);
+  line-height:1;
+  letter-spacing:-.045em;
+}
+
+.selectedVerifyCopy p{
+  max-width:540px;
+  margin:0;
+  color:rgba(255,255,255,.76);
+  font-size:18px;
+  line-height:1.65;
+}
+
+.selectedPrivacy{
+  max-width:550px;
+  margin-top:38px;
+  padding-top:24px;
+  border-top:
+    1px solid rgba(255,255,255,.17);
+  color:var(--lime);
+  font-size:14px;
+  line-height:1.55;
+}
+
+.selectedVerify form{
+  align-self:start;
+  display:flex;
+  flex-direction:column;
+  gap:21px;
+  padding:35px;
+  background:#fff;
+  color:var(--deep);
+  border-radius:24px;
+}
+
+.selectedVerify label,
+.selectedAdjust label{
+  display:flex;
+  flex-direction:column;
+  gap:9px;
+  font-size:14px;
+  font-weight:750;
+}
+
+.selectedVerify input{
+  width:100%;
+  height:54px;
+  padding:0 15px;
+  border:1px solid #c8d1cb;
+  border-radius:11px;
+  outline:none;
+  background:#fff;
+  color:var(--deep);
+  font:inherit;
+}
+
+.selectedVerify input:focus{
+  border-color:var(--green);
+  box-shadow:
+    0 0 0 3px rgba(23,56,43,.08);
+}
+
+.selectedVerify button,
+.selectedActions button{
+  min-height:53px;
+  padding:0 27px;
+  border:0;
+  border-radius:999px;
+  background:var(--lime);
+  color:var(--green);
+  font-size:15px;
+  font-weight:850;
+  cursor:pointer;
+}
+
+.selectedVerify button:disabled,
+.selectedActions button:disabled{
+  opacity:.42;
+  cursor:not-allowed;
+}
+
+.selectedError{
+  margin:0;
+  padding:12px 14px;
+  border-radius:10px;
+  background:#fff0ec;
+  color:#842c20;
+  font-size:14px;
+  line-height:1.45;
+}
+
+.selectedStudio{
+  display:grid;
+  grid-template-columns:
+    minmax(280px,360px)
+    minmax(0,760px);
+  justify-content:space-between;
+  gap:clamp(38px,7vw,100px);
+  align-items:start;
+}
+
+.selectedControls{
+  position:sticky;
+  top:28px;
+}
+
+.selectedControls>small{
+  color:#5f746a;
+}
+
+.selectedControls h2{
+  margin-bottom:14px;
+  color:var(--green);
+}
+
+.selectedControls>p{
+  margin:0;
+  color:#52685e;
+  font-size:16px;
+  line-height:1.6;
+}
+
+.selectedUpload{
+  position:relative;
+  min-height:56px;
+  margin-top:30px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:999px;
+  background:var(--green);
+  color:#fff;
+  font-weight:850;
+  cursor:pointer;
+}
+
+.selectedUpload input{
+  position:absolute;
+  width:1px;
+  height:1px;
+  opacity:0;
+  pointer-events:none;
+}
+
+.selectedAdjust{
+  display:grid;
+  gap:21px;
+  margin-top:28px;
+  padding:25px;
+  border:
+    1px solid rgba(23,56,43,.14);
+  border-radius:18px;
+}
+
+.selectedAdjust input{
+  width:100%;
+  accent-color:var(--green);
+}
+
+.selectedReset{
+  margin-top:25px;
+  padding:0;
+  border:0;
+  background:none;
+  color:#53685f;
+  font:inherit;
+  font-size:13px;
+  text-decoration:underline;
+  text-underline-offset:4px;
+  cursor:pointer;
+}
+
+.selectedCanvasWrap{
+  width:min(100%,720px);
+  margin:0 auto;
+  overflow:hidden;
+  background:#fff;
+  box-shadow:
+    0 30px 85px rgba(14,42,31,.15);
+}
+
+.selectedCanvasWrap canvas{
+  display:block;
+  width:100%;
+  height:auto;
+}
+
+.selectedActions{
+  display:flex;
+  justify-content:center;
+  gap:12px;
+  margin-top:27px;
+}
+
+.selectedActions .selectedShare{
+  background:var(--green);
+  color:#fff;
+}
+
+.selectedHint{
+  margin:14px 0 0;
+  color:#63776e;
+  text-align:center;
+  font-size:13px;
+  line-height:1.5;
+}
+
+.selectedFooter{
+  padding:
+    29px
+    clamp(22px,5vw,72px);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+  background:var(--green);
+  color:#fff;
+  font-size:13px;
+}
+
+.selectedFooter a{
+  color:var(--lime);
+  font-weight:800;
+  text-decoration:none;
+}
+
+@media(max-width:900px){
+  .selectedTop>span{
+    display:none;
+  }
+
+  .selectedVerify,
+  .selectedStudio{
+    grid-template-columns:1fr;
+  }
+
+  .selectedVerify{
+    gap:38px;
+  }
+
+  .selectedControls{
+    position:static;
+  }
+
+  .selectedPreview{
+    width:100%;
+  }
+}
+
+@media(max-width:560px){
+  .selectedTop{
+    height:76px;
+  }
+
+  .selectedBrand img{
+    width:130px;
+  }
+
+  .selectedMain{
+    padding-top:38px;
+    padding-bottom:60px;
+  }
+
+  .selectedIntro{
+    margin-bottom:35px;
+  }
+
+  .selectedIntro h1{
+    font-size:clamp(54px,17vw,82px);
+  }
+
+  .selectedVerify{
+    padding:24px;
+    border-radius:24px;
+  }
+
+  .selectedVerify form{
+    padding:22px;
+  }
+
+  .selectedActions{
+    flex-direction:column;
+  }
+
+  .selectedActions button{
+    width:100%;
+  }
+
+  .selectedFooter{
+    flex-direction:column;
+    align-items:flex-start;
+  }
+}

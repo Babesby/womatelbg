@@ -5,13 +5,6 @@ import { ArrowUpRight, Menu, X, ChevronRight, ChevronDown, ChevronLeft, Leaf, Us
 import'./style.css';
 import CanopyApp from'./canopy/CanopyApp.jsx';
 
-// WOMATE_SELECTED_ROUTE_GATE
-const __WOMATE_SELECTED_ROUTE__ = window.location.pathname.replace(/\/$/,'') === '/selected';
-
-if(__WOMATE_SELECTED_ROUTE__){
-  import('./selected/selectedStandalone.jsx');
-}else{
-
 const pages={
 '/':{k:'WOMATE',title:'Women leading climate action.',accent:'Driving inclusive climate action with technology.',intro:'We equip African women to understand climate systems, lead resilient communities and shape the institutions building our shared future.',type:'home'},
 '/she-leads':{k:'SHE LEADS',title:'She Leads Climate Mentorship.',accent:'Climate knowledge. Leadership. Agency.',intro:'A learning and leadership pathway designed for young African women ready to move from climate concern to credible action.',type:'she'},
@@ -1227,5 +1220,3 @@ createRoot(document.getElementById('root')).render(
 
 
 
-
-}
