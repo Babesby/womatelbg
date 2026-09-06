@@ -995,3 +995,12 @@
 .canopyTesterStatus small{font-size:.66rem;letter-spacing:.1em;opacity:.58}
 .canopyTesterStatus strong{font-size:.92rem}
 @media(max-width:760px){.canopyTesterStatus{grid-template-columns:1fr}}
+
+/* Completed curriculum module marker — WOMATE lemon-lime check */
+.canopyCoursePage .canopyModuleNo svg{
+  color:var(--canopy-lime)!important;
+  stroke:var(--canopy-lime)!important;
+  width:22px;
+  height:22px;
+  stroke-width:2.6;
+}
