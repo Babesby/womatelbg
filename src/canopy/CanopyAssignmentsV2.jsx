@@ -1,6 +1,7 @@
 import React,{useEffect,useState} from 'react';
 import {CANOPY_ASSIGNMENT_SCHEDULE,formatCanopyDate,openAssignments,speakerChallengeOpen} from './canopySchedule';
 import {getWeeklyAssignmentSubmissions,submitWeeklyAssignment,submitTesterWeeklyAssignment,getPuzzleProgress,savePuzzleCompletion,refreshLearningAutomation} from './canopyApi';
+import {canopyModules2026} from './canopyCurriculum2026';
 
 function scramble(word){
   return word.split('').map((c,i)=>({c,k:(i*17+word.charCodeAt(i))%97})).sort((a,b)=>a.k-b.k).map(x=>x.c).join('');
@@ -35,6 +36,7 @@ export default function CanopyAssignmentsV2({viewer}){
   const[now,setNow]=useState(()=>new Date());
   const tester=String(viewer?.user?.email||'').trim().toLowerCase()==='p.viewmultimedia@gmail.com';
   const available=tester?CANOPY_ASSIGNMENT_SCHEDULE:openAssignments(now);
+  const moduleContent=moduleId=>canopyModules2026.find(module=>module.id===moduleId);
 
   async function load(){
     try{await refreshLearningAutomation(viewer.session)}catch{}
@@ -76,11 +78,14 @@ export default function CanopyAssignmentsV2({viewer}){
         const puzzleDone=puzzles.some(p=>p.week_key===item.weekKey&&p.completed);
         const speakerOpen=tester||speakerChallengeOpen(item,now);
         const visible=scoreVisible(sub),score=finalScore(sub),status=(sub?.assessment_status||sub?.status||'submitted').replaceAll('_',' ');
+        const curriculum=moduleContent(item.moduleId);
+        const paragraphPrompt=curriculum?.assignment?.paragraphPrompt||'Respond to the weekly learning task with reflection, analysis and a concrete application to climate action.';
+        const canvasBrief=curriculum?.assignment?.canvasBrief||'Create a campaign graphic in CanopyCanvas that applies the week’s learning to a defined audience and action.';
         return <article className="ca-card" key={item.weekKey}>
           <div className="ca-card-head"><div><small>MODULE {item.moduleId}</small><h2>{item.title}</h2></div><div className="ca-dates"><span>Due {formatCanopyDate(item.dueAt)}</span>{count>0&&<strong>Attempt {count} of 3</strong>}</div></div>
           <div className="ca-threefold">
-            <div><b>01</b><h3>Paragraph response</h3><p>Respond to the weekly learning task with reflection, analysis and a concrete application to climate action.</p></div>
-            <div><b>02</b><h3>CanopyCanvas campaign</h3><p>Create the campaign graphic in CanopyCanvas, download it, upload it to your own Google Drive, make it viewable and attach the link.</p><a href="/canopy/canvas">Open CanopyCanvas →</a></div>
+            <div><b>01</b><h3>Paragraph response</h3><p>{paragraphPrompt}</p></div>
+            <div><b>02</b><h3>CanopyCanvas campaign</h3><p>{canvasBrief}</p><p>Download your finished graphic, upload it to your own Google Drive, make the file viewable by link, and attach that link below.</p><a href="/canopy/canvas">Open CanopyCanvas →</a></div>
             <div><b>03</b><h3>Speaker challenge</h3>{speakerOpen?<><p>{item.speakerPrompt}</p><p>Submit the public LinkedIn post link.</p></>:<><p>Unlocks after Thursday’s live expert session.</p><p>Parts 01 and 02 are available now.</p></>}</div>
           </div>
           {sub&&<div className="ca-status">
