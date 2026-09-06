@@ -1,5 +1,5 @@
-﻿const U=(import.meta.env.VITE_SUPABASE_URL||'').replace(/\/$/,'');
-const K=import.meta.env.VITE_SUPABASE_ANON_KEY||'';
+﻿const U=(import.meta.env.VITE_CANOPY_SUPABASE_URL||import.meta.env.VITE_SUPABASE_URL||'').replace(/\/$/,'');
+const K=import.meta.env.VITE_CANOPY_SUPABASE_ANON_KEY||import.meta.env.VITE_SUPABASE_ANON_KEY||'';
 
 export const selectedCardConfigured=Boolean(U&&K);
 
@@ -46,3 +46,4 @@ export async function verifySelectedLearner(email,code){
 
   return data;
 }
+
