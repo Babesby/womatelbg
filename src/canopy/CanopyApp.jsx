@@ -4,6 +4,8 @@ import CanopyAssignmentsV2 from './CanopyAssignmentsV2';
 import CanopyCanvas from './CanopyCanvas';
 import CanopyNotifications from './CanopyNotifications';
 import CanopyCertificate from './CanopyCertificate';
+import {activateTeamAccess,getStaffAccess,getStaffDashboard} from './canopyTeamAccessApi';
+import {CanopyAdminRolePreview,CanopyTeamAccessAdmin,CanopyTeamActivation,CanopyStaffDashboard,teamRoleLabel} from './CanopyTeamAccess';
 import {CANOPY_ASSIGNMENT_SCHEDULE,CANOPY_ACCESS_DATE} from './canopySchedule';
 import{ArrowLeft,ArrowRight,BookOpen,Check,ChevronRight,ClipboardCheck,Clock,FileText,GraduationCap,Leaf,Lock,LogOut,Menu,PlayCircle,Sparkles,UserRound,X,BookMarked,UsersRound,PenLine,TrendingUp,Eye,EyeOff,MessageSquare,ShieldAlert,Award,BarChart3,Bell} from 'lucide-react';
 import'./canopy.css';
@@ -14,6 +16,9 @@ const route=()=>window.location.pathname.replace(/\/$/,'')||'/canopy';
 
 const CANOPY_TESTER_EMAIL='p.viewmultimedia@gmail.com';
 function isCanopyTester(viewer){return String(viewer?.user?.email||'').trim().toLowerCase()===CANOPY_TESTER_EMAIL}
+function canManageCanopy(viewer){return ['manager','admin'].includes(viewer?.profile?.role)||viewer?.staffAccess?.role==='programme_manager'}
+function isCanopyOperationsStaff(viewer){return ['programme_operations','module_coordinator','learning_fellow'].includes(viewer?.staffAccess?.role)}
+function isAnyCanopyStaff(viewer){return canManageCanopy(viewer)||isCanopyOperationsStaff(viewer)}
 function go(path){window.history.pushState({},'',path);window.dispatchEvent(new PopStateEvent('popstate'));window.scrollTo({top:0,behavior:'smooth'})}
 const totalLessons=modules.reduce((n,m)=>n+m.lessons.length,0);
 const canopyDisplayWeek=w=>String(w).replace(/Weeks?\s*1(?:–|–|-)2/i,'Week 1 & 2').replace(/Weeks?\s*5(?:–|–|-)6/i,'Week 5 & 6').replace(/Weeks?\s*7(?:–|–|-)8/i,'Week 7 & 8');
@@ -28,26 +33,37 @@ function Landing(){return <div className="canopyPublic"><PublicTop/><main>
   <section className="canopyHow"><div><span className="canopyEyebrow">HOW IT WORKS</span><h2>Learn. Meet. Apply. Move forward.</h2></div><div className="canopyHowIcons"><article><div className="canopyHowIcon"><BookMarked/></div><div><h3>Learn</h3><p>Short foundational lessons turn each topic into clear, manageable concepts.</p></div></article><article><div className="canopyHowIcon"><UsersRound/></div><div><h3>Meet</h3><p>Join the Thursday live session to learn directly from an expert speaker for the module.</p></div></article><article><div className="canopyHowIcon"><PenLine/></div><div><h3>Apply</h3><p>Complete the main assignment from Thursday through Sunday while the module is active.</p></div></article><article><div className="canopyHowIcon"><TrendingUp/></div><div><h3>Advance</h3><p>Progress with the cohort as the next module opens according to the programme schedule.</p></div></article></div></section>
  </main><footer className="canopyPublicFooter"><div className="canopyFooterBrand"><img src="/assets/canopy/canopy-logo-primary.png" alt="Canopy — Climate Learning by WOMATE"/></div><div className="canopyFooterMeta"><span>Driving inclusive climate action with technology.</span><span>WOMATE learning environment</span></div></footer></div>}
 function Auth({mode='login'}){
- const[form,setForm]=useState({full_name:'',country:'',email:'',password:''});
+ const[form,setForm]=useState({full_name:'',country:'',email:'',password:'',team_code:''});
  const[busy,setBusy]=useState(false);
  const[msg,setMsg]=useState('');
  const[msgType,setMsgType]=useState('info');
  const[showPassword,setShowPassword]=useState(false);
+ const[showTeamAccess,setShowTeamAccess]=useState(false);
  const feedback=(text,type='info')=>{setMsg(text);setMsgType(type)};
  const submit=async e=>{e.preventDefault();setBusy(true);feedback('');try{
    if(mode==='login'){
      await signIn(form.email,form.password);
-     feedback('Signed in successfully. Opening Canopy…','success');
+     const session=getStoredSession();
+     if(form.team_code.trim()){
+       await activateTeamAccess(session,form.team_code);
+       sessionStorage.removeItem('canopy_team_access_code_pending');
+       feedback('Team access activated. Opening your WOMATE workspace…','success');
+     }else feedback('Signed in successfully. Opening Canopy…','success');
      window.location.assign('/canopy/classroom')
    }else{
-     const data=await signUp(form);
+     if(form.team_code.trim())sessionStorage.setItem('canopy_team_access_code_pending',form.team_code.trim());
+     const data=await signUp({full_name:form.full_name,country:form.country,email:form.email,password:form.password});
      if(data?.access_token){
-       feedback('Account created and signed in. Canopy learning access opens from 20 September 2026.','success');
+       if(form.team_code.trim()){
+         await activateTeamAccess({access_token:data.access_token},form.team_code);
+         sessionStorage.removeItem('canopy_team_access_code_pending');
+         feedback('Account created and team access activated. Opening your WOMATE workspace…','success');
+       }else feedback('Account created and signed in. Canopy learning access opens from 20 September 2026.','success');
        go('/canopy/classroom')
      }else if(data?.possible_existing_account){
        feedback('An account may already exist for this email. Try signing in, or use “Resend confirmation” if the account is still unconfirmed.','warning')
      }else{
-       feedback('Account created. We sent a confirmation email. Open your newest email from WOMATE and confirm your address, then return here to sign in.','success')
+       feedback(form.team_code.trim()?'Account created. Confirm your email, then sign in once; your pending Team Access Code will activate automatically.':'Account created. We sent a confirmation email. Open your newest email from WOMATE and confirm your address, then return here to sign in.','success')
      }
    }
  }catch(err){
@@ -77,10 +93,12 @@ function Auth({mode='login'}){
      <p>{mode==='login'?'Sign in to continue your She Leads learning journey.':'Create your secure Canopy account to begin.'}</p>
      {!canopyConfigured&&<p className="canopyConfigWarn">Canopy backend is not configured on this deployment yet. Add the Supabase environment variables before testing accounts.</p>}
     </div>
-    <div className="canopySocialAuth"><button type="button" className="canopyGoogleAuth" disabled={busy} onClick={async()=>{setBusy(true);feedback('');try{await signInWithGoogle()}catch(err){feedback(err.message||'Unable to continue with Google.','error');setBusy(false)}}}><span className="canopyGoogleMark" aria-hidden="true">G</span><span>Continue with Google</span></button><div className="canopyAuthDivider"><span>or continue with email</span></div></div><form onSubmit={submit}>
+    <div className="canopySocialAuth"><button type="button" className="canopyGoogleAuth" disabled={busy} onClick={async()=>{setBusy(true);feedback('');try{if(form.team_code.trim())sessionStorage.setItem('canopy_team_access_code_pending',form.team_code.trim());await signInWithGoogle()}catch(err){feedback(err.message||'Unable to continue with Google.','error');setBusy(false)}}}><span className="canopyGoogleMark" aria-hidden="true">G</span><span>Continue with Google</span></button><div className="canopyAuthDivider"><span>or continue with email</span></div></div><form onSubmit={submit}>
      {mode==='signup'&&<div className="canopyAuthTwoCol"><label>Full name<input required autoComplete="name" placeholder="Your full name" value={form.full_name} onChange={e=>setForm({...form,full_name:e.target.value})}/></label><label>Country<input required autoComplete="country-name" placeholder="Country" value={form.country} onChange={e=>setForm({...form,country:e.target.value})}/></label></div>}
      <label>Email address<input required type="email" autoComplete="email" placeholder="you@example.com" value={form.email} onChange={e=>setForm({...form,email:e.target.value})}/></label>
      <label>Password<div className="canopyPasswordField"><input required type={showPassword?'text':'password'} autoComplete={mode==='login'?'current-password':'new-password'} minLength="8" placeholder="Minimum 8 characters" value={form.password} onChange={e=>setForm({...form,password:e.target.value})}/><button type="button" onClick={()=>setShowPassword(v=>!v)} aria-label={showPassword?'Hide password':'Show password'}>{showPassword?<EyeOff/>:<Eye/>}</button></div></label>
+     <div className="canopyTeamAccessToggle"><button type="button" onClick={()=>setShowTeamAccess(v=>!v)}>{showTeamAccess?'Hide team access':'WOMATE team member? Activate staff access'}</button><small>Only selected WOMATE delivery team members need this.</small></div>
+     {showTeamAccess&&<label>Team Access Code<input autoCapitalize="characters" autoComplete="one-time-code" placeholder="SL2-XXXXXX-XXXXXX-XXXXXX-XXXXXX" value={form.team_code} onChange={e=>setForm({...form,team_code:e.target.value.toUpperCase()})}/><small className="canopyFieldHint">Single-use. After activation, future sign-ins use only your email and password.</small></label>}
      <button className="canopyPrimary full canopyAuthSubmit" disabled={busy||!canopyConfigured}>{busy?'Please wait…':mode==='login'?'Sign in':'Create account'} <ArrowRight size={17}/></button>
      {msg&&<p className={`canopyFormMsg ${msgType}`} role="status" aria-live="polite">{msg}</p>}
      {mode==='login'&&<div className="canopyAuthHelp"><button type="button" disabled={busy} onClick={resend}>Resend confirmation</button><button type="button" disabled={busy} onClick={forgot}>Forgot password?</button></div>}
@@ -90,28 +108,32 @@ function Auth({mode='login'}){
   </main>
  </div>
 }
-function AuthCallback(){const[msg,setMsg]=useState('Confirming your Canopy account…');useEffect(()=>{let live=true;(async()=>{try{const result=await consumeAuthCallback();if(!live)return;if(result?.type==='recovery'){setMsg('Password-reset link accepted. Opening secure password update…');setTimeout(()=>go('/canopy/reset-password'),350)}else{setMsg('Email confirmed successfully. Opening Canopy…');setTimeout(()=>go('/canopy/classroom'),350)}}catch(err){if(live)setMsg(err.message||'This confirmation link is invalid or has expired. Return to sign in and request a fresh confirmation email.')}})();return()=>{live=false}},[]);return <div className="canopyLoading"><Leaf/><span>{msg}</span><button className="canopySecondary" onClick={()=>go('/canopy/login')}>Return to sign in</button></div>}
+function AuthCallback(){const[msg,setMsg]=useState('Confirming your Canopy account…');useEffect(()=>{let live=true;(async()=>{try{const result=await consumeAuthCallback();if(!live)return;if(result?.type==='recovery'){setMsg('Password-reset link accepted. Opening secure password update…');setTimeout(()=>go('/canopy/reset-password'),350)}else{const pending=sessionStorage.getItem('canopy_team_access_code_pending');if(pending){try{const session=getStoredSession();await activateTeamAccess(session,pending);sessionStorage.removeItem('canopy_team_access_code_pending');setMsg('Email confirmed and WOMATE team access activated. Opening your workspace…')}catch(err){setMsg(`Email confirmed. Team access still needs attention: ${err.message}`);return}}else setMsg('Email confirmed successfully. Opening Canopy…');setTimeout(()=>go('/canopy/classroom'),450)}}catch(err){if(live)setMsg(err.message||'This confirmation link is invalid or has expired. Return to sign in and request a fresh confirmation email.')}})();return()=>{live=false}},[]);return <div className="canopyLoading"><Leaf/><span>{msg}</span><button className="canopySecondary" onClick={()=>go('/canopy/login')}>Return to sign in</button></div>}
 
 function ResetPassword(){const[p1,setP1]=useState('');const[p2,setP2]=useState('');const[busy,setBusy]=useState(false);const[msg,setMsg]=useState('');const submit=async e=>{e.preventDefault();if(p1!==p2){setMsg('The passwords do not match.');return}setBusy(true);setMsg('');try{await updatePassword(p1);setMsg('Password changed successfully. You can now sign in with your new password.');setTimeout(async()=>{await signOut();go('/canopy/login')},700)}catch(err){setMsg(err.message)}finally{setBusy(false)}};return <div className="canopyAuth"><aside><Brand/><div><span className="canopyEyebrow">ACCOUNT RECOVERY</span><h1>Set a new password.</h1><p>Choose a new password for your WOMATE Canopy account.</p></div><blockquote>SECURE · CONTINUE · LEARN</blockquote></aside><main><button className="canopyBack" onClick={()=>go('/canopy/login')}><ArrowLeft/> Back to sign in</button><form onSubmit={submit}><div className="canopyAuthHead"><span>PASSWORD RESET</span><h2>New password</h2></div><label>New password<input required type="password" minLength="8" autoComplete="new-password" value={p1} onChange={e=>setP1(e.target.value)}/></label><label>Confirm new password<input required type="password" minLength="8" autoComplete="new-password" value={p2} onChange={e=>setP2(e.target.value)}/></label><button className="canopyPrimary full" disabled={busy}>{busy?'Updating…':'Change password'} <ArrowRight size={17}/></button>{msg&&<p className="canopyFormMsg" role="status">{msg}</p>}</form></main></div>}
 
 function CourseNav({open,setOpen,viewer}){
- const manager=['manager','admin'].includes(viewer?.profile?.role);
+ const manager=canManageCanopy(viewer);
  const tester=isCanopyTester(viewer);
  const learnerItems=[['/canopy/classroom','Home',BookOpen],['/canopy/course/she-leads','Course',GraduationCap],['/canopy/assignments','Assignments',FileText],['/canopy/progress','Progress',ClipboardCheck],['/canopy/resources','Resources',Sparkles],['/canopy/canvas','CanopyCanvas',PenLine],['/canopy/notifications','Notifications',MessageSquare],['/canopy/help','Help',ShieldAlert],['/canopy/certificate','Certificates',Award]];
- const managerItems=[['/canopy/manage','Operations',ClipboardCheck],['/canopy/manage/access','Manage cohort',UsersRound],['/canopy/manage/reviews','Assess submissions',FileText],['/canopy/manage/communications','Warnings & feedback',MessageSquare],['/canopy/manage/reminders','Reminders',Bell],['/canopy/manage/complaints','Complaints',ShieldAlert],['/canopy/manage/certificates','Certificates',Award],['/canopy/manage/reports','Reports',BarChart3]];
- const items=manager?managerItems:learnerItems;
+ const legacyAdmin=['manager','admin'].includes(viewer?.profile?.role);
+ const managerItems=[['/canopy/manage','Operations',ClipboardCheck],['/canopy/manage/access','Manage cohort',UsersRound],['/canopy/manage/reviews','Assess submissions',FileText],['/canopy/manage/communications','Warnings & feedback',MessageSquare],['/canopy/manage/reminders','Reminders',Bell],['/canopy/manage/complaints','Complaints',ShieldAlert],['/canopy/manage/certificates','Certificates',Award],['/canopy/manage/reports','Reports',BarChart3],...(viewer?.staffAccess?.role==='programme_manager'?[[ '/canopy/manage/spotlight','Canopy Spotlight',Sparkles]]:[]),...(legacyAdmin?[[ '/canopy/manage/team-access','Team Access',UserRound]]:[])];
+ const staffRole=viewer?.staffAccess?.role;
+ const staffItems=staffRole==='programme_operations'?[['/canopy/operations','Operations',ClipboardCheck],['/canopy/notifications','Notifications',Bell],['/canopy/profile','Profile',UserRound]]:staffRole==='module_coordinator'?[['/canopy/coordinator','My module',BookOpen],['/canopy/notifications','Notifications',Bell],['/canopy/profile','Profile',UserRound]]:staffRole==='learning_fellow'?[['/canopy/fellow','Learning experience',Sparkles],['/canopy/notifications','Notifications',Bell],['/canopy/profile','Profile',UserRound]]:learnerItems;
+ const items=manager?managerItems:staffItems;
  return <aside className={'canopySidebar '+(open?'open':'')}>
   <div className="canopySideTop"><Brand compact/><button className="canopySideClose" onClick={()=>setOpen(false)}><X/></button></div>
   <nav>{items.map(([p,n,I])=><button key={p} className={route()===p?'active':''} onClick={()=>{go(p);setOpen(false)}}><I size={18}/><span>{n}</span></button>)}</nav>
-  <div className="canopySideBottom"><small>{manager?'WOMATE OPERATIONS':tester?'CANOPY TEST MODE':CANOPY_BRAND.programme}</small><b>{manager?'She Leads Climate Mentorship · Cohort 2 · 2026':tester?'All modules · all assignments · unrestricted':CANOPY_BRAND.cohort}</b></div>
+  <div className="canopySideBottom"><small>{manager?'WOMATE OPERATIONS':isCanopyOperationsStaff(viewer)?'WOMATE DELIVERY TEAM':tester?'CANOPY TEST MODE':CANOPY_BRAND.programme}</small><b>{manager?'She Leads Climate Mentorship · Cohort 2 · 2026':isCanopyOperationsStaff(viewer)?teamRoleLabel(viewer.staffAccess?.role):tester?'All modules · all assignments · unrestricted':CANOPY_BRAND.cohort}</b></div>
  </aside>
 }
 function LearnerShell({viewer,progress,children,onReload}){
  const[open,setOpen]=useState(false);
  const[unread,setUnread]=useState(0);
- const manager=['manager','admin'].includes(viewer?.profile?.role);
+ const manager=canManageCanopy(viewer);
+ const staff=isAnyCanopyStaff(viewer);
  const tester=isCanopyTester(viewer);
- const name=viewer?.profile?.full_name||viewer?.user?.user_metadata?.full_name||viewer?.user?.email?.split('@')[0]||(manager?'WOMATE':'Learner');
+ const name=viewer?.profile?.full_name||viewer?.user?.user_metadata?.full_name||viewer?.user?.email?.split('@')[0]||(staff?'WOMATE':'Learner');
  useEffect(()=>{
   let live=true;
   const run=async()=>{try{const n=await getUnreadNotificationCount(viewer?.session);if(live)setUnread(Number(n)||0)}catch{}};
@@ -122,7 +144,7 @@ function LearnerShell({viewer,progress,children,onReload}){
   window.addEventListener('focus',onFocus);document.addEventListener('visibilitychange',onVisibility);
   return()=>{live=false;window.clearInterval(timer);window.removeEventListener('focus',onFocus);document.removeEventListener('visibilitychange',onVisibility)};
  },[viewer?.session?.access_token]);
- return <div className="canopyApp"><CourseNav open={open} setOpen={setOpen} viewer={viewer}/><div className="canopyMain"><header className="canopyAppTop"><button className="canopyMenu" onClick={()=>setOpen(true)} aria-label="Open navigation"><Menu/></button><div>{manager&&<span>WOMATE · CANOPY OPERATIONS</span>}{manager?<b>{name}</b>:<button type="button" className="canopyProfileTrigger" onClick={()=>go('/canopy/profile')} title="Open profile settings"><UserRound size={18}/><span><small>PROFILE</small><b>{name}</b></span></button>}</div><button className="canopyTopNotification" aria-label={unread?`${unread} unread notification${unread===1?'':'s'}`:'Notifications'} onClick={()=>go('/canopy/notifications')}><Bell size={18}/>{unread>0&&<span className="canopyNotificationBadge">{unread>99?'99+':unread}</span>}</button><button className="canopySignout" onClick={async()=>{await signOut();go('/canopy/login')}}><LogOut size={17}/><span>Sign out</span></button></header>{children}</div></div>
+ return <div className="canopyApp"><CourseNav open={open} setOpen={setOpen} viewer={viewer}/><div className="canopyMain"><header className="canopyAppTop"><button className="canopyMenu" onClick={()=>setOpen(true)} aria-label="Open navigation"><Menu/></button><div>{staff&&<span>WOMATE · CANOPY OPERATIONS</span>}{staff?<><b>{name}</b>{viewer?.staffAccess?.role&&<small className="canopyTopRole">{teamRoleLabel(viewer.staffAccess.role)}</small>}</>:<button type="button" className="canopyProfileTrigger" onClick={()=>go('/canopy/profile')} title="Open profile settings"><UserRound size={18}/><span><small>PROFILE</small><b>{name}</b></span></button>}</div><button className="canopyTopNotification" aria-label={unread?`${unread} unread notification${unread===1?'':'s'}`:'Notifications'} onClick={()=>go('/canopy/notifications')}><Bell size={18}/>{unread>0&&<span className="canopyNotificationBadge">{unread>99?'99+':unread}</span>}</button><button className="canopySignout" onClick={async()=>{await signOut();go('/canopy/login')}}><LogOut size={17}/><span>Sign out</span></button></header>{children}</div></div>
 }
 
 function Dashboard({viewer,progress}){
@@ -199,7 +221,7 @@ function Progress({progress,submissions=[]}){
 
 function Resources(){return <main className="canopyResources"><div className="canopyPageHead"><span className="canopyEyebrow">KEEP LEARNING</span><h1>Resources</h1><p>Selected starting points for learners who want to continue beyond the foundational course.</p></div><section>{resources.map(r=><a key={r.url} href={r.url} target="_blank" rel="noreferrer"><FileText/><div><small>{r.type}</small><h3>{r.title}</h3></div><ArrowRight/></a>)}</section></main>}
 
-function Profile({viewer}){const p=viewer.profile||{};return <main className="canopyProfile"><div className="canopyPageHead"><span className="canopyEyebrow">LEARNER PROFILE</span><h1>{p.full_name||viewer.user?.user_metadata?.full_name||'Your profile'}</h1><p>Your Canopy identity is connected to your WOMATE learning account.</p></div><section><div><small>Email</small><b>{viewer.user?.email}</b></div><div><small>Country</small><b>{p.country||viewer.user?.user_metadata?.country||'—'}</b></div><div><small>Role</small><b>{isCanopyTester(viewer)?'tester':(p.role||'learner')}</b></div><div><small>Course access</small><b>{isCanopyTester(viewer)?'Unrestricted test access':(viewer.enrollments?.some(e=>e.status==='active')?'Active':'Awaiting enrolment')}</b></div></section></main>}
+function Profile({viewer}){const p=viewer.profile||{};return <main className="canopyProfile"><div className="canopyPageHead"><span className="canopyEyebrow">LEARNER PROFILE</span><h1>{p.full_name||viewer.user?.user_metadata?.full_name||'Your profile'}</h1><p>Your Canopy identity is connected to your WOMATE learning account.</p></div><section><div><small>Email</small><b>{viewer.user?.email}</b></div><div><small>Country</small><b>{p.country||viewer.user?.user_metadata?.country||'—'}</b></div><div><small>Role</small><b>{isCanopyTester(viewer)?'tester':viewer?.staffAccess?.role?teamRoleLabel(viewer.staffAccess.role):(p.role||'learner')}</b></div><div><small>Course access</small><b>{isCanopyTester(viewer)?'Unrestricted test access':(viewer.enrollments?.some(e=>e.status==='active')?'Active':'Awaiting enrolment')}</b></div></section></main>}
 
 function CanopyHelp({viewer}){
  const[subject,setSubject]=useState('');const[message,setMessage]=useState('');const[busy,setBusy]=useState(false);const[msg,setMsg]=useState('');const[complaints,setComplaints]=useState([]);
@@ -305,7 +327,7 @@ function CanopyHeroDemo(){
 const CANOPY_AGENT_SCRIPT='https://cdn.jotfor.ms/agent/embedjs/01a0758b42c07000893310f980bc32c2a80c/embed.js';
 const CANOPY_AGENT_STYLE_ID='canopy-jotform-guide-guard';
 function CanopyLearningGuide({path,viewer}){
- const manager=['manager','admin'].includes(viewer?.profile?.role);
+ const manager=isAnyCanopyStaff(viewer);
  const knowledgeCheck=/^\/canopy\/course\/she-leads\/[^/]+\/quiz$/.test(path);
  const learnerArea=Boolean(viewer)&&!manager&&path.startsWith('/canopy/');
  useEffect(()=>{
@@ -319,8 +341,21 @@ function CanopyLearningGuide({path,viewer}){
 }
 
 export default function CanopyApp(){
- const[path,setPath]=useState(route());const[loading,setLoading]=useState(true);const[viewer,setViewer]=useState(null);const[progress,setProgress]=useState([]);const[submissions,setSubmissions]=useState([]);const[snapshot,setSnapshot]=useState(null);
- const load=async()=>{const session=getStoredSession();if(!session){setViewer(null);setProgress([]);setSubmissions([]);setSnapshot(null);setLoading(false);return}try{const v=await getViewer(session);if(!v){setViewer(null);return}setViewer(v);const manager=['admin','manager'].includes(v.profile?.role);const results=await Promise.allSettled([getProgress(v.session),manager?Promise.resolve([]):getWeeklyAssignmentSubmissions(v.session)]);setProgress(results[0].status==='fulfilled'?(results[0].value||[]):[]);setSubmissions(results[1].status==='fulfilled'?(results[1].value||[]):[]);if(results[0].status==='rejected')console.error('Canopy progress load failed:',results[0].reason);if(results[1].status==='rejected')console.error('Canopy weekly submissions load failed:',results[1].reason);if(manager){try{setSnapshot(await getManagerSnapshot(v.session))}catch(err){console.error('Canopy manager snapshot failed:',err);setSnapshot({profiles:[],enrollments:[],progress:[],submissions:[],actions:[],dataError:String(err?.message||err)})}}else setSnapshot(null)}catch(err){console.error('Canopy viewer load failed:',err);setViewer(null);setProgress([]);setSubmissions([]);setSnapshot(null)}finally{setLoading(false)}};
+ const[path,setPath]=useState(route());const[loading,setLoading]=useState(true);const[viewer,setViewer]=useState(null);const[progress,setProgress]=useState([]);const[submissions,setSubmissions]=useState([]);const[snapshot,setSnapshot]=useState(null);const[staffDashboard,setStaffDashboard]=useState(null);
+ const load=async()=>{const session=getStoredSession();if(!session){setViewer(null);setProgress([]);setSubmissions([]);setSnapshot(null);setStaffDashboard(null);setLoading(false);return}try{
+   const pending=sessionStorage.getItem('canopy_team_access_code_pending');
+   if(pending){try{await activateTeamAccess(session,pending);sessionStorage.removeItem('canopy_team_access_code_pending')}catch(err){console.warn('Pending Canopy team access activation failed:',err)}}
+   const v=await getViewer(session);if(!v){setViewer(null);return}
+   let staffAccess=null;try{staffAccess=await getStaffAccess(v.session)}catch(err){console.warn('Canopy staff access lookup failed:',err)}
+   const withAccess={...v,staffAccess};setViewer(withAccess);
+   const manager=canManageCanopy(withAccess);const operational=isCanopyOperationsStaff(withAccess);
+   if(operational){setProgress([]);setSubmissions([]);setSnapshot(null);try{setStaffDashboard(await getStaffDashboard(v.session))}catch(err){console.error('Canopy staff dashboard failed:',err);setStaffDashboard({role:staffAccess?.role,module_id:staffAccess?.module_id,counts:{},recent_submissions:[],spotlights:[],dataError:String(err?.message||err)})}}
+   else{
+    setStaffDashboard(null);
+    const results=await Promise.allSettled([getProgress(v.session),manager?Promise.resolve([]):getWeeklyAssignmentSubmissions(v.session)]);setProgress(results[0].status==='fulfilled'?(results[0].value||[]):[]);setSubmissions(results[1].status==='fulfilled'?(results[1].value||[]):[]);if(results[0].status==='rejected')console.error('Canopy progress load failed:',results[0].reason);if(results[1].status==='rejected')console.error('Canopy weekly submissions load failed:',results[1].reason);
+    if(manager){try{setSnapshot(await getManagerSnapshot(v.session))}catch(err){console.error('Canopy manager snapshot failed:',err);setSnapshot({profiles:[],enrollments:[],progress:[],submissions:[],actions:[],certificates:[],dataError:String(err?.message||err)})}if(staffAccess?.role==='programme_manager'){try{setStaffDashboard(await getStaffDashboard(v.session))}catch(err){console.error('Canopy programme dashboard failed:',err);setStaffDashboard({role:'programme_manager',module_id:null,counts:{},recent_submissions:[],spotlights:[]})}}}else setSnapshot(null)
+   }
+ }catch(err){console.error('Canopy viewer load failed:',err);setViewer(null);setProgress([]);setSubmissions([]);setSnapshot(null);setStaffDashboard(null)}finally{setLoading(false)}};
  useEffect(()=>{const fn=()=>setPath(route());window.addEventListener('popstate',fn);return()=>window.removeEventListener('popstate',fn)},[]);
  useEffect(()=>{setLoading(true);load()},[path]);
  const publicRoute=path==='/canopy'||path==='/canopy/';const authRoute=path==='/canopy/login'||path==='/canopy/signup';
@@ -329,11 +364,16 @@ export default function CanopyApp(){
  if(authRoute)return <Auth mode={path.endsWith('signup')?'signup':'login'}/>;
  if(loading)return <div className="canopyLoading"><Leaf/><span>Opening Canopy…</span></div>;
  if(!viewer){go('/canopy/login');return null}
- const manager=['manager','admin'].includes(viewer.profile?.role);
- const tester=isCanopyTester(viewer);
- if(manager&&!path.startsWith('/canopy/manage')&&!['/canopy/profile','/canopy/notifications'].includes(path)){go('/canopy/manage');return null}
+ const manager=canManageCanopy(viewer);const operational=isCanopyOperationsStaff(viewer);const staffRole=viewer?.staffAccess?.role;const tester=isCanopyTester(viewer);const legacyAdmin=['manager','admin'].includes(viewer?.profile?.role);
+ if(manager&&!path.startsWith('/canopy/manage')&&!['/canopy/profile','/canopy/notifications','/canopy/team-access'].includes(path)){go('/canopy/manage');return null}
+ if(operational){const home=staffRole==='programme_operations'?'/canopy/operations':staffRole==='module_coordinator'?'/canopy/coordinator':'/canopy/fellow';if(![home,'/canopy/profile','/canopy/notifications','/canopy/team-access'].includes(path)){go(home);return null}}
  const active=tester||viewer.enrollments?.some(e=>e.status==='active');let content;
- if(manager&&path.startsWith('/canopy/manage')){const sub=path.split('/').pop();const view=path==='/canopy/manage'?'overview':sub;content=<ManagerOperations snapshot={snapshot} session={viewer.session} onReload={load} view={view}/>}
+ if(path==='/canopy/team-access')content=<CanopyTeamActivation viewer={viewer} onActivated={()=>{setLoading(true);load().then(()=>window.location.assign('/canopy/classroom'))}}/>;
+ else if(manager&&path==='/canopy/manage/team-access')content=legacyAdmin?<CanopyTeamAccessAdmin viewer={viewer}/>:<ManagerOperations snapshot={snapshot} session={viewer.session} onReload={load} view="overview"/>;
+ else if(manager&&path==='/canopy/manage/role-preview')content=legacyAdmin?<CanopyAdminRolePreview viewer={viewer}/>:<ManagerOperations snapshot={snapshot} session={viewer.session} onReload={load} view="overview"/>;
+ else if(manager&&path==='/canopy/manage/spotlight'&&staffRole==='programme_manager')content=<CanopyStaffDashboard viewer={viewer} access={viewer.staffAccess} data={staffDashboard} onReload={async()=>{try{setStaffDashboard(await getStaffDashboard(viewer.session))}catch(err){console.error(err)}}}/>;
+ else if(manager&&path.startsWith('/canopy/manage')){const sub=path.split('/').pop();const view=path==='/canopy/manage'?'overview':sub;content=<ManagerOperations snapshot={snapshot} session={viewer.session} onReload={load} view={view}/>}
+ else if(operational&&['/canopy/operations','/canopy/coordinator','/canopy/fellow'].includes(path))content=<CanopyStaffDashboard viewer={viewer} access={viewer.staffAccess} data={staffDashboard} onReload={async()=>{try{setStaffDashboard(await getStaffDashboard(viewer.session))}catch(err){console.error(err)}}}/>;
  else if(path==='/canopy/classroom')content=tester?<TesterDashboard viewer={viewer} progress={progress}/>:<Dashboard viewer={viewer} progress={progress}/>;
  else if(!active&&!['/canopy/profile','/canopy/notifications','/canopy/help','/canopy/certificate'].includes(path))content=<Dashboard viewer={viewer} progress={progress}/>;
  else if(path==='/canopy/course/she-leads')content=<CourseOverview progress={progress} tester={tester}/>;
@@ -346,5 +386,5 @@ export default function CanopyApp(){
  else if(path==='/canopy/resources')content=<Resources/>;
  else if(path==='/canopy/profile')content=<Profile viewer={viewer}/>;
  else{const match=path.match(/^\/canopy\/course\/she-leads\/([^/]+)\/([^/]+)$/);if(match){const[,moduleId,last]=match;content=last==='quiz'?<Quiz moduleId={moduleId} session={viewer.session} reload={load} tester={tester}/>:<Lesson moduleId={moduleId} lessonId={last} progress={progress} session={viewer.session} reload={load} tester={tester}/>}else content=tester?<TesterDashboard viewer={viewer} progress={progress}/>:<Dashboard viewer={viewer} progress={progress}/>}
- return <><Helmet><title>{manager?'Canopy Operations':'My Canopy'} | WOMATE</title></Helmet><CanopyLearningGuide path={path} viewer={viewer}/><LearnerShell viewer={viewer} progress={progress}>{content}</LearnerShell></>
+ return <><Helmet><title>{isAnyCanopyStaff(viewer)?'Canopy Operations':'My Canopy'} | WOMATE</title></Helmet><CanopyLearningGuide path={path} viewer={viewer}/><LearnerShell viewer={viewer} progress={progress}>{content}</LearnerShell></>
 }

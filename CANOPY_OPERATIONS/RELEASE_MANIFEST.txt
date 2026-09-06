@@ -1,0 +1,25 @@
+WOMATE CANOPY — FULL LEARNER + OPERATIONS READY
+Release date: 2026-09-06
+
+REPLACEMENT SOURCE FILES
+src/canopy/CanopyApp.jsx
+src/canopy/CanopyAssignmentsV2.jsx
+src/canopy/CanopyTeamAccess.jsx
+src/canopy/canopyTeamAccessApi.js
+src/canopy/canopyData.js
+src/canopy/canopy.css
+
+DATABASE / OPERATIONS
+CANOPY_OPERATIONS/WOMATE_CANOPY_MASTER_2026.sql
+CANOPY_OPERATIONS/audit_full_operations.cjs
+CANOPY_OPERATIONS/README_APPLY.md
+CANOPY_OPERATIONS/RELEASE_MANIFEST.txt
+
+TESTER REFERENCE
+CANOPY_TESTER/WOMATE_CANOPY_TESTER_MODE.sql
+CANOPY_TESTER/README.md
+
+STATIC VALIDATION
+22/22 launch checks passed.
+JS/JSX syntax validation passed for all changed JS/JSX files.
+
