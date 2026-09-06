@@ -1005,3 +1005,16 @@
 .ca-anagram-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.ca-anagram-grid label{display:grid;gap:6px;padding:12px;border:1px solid #dfe7e4;border-radius:14px;background:#fff}.ca-anagram-grid span{letter-spacing:.15em;font-weight:800;color:#0E4D4A}.ca-anagram-grid small{line-height:1.45;color:#5d7471}
 .ca-jigsaw-piece{display:grid;grid-template-columns:42px minmax(0,1fr) auto;gap:10px;align-items:center;padding:12px;border:1px solid #dfe7e4;border-radius:14px;background:#fff}.ca-jigsaw-piece>b{color:#0E4D4A}.ca-jigsaw-piece>span{font-weight:750;color:#173b39}.ca-jigsaw-piece>div{display:flex;gap:6px}.ca-jigsaw .ca-jigsaw-move{width:34px;height:34px;padding:0;border-radius:999px;background:#eef4f1;color:#0E4D4A}
 @media(max-width:720px){.ca-match-row,.ca-crossword label{grid-template-columns:1fr}.ca-anagram-grid{grid-template-columns:1fr}.ca-jigsaw-piece{grid-template-columns:34px minmax(0,1fr) auto}}
+
+/* Completed curriculum module marker — force WOMATE lemon check in participant + tester classroom */
+.canopyCoursePage .canopyCurriculum .canopyModuleRow .canopyModuleNo svg,
+.canopyCoursePage .canopyCurriculum .canopyModuleRow .canopyModuleNo svg path,
+.canopyCoursePage .canopyCurriculum .canopyModuleRow .canopyModuleNo svg polyline {
+  color:#C6FF52 !important;
+  stroke:#C6FF52 !important;
+}
+.canopyCoursePage .canopyCurriculum .canopyModuleRow .canopyModuleNo svg {
+  width:22px;
+  height:22px;
+  stroke-width:2.8;
+}
