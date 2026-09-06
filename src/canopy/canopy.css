@@ -996,11 +996,12 @@
 .canopyTesterStatus strong{font-size:.92rem}
 @media(max-width:760px){.canopyTesterStatus{grid-template-columns:1fr}}
 
-/* Completed curriculum module marker — WOMATE lemon-lime check */
-.canopyCoursePage .canopyModuleNo svg{
-  color:var(--canopy-lime)!important;
-  stroke:var(--canopy-lime)!important;
-  width:22px;
-  height:22px;
-  stroke-width:2.6;
-}
+/* Canopy weekly puzzle variety */
+.ca-match-grid,.ca-crossword,.ca-anagram-grid,.ca-jigsaw{display:grid;gap:10px;margin:15px 0}
+.ca-match-row{display:grid;grid-template-columns:42px minmax(0,1fr) minmax(160px,220px);gap:12px;align-items:center;padding:12px;border:1px solid #dfe7e4;border-radius:14px;background:#fff}
+.ca-match-row>b{color:#0E4D4A}.ca-match-row p{margin:0}.ca-match-row select,.ca-crossword input,.ca-anagram-grid input{border:1px solid #ccd7d4;border-radius:10px;padding:10px;background:#fff;color:#173b39}
+.ca-crossword label{display:grid;grid-template-columns:32px minmax(0,1fr) minmax(140px,220px);gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid #e5ecea}
+.ca-crossword label:last-child{border-bottom:0}.ca-crossword span{letter-spacing:normal;font-weight:600;color:#315b58}.ca-crossword small{color:#6c817f}
+.ca-anagram-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.ca-anagram-grid label{display:grid;gap:6px;padding:12px;border:1px solid #dfe7e4;border-radius:14px;background:#fff}.ca-anagram-grid span{letter-spacing:.15em;font-weight:800;color:#0E4D4A}.ca-anagram-grid small{line-height:1.45;color:#5d7471}
+.ca-jigsaw-piece{display:grid;grid-template-columns:42px minmax(0,1fr) auto;gap:10px;align-items:center;padding:12px;border:1px solid #dfe7e4;border-radius:14px;background:#fff}.ca-jigsaw-piece>b{color:#0E4D4A}.ca-jigsaw-piece>span{font-weight:750;color:#173b39}.ca-jigsaw-piece>div{display:flex;gap:6px}.ca-jigsaw .ca-jigsaw-move{width:34px;height:34px;padding:0;border-radius:999px;background:#eef4f1;color:#0E4D4A}
+@media(max-width:720px){.ca-match-row,.ca-crossword label{grid-template-columns:1fr}.ca-anagram-grid{grid-template-columns:1fr}.ca-jigsaw-piece{grid-template-columns:34px minmax(0,1fr) auto}}
