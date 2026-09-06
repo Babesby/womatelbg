@@ -302,6 +302,22 @@ function CanopyHeroDemo(){
  </section>;
 }
 
+const CANOPY_AGENT_SCRIPT='https://cdn.jotfor.ms/agent/embedjs/01a0758b42c07000893310f980bc32c2a80c/embed.js';
+const CANOPY_AGENT_STYLE_ID='canopy-jotform-guide-guard';
+function CanopyLearningGuide({path,viewer}){
+ const manager=['manager','admin'].includes(viewer?.profile?.role);
+ const knowledgeCheck=/^\/canopy\/course\/she-leads\/[^/]+\/quiz$/.test(path);
+ const learnerArea=Boolean(viewer)&&!manager&&path.startsWith('/canopy/');
+ useEffect(()=>{
+  let style=document.getElementById(CANOPY_AGENT_STYLE_ID);
+  if(!style){style=document.createElement('style');style.id=CANOPY_AGENT_STYLE_ID;style.textContent='body.canopyKnowledgeCheck iframe[src*="jotfor"],body.canopyKnowledgeCheck iframe[src*="jotform"],body.canopyKnowledgeCheck [id*="jotform" i],body.canopyKnowledgeCheck [class*="jotform" i],body.canopyKnowledgeCheck [id*="agent" i][style*="fixed"],body.canopyKnowledgeCheck [class*="agent" i][style*="fixed"]{display:none!important;visibility:hidden!important;pointer-events:none!important}';document.head.appendChild(style)}
+  document.body.classList.toggle('canopyKnowledgeCheck',knowledgeCheck);
+  if(learnerArea&&!knowledgeCheck&&!document.querySelector(`script[src="${CANOPY_AGENT_SCRIPT}"]`)){const script=document.createElement('script');script.src=CANOPY_AGENT_SCRIPT;script.async=true;script.dataset.canopyGuide='true';document.body.appendChild(script)}
+  return()=>document.body.classList.remove('canopyKnowledgeCheck');
+ },[learnerArea,knowledgeCheck,path]);
+ return null;
+}
+
 export default function CanopyApp(){
  const[path,setPath]=useState(route());const[loading,setLoading]=useState(true);const[viewer,setViewer]=useState(null);const[progress,setProgress]=useState([]);const[submissions,setSubmissions]=useState([]);const[snapshot,setSnapshot]=useState(null);
  const load=async()=>{const session=getStoredSession();if(!session){setViewer(null);setProgress([]);setSubmissions([]);setSnapshot(null);setLoading(false);return}try{const v=await getViewer(session);if(!v){setViewer(null);return}setViewer(v);const manager=['admin','manager'].includes(v.profile?.role);const results=await Promise.allSettled([getProgress(v.session),manager?Promise.resolve([]):getWeeklyAssignmentSubmissions(v.session)]);setProgress(results[0].status==='fulfilled'?(results[0].value||[]):[]);setSubmissions(results[1].status==='fulfilled'?(results[1].value||[]):[]);if(results[0].status==='rejected')console.error('Canopy progress load failed:',results[0].reason);if(results[1].status==='rejected')console.error('Canopy weekly submissions load failed:',results[1].reason);if(manager){try{setSnapshot(await getManagerSnapshot(v.session))}catch(err){console.error('Canopy manager snapshot failed:',err);setSnapshot({profiles:[],enrollments:[],progress:[],submissions:[],actions:[],dataError:String(err?.message||err)})}}else setSnapshot(null)}catch(err){console.error('Canopy viewer load failed:',err);setViewer(null);setProgress([]);setSubmissions([]);setSnapshot(null)}finally{setLoading(false)}};
@@ -330,5 +346,5 @@ export default function CanopyApp(){
  else if(path==='/canopy/resources')content=<Resources/>;
  else if(path==='/canopy/profile')content=<Profile viewer={viewer}/>;
  else{const match=path.match(/^\/canopy\/course\/she-leads\/([^/]+)\/([^/]+)$/);if(match){const[,moduleId,last]=match;content=last==='quiz'?<Quiz moduleId={moduleId} session={viewer.session} reload={load} tester={tester}/>:<Lesson moduleId={moduleId} lessonId={last} progress={progress} session={viewer.session} reload={load} tester={tester}/>}else content=tester?<TesterDashboard viewer={viewer} progress={progress}/>:<Dashboard viewer={viewer} progress={progress}/>}
- return <><Helmet><title>{manager?'Canopy Operations':'My Canopy'} | WOMATE</title></Helmet><LearnerShell viewer={viewer} progress={progress}>{content}</LearnerShell></>
+ return <><Helmet><title>{manager?'Canopy Operations':'My Canopy'} | WOMATE</title></Helmet><CanopyLearningGuide path={path} viewer={viewer}/><LearnerShell viewer={viewer} progress={progress}>{content}</LearnerShell></>
 }
