@@ -1,8 +1,8 @@
 ﻿.selectedPage{
-  --green:#17382b;
-  --deep:#10231b;
-  --lime:#caff58;
-  --cream:#f4f1e8;
+  --green:#0E4D4A;
+  --deep:#083F3E;
+  --lime:#C6FF52;
+  --cream:#F9F6FF;
   min-height:100vh;
   background:var(--cream);
   color:var(--deep);

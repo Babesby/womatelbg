@@ -1,10 +1,10 @@
 ﻿const SIZE=1080;
 
-const GREEN='#17382b';
-const LIME='#CAFF58';
-const CREAM='#F4F1E8';
+const GREEN='#0E4D4A';
+const LIME='#C6FF52';
+const CREAM='#F9F6FF';
 const WHITE='#FFFFFF';
-const INK='#10231b';
+const INK='#083F3E';
 const MUTED='#51655c';
 
 function roundedRect(ctx,x,y,w,h,r){
@@ -278,7 +278,7 @@ export async function renderSelectedCard(canvas,{
   ctx.fillStyle=WHITE;
   ctx.font='400 18px Arial, Helvetica, sans-serif';
   ctx.fillText(
-    'Share your selection. Carry the mission.',
+    'Driving inclusive climate action with technology.',
     1010,
     985
   );
