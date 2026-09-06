@@ -22,7 +22,8 @@ const envVideo=(...keys)=>{
 const MODULE_VIDEO_URLS={
   '01':'https://share.synthesia.io/embeds/videos/78a7b03f-3a6b-4cf2-9fc8-20e00fb50bee',
   '02':'https://share.synthesia.io/embeds/videos/4d2a680b-b8b6-479a-908a-429ff3046abc',
-  '03':'https://share.synthesia.io/embeds/videos/03d27d73-0d28-4645-864e-596b563e3f12'
+  '03':'https://share.synthesia.io/embeds/videos/03d27d73-0d28-4645-864e-596b563e3f12',
+  '04':'https://share.synthesia.io/embeds/videos/d4b0cb1a-e969-492d-8818-7a7b305fd3f8'
 };
 
 const videoFor=(moduleId)=>envVideo(
