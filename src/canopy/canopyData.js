@@ -20,7 +20,8 @@ const envVideo=(...keys)=>{
 };
 
 const MODULE_VIDEO_URLS={
-  '01':'https://share.synthesia.io/embeds/videos/78a7b03f-3a6b-4cf2-9fc8-20e00fb50bee'
+  '01':'https://share.synthesia.io/embeds/videos/78a7b03f-3a6b-4cf2-9fc8-20e00fb50bee',
+  '02':'https://share.synthesia.io/embeds/videos/4d2a680b-b8b6-479a-908a-429ff3046abc'
 };
 
 const videoFor=(moduleId)=>envVideo(
