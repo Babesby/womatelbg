@@ -487,7 +487,7 @@ export default function SelectedCard(){
 
       <footer className="selectedFooter">
         <span>
-          WOMATE · Women in Climate Action
+          WOMATE · Women in Climate
         </span>
 
         <a href="/">

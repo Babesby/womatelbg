@@ -264,7 +264,7 @@ export async function renderSelectedCard(canvas,{
   ctx.fillStyle=WHITE;
   ctx.font='400 22px Arial, Helvetica, sans-serif';
   ctx.fillText(
-    'Women in Climate Action',
+    'Women in Climate',
     68,
     1005
   );

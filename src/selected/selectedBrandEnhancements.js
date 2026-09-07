@@ -87,3 +87,44 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     wrapped.__womateV2=true; HTMLCanvasElement.prototype.toDataURL=wrapped;
   }
 })();
+
+
+// WOMATE_CARD_TEXTURE_V3
+// Adds a restrained texture only on flat brand-background pixels and preserves text/photo clarity.
+(function installWomateCardTextureV3(){
+  function near(d,r,g,b,t=2){return Math.abs(d[0]-r)<=t&&Math.abs(d[1]-g)<=t&&Math.abs(d[2]-b)<=t&&d[3]>245}
+  function texture(c){
+    if(!c||c.width!==1080||c.height!==1080)return;
+    const ctx=c.getContext('2d',{willReadFrequently:true}); if(!ctx)return;
+    ctx.save();
+    try{
+      for(let y=18;y<1065;y+=27){
+        for(let x=18;x<1065;x+=27){
+          const d=ctx.getImageData(x,y,1,1).data;
+          if(near(d,14,77,74,1)){
+            ctx.fillStyle='rgba(198,255,82,.075)';
+            ctx.beginPath(); ctx.arc(x,y,1.15,0,Math.PI*2); ctx.fill();
+          }else if(near(d,249,246,255,1)){
+            ctx.fillStyle='rgba(14,77,74,.035)';
+            ctx.fillRect(x,y,1,1);
+          }
+        }
+      }
+    }catch(_){} finally{ctx.restore()}
+  }
+  function all(){document.querySelectorAll('canvas').forEach(texture)}
+  window.addEventListener('load',()=>setTimeout(all,180));
+  document.addEventListener('change',()=>setTimeout(all,80));
+  document.addEventListener('input',()=>setTimeout(all,80));
+  document.addEventListener('click',()=>setTimeout(all,160));
+  const nativeToBlob=HTMLCanvasElement.prototype.toBlob;
+  if(nativeToBlob&&!nativeToBlob.__womateTextureV3){
+    const wrapped=function(...args){texture(this);return nativeToBlob.apply(this,args)};
+    wrapped.__womateTextureV3=true; HTMLCanvasElement.prototype.toBlob=wrapped;
+  }
+  const nativeToDataURL=HTMLCanvasElement.prototype.toDataURL;
+  if(nativeToDataURL&&!nativeToDataURL.__womateTextureV3){
+    const wrapped=function(...args){texture(this);return nativeToDataURL.apply(this,args)};
+    wrapped.__womateTextureV3=true; HTMLCanvasElement.prototype.toDataURL=wrapped;
+  }
+})();

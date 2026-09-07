@@ -401,3 +401,13 @@
     align-items:flex-start;
   }
 }
+
+
+/* WOMATE_SELECTED_TEXTURE_V3 — subtle, non-distracting brand texture */
+body{
+  background-color:#F9F6FF;
+  background-image:
+    radial-gradient(circle at 18% 20%, rgba(198,255,82,.07) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 78% 65%, rgba(14,77,74,.055) 0 1px, transparent 1.5px);
+  background-size:28px 28px,34px 34px;
+}
