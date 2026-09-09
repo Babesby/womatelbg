@@ -8,6 +8,7 @@ import CanopySelectionCodes from './CanopySelectionCodes';
 import {activateTeamAccess,getStaffAccess,getStaffDashboard} from './canopyTeamAccessApi';
 import {CanopyAdminRolePreview,CanopyTeamAccessAdmin,CanopyTeamActivation,CanopyStaffDashboard,teamRoleLabel} from './CanopyTeamAccess';
 import {CANOPY_ASSIGNMENT_SCHEDULE,CANOPY_ACCESS_DATE} from './canopySchedule';
+import CanopyStaffWorkspace from './CanopyStaffWorkspace';
 import{ArrowLeft,ArrowRight,BookOpen,Check,ChevronRight,ClipboardCheck,Clock,FileText,GraduationCap,Leaf,Lock,LogOut,Menu,PlayCircle,Sparkles,UserRound,X,BookMarked,UsersRound,PenLine,TrendingUp,Eye,EyeOff,MessageSquare,ShieldAlert,Award,BarChart3,Bell} from 'lucide-react';
 import'./canopy.css';
 import{CANOPY_BRAND,modules,resources}from'./canopyData';
@@ -366,7 +367,13 @@ export default function CanopyApp(){
  if(authRoute)return <Auth mode={path.endsWith('signup')?'signup':'login'}/>;
  if(loading)return <div className="canopyLoading"><Leaf/><span>Opening Canopy…</span></div>;
  if(!viewer){go('/canopy/login');return null}
- const manager=canManageCanopy(viewer);const operational=isCanopyOperationsStaff(viewer);const staffRole=viewer?.staffAccess?.role;const tester=isCanopyTester(viewer);const legacyAdmin=['manager','admin'].includes(viewer?.profile?.role);
+ 
+/* WOMATE_FULL_TEAM_WORKSPACE_PREVIEW_20260909 */
+const __womateTeamPath=path==='/canopy/manage/role-preview'||path.startsWith('/canopy/manage/role-preview/')||path==='/canopy/operations'||path.startsWith('/canopy/operations/')||path==='/canopy/coordinator'||path.startsWith('/canopy/coordinator/')||path==='/canopy/fellow'||path.startsWith('/canopy/fellow/');
+if(__womateTeamPath){
+  return <CanopyStaffWorkspace viewer={viewer} path={path} onSignOut={async()=>{await signOut();go('/canopy/login')}}/>;
+}
+const manager=canManageCanopy(viewer);const operational=isCanopyOperationsStaff(viewer);const staffRole=viewer?.staffAccess?.role;const tester=isCanopyTester(viewer);const legacyAdmin=['manager','admin'].includes(viewer?.profile?.role);
  if(manager&&!path.startsWith('/canopy/manage')&&!['/canopy/profile','/canopy/notifications','/canopy/team-access'].includes(path)){go('/canopy/manage');return null}
  if(operational){const home=staffRole==='programme_operations'?'/canopy/operations':staffRole==='module_coordinator'?'/canopy/coordinator':'/canopy/fellow';if(![home,'/canopy/profile','/canopy/notifications','/canopy/team-access'].includes(path)){go(home);return null}}
  const active=tester||viewer.enrollments?.some(e=>e.status==='active');let content;
