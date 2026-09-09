@@ -1,5 +1,5 @@
 -- WOMATE CANOPY · FULL TEAM WORKSPACE DATA
--- 9 September 2026
+-- 9 September 2026 · NAV/RPC FIX
 -- Additive / idempotent. No new auth model and no participant schedule changes.
 -- Provides richer read-only workspace data for real staff roles and Admin Preview.
 
@@ -135,7 +135,7 @@ create or replace function public.canopy_admin_preview_staff_workspace(
 )
 returns jsonb
 language plpgsql
-stable
+volatile
 security definer
 set search_path=public,auth
 as $$

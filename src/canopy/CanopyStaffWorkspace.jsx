@@ -247,8 +247,15 @@ function CapabilityPage({role,keyName,moduleId}){
 }
 
 export default function CanopyStaffWorkspace({viewer,path,onSignOut}){
-  const params=new URLSearchParams(window.location.search);
-  const isPreview=path==='/canopy/manage/role-preview'||path.startsWith('/canopy/manage/role-preview/');
+  const[locationKey,setLocationKey]=useState(()=>window.location.pathname+window.location.search);
+  useEffect(()=>{
+    const sync=()=>setLocationKey(window.location.pathname+window.location.search);
+    window.addEventListener('popstate',sync);
+    return()=>window.removeEventListener('popstate',sync);
+  },[]);
+  const livePath=window.location.pathname.replace(/\/$/,'')||'/canopy';
+  const params=useMemo(()=>new URLSearchParams(window.location.search),[locationKey]);
+  const isPreview=livePath==='/canopy/manage/role-preview'||livePath.startsWith('/canopy/manage/role-preview/');
   const previewRole=isPreview?params.get('role'):null;
   const previewModule=isPreview?params.get('module'):null;
   if(isPreview&&!previewRole)return <PreviewChooser/>;
@@ -258,7 +265,7 @@ export default function CanopyStaffWorkspace({viewer,path,onSignOut}){
   const moduleId=previewModule||data?.module_id||null;
   const [open,setOpen]=useState(false);
   const root=isPreview?'/canopy/manage/role-preview':(ROLE_ROOTS[role]||'/canopy/classroom');
-  const requested=isPreview?(params.get('view')||'overview'):(path.split('/').filter(Boolean).pop()||'overview');
+  const requested=isPreview?(params.get('view')||'overview'):(livePath.split('/').filter(Boolean).pop()||'overview');
   const valid=new Set((NAV[role]||[]).map(x=>x[0]));
   const view=valid.has(requested)?requested:'overview';
 
@@ -300,7 +307,7 @@ export default function CanopyStaffWorkspace({viewer,path,onSignOut}){
     </aside>
     <div className="cstaffMain">
       <header className="cstaffTop"><button className="cstaffMenu" onClick={()=>setOpen(true)}><Menu/></button><div><small>{moduleId?moduleLabel(moduleId):'CANOPY DELIVERY TEAM'}</small><b>{nameFrom(viewer)}</b></div>{!isPreview&&<button className="cstaffSignout" onClick={onSignOut}><LogOut/><span>Sign out</span></button>}</header>
-      <main className="cstaffContent"><div className="cstaffPageHead"><span>{ROLE_LABELS[role]}</span><h1>{(NAV[role].find(x=>x[0]===view)||[])[1]||'Workspace'}</h1><p>{isPreview?'This is the same role navigation staff will use after activation.':'Your workspace is limited to the responsibilities and data authorised for your role.'}</p></div>{data?.limited_preview&&<div className="cstaffUpgradeNote"><b>Workspace compatibility mode</b><span>The navigation is complete, but the richer learner/communication lists require the included staff-workspace SQL. Dashboard data is still available now.</span></div>}{content}</main>
+      <main className="cstaffContent"><div className="cstaffPageHead"><span>{ROLE_LABELS[role]}</span><h1>{(NAV[role].find(x=>x[0]===view)||[])[1]||'Workspace'}</h1><p>{isPreview?'This is the same role navigation staff will use after activation.':'Your workspace is limited to the responsibilities and data authorised for your role.'}</p></div>{content}</main>
     </div>
   </div>;
 }
