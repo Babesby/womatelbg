@@ -70,7 +70,7 @@ function apiConfig(){
 }
 async function rpc(session,name,body={}){
   const{url,key}=apiConfig();
-  if(!url||!key)throw new Error('Canopy Supabase environment variables are missing.');
+  if(!url||!key)throw new Error('Canopy is temporarily unavailable.');
   const token=session?.access_token||session?.session?.access_token;
   if(!token)throw new Error('Your Canopy session has expired. Sign in again.');
   const res=await fetch(`${url}/rest/v1/rpc/${name}`,{
@@ -85,7 +85,7 @@ async function rpc(session,name,body={}){
   const text=await res.text();
   let data=null;
   try{data=text?JSON.parse(text):null}catch{data=text}
-  if(!res.ok)throw new Error(data?.message||data?.error||text||`Request failed (${res.status}).`);
+  if(!res.ok){console.error('Canopy team request failed',name,res.status,text);throw new Error('We could not complete that action. Please try again.');}
   return data;
 }
 function nav(path){
@@ -105,7 +105,7 @@ function Stat({value,label}){return <article><strong>{value??0}</strong><span>{l
 function Empty({children='No records here yet.'}){return <div className="cstaffEmpty">{children}</div>}
 function Status({children}){return <span className={'cstaffStatus '+String(children||'').replaceAll('_','-')}>{String(children||'—').replaceAll('_',' ')}</span>}
 
-function useWorkspace({viewer,previewRole,previewModule}){
+function useWorkspace({viewer,previewRole,previewModule,refreshKey=0}){
   const[data,setData]=useState(null);
   const[error,setError]=useState('');
   const[loading,setLoading]=useState(true);
@@ -114,33 +114,16 @@ function useWorkspace({viewer,previewRole,previewModule}){
     (async()=>{
       setLoading(true);setError('');
       try{
-        let result;
-        if(previewRole){
-          try{
-            result=await rpc(viewer?.session,'canopy_admin_preview_staff_workspace',{
-              p_role:previewRole,p_module_id:previewModule||null
-            });
-          }catch(first){
-            result=await rpc(viewer?.session,'canopy_admin_preview_staff_dashboard',{
-              p_role:previewRole,p_module_id:previewModule||null
-            });
-            result={...result,limited_preview:true};
-          }
-        }else{
-          try{
-            result=await rpc(viewer?.session,'canopy_staff_workspace_data',{});
-          }catch(first){
-            result=await rpc(viewer?.session,'canopy_staff_dashboard',{});
-            result={...result,limited_preview:true};
-          }
-        }
+        const result=previewRole
+          ?await rpc(viewer?.session,'canopy_admin_preview_staff_workspace',{p_role:previewRole,p_module_id:previewModule||null})
+          :await rpc(viewer?.session,'canopy_staff_workspace_data',{});
         if(live)setData(result||{});
-      }catch(e){if(live)setError(e.message||String(e))}
+      }catch(e){if(live)setError('This workspace could not be loaded. Refresh the page or contact WOMATE if the problem continues.')}
       finally{if(live)setLoading(false)}
     })();
     return()=>{live=false};
-  },[viewer?.session?.access_token,previewRole,previewModule]);
-  return{data,error,loading,setData};
+  },[viewer?.session?.access_token,previewRole,previewModule,refreshKey]);
+  return{data,error,loading};
 }
 
 function PreviewChooser(){
@@ -183,7 +166,7 @@ function Learners({data,moduleId,title='Learners'}){
     {learners.length?<div className="cstaffTable">
       <div className="head"><b>Learner</b><b>Country</b><b>Access</b><b>Activity</b></div>
       {learners.map((l,i)=><div key={l.user_id||l.id||i}><span><b>{l.full_name||l.learner_name||'Learner'}</b><small>{l.email||''}</small></span><span>{l.country||'—'}</span><Status>{l.enrollment_status||l.status||'visible'}</Status><span>{l.submission_count??l.activity_count??'—'}</span></div>)}
-    </div>:<Empty>{data?.limited_preview?'The existing dashboard RPC does not expose a learner roster. Run the included workspace SQL to enable the complete roster in both Admin Preview and real staff workspaces.':'No learners are currently visible in this scope.'}</Empty>}
+    </div>:<Empty>No learners are currently visible in this scope.</Empty>}
   </section>
 }
 function RecentSubmissions({items=[],attentionOnly=false,compact=false}){
@@ -232,8 +215,32 @@ function Spotlight({viewer,data,preview,role,onRefresh}){
     <label className="cstaffNomNote">Optional nomination note<textarea value={note} onChange={e=>setNote(e.target.value)} maxLength="600" placeholder="Why should WOMATE notice this work?"/></label>
     <div className="cstaffCards">{subs.slice(0,12).map((s,i)=><article key={s.id||i}><div><small>{s.module_label||moduleLabel(s.week_key)} · {s.learner_name||'Learner'}</small><h3>{s.score!=null?`${s.score}/100 · ${s.score_band||''}`:'Learner submission'}</h3><p>{s.paragraph_excerpt||'Review the submission and nominate exceptional work.'}</p></div><button className="cstaffAction" disabled={preview||busy===s.id||!s.id} onClick={()=>nominate(s.id)}>{busy===s.id?'Saving…':'Nominate'}</button></article>)}</div>
   </section>
-  <section className="cstaffPanel"><header><div><small>NOMINATIONS</small><h2>Current Spotlight queue</h2></div><span>{spots.length}</span></header>{spots.length?<div className="cstaffCards">{spots.map((s,i)=><article key={s.id||i}><div><small>{moduleLabel(s.module_id)} · {s.learner_name||'Learner'}</small><h3>{String(s.category||'Spotlight').replaceAll('_',' ')}</h3><p>{s.note||'No nomination note.'}</p></div><div className="cstaffStack"><Status>{s.status}</Status>{role==='programme_operations'&&s.status==='nominated'&&<button className="cstaffAction subtle" disabled={preview||busy===s.id} onClick={()=>shortlist(s.id)}>Shortlist</button>}</div></article>)}</div>:<Empty/>}</section></div>
+  <section className="cstaffPanel"><header><div><small>NOMINATIONS</small><h2>Current Spotlight queue</h2></div><span>{spots.length}</span></header>{spots.length?<div className="cstaffCards">{spots.map((s,i)=><article key={s.id||i}><div><small>{moduleLabel(s.module_id)} · {s.learner_name||'Learner'}</small><h3>{String(s.category||'Spotlight').replaceAll('_',' ')}</h3><p>{s.note||'No nomination note.'}</p></div><div className="cstaffStack"><Status>{s.status}</Status>{role==='programme_operations'&&s.status==='nominated'&&<button className="cstaffAction subtle" disabled={preview||busy===s.id} onClick={()=>shortlist(s.id)}>Shortlist</button>}{role==='programme_manager'&&!preview&&<><button className="cstaffAction subtle" disabled={busy===s.id} onClick={async()=>{setBusy(s.id);try{await rpc(viewer.session,'canopy_update_spotlight_status',{p_nomination_id:s.id,p_status:'featured'});setMsg('Spotlight updated.');onRefresh?.()}catch(e){setMsg(e.message)}finally{setBusy('')}}}>Feature</button><button className="cstaffAction subtle" disabled={busy===s.id} onClick={async()=>{setBusy(s.id);try{await rpc(viewer.session,'canopy_update_spotlight_status',{p_nomination_id:s.id,p_status:'declined'});setMsg('Nomination closed.');onRefresh?.()}catch(e){setMsg(e.message)}finally{setBusy('')}}}>Close</button></>}</div></article>)}</div>:<Empty/>}</section></div>
 }
+
+function ActionNotice({text}){return text?<p className="cstaffMsg">{text}</p>:null}
+function StaffForm({children}){return <div className="cstaffFunctionalForm">{children}</div>}
+function ReviewAssignments({viewer,data,preview,onRefresh}){
+ const rows=data?.recent_submissions||[];const[open,setOpen]=useState('');const[score,setScore]=useState('');const[feedback,setFeedback]=useState('');const[decision,setDecision]=useState('completed');const[busy,setBusy]=useState(false);const[msg,setMsg]=useState('');
+ async function save(id){const n=Number(score);if(!Number.isFinite(n)||n<0||n>100){setMsg('Enter a score from 0 to 100.');return}setBusy(true);setMsg('');try{await rpc(viewer.session,'canopy_manager_review_assignment',{p_submission_id:id,p_score:n,p_feedback:feedback||'',p_decision:decision});setOpen('');setMsg('Review saved and learner notified.');onRefresh?.()}catch(e){setMsg(e.message)}finally{setBusy(false)}}
+ return <section className="cstaffPanel"><header><div><small>ASSIGNMENTS</small><h2>Assignment reviews</h2></div><span>{rows.length}</span></header><ActionNotice text={msg}/>{rows.length?<div className="cstaffCards">{rows.map(s=><article key={s.id}><div><small>{s.module_label||moduleLabel(s.week_key)} · {s.learner_name||'Learner'}</small><h3>{s.score!=null?`${s.score}/100 · ${s.score_band||''}`:'Submission received'}</h3><p className="cstaffLongText">{s.paragraph_response||s.paragraph_excerpt||'Submission received.'}</p><div className="cstaffEvidence">{s.canvas_link&&<a href={s.canvas_link} target="_blank" rel="noreferrer">CanopyCanvas</a>}{s.linkedin_link&&<a href={s.linkedin_link} target="_blank" rel="noreferrer">LinkedIn evidence</a>}</div>{open===s.id&&<StaffForm><label>Score<input type="number" min="0" max="100" value={score} onChange={e=>setScore(e.target.value)}/></label><label>Decision<select value={decision} onChange={e=>setDecision(e.target.value)}><option value="completed">Completed</option><option value="revision_required">Revision required</option><option value="needs_manual_review">Keep under review</option></select></label><label className="wide">Feedback<textarea rows="4" value={feedback} onChange={e=>setFeedback(e.target.value)}/></label><button className="cstaffAction" disabled={busy} onClick={()=>save(s.id)}>{busy?'Saving…':'Save review'}</button></StaffForm>}</div><div className="cstaffStack"><Status>{s.assessment_status||'submitted'}</Status>{preview?<span className="cstaffReadOnly">Preview only</span>:open===s.id?<button className="cstaffAction subtle" onClick={()=>setOpen('')}>Cancel</button>:<button className="cstaffAction" onClick={()=>{setOpen(s.id);setScore(String(s.score??''));setFeedback(s.final_feedback||'');setDecision(s.assessment_status==='revision_required'?'revision_required':'completed')}}>Review</button>}</div></article>)}</div>:<Empty/>}</section>
+}
+function StaffCommunications({viewer,data,role,preview,onRefresh}){
+ const learners=data?.learners||[],rows=data?.communications||[];const types=role==='programme_manager'?['warning','feedback','reminder']:['feedback','reminder'];const[form,setForm]=useState({learner_id:'',type:types[0],subject:'',message:''});const[busy,setBusy]=useState(false),[msg,setMsg]=useState('');
+ async function send(e){e.preventDefault();if(preview)return;setBusy(true);setMsg('');try{await rpc(viewer.session,'canopy_staff_send_communication',{p_learner_id:form.learner_id,p_type:form.type,p_subject:form.subject,p_message:form.message});setForm({learner_id:'',type:types[0],subject:'',message:''});setMsg('Message sent.');onRefresh?.()}catch(e){setMsg(e.message)}finally{setBusy(false)}}
+ return <><section className="cstaffPanel"><header><div><small>LEARNER CONTACT</small><h2>Send a message</h2></div></header><ActionNotice text={msg}/><form onSubmit={send}><StaffForm><label>Learner<select disabled={preview} required value={form.learner_id} onChange={e=>setForm({...form,learner_id:e.target.value})}><option value="">Select learner</option>{learners.map(l=><option key={l.user_id} value={l.user_id}>{l.full_name||'Learner'}</option>)}</select></label><label>Type<select disabled={preview} value={form.type} onChange={e=>setForm({...form,type:e.target.value})}>{types.map(t=><option key={t}>{t}</option>)}</select></label><label className="wide">Subject<input disabled={preview} required value={form.subject} onChange={e=>setForm({...form,subject:e.target.value})}/></label><label className="wide">Message<textarea disabled={preview} required rows="4" value={form.message} onChange={e=>setForm({...form,message:e.target.value})}/></label><button className="cstaffAction" disabled={preview||busy}>{busy?'Sending…':preview?'Preview only':'Send message'}</button></StaffForm></form></section><section className="cstaffPanel"><header><div><small>RECENT</small><h2>Communications</h2></div><span>{rows.length}</span></header>{rows.length?<div className="cstaffCards">{rows.map(a=><article key={a.id}><div><small>{String(a.action_type||'message').toUpperCase()} · {a.learner_name||'Learner'}</small><h3>{a.subject}</h3><p>{a.message}</p></div><Status>{a.status}</Status></article>)}</div>:<Empty/>}</section></>
+}
+function StaffComplaints({viewer,data,preview,onRefresh}){
+ const rows=data?.complaints||[];const[reply,setReply]=useState({});const[busy,setBusy]=useState('');const[msg,setMsg]=useState('');async function resolve(id){const text=(reply[id]||'').trim();if(!text){setMsg('Add a response before resolving.');return}setBusy(id);setMsg('');try{await rpc(viewer.session,'canopy_staff_resolve_complaint',{p_complaint_id:id,p_response:text,p_status:'resolved'});setMsg('Response saved and learner notified.');onRefresh?.()}catch(e){setMsg(e.message)}finally{setBusy('')}}
+ return <section className="cstaffPanel"><header><div><small>LEARNER CARE</small><h2>Complaints</h2></div><span>{rows.length}</span></header><ActionNotice text={msg}/>{rows.length?<div className="cstaffCards">{rows.map(a=><article key={a.id}><div><small>{a.learner_name||'Learner'}</small><h3>{a.subject}</h3><p>{a.message}</p>{a.response_message&&<p className="cstaffResponse"><b>WOMATE response:</b> {a.response_message}</p>}{a.status==='open'&&<textarea className="cstaffReply" disabled={preview} rows="3" value={reply[a.id]||''} onChange={e=>setReply({...reply,[a.id]:e.target.value})} placeholder="Response to learner"/>}</div><div className="cstaffStack"><Status>{a.status}</Status>{a.status==='open'&&<button className="cstaffAction" disabled={preview||busy===a.id} onClick={()=>resolve(a.id)}>{busy===a.id?'Saving…':preview?'Preview only':'Respond & resolve'}</button>}</div></article>)}</div>:<Empty/>}</section>
+}
+function StaffCertificates({viewer,data,preview,onRefresh}){
+ const learners=data?.learners||[],rows=data?.certificates||[];const[learner,setLearner]=useState(''),[url,setUrl]=useState(''),[busy,setBusy]=useState(false),[msg,setMsg]=useState('');async function issue(e){e.preventDefault();if(preview)return;setBusy(true);setMsg('');try{await rpc(viewer.session,'canopy_manager_issue_certificate',{p_user_id:learner,p_drive_url:url});setLearner('');setUrl('');setMsg('Certificate issued and learner notified.');onRefresh?.()}catch(e){setMsg(e.message)}finally{setBusy(false)}}
+ return <><section className="cstaffPanel"><header><div><small>COMPLETION</small><h2>Issue certificate</h2></div></header><ActionNotice text={msg}/><form onSubmit={issue}><StaffForm><label>Learner<select disabled={preview} required value={learner} onChange={e=>setLearner(e.target.value)}><option value="">Select learner</option>{learners.map(l=><option key={l.user_id} value={l.user_id}>{l.full_name||'Learner'}</option>)}</select></label><label className="wide">Viewable Google Drive link<input disabled={preview} required type="url" value={url} onChange={e=>setUrl(e.target.value)}/></label><button className="cstaffAction" disabled={preview||busy}>{busy?'Issuing…':preview?'Preview only':'Issue certificate'}</button></StaffForm></form></section><section className="cstaffPanel"><header><div><small>ISSUED</small><h2>Certificate records</h2></div><span>{rows.length}</span></header>{rows.length?<div className="cstaffCards">{rows.map(c=><article key={c.id}><div><small>{c.learner_name||'Learner'}</small><h3>{c.title||'She Leads certificate'}</h3><p>{c.issued_at?new Date(c.issued_at).toLocaleDateString():''}</p></div>{c.drive_url&&<a className="cstaffAction subtle" href={c.drive_url} target="_blank" rel="noreferrer">Open</a>}</article>)}</div>:<Empty/>}</section></>
+}
+function TeamDirectory({data}){const rows=data?.team_members||[];return <section className="cstaffPanel"><header><div><small>DELIVERY TEAM</small><h2>Team operations</h2></div><span>{rows.length}</span></header>{rows.length?<div className="cstaffTable team"><div className="head"><b>Team member</b><b>Role</b><b>Module</b><b>Status</b></div>{rows.map(m=><div key={m.user_id}><span><b>{m.full_name||'Team member'}</b></span><span>{ROLE_LABELS[m.role]||m.role}</span><span>{m.module_id?moduleLabel(m.module_id):'Programme-wide'}</span><Status>{m.status}</Status></div>)}</div>:<Empty/>}</section>}
+function ManagedLearners({viewer,data,role,preview,onRefresh}){const learners=data?.learners||[];const[busy,setBusy]=useState(''),[msg,setMsg]=useState('');async function change(l){setBusy(l.user_id);setMsg('');try{await rpc(viewer.session,'canopy_programme_manager_set_learner_access',{p_user_id:l.user_id,p_status:l.enrollment_status==='active'?'paused':'active'});setMsg('Learner access updated.');onRefresh?.()}catch(e){setMsg(e.message)}finally{setBusy('')}}return <section className="cstaffPanel"><header><div><small>PROGRAMME</small><h2>{role==='programme_manager'?'Learners':'Learner operations'}</h2></div><span>{learners.length}</span></header><ActionNotice text={msg}/>{learners.length?<div className="cstaffTable"><div className="head"><b>Learner</b><b>Country</b><b>Access</b><b>Submissions</b></div>{learners.map(l=><div key={l.user_id}><span><b>{l.full_name||'Learner'}</b></span><span>{l.country||'—'}</span><span><Status>{l.enrollment_status||'waiting'}</Status>{role==='programme_manager'&&!preview&&<button className="cstaffTiny" disabled={busy===l.user_id} onClick={()=>change(l)}>{l.enrollment_status==='active'?'Pause':'Activate'}</button>}</span><span>{l.submission_count??0}</span></div>)}</div>:<Empty/>}</section>}
+
 function CapabilityPage({role,keyName,moduleId}){
   const map={
     certificates:['CERTIFICATES','Certificate oversight','Only authorised Programme Manager/WOMATE controls can issue final completion records.'],
@@ -260,10 +267,11 @@ export default function CanopyStaffWorkspace({viewer,path,onSignOut}){
   const previewModule=isPreview?params.get('module'):null;
   if(isPreview&&!previewRole)return <PreviewChooser/>;
 
-  const{data,error,loading}=useWorkspace({viewer,previewRole,previewModule});
+  const{data,error,loading}=useWorkspace({viewer,previewRole,previewModule,refreshKey});
   const role=previewRole||data?.role||null;
   const moduleId=previewModule||data?.module_id||null;
   const [open,setOpen]=useState(false);
+  const [refreshKey,setRefreshKey]=useState(0);
   const root=isPreview?'/canopy/manage/role-preview':(ROLE_ROOTS[role]||'/canopy/classroom');
   const requested=isPreview?(params.get('view')||'overview'):(livePath.split('/').filter(Boolean).pop()||'overview');
   const valid=new Set((NAV[role]||[]).map(x=>x[0]));
@@ -280,7 +288,7 @@ export default function CanopyStaffWorkspace({viewer,path,onSignOut}){
     }
     setOpen(false);
   };
-  const refresh=()=>window.dispatchEvent(new PopStateEvent('popstate'));
+  const refresh=()=>setRefreshKey(v=>v+1);
 
   if(loading)return <div className="cstaffLoading"><BookOpen/><span>Opening team workspace…</span></div>;
   if(error)return <main className="cstaffError"><ShieldAlert/><h1>Team workspace could not open.</h1><p>{error}</p>{isPreview&&<button onClick={()=>nav('/canopy/manage/role-preview')}>Back to role preview</button>}</main>;
@@ -288,17 +296,21 @@ export default function CanopyStaffWorkspace({viewer,path,onSignOut}){
 
   let content;
   if(view==='overview')content=<Overview role={role} moduleId={moduleId} data={data}/>;
-  else if(view==='learners')content=<Learners data={data} moduleId={moduleId} title={role==='programme_operations'?'Learner operations':role==='module_coordinator'?'Module learners':'Learners'}/>;
-  else if(['submissions','reviews'].includes(view))content=<RecentSubmissions items={data?.recent_submissions||data?.submissions||[]}/>;
-  else if(['attention','followups'].includes(view))content=<RecentSubmissions items={data?.recent_submissions||data?.submissions||[]} attentionOnly/>;
-  else if(view==='communications')content=<Communications data={data} role={role}/>;
-  else if(view==='complaints')content=<Complaints data={data}/>;
-  else if(view==='reports')content=<Reports data={data} moduleId={moduleId}/>;
+  else if(view==='learners')content=<ManagedLearners viewer={viewer} data={data} role={role} preview={isPreview} onRefresh={refresh}/>;
+  else if(view==='reviews')content=<ReviewAssignments viewer={viewer} data={data} preview={isPreview} onRefresh={refresh}/>;
+  else if(view==='submissions')content=<RecentSubmissions items={data?.recent_submissions||[]}/>;
+  else if(['attention','followups'].includes(view))content=<RecentSubmissions items={data?.recent_submissions||[]} attentionOnly/>;
+  else if(view==='communications')content=<StaffCommunications viewer={viewer} data={data} role={role} preview={isPreview} onRefresh={refresh}/>;
+  else if(view==='complaints')content=<StaffComplaints viewer={viewer} data={data} preview={isPreview} onRefresh={refresh}/>;
+  else if(view==='certificates')content=<StaffCertificates viewer={viewer} data={data} preview={isPreview} onRefresh={refresh}/>;
+  else if(view==='reports'||view==='activity')content=<Reports data={data} moduleId={moduleId}/>;
   else if(view==='spotlight')content=<Spotlight viewer={viewer} data={data} preview={isPreview} role={role} onRefresh={refresh}/>;
+  else if(view==='team')content=<TeamDirectory data={data}/>;
+  else if(view==='support')content=<><ManagedLearners viewer={viewer} data={data} role={role} preview={true}/><RecentSubmissions items={data?.recent_submissions||[]} attentionOnly/></>;
   else content=<CapabilityPage role={role} keyName={view} moduleId={moduleId}/>;
 
   return <div className="cstaffApp">
-    {isPreview&&<div className="cstaffPreviewBanner"><strong>ADMIN PREVIEW MODE</strong><span>Viewing {ROLE_LABELS[role]}{moduleId?` · ${moduleLabel(moduleId)}`:''}. No Team Access Code is consumed and preview actions are read-only.</span><button onClick={()=>nav('/canopy/manage/role-preview')}>Change role</button><button onClick={()=>nav('/canopy/manage')}>Exit preview</button></div>}
+    {isPreview&&<div className="cstaffPreviewBanner"><strong>ADMIN PREVIEW MODE</strong><span>Viewing {ROLE_LABELS[role]}{moduleId?` · ${moduleLabel(moduleId)}`:''}. No  and preview actions are read-only.</span><button onClick={()=>nav('/canopy/manage/role-preview')}>Change role</button><button onClick={()=>nav('/canopy/manage')}>Exit preview</button></div>}
     <aside className={'cstaffSidebar '+(open?'open':'')}>
       <div className="cstaffBrand"><img src="/assets/canopy/canopy-logo-primary.png" alt="Canopy"/><button onClick={()=>setOpen(false)}><X/></button></div>
       <div className="cstaffRole"><small>WOMATE TEAM</small><b>{ROLE_LABELS[role]}</b><span>{moduleId?moduleLabel(moduleId):'Programme-wide'}</span></div>
