@@ -1,0 +1,13 @@
+const fs=require('fs'),path=require('path');
+const cwd=process.cwd(),pkg=__dirname;
+const target=path.join(cwd,'src','canopy','CanopyStaffWorkspace.jsx');
+if(!fs.existsSync(target))throw new Error('Run this from the WOMATE project root.');
+fs.copyFileSync(path.join(pkg,'src','canopy','CanopyStaffWorkspace.jsx'),target);
+fs.copyFileSync(path.join(pkg,'src','canopy','canopyStaffWorkspace.css'),path.join(cwd,'src','canopy','canopyStaffWorkspace.css'));
+const ops=path.join(cwd,'CANOPY_OPERATIONS');fs.mkdirSync(ops,{recursive:true});
+fs.copyFileSync(path.join(pkg,'CANOPY_OPERATIONS','WOMATE_CANOPY_DEPUTY_DASHBOARD_FIX_20260910.sql'),path.join(ops,'WOMATE_CANOPY_DEPUTY_DASHBOARD_FIX_20260910.sql'));
+console.log('Fixed Canopy Deputy/team workspace crash.');
+console.log('- refreshKey is now declared before the workspace hook uses it');
+console.log('- Admin Preview copy cleaned');
+console.log('- Team Access retry SQL copied to CANOPY_OPERATIONS');
+console.log('NEXT: npm run build, then run the SQL once in Supabase.');
