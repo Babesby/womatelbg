@@ -1014,7 +1014,7 @@ function DonationPage(){
 </section>
 <aside className="donateMicroCampaign" aria-label="Small donations matter">
   <span>START SMALL</span>
-  <strong>Even GH?5 can join a bigger impact.</strong>
+  <strong>Even GHC5 can join a bigger impact.</strong>
   <p>Small contributions, combined, help widen access to WOMATE programmes and resources.</p>
   <a href="https://paystack.shop/pay/donateadollar" target="_blank" rel="noreferrer">Give to WOMATE <ArrowUpRight size={15}/></a>
 </aside></main>
