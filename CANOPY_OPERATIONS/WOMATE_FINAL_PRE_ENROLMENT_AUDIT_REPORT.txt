@@ -1,0 +1,90 @@
+WOMATE / CANOPY FINAL PRE-ENROLMENT SOURCE AUDIT
+2026-09-12T15:42:01.376Z
+
+PASS: 50
+FAIL: 3
+WARN: 1
+
+PASS  No common UTF-8 mojibake sequences remain
+PASS  Correct separator present: Africa · connected globally
+PASS  Correct separator present: WOMATE Circle · WhatsApp
+PASS  Correct separator present: 02 · DIRECT ACCESS
+PASS  No rendered/internal copy matching /This view gives the role a quick operational picture without exposing functions outside its authority\./i
+PASS  No rendered/internal copy matching /Workspace compatibility mode/i
+PASS  No rendered/internal copy matching /dashboard RPC/i
+PASS  No rendered/internal copy matching /workspace SQL/i
+PASS  No rendered/internal copy matching /Run the included .*SQL/i
+PASS  Public alerts do not expose environment/database implementation details
+PASS  No obvious dead href="#" or javascript:void links
+PASS  No obvious empty image src attributes
+PASS  Required Canopy file exists: src/canopy/CanopyApp.jsx
+PASS  Required Canopy file exists: src/canopy/canopyApi.js
+PASS  Required Canopy file exists: src/canopy/canopySchedule.js
+PASS  Required Canopy file exists: src/canopy/CanopyAssignmentsV2.jsx
+PASS  Required Canopy file exists: src/canopy/CanopyCertificate.jsx
+PASS  Required Canopy file exists: src/canopy/CanopyNotifications.jsx
+PASS  Required Canopy file exists: src/canopy/CanopyCanvas.jsx
+PASS  Required Canopy file exists: src/canopy/canopyCurriculum2026.js
+PASS  Learner route wired: /canopy/classroom
+PASS  Learner route wired: /canopy/course/she-leads
+PASS  Learner route wired: /canopy/assignments
+PASS  Learner route wired: /canopy/progress
+PASS  Learner route wired: /canopy/resources
+PASS  Learner route wired: /canopy/profile
+PASS  Learner route wired: /canopy/canvas
+PASS  Learner route wired: /canopy/notifications
+PASS  Learner route wired: /canopy/help
+PASS  Learner route wired: /canopy/certificate
+PASS  Auth callback route exists
+PASS  Reset password route exists
+PASS  Staff role workspace definition present: programme_manager
+PASS  Staff role workspace definition present: programme_operations
+PASS  Staff role workspace definition present: module_coordinator
+PASS  Staff role workspace definition present: learning_fellow
+PASS  Shared staff navigation/function present: Overview
+PASS  Shared staff navigation/function present: Submissions
+PASS  Shared staff navigation/function present: Communications
+PASS  Shared staff navigation/function present: Complaints
+PASS  Shared staff navigation/function present: Reports
+PASS  Known refreshKey temporal-dead-zone ordering is fixed
+PASS  Participant access date retained: 20 Sep 2026
+PASS  Module 01 start retained: 21 Sep 2026
+PASS  Module 05 start retained: 19 Oct 2026
+PASS  Curriculum still contains 20 unique lessons
+PASS  Manual assignment review RPC remains wired
+PASS  Certificate issuance RPC remains wired
+PASS  No obsolete src/cantest directory
+PASS  No obsolete nested src/canopy/canopy directory
+
+FAILURES
+FAIL  No Unicode replacement characters (�) remain anywhere in src/public/index.html
+src/main.jsx:18: '/wok-action':{k:'WoK Action',title:'Women�s local knowledge for climate adaptation.',accent:'Knowledge held by women is climate infrastructure.',intro:'We document, protect and ac
+src/main.jsx:22: '/honours':{k:'CLIMATE HONOURS',title:'Amplify the Untold.',accent:'Recognising women moving Africa�s climate future forward.',intro:'An annual platform documenting, celebrating an
+src/main.jsx:33: '/wok-action':{title:'WoK Action | Women�s Climate Knowledge | WOMATE',description:"WoK Action documents, protects and activates women's local and indigenous climate knowledge for 
+src/main.jsx:97: <div className="navGroup"><button className="navTrigger" type="button" aria-haspopup="true">Our work <ChevronDown size={15}/></button><div className="megaMenu workMenu"><div classN
+src/main.jsx:137: ['WoK Action','Women�s local knowledge as living climate infrastructure.','/wok-action',<Leaf size={22}/>,heroAssets?.wok],
+src/main.jsx:141: ['Climate Honours','Recognition for women moving Africa�s climate future forward.','/honours',<Award size={22}/>,heroAssets?.honours]
+src/main.jsx:146: {n:'02',kind:'blueprint',content:<><span className="reportKicker">THE BLUEPRINT</span><blockquote>�To build a world where African women lead climate action through innovative, tech
+src/main.jsx:148: {n:'04',kind:'technology',content:<><span className="reportKicker">TECH INTEGRATION</span><h2>Local climate intelligence.<br/><em>Digital possibility.</em></h2><p>We bridge local c
+src/main.jsx:170: <section className="impactScene"><div className="impactPhoto"><img src="/assets/img/wok-field-collage.png" alt="Women participating in WOMATE climate field work" loading="lazy"/><b
+src/main.jsx:196: circle:{items:['Membership activation','Member pathways','Community access','Climate Honours access','Peer opportunities','Professional visibility'],title:'A network designed to co
+src/main.jsx:208: ['03','Climate Governance & Policy','Learning how climate institutions, policies, and decision-making spaces function�and how women can engage and lead.'],
+src/main.jsx:631: {formOpen&&<div className="formModal" role="dialog" aria-modal="true" aria-label="Join the next She Leads cohort"><button className="formBackdrop" aria-label="Close form" onClick={
+src/main.jsx:636: ['01','DOCUMENTATION','Indigenous Sovereignty','Preserving women�s local and indigenous knowledge systems, traditions, and climate adaptation practices before they are lost.'],
+src/main.jsx:637: ['02','ANALYSIS','Impact Visibility','Examining how climate change reshapes women�s livelihoods, health, and everyday wellbeing across communities.'],
+src/main.jsx:638: ['03','RESILIENCE','Economic Alchemy','Identifying practical skills, trades, and income pathways that strengthen women�s economic and climate resilience.'],
+src/main.jsx:641: ['06','STORYTELLING','Living Archives','Documenting insights through storytelling, reports, and shared learning to elevate women�s voices in climate discourse.']
+src/main.jsx:648: <section className="wokTheme"><div className="wokThemeMeta"><span>2025 ACTIVE THEME</span><strong>WOMATE · COMMUNITY RESEARCH</strong></div><div><h2>�Rising Together: How Women�s L
+src/main.jsx:651: <section className="wokProof"><div><b>2025</b><span>Launch year</span></div><div><b>Okere</b><span>Active district</span></div><div><b>100%</b><span>Community led</span></div><bloc
+src/main.jsx:677: ['06','ADVOCACY','Knowledge Management','Amplifying women�s voices through strategic communications and digital platforms that strengthen visibility and influence.',['Advocacy Camp
+src/main.jsx:689: <section className="researchVisual"><figure><img src="/assets/hero/research.png" alt="WOMATE climate researcher"/></figure><div><span>RESEARCH THAT MOVES</span><h2>Not research for
+FAIL  No rendered/internal copy matching /Supabase environment/i
+src/canopy/CanopyApp.jsx:96: {!canopyConfigured&&<p className="canopyConfigWarn">Canopy backend is not configured on this deployment yet. Add the Supabase environment variables before testing accounts.</p>}
+src/canopy/canopyTeamAccessApi.js:6: if(!configured())throw new Error('Canopy team access is not configured. Add the Supabase environment variables.');
+FAIL  Shared staff navigation/function present: Learner Operations
+
+WARNINGS (review; not all are launch blockers)
+WARN  Canonical Team Readiness SQL not found at expected path
+CANOPY_OPERATIONS/WOMATE_CANOPY_TEAM_READINESS_FINAL_20260910.sql
+
+NOTE: Static audit cannot prove live Supabase/Vercel behaviour. Production build and one live role/learner smoke test remain the final runtime checks.

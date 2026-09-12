@@ -412,7 +412,7 @@ body.reportOpen{overflow:hidden}.impactReportLaunch{max-width:1260px;margin:26px
 .guardianSuccess{display:grid;gap:.2rem;padding:1rem;background:#dff2d5;border-radius:.7rem}.guardianSuccess span{font-size:.85rem}.guardianError{font-weight:700}
 
 
-/* WOMATE DONATE PAGE � PATCH */
+/* WOMATE DONATE PAGE · PATCH */
 .donatePage{background:#f6f5ef;color:#103f3c;min-height:70vh}
 .donateHero{min-height:76vh;padding:clamp(120px,14vw,190px) clamp(24px,6vw,96px) 80px;background:#0E4D4A;color:#fff;display:grid;grid-template-columns:minmax(0,1.35fr) minmax(300px,.65fr);gap:clamp(44px,8vw,120px);align-items:end}
 .donateHeroCopy{max-width:850px}.donateHeroCopy>span,.donatePromise>span,.donateStatement>span,.donateModel>div>span,.donateFinal span{font-size:11px;letter-spacing:.18em;font-weight:800}
@@ -430,7 +430,7 @@ body.reportOpen{overflow:hidden}.impactReportLaunch{max-width:1260px;margin:26px
 @media(max-width:850px){.donateHero,.donateStatement,.donateModel,.donateFinal{grid-template-columns:1fr}.donateHero{padding-top:110px}.donateImpactGrid{grid-template-columns:1fr}.donateImpactGrid article:nth-child(odd){border-right:0}.donateImpactGrid article:nth-child(even){padding-left:0}.donateModelRail article{grid-template-columns:80px 1fr}.donateModelRail p{grid-column:2}.donateStatement{padding-top:72px}.donateImpactGrid{padding-bottom:75px}}
 
 
-/* WOMATE DONATE PAGE � SOCIAL ENTERPRISE */
+/* WOMATE DONATE PAGE · SOCIAL ENTERPRISE */
 .donatePage{background:#f6f5ef;color:#103f3c;min-height:70vh}
 .donateHero{min-height:76vh;padding:clamp(120px,14vw,190px) clamp(24px,6vw,96px) 80px;background:#0E4D4A;color:#fff;display:grid;grid-template-columns:minmax(0,1.35fr) minmax(300px,.65fr);gap:clamp(44px,8vw,120px);align-items:end}
 .donateHeroCopy{max-width:850px}.donateHeroCopy>span,.donatePromise>span,.donateStatement>span,.donateModel>div>span,.donateFinal span{font-size:11px;letter-spacing:.18em;font-weight:800}
@@ -447,7 +447,7 @@ body.reportOpen{overflow:hidden}.impactReportLaunch{max-width:1260px;margin:26px
 .donateFinal{padding:90px clamp(24px,6vw,96px);background:#072f2d;color:#fff;display:grid;grid-template-columns:1.2fr .8fr;gap:60px;align-items:end}.donateFinal h2{font-size:clamp(48px,6vw,86px);line-height:.98;letter-spacing:-.05em;margin:14px 0 18px}.donateFinal p{color:rgba(255,255,255,.72);font-size:18px;max-width:700px}.donateFinal>a{justify-self:start}
 @media(max-width:850px){.donateHero,.donateStatement,.donateModel,.donateFinal{grid-template-columns:1fr}.donateHero{padding-top:110px}.donateImpactGrid{grid-template-columns:1fr}.donateImpactGrid article:nth-child(odd){border-right:0}.donateImpactGrid article:nth-child(even){padding-left:0}.donateModelRail article{grid-template-columns:80px 1fr}.donateModelRail p{grid-column:2}.donateStatement{padding-top:72px}.donateImpactGrid{padding-bottom:75px}}
 
-/* WOMATE APPROVED ICON NAV � GLOBAL RESTORE V2 */
+/* WOMATE APPROVED ICON NAV · GLOBAL RESTORE V2 */
 .iconPillarSection{display:block!important;padding:clamp(54px,6vw,82px) clamp(18px,5vw,72px) clamp(60px,7vw,92px)!important;background:linear-gradient(180deg,#f5f8f6 0%,#fff 100%)!important}
 .iconPillarHead{display:block!important;max-width:1100px!important;margin:0 auto clamp(28px,4vw,44px)!important;text-align:center!important}
 .iconPillarHead>span{display:block!important;margin-bottom:10px!important;font-size:10px!important;font-weight:800!important;letter-spacing:.17em!important;color:#6c8b89!important}
@@ -473,7 +473,7 @@ body.reportOpen{overflow:hidden}.impactReportLaunch{max-width:1260px;margin:26px
 @media(max-width:1100px){.iconPillarGrid.six,.iconPillarGrid.eight{grid-template-columns:repeat(4,minmax(0,1fr))!important}}
 @media(max-width:760px){.iconPillarHead{text-align:left!important}.iconPillarGrid.six,.iconPillarGrid.eight{grid-template-columns:repeat(2,minmax(0,1fr))!important}.iconPillarCard{min-height:116px!important}.iconPillarGlyph{width:56px!important;height:56px!important;flex-basis:56px!important;border-radius:17px!important}.healSupportDirect{grid-template-columns:1fr}}
 
-/* WOMATE MOBILE NAV � CATEGORISED */
+/* WOMATE MOBILE NAV · CATEGORISED */
 @media(max-width:900px){
  .mobileNavCategorised{position:fixed!important;inset:0!important;z-index:9998!important;background:#f8faf8!important;padding:18px 20px 28px!important;overflow-y:auto!important;display:block!important}
  .mobileNavCategorised>a{border:0!important}

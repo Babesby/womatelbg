@@ -1,0 +1,66 @@
+WOMATE / CANOPY FINAL PRE-ENROLMENT AUDIT V2
+2026-09-12T16:06:42.344Z
+
+PASS: 57
+FAIL: 0
+WARN: 0
+
+PASS  No Unicode replacement characters (�) remain
+PASS  No common UTF-8 mojibake remains
+PASS  Correct copy present: Africa · connected globally
+PASS  Correct copy present: WOMATE Circle · WhatsApp
+PASS  Correct copy present: 02 · DIRECT ACCESS
+PASS  No public/internal implementation copy matching /This view gives the role a quick operational picture without exposing functions outside its authority\./i
+PASS  No public/internal implementation copy matching /Workspace compatibility mode/i
+PASS  No public/internal implementation copy matching /dashboard RPC/i
+PASS  No public/internal implementation copy matching /workspace SQL/i
+PASS  No public/internal implementation copy matching /Run the included .*SQL/i
+PASS  No public/internal implementation copy matching /Supabase environment/i
+PASS  No public alert exposes environment/database implementation details
+PASS  No obvious dead href="#" or javascript:void links
+PASS  No obvious empty image src
+PASS  Required Canopy file exists: src/canopy/CanopyApp.jsx
+PASS  Required Canopy file exists: src/canopy/canopyApi.js
+PASS  Required Canopy file exists: src/canopy/canopySchedule.js
+PASS  Required Canopy file exists: src/canopy/CanopyAssignmentsV2.jsx
+PASS  Required Canopy file exists: src/canopy/CanopyCertificate.jsx
+PASS  Required Canopy file exists: src/canopy/CanopyNotifications.jsx
+PASS  Required Canopy file exists: src/canopy/CanopyCanvas.jsx
+PASS  Required Canopy file exists: src/canopy/canopyCurriculum2026.js
+PASS  Learner route wired: /canopy/classroom
+PASS  Learner route wired: /canopy/course/she-leads
+PASS  Learner route wired: /canopy/assignments
+PASS  Learner route wired: /canopy/progress
+PASS  Learner route wired: /canopy/resources
+PASS  Learner route wired: /canopy/profile
+PASS  Learner route wired: /canopy/canvas
+PASS  Learner route wired: /canopy/notifications
+PASS  Learner route wired: /canopy/help
+PASS  Learner route wired: /canopy/certificate
+PASS  Auth callback route exists
+PASS  Reset password route exists
+PASS  Staff role present: programme_manager
+PASS  Staff role present: programme_operations
+PASS  Staff role present: module_coordinator
+PASS  Staff role present: learning_fellow
+PASS  Staff navigation/function present: /Overview/i
+PASS  Staff navigation/function present: /Learner operations/i
+PASS  Staff navigation/function present: /Submissions/i
+PASS  Staff navigation/function present: /Communications/i
+PASS  Staff navigation/function present: /Complaints/i
+PASS  Staff navigation/function present: /Reports/i
+PASS  Known refreshKey initialization-order crash remains fixed
+PASS  Participant access date retained: 20 Sep 2026
+PASS  Module 01 start retained: 21 Sep 2026
+PASS  Module 05 start retained: 19 Oct 2026
+PASS  Curriculum still contains 20 unique lessons
+PASS  Manual assignment review RPC remains wired
+PASS  Certificate issuance RPC remains wired
+PASS  No obsolete src/cantest directory
+PASS  No obsolete nested src/canopy/canopy directory
+PASS  Canonical Team Readiness SQL exists
+PASS  Canonical SQL includes staff workspace RPC
+PASS  Canonical SQL includes safe Team Access retry
+PASS  Canonical SQL includes Auth-user deletion safety
+
+Static source audit complete. Production build + live smoke test remain runtime evidence.

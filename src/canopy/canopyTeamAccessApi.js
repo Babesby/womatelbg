@@ -3,7 +3,7 @@ const SUPABASE_ANON_KEY=import.meta.env.VITE_SUPABASE_ANON_KEY||import.meta.env.
 
 function configured(){return Boolean(SUPABASE_URL&&SUPABASE_ANON_KEY)}
 function headers(session){
- if(!configured())throw new Error('Canopy team access is not configured. Add the Supabase environment variables.');
+ if(!configured())throw new Error('Canopy team access is temporarily unavailable.');
  if(!session?.access_token)throw new Error('Sign in before using WOMATE team access.');
  return {'Content-Type':'application/json','apikey':SUPABASE_ANON_KEY,'Authorization':`Bearer ${session.access_token}`};
 }

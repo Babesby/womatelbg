@@ -93,7 +93,7 @@ function Auth({mode='login'}){
      <span>{mode==='login'?'PARTICIPANT ACCESS':'CREATE ACCOUNT'}</span>
      <h2>{mode==='login'?'Welcome back':'Join Canopy'}</h2>
      <p>{mode==='login'?'Sign in to continue your She Leads learning journey.':'Create your secure Canopy account to begin.'}</p>
-     {!canopyConfigured&&<p className="canopyConfigWarn">Canopy backend is not configured on this deployment yet. Add the Supabase environment variables before testing accounts.</p>}
+     {!canopyConfigured&&<p className="canopyConfigWarn">Canopy is temporarily unavailable. Please try again shortly or contact WOMATE support.</p>}
     </div>
     <div className="canopySocialAuth"><button type="button" className="canopyGoogleAuth" disabled={busy} onClick={async()=>{setBusy(true);feedback('');try{if(form.team_code.trim())sessionStorage.setItem('canopy_team_access_code_pending',form.team_code.trim());await signInWithGoogle()}catch(err){feedback(err.message||'Unable to continue with Google.','error');setBusy(false)}}}><span className="canopyGoogleMark" aria-hidden="true">G</span><span>Continue with Google</span></button><div className="canopyAuthDivider"><span>or continue with email</span></div></div><form onSubmit={submit}>
      {mode==='signup'&&<div className="canopyAuthTwoCol"><label>Full name<input required autoComplete="name" placeholder="Your full name" value={form.full_name} onChange={e=>setForm({...form,full_name:e.target.value})}/></label><label>Country<input required autoComplete="country-name" placeholder="Country" value={form.country} onChange={e=>setForm({...form,country:e.target.value})}/></label></div>}
