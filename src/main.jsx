@@ -215,7 +215,7 @@ const shePillars=[
 ];
 const shePillarIcons=[Globe2,ShieldCheck,BookOpen,Quote,Users,Sparkles];
 const shePillarLabels=['Foundations','Justice','Policy','Advocacy','Leadership','Careers'];
-const SHE_FORM='https://docs.google.com/forms/d/e/1FAIpQLSdwc1l7vlWD4VC6v9cPF_-UdO3VLGDVLRiVJiwmiGE3Aqjs4w/viewform?embedded=true';
+const SHE_FORM='https://forms.gle/bfvyE7TryQ76LsLEA';
 
 const sheTestimonialSlides=["/assets/img/she.png","/assets/she-leads/testimonials/testimonial-3.png","/assets/she-leads/testimonials/testimonial-4.png","/assets/she-leads/testimonials/testimonial-5.png","/assets/she-leads/testimonials/testimonial-6.png","/assets/she-leads/testimonials/testimonial-7.png","/assets/she-leads/testimonials/testimonial-8.png","/assets/she-leads/testimonials/testimonial-9.png","/assets/she-leads/testimonials/testimonial-10.png","/assets/she-leads/testimonials/testimonial-11.png"];
 function SheTestimonialSlider(){const[index,setIndex]=useState(0);useEffect(()=>{const id=setInterval(()=>setIndex(i=>(i+1)%sheTestimonialSlides.length),6500);return()=>clearInterval(id)},[]);return <div className="sheTestimonialSlider" aria-label="She Leads fellow testimonials"><div className="sheTestimonialStage">{sheTestimonialSlides.map((src,i)=><img key={src} src={src} alt={i===0?'She Leads Climate outstanding fellows':`She Leads fellow testimonial ${i}`} className={i===index?'active':''} loading={i===0?'eager':'lazy'}/>)}</div><div className="sheTestimonialDots" aria-label="Choose testimonial">{sheTestimonialSlides.map((_,i)=><button type="button" key={i} className={i===index?'active':''} onClick={()=>setIndex(i)} aria-label={`Show testimonial ${i+1}`}/>)}</div></div>}
