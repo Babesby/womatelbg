@@ -801,11 +801,11 @@ function HonoursPage(){
 
 function LeadershipPage(){
  const team=[
+  {name:'Ruby Damenshie-Brown',role:'Chief Executive Officer (CEO)',unit:'PROGRAMS',image:'/assets/img/team/ruby-damenshie-brown.jpg',linkedin:'https://gh.linkedin.com/in/ruby-damenshie-brown-she-her-582b7287',bio:'Operations Specialist focused on community engagement, programme delivery and the regional scaling of climate initiatives.'},
   {name:'Phillipa Aidoo',role:'Chief Operating Officer (COO)',unit:'TECHNOLOGY',image:'/assets/img/team/phillipa-aidoo.png',linkedin:'https://gh.linkedin.com/in/phillipa-aidoo',bio:"Chief Strategist & Full-stack Developer. Architect of WOMATE’s integrated climate-tech ecosystem and the organisation’s strategic direction."},
   {name:'Asaa Gyebi-Adjei',role:'Board Member',unit:'RESEARCH',image:'/assets/img/team/asaa.jpeg',linkedin:'https://gh.linkedin.com/in/asaa-gyebi-adjei-902a03111',bio:'PhD Candidate & Strategic Economist. Leads data analysis and research thinking for high-impact adaptation projects.'},
-  {name:'Ruby Damenshie-Brown',role:'Chief Executive Officer (CEO)',unit:'PROGRAMS',image:'/assets/img/team/ruby-damenshie-brown.jpg',linkedin:'https://gh.linkedin.com/in/ruby-damenshie-brown-she-her-582b7287',bio:'Operations Specialist focused on community engagement, programme delivery and the regional scaling of climate initiatives.'},
-  {name:'Hamza Abubakar',role:'Chief Communications Officer',unit:'ADVOCACY',image:'/assets/img/team/h.jpg',linkedin:'https://gh.linkedin.com/in/hamza-abubakar-537852214',bio:'UN Climate Champion advancing global communication, advocacy and public engagement for planetary stewardship.'}
- ];
+  {name:'Hamza Abubakar',role:'Chief Communications Officer (CCO)',unit:'ADVOCACY',image:'/assets/img/team/h.jpg',linkedin:'https://gh.linkedin.com/in/hamza-abubakar-537852214',bio:'UN Climate Champion advancing global communication, advocacy and public engagement for planetary stewardship.'}
+];
  const [status,setStatus]=useState('');
  const endpoint=import.meta.env.VITE_LEADERSHIP_INQUIRY_ENDPOINT||'';
  const submit=async e=>{e.preventDefault();setStatus('sending');const f=new FormData(e.currentTarget);const payload=Object.fromEntries(f.entries());try{if(endpoint){const r=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});if(!r.ok)throw new Error('Request failed');setStatus('sent');e.currentTarget.reset()}else{const subject=encodeURIComponent('WOMATE leadership partnership enquiry');const body=encodeURIComponent(`Name / Organisation: ${payload.name}\nEmail: ${payload.email}\nInterest: ${payload.interest}\n\n${payload.message||''}`);window.location.href=`mailto:womatead@gmail.com?subject=${subject}&body=${body}`;setStatus('sent')}}catch(err){setStatus('error')}};
