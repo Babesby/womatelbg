@@ -1,3 +1,5 @@
+import './selectedDirectory.js';
+import './selectedDirectory.css';
 import './selectedBrandEnhancements.js';
 ﻿import React from 'react';
 import {createRoot} from 'react-dom/client';
