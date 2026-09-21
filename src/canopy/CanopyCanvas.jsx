@@ -38,6 +38,62 @@ const textures=[
   {id:'diagonal',label:'Diagonal weave'},
   {id:'grain',label:'Paper grain'}
 ];
+const canvasGraphics=[
+  {id:'none',label:'No graphic',src:''},
+  {id:'community-climate-dialogue-flood',label:'Community climate dialogue',src:'/assets/canopy/canvas-graphics/community-climate-dialogue-flood.webp'},
+  {id:'youth-climate-action',label:'Youth climate action',src:'/assets/canopy/canvas-graphics/youth-climate-action.webp'},
+  {id:'coastal-mangrove-planting',label:'Coastal mangrove planting',src:'/assets/canopy/canvas-graphics/coastal-mangrove-planting.webp'},
+  {id:'flood-resilience-restoration',label:'Flood resilience restoration',src:'/assets/canopy/canvas-graphics/flood-resilience-restoration.webp'},
+  {id:'rainwater-terraces',label:'Rainwater harvesting terraces',src:'/assets/canopy/canvas-graphics/rainwater-terraces.webp'},
+  {id:'renewable-energy-landscape',label:'Renewable energy landscape',src:'/assets/canopy/canvas-graphics/renewable-energy-landscape.webp'},
+  {id:'clean-energy-baobab',label:'Clean energy & baobab',src:'/assets/canopy/canvas-graphics/clean-energy-baobab.webp'},
+  {id:'solar-engineer',label:'Solar engineer',src:'/assets/canopy/canvas-graphics/solar-engineer.webp'},
+  {id:'solar-lantern',label:'Solar lantern',src:'/assets/canopy/canvas-graphics/solar-lantern.webp'},
+  {id:'climate-planning-table',label:'Climate planning table',src:'/assets/canopy/canvas-graphics/climate-planning-table.webp'},
+  {id:'mangrove-restoration-team',label:'Mangrove restoration team',src:'/assets/canopy/canvas-graphics/mangrove-restoration-team.webp'},
+  {id:'community-adaptation-learning',label:'Community adaptation learning',src:'/assets/canopy/canvas-graphics/community-adaptation-learning.webp'},
+  {id:'watershed-field-research',label:'Watershed field research',src:'/assets/canopy/canvas-graphics/watershed-field-research.webp'},
+  {id:'green-neighbourhood-transit',label:'Green neighbourhood transit',src:'/assets/canopy/canvas-graphics/green-neighbourhood-transit.webp'},
+  {id:'solar-market-neighbourhood',label:'Solar market neighbourhood',src:'/assets/canopy/canvas-graphics/solar-market-neighbourhood.webp'},
+  {id:'green-city-mobility',label:'Green city mobility',src:'/assets/canopy/canvas-graphics/green-city-mobility.webp'},
+  {id:'urban-rainwater-harvesting',label:'Urban rainwater harvesting',src:'/assets/canopy/canvas-graphics/urban-rainwater-harvesting.webp'},
+  {id:'green-transit-stop',label:'Green transit stop',src:'/assets/canopy/canvas-graphics/green-transit-stop.webp'},
+  {id:'water-quality-scientist',label:'Water quality scientist',src:'/assets/canopy/canvas-graphics/water-quality-scientist.webp'},
+  {id:'community-water-point',label:'Community water point',src:'/assets/canopy/canvas-graphics/community-water-point.webp'},
+  {id:'water-conservation-river',label:'Water conservation',src:'/assets/canopy/canvas-graphics/water-conservation-river.webp'},
+  {id:'baobab-biodiversity',label:'Baobab biodiversity',src:'/assets/canopy/canvas-graphics/baobab-biodiversity.webp'},
+  {id:'savanna-biodiversity',label:'Savanna biodiversity',src:'/assets/canopy/canvas-graphics/savanna-biodiversity.webp'},
+  {id:'mangrove-biodiversity',label:'Mangrove biodiversity',src:'/assets/canopy/canvas-graphics/mangrove-biodiversity.webp'},
+  {id:'biodiversity-field-research',label:'Biodiversity field research',src:'/assets/canopy/canvas-graphics/biodiversity-field-research.webp'},
+  {id:'community-climate-circle',label:'Community climate circle',src:'/assets/canopy/canvas-graphics/community-climate-circle.webp'},
+  {id:'inclusive-climate-planning',label:'Inclusive climate planning',src:'/assets/canopy/canvas-graphics/inclusive-climate-planning.webp'},
+  {id:'coastal-mangrove-resilience',label:'Coastal mangrove resilience',src:'/assets/canopy/canvas-graphics/coastal-mangrove-resilience.webp'}
+];
+const graphicLayouts=['Smart fit','Watermark','Right scene','Bottom scene','Hero scene'];
+
+function loadCanvasGraphic(src){
+  return new Promise((resolve,reject)=>{
+    const img=new Image();
+    img.onload=()=>resolve(img);
+    img.onerror=()=>reject(new Error('Graphic could not load.'));
+    img.src=src;
+  });
+}
+function drawGraphicContain(ctx,img,x,y,w,h,alpha=1){
+  const scale=Math.min(w/img.width,h/img.height);
+  const dw=img.width*scale,dh=img.height*scale;
+  ctx.save();ctx.globalAlpha=alpha;ctx.drawImage(img,x+(w-dw)/2,y+(h-dh)/2,dw,dh);ctx.restore();
+}
+function drawResponsiveGraphic(ctx,img,w,h,format,layout){
+  if(layout==='Watermark') return drawGraphicContain(ctx,img,w*.09,h*.17,w*.82,h*.63,.17);
+  if(layout==='Right scene') return drawGraphicContain(ctx,img,w*.51,h*.28,w*.47,h*.44,.82);
+  if(layout==='Bottom scene') return drawGraphicContain(ctx,img,w*.08,h*.52,w*.84,h*.32,.88);
+  if(layout==='Hero scene') return drawGraphicContain(ctx,img,w*.31,h*.31,w*.66,h*.43,.82);
+  // Smart fit is intentionally format-aware so transparent artwork never looks stretched.
+  if(format==='Portrait post') return drawGraphicContain(ctx,img,w*.15,h*.46,w*.70,h*.27,.88);
+  return drawGraphicContain(ctx,img,w*.52,h*.40,w*.45,h*.34,.86);
+}
+
 const toneTemplates={
   'Clear & factual':()=>`Know the facts. Choose climate action that makes an impact.`,
   'Hopeful':()=>`Small climate actions can build a stronger future together.`,
@@ -77,9 +133,10 @@ function drawTexture(ctx,w,h,type,color){
 function loadImage(src){return new Promise(resolve=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=()=>resolve(null);img.src=src})}
 
 export default function CanopyCanvas(){
-  const initial={cause:causes[0],audience:audiences[0],actionTarget:actions[0],tone:tones[0],format:formats[0],palette:'canopy',texture:'contour',buttonShape:'Pill',message:''};
+  const initial={cause:causes[0],audience:audiences[0],actionTarget:actions[0],tone:tones[0],format:formats[0],palette:'canopy',texture:'contour',buttonShape:'Pill',graphic:'none',graphicLayout:'Smart fit',message:''};
   const[form,setForm]=useState(initial);const[note,setNote]=useState('');const lastSuggested=useRef('');
   const palette=palettes.find(x=>x.id===form.palette)||palettes[0];
+  const selectedGraphic=canvasGraphics.find(x=>x.id===form.graphic)||canvasGraphics[0];
   const dims=useMemo(()=>form.format==='Square post'?[1200,1200]:[1080,1350],[form.format]);
   const suggestion=useMemo(()=>toneTemplates[form.tone](),[form.tone]);
   const update=(k,v)=>setForm(f=>({...f,[k]:v}));
@@ -88,7 +145,14 @@ export default function CanopyCanvas(){
 
   const makeBlob=()=>new Promise(async resolve=>{
     const[w,h]=dims,c=document.createElement('canvas');c.width=w;c.height=h;const ctx=c.getContext('2d');
-    fillBackground(ctx,w,h,palette);drawTexture(ctx,w,h,form.texture,palette.text);ctx.fillStyle=palette.accent;ctx.fillRect(0,0,w,Math.max(16,h*.012));
+    fillBackground(ctx,w,h,palette);drawTexture(ctx,w,h,form.texture,palette.text);
+    /* WOMATE_CANVASCANVAS_GRAPHIC_EXPORT_V2 */
+    if(selectedGraphic?.src){
+      try{
+        const graphic=await loadCanvasGraphic(selectedGraphic.src);
+        drawResponsiveGraphic(ctx,graphic,w,h,form.format,form.graphicLayout);
+      }catch{}
+    }ctx.fillStyle=palette.accent;ctx.fillRect(0,0,w,Math.max(16,h*.012));
     const pad=w*.065,msg=(form.message||suggestion).slice(0,MESSAGE_LIMIT),portrait=form.format==='Portrait post';
     ctx.fillStyle=palette.accent;ctx.font=`700 ${Math.round(w*.022)}px Arial`;ctx.fillText(form.cause.toUpperCase(),pad,h*.18);
     ctx.fillStyle=palette.text;const base=portrait?.058:.052,lengthScale=msg.length>52?.88:1;ctx.font=`700 ${Math.round(w*base*lengthScale)}px Arial`;wrap(ctx,msg,pad,portrait?h*.265:h*.27,w*.84,h*.062,portrait?6:5);
@@ -101,7 +165,7 @@ export default function CanopyCanvas(){
     setNote('Preparing your graphic…');try{const blob=await makeBlob();if(!blob)throw new Error('The graphic could not be prepared.');const href=URL.createObjectURL(blob),a=document.createElement('a');a.href=href;a.download=`canopycanvas-${form.cause.toLowerCase().replace(/[^a-z0-9]+/g,'-')}.png`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(href),1200);setNote('Graphic downloaded. Upload it to your own Google Drive, set access to “Anyone with the link”, then paste that Drive link into your assignment.')}catch(e){setNote(e?.message||'Unable to download the graphic. Try again.')}
   }
 
-  return <section className="cc-page"><div className="cc-head"><span className="cc-kicker">CANOPYCANVAS</span><h1>Create a responsible climate campaign graphic.</h1><p>Build the campaign by selecting the cause, audience, action, tone, visual system and format. The message is the only field you type.</p></div>
+  return <section className="cc-page"><div className="cc-head"><span className="cc-kicker">CANOPYCANVAS</span><h1>Create a responsible climate campaign graphic.</h1><p>Build the campaign by selecting the cause, audience, action, tone, campaign graphic, visual system and format. The message is the only field you type.</p></div>
     <div className="cc-grid cc-grid-upgraded"><div className="cc-form">
       <label>Cause<select value={form.cause} onChange={e=>choose('cause',e.target.value)}>{causes.map(x=><option key={x}>{x}</option>)}</select></label>
       <div className="cc-two"><label>Audience<select value={form.audience} onChange={e=>choose('audience',e.target.value)}>{audiences.map(x=><option key={x}>{x}</option>)}</select></label><label>Desired action<select value={form.actionTarget} onChange={e=>choose('actionTarget',e.target.value)}>{actions.map(x=><option key={x}>{x}</option>)}</select></label></div>
@@ -110,10 +174,15 @@ export default function CanopyCanvas(){
       <label>Action button shape<select value={form.buttonShape} onChange={e=>update('buttonShape',e.target.value)}>{buttonShapes.map(x=><option key={x}>{x}</option>)}</select></label>
       <div className="cc-choice-block"><span>Background</span><div className="cc-palette-grid">{palettes.map(p=><button type="button" key={p.id} className={form.palette===p.id?'active':''} onClick={()=>update('palette',p.id)}><i style={{background:p.css}}/><b>{p.label}</b></button>)}</div></div>
       <div className="cc-choice-block"><span>Texture</span><div className="cc-texture-grid">{textures.map(t=><button type="button" key={t.id} className={form.texture===t.id?'active':''} onClick={()=>update('texture',t.id)}><i className={`cc-texture-swatch texture-${t.id}`}/><b>{t.label}</b></button>)}</div></div>
-      <div className="cc-brand-note"><img src="/assets/canopy/auth/canopy-logo-white.png" alt="Canopy"/><p>The Canopy mark is applied automatically as a small campaign watermark.</p></div>
+      <div className="cc-choice-block cc-graphic-choice">
+          <span>Campaign graphic <small>Optional · choose one of 28 scenes</small></span>
+          <div className="cc-graphic-grid">{canvasGraphics.map(g=><button type="button" key={g.id} className={form.graphic===g.id?'active':''} onClick={()=>update('graphic',g.id)} aria-pressed={form.graphic===g.id}>{g.src?<img src={g.src} alt="" loading="lazy"/>:<i className="cc-no-graphic">Aa</i>}<b>{g.label}</b></button>)}</div>
+          {form.graphic!=='none'&&<label className="cc-graphic-layout">Graphic placement<select value={form.graphicLayout} onChange={e=>update('graphicLayout',e.target.value)}>{graphicLayouts.map(x=><option key={x}>{x}</option>)}</select><small>Smart fit automatically adapts the illustration to square or portrait without stretching it.</small></label>}
+        </div>
+        <div className="cc-brand-note"><img src="/assets/canopy/auth/canopy-logo-white.png" alt="Canopy"/><p>The Canopy mark is applied automatically as a small campaign watermark.</p></div>
       <button type="button" className="cc-download" onClick={download}>Download graphic</button>{note&&<p className="cc-note" role="status">{note}</p>}
     </div>
-      <div className={`cc-preview cc-preview-upgraded format-${form.format.toLowerCase().replace(/\s+/g,'-')} tone-${form.tone.toLowerCase().replace(/[^a-z]+/g,'-')}`} style={{background:palette.css,color:palette.text,'--cc-accent':palette.accent,width:'100%',height:'auto',aspectRatio:form.format==='Square post'?'1 / 1':'4 / 5'}}><div className={`cc-texture-layer texture-${form.texture}`}/><small>{form.cause}</small><h2>{form.message||suggestion}</h2><p>For {form.audience}</p><button type="button" className={`cc-action-button ${form.buttonShape==='Pill'?'is-pill':'is-rectangle'}`} style={{borderRadius:form.buttonShape==='Pill'?'999px':'8px'}}>{form.actionTarget}</button><img className="cc-watermark" src="/assets/canopy/auth/canopy-logo-white.png" alt=""/></div>
+      <div className={`cc-preview cc-preview-upgraded format-${form.format.toLowerCase().replace(/\s+/g,'-')} tone-${form.tone.toLowerCase().replace(/[^a-z]+/g,'-')}`} style={{background:palette.css,color:palette.text,'--cc-accent':palette.accent,width:'100%',height:'auto',aspectRatio:form.format==='Square post'?'1 / 1':'4 / 5'}}><div className={`cc-texture-layer texture-${form.texture}`}/>{selectedGraphic?.src&&<img className={`cc-preview-graphic layout-${form.graphicLayout.toLowerCase().replace(/\s+/g,'-')}`} src={selectedGraphic.src} alt=""/>}<small>{form.cause}</small><h2>{form.message||suggestion}</h2><p>For {form.audience}</p><button type="button" className={`cc-action-button ${form.buttonShape==='Pill'?'is-pill':'is-rectangle'}`} style={{borderRadius:form.buttonShape==='Pill'?'999px':'8px'}}>{form.actionTarget}</button><img className="cc-watermark" src="/assets/canopy/auth/canopy-logo-white.png" alt=""/></div>
     </div>
   </section>
 }

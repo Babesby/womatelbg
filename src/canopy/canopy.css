@@ -1148,3 +1148,25 @@
     width:100%;
   }
 }
+
+
+/* WOMATE CanopyCanvas · responsive campaign graphics V2 · 2026-09-21 */
+.cc-graphic-choice{margin-top:2px}
+.cc-graphic-choice>span{display:flex;align-items:baseline;justify-content:space-between;gap:10px}.cc-graphic-choice>span small{font-size:10px;color:#6f827e;font-weight:700}
+.cc-graphic-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-top:10px;max-height:430px;overflow:auto;padding:2px 4px 8px 2px;scrollbar-width:thin}
+.cc-graphic-grid button{appearance:none;min-width:0;border:1px solid rgba(14,77,74,.14);border-radius:14px;background:#fff;padding:8px;display:grid;grid-template-rows:88px auto;gap:7px;align-items:center;text-align:left;color:#173b39;overflow:hidden;cursor:pointer}
+.cc-graphic-grid button img{width:100%;height:88px;object-fit:contain;border-radius:9px;background:linear-gradient(145deg,#f7faf8,#eef5f1)}
+.cc-graphic-grid button b{font-size:10px;line-height:1.25;min-height:25px}
+.cc-graphic-grid button.active{border-color:#0E4D4A;box-shadow:0 0 0 2px rgba(198,255,82,.78)}
+.cc-no-graphic{height:88px;border-radius:9px;display:grid;place-items:center;background:#f1f5f3;color:#78908c;font-style:normal;font-weight:900;font-size:22px}
+.cc-graphic-layout{margin-top:12px!important}.cc-graphic-layout select{width:100%}.cc-graphic-layout>small{font-size:10px;line-height:1.45;color:#6b7f7b;font-weight:600}
+.cc-preview-upgraded{position:relative;overflow:hidden;isolation:isolate}
+.cc-preview-upgraded>.cc-preview-graphic{position:absolute!important;z-index:1!important;pointer-events:none;object-fit:contain;max-width:none;transition:all .24s ease}
+.cc-preview-graphic.layout-watermark{inset:15% 9% 18%;width:82%;height:67%;opacity:.17}
+.cc-preview-graphic.layout-right-scene{right:1%;top:27%;width:48%;height:45%;opacity:.82}
+.cc-preview-graphic.layout-bottom-scene{left:8%;bottom:13%;width:84%;height:33%;opacity:.88}
+.cc-preview-graphic.layout-hero-scene{right:1%;top:30%;width:67%;height:44%;opacity:.82}
+.cc-preview-upgraded.format-square-post .cc-preview-graphic.layout-smart-fit{right:1.5%;top:39%;width:47%;height:35%;opacity:.86}
+.cc-preview-upgraded.format-portrait-post .cc-preview-graphic.layout-smart-fit{left:15%;top:46%;width:70%;height:28%;opacity:.88}
+.cc-preview-upgraded>small,.cc-preview-upgraded>h2,.cc-preview-upgraded>p,.cc-preview-upgraded>.cc-action-button,.cc-preview-upgraded>em,.cc-preview-upgraded>.cc-watermark,.cc-preview-upgraded>.cc-preview-icons{position:relative;z-index:4}
+@media(max-width:760px){.cc-graphic-grid{grid-template-columns:repeat(2,minmax(0,1fr));max-height:360px}.cc-graphic-grid button{grid-template-rows:72px auto}.cc-graphic-grid button img,.cc-no-graphic{height:72px}.cc-graphic-choice>span{align-items:flex-start;flex-direction:column;gap:2px}}
