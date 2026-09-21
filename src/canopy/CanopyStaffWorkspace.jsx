@@ -191,7 +191,7 @@ function Complaints({data}){
 function Reports({data,moduleId}){
   const c=data?.counts||{};
   return <div><section className="cstaffStats"><Stat value={c.submissions} label="submissions"/><Stat value={c.completed} label="completed"/><Stat value={c.needs_attention} label="needs attention"/><Stat value={c.revision_required} label="revisions"/></section>
-    <section className="cstaffPanel"><header><div><small>{moduleId?moduleLabel(moduleId):'COHORT 2'}</small><h2>Delivery report</h2></div></header></section></div>
+    <section className="cstaffPanel"><header><div><small>{moduleId?moduleLabel(moduleId):'COHORT 2'}</small><h2>Delivery report</h2></div></header><p className="cstaffNote">This view gives the role a quick operational picture without exposing functions outside its authority.</p></section></div>
 }
 function Spotlight({viewer,data,preview,role,onRefresh}){
   const[note,setNote]=useState('');
@@ -273,7 +273,9 @@ export default function CanopyStaffWorkspace({viewer,path,onSignOut}){
   const role=previewRole||data?.role||null;
   const moduleId=previewModule||data?.module_id||null;
   const root=isPreview?'/canopy/manage/role-preview':(ROLE_ROOTS[role]||'/canopy/classroom');
-  const requested=isPreview?(params.get('view')||'overview'):(livePath.split('/').filter(Boolean).pop()||'overview');
+  const legacyViewAliases={access:'learners',reminders:'communications'};
+  const rawRequested=isPreview?(params.get('view')||'overview'):(livePath.split('/').filter(Boolean).pop()||'overview');
+  const requested=legacyViewAliases[rawRequested]||rawRequested;
   const valid=new Set((NAV[role]||[]).map(x=>x[0]));
   const view=valid.has(requested)?requested:'overview';
 

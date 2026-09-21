@@ -115,7 +115,20 @@ function AuthCallback(){const[msg,setMsg]=useState('Confirming your Canopy accou
 function ResetPassword(){const[p1,setP1]=useState('');const[p2,setP2]=useState('');const[busy,setBusy]=useState(false);const[msg,setMsg]=useState('');const submit=async e=>{e.preventDefault();if(p1!==p2){setMsg('The passwords do not match.');return}setBusy(true);setMsg('');try{await updatePassword(p1);setMsg('Password changed successfully. You can now sign in with your new password.');setTimeout(async()=>{await signOut();go('/canopy/login')},700)}catch(err){setMsg(err.message)}finally{setBusy(false)}};return <div className="canopyAuth"><aside><Brand/><div><span className="canopyEyebrow">ACCOUNT RECOVERY</span><h1>Set a new password.</h1><p>Choose a new password for your WOMATE Canopy account.</p></div><blockquote>SECURE · CONTINUE · LEARN</blockquote></aside><main><button className="canopyBack" onClick={()=>go('/canopy/login')}><ArrowLeft/> Back to sign in</button><form onSubmit={submit}><div className="canopyAuthHead"><span>PASSWORD RESET</span><h2>New password</h2></div><label>New password<input required type="password" minLength="8" autoComplete="new-password" value={p1} onChange={e=>setP1(e.target.value)}/></label><label>Confirm new password<input required type="password" minLength="8" autoComplete="new-password" value={p2} onChange={e=>setP2(e.target.value)}/></label><button className="canopyPrimary full" disabled={busy}>{busy?'Updating…':'Change password'} <ArrowRight size={17}/></button>{msg&&<p className="canopyFormMsg" role="status">{msg}</p>}</form></main></div>}
 
 function CourseNav({open,setOpen,viewer}){
- const manager=canManageCanopy(viewer);
+ /* WOMATE_PROGRAMME_MANAGER_LIVE_PARITY_20260921 */
+const __womatePreviewOrStaffPath=
+  path==='/canopy/manage/role-preview'||path.startsWith('/canopy/manage/role-preview/')||
+  path==='/canopy/operations'||path.startsWith('/canopy/operations/')||
+  path==='/canopy/coordinator'||path.startsWith('/canopy/coordinator/')||
+  path==='/canopy/fellow'||path.startsWith('/canopy/fellow/');
+const __womateProgrammeManagerPath=
+  (path==='/canopy/manage'||path.startsWith('/canopy/manage/'))&&
+  viewer.profile?.role!=='admin'&&
+  !path.startsWith('/canopy/manage/role-preview');
+if(__womatePreviewOrStaffPath||__womateProgrammeManagerPath){
+  return <CanopyStaffWorkspace viewer={viewer} path={path} onSignOut={async()=>{await signOut();go('/canopy/login')}}/>;
+}
+const manager=canManageCanopy(viewer);
  const tester=isCanopyTester(viewer);
  const learnerItems=[['/canopy/classroom','Home',BookOpen],['/canopy/course/she-leads','Course',GraduationCap],['/canopy/assignments','Assignments',FileText],['/canopy/progress','Progress',ClipboardCheck],['/canopy/resources','Resources',Sparkles],['/canopy/canvas','CanopyCanvas',PenLine],['/canopy/notifications','Notifications',MessageSquare],['/canopy/help','Help',ShieldAlert],['/canopy/certificate','Certificates',Award]];
  const legacyAdmin=['manager','admin'].includes(viewer?.profile?.role);
@@ -368,11 +381,6 @@ export default function CanopyApp(){
  if(loading)return <div className="canopyLoading"><Leaf/><span>Opening Canopy…</span></div>;
  if(!viewer){go('/canopy/login');return null}
  
-/* WOMATE_FULL_TEAM_WORKSPACE_PREVIEW_20260909 */
-const __womateTeamPath=path==='/canopy/manage/role-preview'||path.startsWith('/canopy/manage/role-preview/')||path==='/canopy/operations'||path.startsWith('/canopy/operations/')||path==='/canopy/coordinator'||path.startsWith('/canopy/coordinator/')||path==='/canopy/fellow'||path.startsWith('/canopy/fellow/');
-if(__womateTeamPath){
-  return <CanopyStaffWorkspace viewer={viewer} path={path} onSignOut={async()=>{await signOut();go('/canopy/login')}}/>;
-}
 const manager=canManageCanopy(viewer);const operational=isCanopyOperationsStaff(viewer);const staffRole=viewer?.staffAccess?.role;const tester=isCanopyTester(viewer);const legacyAdmin=['manager','admin'].includes(viewer?.profile?.role);
  if(manager&&!path.startsWith('/canopy/manage')&&!['/canopy/profile','/canopy/notifications','/canopy/team-access'].includes(path)){go('/canopy/manage');return null}
  if(operational){const home=staffRole==='programme_operations'?'/canopy/operations':staffRole==='module_coordinator'?'/canopy/coordinator':'/canopy/fellow';if(![home,'/canopy/profile','/canopy/notifications','/canopy/team-access'].includes(path)){go(home);return null}}
