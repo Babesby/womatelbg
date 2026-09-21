@@ -1028,3 +1028,123 @@
 /* WOMATE Admin dashboard preview */
 .canopyAdminPreviewPanel{margin:0 0 24px;padding:24px;border:1px solid rgba(20,61,44,.14);border-radius:24px;background:linear-gradient(135deg,rgba(198,255,82,.14),rgba(255,255,255,.95));display:flex;justify-content:space-between;gap:24px;align-items:center}.canopyAdminPreviewPanel>div:first-child{max-width:700px}.canopyAdminPreviewPanel span,.canopyPreviewGuard span{font-size:11px;letter-spacing:.12em;font-weight:800}.canopyAdminPreviewPanel h2{margin:7px 0 7px}.canopyAdminPreviewPanel p{margin:0;color:var(--canopy-muted,#66746d)}.canopyAdminPreviewActions{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px}.canopyAdminRolePreview{display:block}.canopyPreviewGuard{margin-bottom:24px;padding:24px;border-radius:24px;background:#123e2d;color:#fff}.canopyPreviewGuard>div:first-child{display:flex;align-items:center;gap:8px;color:#c6ff52}.canopyPreviewGuard h1{margin:9px 0 6px;color:#fff}.canopyPreviewGuard p{margin:0 0 18px;color:rgba(255,255,255,.78)}.canopyPreviewControls{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap}.canopyPreviewControls label{display:grid;gap:6px;font-size:12px;font-weight:700}.canopyPreviewControls select{min-width:220px;padding:11px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.25);background:#fff;color:#17392d}.canopyPreviewLoading{padding:28px;border-radius:20px;background:#fff;display:flex;align-items:center;gap:10px}.canopyPreviewLoading svg{animation:canopySpin 1s linear infinite}@keyframes canopySpin{to{transform:rotate(360deg)}}
 @media(max-width:820px){.canopyAdminPreviewPanel{display:block}.canopyAdminPreviewActions{justify-content:flex-start;margin-top:18px}.canopyPreviewControls{display:grid}.canopyPreviewControls label,.canopyPreviewControls select,.canopyPreviewControls button{width:100%;min-width:0}}
+
+
+/* WOMATE CANOPY · progressive assignment submission · 2026-09-21 */
+
+.ca-assignment-progress{
+  margin:0 0 18px;
+  padding:18px;
+  border:1px solid rgba(14,77,74,.14);
+  border-radius:18px;
+  background:rgba(216,238,229,.22);
+}
+
+.ca-assignment-progress-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:14px;
+  margin-bottom:10px;
+  color:#0E4D4A;
+}
+
+.ca-assignment-progress-head strong{
+  font-size:14px;
+}
+
+.ca-assignment-progress-head span{
+  font-size:12px;
+  opacity:.72;
+}
+
+.ca-assignment-progress-track{
+  height:8px;
+  border-radius:999px;
+  overflow:hidden;
+  background:rgba(14,77,74,.10);
+}
+
+.ca-assignment-progress-track>span{
+  display:block;
+  height:100%;
+  border-radius:inherit;
+  background:#0E4D4A;
+  transition:width .22s ease;
+}
+
+.ca-assignment-progress-parts{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px;
+  margin-top:12px;
+}
+
+.ca-assignment-progress-parts>span{
+  padding:9px 10px;
+  border:1px solid rgba(14,77,74,.10);
+  border-radius:12px;
+  background:#fff;
+  color:#4b625f;
+  font-size:12px;
+  font-weight:800;
+}
+
+.ca-assignment-progress-parts>span.ready{
+  background:#C6FF52;
+  border-color:#C6FF52;
+  color:#083f3e;
+}
+
+.ca-assignment-progress-parts>span.locked{
+  opacity:.52;
+}
+
+.ca-assignment-progress-note{
+  margin:12px 0 0!important;
+  font-size:12px!important;
+  line-height:1.5!important;
+}
+
+.ca-assignment-form-actions{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  align-items:center;
+}
+
+.ca-assignment-form-actions .ca-save-progress{
+  background:#fff;
+  color:#0E4D4A;
+  border:1px solid rgba(14,77,74,.25);
+}
+
+.ca-draft-note{
+  display:block;
+  color:#0E4D4A;
+  margin-top:7px;
+}
+
+.ca-part-ready{
+  color:#0E4D4A;
+}
+
+.ca-part-pending{
+  color:#667b77;
+}
+
+@media(max-width:700px){
+  .ca-assignment-progress-parts{
+    grid-template-columns:1fr;
+  }
+
+  .ca-assignment-progress-head{
+    align-items:flex-start;
+    flex-direction:column;
+    gap:4px;
+  }
+
+  .ca-assignment-form-actions>button{
+    width:100%;
+  }
+}

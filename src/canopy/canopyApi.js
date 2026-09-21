@@ -257,3 +257,49 @@ export async function getCertificates(session){
   return rest(`canopy_certificates?select=*&user_id=eq.${s.user.id}&order=issued_at.desc`,{token:s.access_token});
 }
 
+
+
+/* WOMATE · progressive weekly assignment drafts · 2026-09-21 */
+
+export async function getWeeklyAssignmentDrafts(session){
+  const s=await refreshSession(session||getStoredSession());
+
+  if(!s?.access_token)return[];
+
+  return rest(
+    'canopy_assignment_drafts?select=*&user_id=eq.'+
+    s.user.id+
+    '&order=updated_at.desc',
+    {token:s.access_token}
+  );
+}
+
+export async function saveWeeklyAssignmentDraft(
+  session,
+  weekKey,
+  payload
+){
+  const s=await refreshSession(session||getStoredSession());
+
+  if(!s?.access_token){
+    throw new Error(
+      'Your Canopy session has expired. Sign in again.'
+    );
+  }
+
+  return rest(
+    'canopy_assignment_drafts?on_conflict=user_id,week_key',
+    {
+      token:s.access_token,
+      method:'POST',
+      prefer:'resolution=merge-duplicates,return=representation',
+      body:{
+        user_id:s.user.id,
+        week_key:weekKey,
+        paragraph_response:payload?.paragraph_response||'',
+        canvas_link:payload?.canvas_link||'',
+        linkedin_link:payload?.linkedin_link||''
+      }
+    }
+  );
+}

@@ -1,6 +1,6 @@
 import React,{useEffect,useState} from 'react';
 import {CANOPY_ASSIGNMENT_SCHEDULE,formatCanopyDate,openAssignments,speakerChallengeOpen} from './canopySchedule';
-import {getWeeklyAssignmentSubmissions,submitWeeklyAssignment,submitTesterWeeklyAssignment,getPuzzleProgress,savePuzzleCompletion,refreshLearningAutomation} from './canopyApi';
+import {getWeeklyAssignmentSubmissions,submitWeeklyAssignment,submitTesterWeeklyAssignment,getPuzzleProgress,savePuzzleCompletion,refreshLearningAutomation,getWeeklyAssignmentDrafts,saveWeeklyAssignmentDraft} from './canopyApi';
 import {canopyModules2026} from './canopyCurriculum2026';
 
 function scramble(word){
@@ -124,6 +124,8 @@ export default function CanopyAssignmentsV2({viewer}){
   const[puzzles,setPuzzles]=useState([]);
   const[drafts,setDrafts]=useState({});
   const[busy,setBusy]=useState('');
+  const[draftBusy,setDraftBusy]=useState('');
+  const[draftNotes,setDraftNotes]=useState({});
   const[message,setMessage]=useState('');
   const[now,setNow]=useState(()=>new Date());
   const tester=String(viewer?.user?.email||'').trim().toLowerCase()==='p.viewmultimedia@gmail.com';
@@ -135,7 +137,52 @@ export default function CanopyAssignmentsV2({viewer}){
     const[s,p]=await Promise.all([getWeeklyAssignmentSubmissions(viewer.session),getPuzzleProgress(viewer.session)]);
     setSubs(s||[]);setPuzzles(p||[]);
   }
-  useEffect(()=>{load()},[viewer?.session?.access_token]);
+  /* WOMATE_PROGRESSIVE_DRAFT_LOADER */
+  async function loadDrafts(){
+    try{
+      const rows=await getWeeklyAssignmentDrafts(viewer.session);
+      const saved={};
+
+      (rows||[]).forEach(row=>{
+        saved[row.week_key]={
+          paragraph_response:row.paragraph_response||'',
+          canvas_link:row.canvas_link||'',
+          linkedin_link:row.linkedin_link||''
+        };
+      });
+
+      setDrafts(current=>{
+        const merged={...saved};
+
+        Object.entries(current||{}).forEach(([weekKey,value])=>{
+          const hasLocal=[
+            'paragraph_response',
+            'canvas_link',
+            'linkedin_link'
+          ].some(field=>String(value?.[field]||'').trim());
+
+          if(hasLocal){
+            merged[weekKey]={
+              ...(merged[weekKey]||{}),
+              ...value
+            };
+          }
+        });
+
+        return merged;
+      });
+    }catch(error){
+      console.warn(
+        'Canopy saved assignment progress could not be loaded:',
+        error?.message||error
+      );
+    }
+  }
+
+  useEffect(()=>{
+    load();
+    loadDrafts();
+  },[viewer?.session?.access_token]);
   useEffect(()=>{const timer=window.setInterval(()=>setNow(new Date()),60000);return()=>window.clearInterval(timer)},[]);
 
   const latest=weekKey=>subs.filter(x=>x.week_key===weekKey).sort((a,b)=>b.attempt_no-a.attempt_no)[0];
@@ -144,6 +191,96 @@ export default function CanopyAssignmentsV2({viewer}){
   const finalScore=s=>s?.final_score??s?.auto_score;
   const finalFeedback=s=>s?.final_feedback||s?.feedback_hint||'';
   const reviewLabel=s=>s?.review_source==='manual'?'WOMATE review':'Automated formative baseline';
+
+  function assignmentPartState(d,speakerOpen){
+    const paragraphWords=(d?.paragraph_response||'')
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean)
+      .length;
+
+    const paragraphReady=paragraphWords>=80;
+
+    const canvasReady=/^https:\/\/(drive|docs)\.google\.com\//i
+      .test((d?.canvas_link||'').trim());
+
+    const linkedinReady=!!speakerOpen &&
+      /^https:\/\/(www\.)?linkedin\.com\//i
+        .test((d?.linkedin_link||'').trim());
+
+    const completed=[
+      paragraphReady,
+      canvasReady,
+      linkedinReady
+    ].filter(Boolean).length;
+
+    return {
+      paragraphWords,
+      paragraphReady,
+      canvasReady,
+      linkedinReady,
+      completed,
+      remaining:3-completed,
+      percent:Math.round((completed/3)*100),
+      allReady:paragraphReady&&canvasReady&&linkedinReady
+    };
+  }
+
+  async function saveProgress(item){
+    const d=drafts[item.weekKey]||{};
+
+    const hasWork=[
+      d.paragraph_response,
+      d.canvas_link,
+      d.linkedin_link
+    ].some(value=>String(value||'').trim());
+
+    if(!hasWork){
+      setDraftNotes(current=>({
+        ...current,
+        [item.weekKey]:'Start one of the assignment parts before saving.'
+      }));
+      return;
+    }
+
+    setDraftBusy(item.weekKey);
+
+    setDraftNotes(current=>({
+      ...current,
+      [item.weekKey]:''
+    }));
+
+    try{
+      await saveWeeklyAssignmentDraft(
+        viewer.session,
+        item.weekKey,
+        {
+          paragraph_response:d.paragraph_response||'',
+          canvas_link:d.canvas_link||'',
+          linkedin_link:d.linkedin_link||''
+        }
+      );
+
+      const speakerOpen=tester||speakerChallengeOpen(item,now);
+      const state=assignmentPartState(d,speakerOpen);
+
+      setDraftNotes(current=>({
+        ...current,
+        [item.weekKey]:
+          'Progress saved · '+state.completed+
+          ' of 3 required parts ready.'
+      }));
+    }catch(error){
+      setDraftNotes(current=>({
+        ...current,
+        [item.weekKey]:
+          error?.message||
+          'Progress could not be saved. Please try again.'
+      }));
+    }finally{
+      setDraftBusy('');
+    }
+  }
 
   async function send(item){
     const d=drafts[item.weekKey]||{};
@@ -155,13 +292,42 @@ export default function CanopyAssignmentsV2({viewer}){
     if(!tester&&!speakerChallengeOpen(item,now)){setMessage('Parts 01 and 02 are open now. The speaker challenge opens after Thursday’s live session.');return}
     if(!/^https:\/\/(www\.)?linkedin\.com\//i.test(linkedin)){setMessage('Paste the LinkedIn post link for the speaker challenge.');return}
     setBusy(item.weekKey);setMessage('');
-    try{await (tester?submitTesterWeeklyAssignment:submitWeeklyAssignment)(viewer.session,item.weekKey,{paragraph_response:paragraph,canvas_link:canvas,linkedin_link:linkedin});setDrafts(x=>({...x,[item.weekKey]:{}}));await load();setMessage('Assignment submitted successfully.')}
+    try{
+      await (tester?submitTesterWeeklyAssignment:submitWeeklyAssignment)(
+        viewer.session,
+        item.weekKey,
+        {
+          paragraph_response:paragraph,
+          canvas_link:canvas,
+          linkedin_link:linkedin
+        }
+      );
+
+      try{
+        await saveWeeklyAssignmentDraft(
+          viewer.session,
+          item.weekKey,
+          {
+            paragraph_response:'',
+            canvas_link:'',
+            linkedin_link:''
+          }
+        );
+      }catch{}
+
+      setDrafts(x=>({...x,[item.weekKey]:{}}));
+      setDraftNotes(x=>({...x,[item.weekKey]:''}));
+
+      await load();
+
+      setMessage('Assignment submitted successfully.');
+    }
     catch(e){setMessage(e?.message||'Submission failed. Try again.')}
     finally{setBusy('')}
   }
 
   return <section className="ca-page">
-    <div className="ca-head"><span className="ca-kicker">ASSIGNMENTS</span><h1>Work that follows the cohort.</h1><p>Each week opens on Monday. Start the paragraph response, CanopyCanvas graphic and optional puzzle immediately. The speaker challenge unlocks after Thursday’s live session. Complete all three required parts by Sunday.</p></div>
+    <div className="ca-head"><span className="ca-kicker">ASSIGNMENTS</span><h1>Work that follows the cohort.</h1><p>Each week opens on Monday. Complete the work in stages: save your paragraph and CanopyCanvas evidence when they are ready, then add the speaker challenge after Thursday’s live session. Saving progress does not use an attempt. Complete all three required parts by Sunday.</p></div>
     {!available.length&&<div className="ca-empty"><h2>Your first assignment is not open yet.</h2><p>Module 01 opens Monday, 21 September 2026.</p></div>}
     <div className="ca-stack">
       {available.map(item=>{
@@ -169,6 +335,7 @@ export default function CanopyAssignmentsV2({viewer}){
         const mayResubmit=tester||(count<3&&now<=new Date(item.resubmitUntil));
         const puzzleDone=puzzles.some(p=>p.week_key===item.weekKey&&p.completed);
         const speakerOpen=tester||speakerChallengeOpen(item,now);
+        const parts=assignmentPartState(d,speakerOpen);
         const visible=scoreVisible(sub),score=finalScore(sub),status=(sub?.assessment_status||sub?.status||'submitted').replaceAll('_',' ');
         const curriculum=moduleContent(item.moduleId);
         const paragraphPrompt=curriculum?.assignment?.paragraphPrompt||'Respond to the weekly learning task with reflection, analysis and a concrete application to climate action.';
@@ -188,11 +355,172 @@ export default function CanopyAssignmentsV2({viewer}){
             {visible&&(['revision_required','needs_manual_review'].includes(sub.assessment_status)||Number(score)<70)&&<div className="ca-feedback ca-revision"><span>Next step</span><strong>Revision required. Use the feedback above and submit again within the resubmission window if an attempt remains.</strong></div>}
           </div>}
           {(!sub||mayResubmit)&&<div className="ca-form">
-            <label>Paragraph answer<textarea rows="8" value={d.paragraph_response||''} onChange={e=>setDrafts(x=>({...x,[item.weekKey]:{...d,paragraph_response:e.target.value}}))} placeholder="Write your response here…"/></label>
-            <label>CanopyCanvas Google Drive link<input inputMode="url" value={d.canvas_link||''} onChange={e=>setDrafts(x=>({...x,[item.weekKey]:{...d,canvas_link:e.target.value}}))} placeholder="https://drive.google.com/…"/></label>
-            {speakerOpen&&<label>LinkedIn speaker-task post link<input inputMode="url" value={d.linkedin_link||''} onChange={e=>setDrafts(x=>({...x,[item.weekKey]:{...d,linkedin_link:e.target.value}}))} placeholder="https://www.linkedin.com/posts/…"/></label>}
-            <button type="button" disabled={busy===item.weekKey||!speakerOpen} onClick={()=>send(item)}>{!speakerOpen?'Final submission opens Thursday':busy===item.weekKey?'Submitting…':sub?'Submit revision':'Submit assignment'}</button>
-            {sub&&!tester&&<small>{Math.max(0,3-count)} resubmission{3-count===1?'':'s'} remaining.</small>}{sub&&tester&&<small>Tester mode has no date or attempt lock.</small>}
+
+            <div className="ca-assignment-progress">
+              <div className="ca-assignment-progress-head">
+                <strong>{parts.completed} of 3 required parts ready</strong>
+                <span>{parts.remaining} remaining</span>
+              </div>
+
+              <div
+                className="ca-assignment-progress-track"
+                aria-label={parts.completed+' of 3 assignment parts ready'}
+              >
+                <span style={{width:parts.percent+'%'}}/>
+              </div>
+
+              <div className="ca-assignment-progress-parts">
+                <span className={parts.paragraphReady?'ready':''}>
+                  {parts.paragraphReady?'✓':'01'} Paragraph
+                </span>
+
+                <span className={parts.canvasReady?'ready':''}>
+                  {parts.canvasReady?'✓':'02'} CanopyCanvas
+                </span>
+
+                <span className={
+                  parts.linkedinReady
+                    ?'ready'
+                    :speakerOpen
+                      ?''
+                      :'locked'
+                }>
+                  {parts.linkedinReady
+                    ?'✓'
+                    :speakerOpen
+                      ?'03'
+                      :'LOCKED'} Speaker challenge
+                </span>
+              </div>
+
+              {!speakerOpen&&
+                <p className="ca-assignment-progress-note">
+                  Part 03 opens after Thursday’s live session.
+                  Save Parts 01 and 02 now and return later.
+                </p>
+              }
+            </div>
+
+            <label>
+              Paragraph answer
+
+              <textarea
+                rows="8"
+                value={d.paragraph_response||''}
+                onChange={e=>setDrafts(x=>({
+                  ...x,
+                  [item.weekKey]:{
+                    ...d,
+                    paragraph_response:e.target.value
+                  }
+                }))}
+                placeholder="Write your response here…"
+              />
+
+              <small className={
+                parts.paragraphReady
+                  ?'ca-part-ready'
+                  :'ca-part-pending'
+              }>
+                {parts.paragraphWords} words ·
+                {parts.paragraphReady
+                  ?' Ready'
+                  :' Minimum 80 words'}
+              </small>
+            </label>
+
+            <label>
+              CanopyCanvas Google Drive link
+
+              <input
+                inputMode="url"
+                value={d.canvas_link||''}
+                onChange={e=>setDrafts(x=>({
+                  ...x,
+                  [item.weekKey]:{
+                    ...d,
+                    canvas_link:e.target.value
+                  }
+                }))}
+                placeholder="https://drive.google.com/…"
+              />
+            </label>
+
+            {speakerOpen&&
+              <label>
+                LinkedIn speaker-task post link
+
+                <input
+                  inputMode="url"
+                  value={d.linkedin_link||''}
+                  onChange={e=>setDrafts(x=>({
+                    ...x,
+                    [item.weekKey]:{
+                      ...d,
+                      linkedin_link:e.target.value
+                    }
+                  }))}
+                  placeholder="https://www.linkedin.com/posts/…"
+                />
+              </label>
+            }
+
+            <div className="ca-assignment-form-actions">
+
+              <button
+                type="button"
+                className="ca-save-progress"
+                disabled={draftBusy===item.weekKey}
+                onClick={()=>saveProgress(item)}
+              >
+                {draftBusy===item.weekKey
+                  ?'Saving…'
+                  :'Save progress'}
+              </button>
+
+              <button
+                type="button"
+                disabled={
+                  busy===item.weekKey||
+                  !speakerOpen||
+                  !parts.allReady
+                }
+                onClick={()=>send(item)}
+              >
+                {busy===item.weekKey
+                  ?'Submitting…'
+                  :!speakerOpen
+                    ?'Final submit opens Thursday'
+                    :!parts.allReady
+                      ?'Complete '+parts.remaining+
+                        ' remaining part'+
+                        (parts.remaining===1?'':'s')
+                      :sub
+                        ?'Submit revision'
+                        :'Submit final assignment'}
+              </button>
+
+            </div>
+
+            {draftNotes[item.weekKey]&&
+              <small className="ca-draft-note">
+                {draftNotes[item.weekKey]}
+              </small>
+            }
+
+            {sub&&!tester&&
+              <small>
+                {Math.max(0,3-count)} resubmission
+                {3-count===1?'':'s'} remaining.
+              </small>
+            }
+
+            {sub&&tester&&
+              <small>
+                Tester mode has no date or attempt lock.
+              </small>
+            }
+
           </div>}
           {sub&&!mayResubmit&&<p className="ca-locked">Submission window closed or all three attempts have been used.</p>}
           <WeeklyPuzzle viewer={viewer} item={item} completed={puzzleDone} onComplete={load}/>
