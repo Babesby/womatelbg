@@ -1170,3 +1170,22 @@
 .cc-preview-upgraded.format-portrait-post .cc-preview-graphic.layout-smart-fit{left:15%;top:46%;width:70%;height:28%;opacity:.88}
 .cc-preview-upgraded>small,.cc-preview-upgraded>h2,.cc-preview-upgraded>p,.cc-preview-upgraded>.cc-action-button,.cc-preview-upgraded>em,.cc-preview-upgraded>.cc-watermark,.cc-preview-upgraded>.cc-preview-icons{position:relative;z-index:4}
 @media(max-width:760px){.cc-graphic-grid{grid-template-columns:repeat(2,minmax(0,1fr));max-height:360px}.cc-graphic-grid button{grid-template-rows:72px auto}.cc-graphic-grid button img,.cc-no-graphic{height:72px}.cc-graphic-choice>span{align-items:flex-start;flex-direction:column;gap:2px}}
+
+/* WOMATE · Canopy participant profile self-service · 2026-09-23 */
+.canopyProfileSettings .canopyProfileFacts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:18px}
+.canopyProfileSettings .canopyProfileFacts>div{padding:16px;border:1px solid rgba(14,77,74,.12);border-radius:16px;background:#fff;display:flex;flex-direction:column;gap:5px}
+.canopyProfileSettings .canopyProfileFacts small{color:#667b77;font-size:11px;text-transform:uppercase;letter-spacing:.08em}
+.canopyProfileEdit,.canopyDangerZone{margin-top:18px;padding:22px;border:1px solid rgba(14,77,74,.12);border-radius:20px;background:#fff}
+.canopyProfileEdit{display:grid;grid-template-columns:minmax(0,1fr) minmax(240px,.8fr);gap:18px;align-items:end}
+.canopyProfileEdit h2,.canopyDangerZone h2{margin:4px 0 6px}.canopyProfileEdit p,.canopyDangerZone p{margin:0;color:#667b77;line-height:1.55}
+.canopyProfileEdit label,.canopyDangerZone label{display:flex;flex-direction:column;gap:7px;font-weight:700}
+.canopyProfileEdit input,.canopyDangerZone input{width:100%;min-height:46px;border:1px solid rgba(14,77,74,.22);border-radius:12px;padding:0 13px;background:#fff;color:inherit}
+.canopyProfileEdit button{min-height:46px}
+.canopyDangerZone{border-color:rgba(190,54,54,.20);background:rgba(255,248,248,.72)}
+.canopyDangerZone>div:first-child{margin-bottom:16px}
+.canopyDangerButton{min-height:44px;border:1px solid #b93636!important;background:#fff!important;color:#a12929!important;border-radius:12px;padding:0 16px;font-weight:800}
+.canopyDangerButton:disabled{opacity:.45;cursor:not-allowed}
+.canopyDeletionPending{display:flex!important;flex-direction:column;gap:4px;padding:14px 16px;border-radius:14px;background:#fff4df;border:1px solid #edc77e}
+.canopyDeletionPending b{color:#7f5712}.canopyDeletionPending span{color:#6b6253;font-size:13px}
+@media(max-width:820px){.canopyProfileSettings .canopyProfileFacts{grid-template-columns:1fr 1fr}.canopyProfileEdit{grid-template-columns:1fr}}
+@media(max-width:520px){.canopyProfileSettings .canopyProfileFacts{grid-template-columns:1fr}.canopyProfileEdit,.canopyDangerZone{padding:17px}}

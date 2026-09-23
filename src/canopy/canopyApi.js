@@ -303,3 +303,20 @@ export async function saveWeeklyAssignmentDraft(
     }
   );
 }
+
+
+// ---- WOMATE Canopy participant profile self-service -------------------------
+export async function updateOwnCanopyProfileName(session,fullName){
+  const s=await refreshSession(session||getStoredSession());
+  if(!s?.access_token)throw new Error('Your Canopy session has expired. Sign in again.');
+  return rest('rpc/canopy_update_own_profile_name',{token:s.access_token,method:'POST',body:{p_full_name:String(fullName||'').trim()}});
+}
+export async function getOwnCanopyDeletionRequest(session){
+  const s=await refreshSession(session||getStoredSession());if(!s?.access_token)return null;
+  return rest('rpc/canopy_get_own_account_deletion_request',{token:s.access_token,method:'POST',body:{}});
+}
+export async function requestOwnCanopyAccountDeletion(session,reason=''){
+  const s=await refreshSession(session||getStoredSession());
+  if(!s?.access_token)throw new Error('Your Canopy session has expired. Sign in again.');
+  return rest('rpc/canopy_request_own_account_deletion',{token:s.access_token,method:'POST',body:{p_reason:String(reason||'').trim()||null}});
+}

@@ -12,7 +12,7 @@ import CanopyStaffWorkspace from './CanopyStaffWorkspace';
 import{ArrowLeft,ArrowRight,BookOpen,Check,ChevronRight,ClipboardCheck,Clock,FileText,GraduationCap,Leaf,Lock,LogOut,Menu,PlayCircle,Sparkles,UserRound,X,BookMarked,UsersRound,PenLine,TrendingUp,Eye,EyeOff,MessageSquare,ShieldAlert,Award,BarChart3,Bell} from 'lucide-react';
 import'./canopy.css';
 import{CANOPY_BRAND,modules,resources}from'./canopyData';
-import{canopyConfigured,consumeAuthCallback,getStoredSession,getViewer,getProgress,getManagerSnapshot,markLesson,requestPasswordReset,resendConfirmation,saveQuiz,signIn,signOut,signUp,updatePassword,setLearnerEnrollmentStatus,createManagerAction,updateManagerAction,reviewWeeklyAssignment,getUnreadNotificationCount,submitLearnerComplaint,getLearnerComplaints,getWeeklyAssignmentSubmissions,issueCanopyCertificate,signInWithGoogle} from './canopyApi';
+import{canopyConfigured,consumeAuthCallback,getStoredSession,getViewer,getProgress,getManagerSnapshot,markLesson,requestPasswordReset,resendConfirmation,saveQuiz,signIn,signOut,signUp,updatePassword,setLearnerEnrollmentStatus,createManagerAction,updateManagerAction,reviewWeeklyAssignment,getUnreadNotificationCount,submitLearnerComplaint,getLearnerComplaints,getWeeklyAssignmentSubmissions,issueCanopyCertificate,signInWithGoogle,updateOwnCanopyProfileName,getOwnCanopyDeletionRequest,requestOwnCanopyAccountDeletion} from './canopyApi';
 
 const route=()=>window.location.pathname.replace(/\/$/,'')||'/canopy';
 
@@ -224,14 +224,100 @@ function Progress({progress,submissions=[]}){
 
 function Resources(){return <main className="canopyResources"><div className="canopyPageHead"><span className="canopyEyebrow">KEEP LEARNING</span><h1>Resources</h1><p>Selected starting points for learners who want to continue beyond the foundational course.</p></div><section>{resources.map(r=><a key={r.url} href={r.url} target="_blank" rel="noreferrer"><FileText/><div><small>{r.type}</small><h3>{r.title}</h3></div><ArrowRight/></a>)}</section></main>}
 
-function Profile({viewer}){const p=viewer.profile||{};return <main className="canopyProfile"><div className="canopyPageHead"><span className="canopyEyebrow">LEARNER PROFILE</span><h1>{p.full_name||viewer.user?.user_metadata?.full_name||'Your profile'}</h1><p>Your Canopy identity is connected to your WOMATE learning account.</p></div><section><div><small>Email</small><b>{viewer.user?.email}</b></div><div><small>Country</small><b>{p.country||viewer.user?.user_metadata?.country||'—'}</b></div><div><small>Role</small><b>{isCanopyTester(viewer)?'tester':viewer?.staffAccess?.role?teamRoleLabel(viewer.staffAccess.role):(p.role||'learner')}</b></div><div><small>Course access</small><b>{isCanopyTester(viewer)?'Unrestricted test access':(viewer.enrollments?.some(e=>e.status==='active')?'Active':'Awaiting enrolment')}</b></div></section></main>}
+function Profile({viewer,onReload}){
+ const p=viewer.profile||{};
+ const initialName=p.full_name||viewer.user?.user_metadata?.full_name||'';
+ const[name,setName]=useState(initialName);
+ const[busy,setBusy]=useState('');
+ const[msg,setMsg]=useState('');
+ const[deletion,setDeletion]=useState(null);
+ const[confirmDelete,setConfirmDelete]=useState('');
 
-function CanopyHelp({viewer}){
- const[subject,setSubject]=useState('');const[message,setMessage]=useState('');const[busy,setBusy]=useState(false);const[msg,setMsg]=useState('');const[complaints,setComplaints]=useState([]);
- const loadComplaints=async()=>{try{setComplaints(await getLearnerComplaints(viewer?.session)||[])}catch(err){console.error('Canopy complaint history load failed:',err)}};
- useEffect(()=>{loadComplaints()},[viewer?.session?.access_token]);
- const submit=async e=>{e.preventDefault();if(!subject.trim()||!message.trim())return;setBusy(true);setMsg('');try{await submitLearnerComplaint(viewer?.session,{subject,message});setSubject('');setMessage('');setMsg('Your complaint has been submitted to WOMATE. You can follow its status below.');await loadComplaints()}catch(err){setMsg(err.message||'Unable to submit your complaint.')}finally{setBusy(false)}};
- return <main className="canopyHelp"><div className="canopyPageHead"><span className="canopyEyebrow">HELP & SUPPORT</span><h1>How can WOMATE help?</h1><p>Submit a concern about your Canopy learning experience. Your complaint goes directly to the authorised WOMATE team for review.</p></div><div className="canopyHelpGrid"><form className="canopyHelpForm" onSubmit={submit}><div><span>SUBMIT A COMPLAINT</span><h2>Tell us what happened.</h2><p>Give enough detail for the WOMATE team to understand and address the concern.</p></div><label>Subject<input required maxLength="120" value={subject} onChange={e=>setSubject(e.target.value)} placeholder="Briefly describe the issue"/></label><label>Details<textarea required rows="7" maxLength="2000" value={message} onChange={e=>setMessage(e.target.value)} placeholder="Explain the issue, what happened and what support you need."/></label><div className="canopyHelpSubmit"><small>{message.length}/2000</small><button className="canopyPrimary" disabled={busy}>{busy?'Submitting…':'Submit complaint'} <ArrowRight size={16}/></button></div>{msg&&<p className="canopyHelpMessage" role="status">{msg}</p>}</form><aside className="canopyHelpHistory"><div><span>YOUR COMPLAINTS</span><h2>Status & history</h2></div>{complaints.length?complaints.map(c=><article key={c.id}><header><div><small>{new Date(c.created_at).toLocaleDateString()}</small><h3>{c.subject}</h3></div><span className={`canopyHelpStatus is-${c.status||'open'}`}>{c.status||'open'}</span></header><p>{c.message}</p>{c.response_message&&<div className="canopyComplaintResponse"><b>WOMATE response</b><p>{c.response_message}</p></div>}{c.resolved_at&&<small>Resolved {new Date(c.resolved_at).toLocaleDateString()}</small>}</article>):<div className="canopyHelpEmpty"><ShieldAlert/><p>No complaints submitted.</p></div>}</aside></div></main>
+ useEffect(()=>{
+   let live=true;
+   getOwnCanopyDeletionRequest(viewer.session).then(x=>{if(live)setDeletion(x)}).catch(()=>{});
+   return()=>{live=false};
+ },[viewer?.session?.access_token]);
+
+ async function saveName(e){
+   e.preventDefault();
+   setBusy('name');setMsg('');
+   try{
+     const result=await updateOwnCanopyProfileName(viewer.session,name);
+     setName(result?.full_name||name.trim());
+     setMsg(result?.changed===false?'Your name is already up to date.':'Name updated successfully.');
+     await onReload?.();
+   }catch(err){setMsg(err?.message||'Could not update your name.')}
+   finally{setBusy('')}
+ }
+
+ async function requestDeletion(){
+   if(confirmDelete!=='DELETE'){setMsg('Type DELETE exactly to confirm the account deletion request.');return}
+   setBusy('delete');setMsg('');
+   try{
+     const result=await requestOwnCanopyAccountDeletion(viewer.session);
+     setDeletion({status:'requested',requested_at:new Date().toISOString()});
+     setMsg(result?.message||'Deletion request submitted.');
+     setTimeout(async()=>{await signOut();go('/canopy/login')},900);
+   }catch(err){setMsg(err?.message||'Could not submit the deletion request.')}
+   finally{setBusy('')}
+ }
+
+ const pending=deletion?.status==='requested';
+
+ return <main className="canopyProfile canopyProfileSettings">
+  <div className="canopyPageHead">
+   <span className="canopyEyebrow">PROFILE & SETTINGS</span>
+   <h1>{name||'Your profile'}</h1>
+   <p>Keep your participant name accurate for programme records and certificates.</p>
+  </div>
+
+  <section className="canopyProfileFacts">
+   <div><small>Email</small><b>{viewer.user?.email}</b></div>
+   <div><small>Country</small><b>{p.country||viewer.user?.user_metadata?.country||'—'}</b></div>
+   <div><small>Role</small><b>{p.role||'learner'}</b></div>
+   <div><small>Course access</small><b>{viewer.enrollments?.some(e=>e.status==='active')?'Active':'Not active'}</b></div>
+  </section>
+
+  <form className="canopyProfileEdit" onSubmit={saveName}>
+   <div>
+    <span className="canopyEyebrow">NAME</span>
+    <h2>Participant name</h2>
+    <p>This name is used across Canopy. Once a certificate has been issued, name corrections must go through WOMATE Support.</p>
+   </div>
+   <label>
+    Full name
+    <input required minLength="2" maxLength="120" value={name}
+      onChange={e=>setName(e.target.value)} autoComplete="name"/>
+   </label>
+   <button className="canopyPrimary" disabled={busy==='name'||!name.trim()}>
+    {busy==='name'?'Saving…':'Save settings'}
+   </button>
+  </form>
+
+  <section className="canopyDangerZone">
+   <div>
+    <span className="canopyEyebrow">ACCOUNT</span>
+    <h2>Account deletion</h2>
+    <p>For programme-record safety, Canopy does not instantly erase your learning history. A deletion request pauses your course access immediately and sends the request to WOMATE for permanent account deletion after record checks.</p>
+   </div>
+   {pending
+    ? <div className="canopyDeletionPending"><b>Deletion requested</b><span>Your request is awaiting WOMATE review.</span></div>
+    : <>
+      <label>Type <b>DELETE</b> to confirm
+       <input value={confirmDelete} onChange={e=>setConfirmDelete(e.target.value)}
+        placeholder="DELETE" autoComplete="off"/>
+      </label>
+      <button type="button" className="canopyDangerButton"
+       disabled={busy==='delete'||confirmDelete!=='DELETE'} onClick={requestDeletion}>
+       {busy==='delete'?'Submitting request…':'Request account deletion'}
+      </button>
+     </>
+   }
+  </section>
+
+  {msg&&<p className="canopyFormMsg" role="status">{msg}</p>}
+ </main>
 }
 
 function ManagerNotice({children}){return children?<p className="canopyFormMsg" role="status">{children}</p>:null}
@@ -410,7 +496,7 @@ const manager=canManageCanopy(viewer);const operational=isCanopyOperationsStaff(
  else if(path==='/canopy/assignments')content=<CanopyAssignmentsV2 viewer={viewer}/>;
  else if(path==='/canopy/progress')content=<Progress progress={progress} submissions={submissions}/>;
  else if(path==='/canopy/resources')content=<Resources/>;
- else if(path==='/canopy/profile')content=<Profile viewer={viewer}/>;
+ else if(path==='/canopy/profile')content=<Profile viewer={viewer} onReload={load}/>;
  else{const match=path.match(/^\/canopy\/course\/she-leads\/([^/]+)\/([^/]+)$/);if(match){const[,moduleId,last]=match;content=last==='quiz'?<Quiz moduleId={moduleId} session={viewer.session} reload={load} tester={tester}/>:<Lesson moduleId={moduleId} lessonId={last} progress={progress} session={viewer.session} reload={load} tester={tester}/>}else content=tester?<TesterDashboard viewer={viewer} progress={progress}/>:<Dashboard viewer={viewer} progress={progress}/>}
  return <><Helmet><title>{isAnyCanopyStaff(viewer)?'Canopy Operations':'My Canopy'} | WOMATE</title></Helmet><CanopyLearningGuide path={path} viewer={viewer}/><LearnerShell viewer={viewer} progress={progress}>{content}</LearnerShell></>
 }
