@@ -1,1 +1,0 @@
-Closes She Leads 2026 Cohort 2 applications and points the application CTA/form to the 2027 Expression of Interest. No Canopy/SQL/legal/Paystack changes.
