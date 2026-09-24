@@ -346,7 +346,8 @@ export default function CanopyAssignmentsV2({viewer}){
     <div className="ca-stack">
       {available.map(item=>{
         const sub=latest(item.weekKey),count=attempts(item.weekKey),d=drafts[item.weekKey]||{};
-        const mayResubmit=tester||(count<3&&now<=new Date(item.resubmitUntil));
+        const manualCompleted=!!sub&&sub.review_source==='manual'&&sub.assessment_status==='completed';
+        const mayResubmit=!manualCompleted&&(tester||(count<3&&now<=new Date(item.resubmitUntil)));
         const puzzleDone=puzzles.some(p=>p.week_key===item.weekKey&&p.completed);
         const speakerOpen=tester||speakerChallengeOpen(item,now);
         const parts=assignmentPartState(d,speakerOpen);
@@ -371,7 +372,8 @@ export default function CanopyAssignmentsV2({viewer}){
             <div><span>Status</span><strong>{status}</strong></div>
             <div><span>Final score</span><strong>{visible?`${score}/100 · ${sub.score_band||''}`:'Releases after the week closes'}</strong>{visible&&<small>{reviewLabel(sub)}</small>}</div>
             {visible&&finalFeedback(sub)&&<div className="ca-feedback"><span>Feedback</span><strong>{finalFeedback(sub)}</strong></div>}
-            {visible&&(['revision_required','needs_manual_review'].includes(sub.assessment_status)||Number(score)<70)&&<div className="ca-feedback ca-revision"><span>Next step</span><strong>Revision required. Use the feedback above and submit again within the resubmission window if an attempt remains.</strong></div>}
+            {manualCompleted&&<div className="ca-feedback ca-complete-locked"><span>Completed</span><strong>WOMATE has completed the manual review. This assignment is closed and no further resubmission is required.</strong></div>}
+            {visible&&!manualCompleted&&(['revision_required','needs_manual_review'].includes(sub.assessment_status)||Number(score)<70)&&<div className="ca-feedback ca-revision"><span>Next step</span><strong>Revision required. Use the feedback above and submit again within the resubmission window if an attempt remains.</strong></div>}
           </div>}
           {(!sub||mayResubmit)&&<div className="ca-form">
 
