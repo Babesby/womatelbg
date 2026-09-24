@@ -15,7 +15,7 @@ export const CANOPY_ASSIGNMENT_SCHEDULE = [
     resubmitUntil:'2026-09-30T23:59:59Z',
     puzzleTerms:['CLIMATE','ADAPTATION','MITIGATION','RESILIENCE'],
     speakerPrompt:'Complete the challenge announced by the expert during the Thursday live session and publish the required reflection or action post on LinkedIn.',
-    liveUrl:'https://www.youtube.com/live/OdHsoorSmlE?si=tku6MyL-gJ1wuz6Z',
+    liveUrl:'https://youtu.be/GjMa1LtDK5U',
     livePoster:'/assets/canopy/live/module-01-live.webp',
     liveHost:'Maame Ekua Nyarkomah Donkor',
     liveSpeaker:'Judith Singibala',
