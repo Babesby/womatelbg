@@ -14,7 +14,12 @@ export const CANOPY_ASSIGNMENT_SCHEDULE = [
     dueAt:'2026-09-27T23:59:59Z',
     resubmitUntil:'2026-09-30T23:59:59Z',
     puzzleTerms:['CLIMATE','ADAPTATION','MITIGATION','RESILIENCE'],
-    speakerPrompt:'Complete the challenge announced by the expert during the Thursday live session and publish the required reflection or action post on LinkedIn.'
+    speakerPrompt:'Complete the challenge announced by the expert during the Thursday live session and publish the required reflection or action post on LinkedIn.',
+    liveUrl:'https://www.youtube.com/live/OdHsoorSmlE?si=tku6MyL-gJ1wuz6Z',
+    livePoster:'/assets/canopy/live/module-01-live.webp',
+    liveHost:'Maame Ekua Nyarkomah Donkor',
+    liveSpeaker:'Judith Singibala',
+    liveSpeakerRole:'Founder & Executive Director, TUPO Foundation'
   },
   {
     weekKey:'module-02', moduleId:'02', title:'Gender & Climate Justice',
@@ -23,7 +28,12 @@ export const CANOPY_ASSIGNMENT_SCHEDULE = [
     dueAt:'2026-10-04T23:59:59Z',
     resubmitUntil:'2026-10-07T23:59:59Z',
     puzzleTerms:['JUSTICE','EQUITY','GENDER','INCLUSION'],
-    speakerPrompt:'Complete the challenge announced by the expert during the Thursday live session and publish the required reflection or action post on LinkedIn.'
+    speakerPrompt:'Complete the challenge announced by the expert during the Thursday live session and publish the required reflection or action post on LinkedIn.',
+    liveUrl:'https://www.youtube.com/live/2prJ6c4gkAQ?si=GZhxK73WaG-K5wNL',
+    livePoster:'/assets/canopy/live/module-02-live.webp',
+    liveHost:'Sharon Nyarko',
+    liveSpeaker:'Patricia Bekoe',
+    liveSpeakerRole:'Founder & Executive Director, Odeibea Foundation'
   },
   {
     weekKey:'module-03', moduleId:'03', title:'Climate Governance & Policy',

@@ -12,9 +12,9 @@ import CanopyStaffWorkspace from './CanopyStaffWorkspace';
 import{ArrowLeft,ArrowRight,BookOpen,Check,ChevronRight,ClipboardCheck,Clock,FileText,GraduationCap,Leaf,Lock,LogOut,Menu,PlayCircle,Sparkles,UserRound,X,BookMarked,UsersRound,PenLine,TrendingUp,Eye,EyeOff,MessageSquare,ShieldAlert,Award,BarChart3,Bell,Moon,Sun,Globe2,Mail,ShieldCheck,BriefcaseBusiness} from 'lucide-react';
 import'./canopy.css';
 import{CANOPY_BRAND,modules,resources}from'./canopyData';
-import{canopyConfigured,consumeAuthCallback,getStoredSession,getViewer,getProgress,getManagerSnapshot,markLesson,requestPasswordReset,resendConfirmation,saveQuiz,signIn,signOut,signUp,updatePassword,setLearnerEnrollmentStatus,createManagerAction,updateManagerAction,reviewWeeklyAssignment,getUnreadNotificationCount,getWeeklyAssignmentSubmissions,issueCanopyCertificate,signInWithGoogle,updateOwnCanopyProfile,getOwnCanopyDeletionRequest,requestOwnCanopyAccountDeletion} from './canopyApi';
+import{canopyConfigured,consumeAuthCallback,getStoredSession,getViewer,getProgress,getManagerSnapshot,markLesson,requestPasswordReset,resendConfirmation,saveQuiz,signIn,signOut,signUp,updatePassword,setLearnerEnrollmentStatus,createManagerAction,updateManagerAction,reviewWeeklyAssignment,getUnreadNotificationCount,getWeeklyAssignmentSubmissions,issueCanopyCertificate,signInWithGoogle,updateOwnCanopyProfile,getOwnCanopyDeletionRequest,requestOwnCanopyAccountDeletion,withdrawCanopyLearner,restoreCanopyLearnerEligibility} from './canopyApi';
 import{applyCanopyTheme,getCanopyTheme}from'./canopyTheme';
-import{CanopyJourneyMap,CanopyThisWeek,CanopyReflectionPrompt,CanopyReflectionTimeline,CanopyModuleComplete,CanopySpotlight,CanopyPortfolioPage}from'./CanopyExperience';
+import{CanopyJourneyMap,CanopyThisWeek,CanopyLessonActivity,CanopyReflectionTimeline,CanopyModuleComplete,CanopySpotlight,CanopyPortfolioPage}from'./CanopyExperience';
 
 const CanopyHelp=lazy(()=>import('./CanopyHelp'));
 const AskCanopyWidget=lazy(()=>import('./AskCanopyWidget'));
@@ -42,9 +42,11 @@ function Landing(){return <div className="canopyPublic"><PublicTop/><main>
 function Auth({mode='login'}){
  const[form,setForm]=useState({full_name:'',country:'',email:'',password:'',team_code:''});
  const[busy,setBusy]=useState(false);
- const[msg,setMsg]=useState('');
- const[msgType,setMsgType]=useState('info');
+ const[withdrawnNotice]=useState(()=>sessionStorage.getItem('canopy_withdrawn_notice')||'');
+ const[msg,setMsg]=useState(()=>withdrawnNotice);
+ const[msgType,setMsgType]=useState(()=>withdrawnNotice?'error':'info');
  const[showPassword,setShowPassword]=useState(false);
+ useEffect(()=>{if(withdrawnNotice)sessionStorage.removeItem('canopy_withdrawn_notice')},[withdrawnNotice]);
  const[showTeamAccess,setShowTeamAccess]=useState(false);
  const feedback=(text,type='info')=>{setMsg(text);setMsgType(type)};
  const submit=async e=>{e.preventDefault();setBusy(true);feedback('');try{
@@ -211,7 +213,7 @@ function Lesson({moduleId,lessonId,progress,session,reload,tester=false}){
  if(index<0)return <main className="canopyLockedModule"><BookOpen/><h1>Lesson not found.</h1><p>Return to the module and choose an available lesson.</p><button className="canopySecondary" onClick={()=>go('/canopy/course/she-leads')}>Back to course</button></main>;
  const lesson=m.lessons[index];const done=progress.some(x=>x.lesson_id===lesson.id&&x.completed);const next=m.lessons[index+1];const prev=m.lessons[index-1];const moduleVideoUrl=m.videoUrl||((String(m.number||m.id).padStart(2,'0')==='04'||/Climate Advocacy & Digital Innovation/i.test(m.title||''))?'https://share.synthesia.io/embeds/videos/d4b0cb1a-e969-492d-8818-7a7b305fd3f8':'');
  const complete=async()=>{await markLesson(session,lesson.id,m.id,true);await reload();if(next)go(`/canopy/course/she-leads/${m.id}/${next.id}`);else setShowComplete(true)};
- return <main className="canopyLesson"><div className="canopyLessonCrumb"><button onClick={()=>go('/canopy/course/she-leads')}><ArrowLeft/> Course</button><span>Module {m.number}</span></div><div className="canopyLessonLayout"><aside><span>{m.number}</span><h2>{m.title}</h2><div>{m.lessons.map((l,i)=><button key={l.id} className={l.id===lesson.id?'active':''} onClick={()=>go(`/canopy/course/she-leads/${m.id}/${l.id}`)}><span>{progress.some(x=>x.lesson_id===l.id&&x.completed)?<Check/>:i+1}</span><b>{l.title}</b></button>)}<button className="quiz" onClick={()=>go(`/canopy/course/she-leads/${m.id}/quiz`)}><ClipboardCheck/><b>Knowledge check</b></button></div></aside><article><header><small>{canopyDisplayWeek(m.week)} · {lesson.minutes} MIN READ</small><h1>{lesson.title}</h1></header>{index===0&&<ModuleVideo youtubeId={m.youtubeId} videoUrl={moduleVideoUrl} title={`${m.title} introduction video`}/>}<div className="canopyLessonBody">{lesson.body.map((p,i)=><p key={i}>{p}</p>)}<div className="canopyTakeaway"><Leaf/><div><span>KEY TAKEAWAY</span><p>{lesson.takeaway}</p></div></div><CanopyReflectionPrompt moduleId={m.id} lessonId={lesson.id}/></div><footer><button className="canopySecondary" disabled={!prev} onClick={()=>prev&&go(`/canopy/course/she-leads/${m.id}/${prev.id}`)}><ArrowLeft/> Previous</button><button className="canopyPrimary" onClick={complete}>{done?'Completed':'Mark complete'} {next?<ArrowRight/>:<Check/>}</button></footer></article></div>{showComplete&&<CanopyModuleComplete module={m} onClose={()=>setShowComplete(false)}/>}</main>
+ return <main className="canopyLesson"><div className="canopyLessonCrumb"><button onClick={()=>go('/canopy/course/she-leads')}><ArrowLeft/> Course</button><span>Module {m.number}</span></div><div className="canopyLessonLayout"><aside><span>{m.number}</span><h2>{m.title}</h2><div>{m.lessons.map((l,i)=><button key={l.id} className={l.id===lesson.id?'active':''} onClick={()=>go(`/canopy/course/she-leads/${m.id}/${l.id}`)}><span>{progress.some(x=>x.lesson_id===l.id&&x.completed)?<Check/>:i+1}</span><b>{l.title}</b></button>)}<button className="quiz" onClick={()=>go(`/canopy/course/she-leads/${m.id}/quiz`)}><ClipboardCheck/><b>Knowledge check</b></button></div></aside><article><header><small>{canopyDisplayWeek(m.week)} · {lesson.minutes} MIN READ</small><h1>{lesson.title}</h1></header>{index===0&&<ModuleVideo youtubeId={m.youtubeId} videoUrl={moduleVideoUrl} title={`${m.title} introduction video`}/>}<div className="canopyLessonBody">{lesson.body.map((p,i)=><p key={i}>{p}</p>)}<div className="canopyTakeaway"><Leaf/><div><span>KEY TAKEAWAY</span><p>{lesson.takeaway}</p></div></div><CanopyLessonActivity moduleId={m.id} lessonId={lesson.id}/></div><footer><button className="canopySecondary" disabled={!prev} onClick={()=>prev&&go(`/canopy/course/she-leads/${m.id}/${prev.id}`)}><ArrowLeft/> Previous</button><button className="canopyPrimary" onClick={complete}>{done?'Completed':'Mark complete'} {next?<ArrowRight/>:<Check/>}</button></footer></article></div>{showComplete&&<CanopyModuleComplete module={m} onClose={()=>setShowComplete(false)}/>}</main>
 }
 
 function Quiz({moduleId,session,tester=false}){
@@ -383,14 +385,18 @@ function Profile({viewer,onReload}){
  </main>
 }
 function ManagerNotice({children}){return children?<p className="canopyFormMsg" role="status">{children}</p>:null}
-function ManagerOperations({snapshot,session,onReload,view='overview'}){
+function ManagerOperations({snapshot,session,onReload,viewer,view='overview'}){
  const[busy,setBusy]=useState('');const[msg,setMsg]=useState('');const[form,setForm]=useState({learner_id:'',action_type:'reminder',subject:'',message:''});const[reviewFilter,setReviewFilter]=useState('all');const[reviewDrafts,setReviewDrafts]=useState({});
  if(!snapshot)return <main className="canopyManager"><div className="canopyPageHead"><h1>Canopy operations</h1><p>Loading operational data…</p></div></main>;
  const learners=snapshot.profiles.filter(p=>p.role==='learner');
  const actions=snapshot.actions||[];
  const enrolFor=id=>snapshot.enrollments.find(e=>e.user_id===id);
  const nameFor=id=>learners.find(p=>p.user_id===id)?.full_name||'Learner';
+ const trueAdmin=viewer?.profile?.role==='admin';
+ const withdrawalFor=id=>(snapshot.withdrawals||[]).find(w=>w.user_id===id&&w.active);
  const activate=async(id,status)=>{setBusy(id);setMsg('');try{await setLearnerEnrollmentStatus(session,id,status);setMsg(status==='active'?'Learner access activated.':'Learner access deactivated.');await onReload?.()}catch(e){setMsg(e.message)}finally{setBusy('')}};
+ const withdraw=async id=>{if(!trueAdmin)return;if(!window.confirm('Withdraw this learner from Canopy? They will lose participant access immediately, but their learning record will be retained.'))return;setBusy(id);setMsg('');try{await withdrawCanopyLearner(session,id,'Withdrawn by WOMATE Admin.');setMsg('Learner withdrawn. Their Canopy access is now blocked.');await onReload?.()}catch(e){setMsg(e.message)}finally{setBusy('')}};
+ const restore=async id=>{if(!trueAdmin)return;setBusy(id);setMsg('');try{await restoreCanopyLearnerEligibility(session,id);setMsg('Withdrawal block removed. The learner remains paused until WOMATE Admin activates access again.');await onReload?.()}catch(e){setMsg(e.message)}finally{setBusy('')}};
  const sendAction=async e=>{e.preventDefault();if(!form.learner_id||!form.subject)return;setBusy('action');setMsg('');try{const extra=form.action_type==='certificate'?{status:'issued',certificate_code:'WOMATE-SL2-'+Date.now().toString(36).toUpperCase()}:{status:'open'};await createManagerAction(session,{...form,...extra});setForm({learner_id:'',action_type:'reminder',subject:'',message:''});setMsg(form.action_type==='certificate'?'Certificate issued to learner record.':'Operational message recorded and delivered inside Canopy.');await onReload?.()}catch(e){setMsg(e.message)}finally{setBusy('')}};
  const resolve=async(a,status='resolved')=>{setBusy(a.id);setMsg('');try{await updateManagerAction(session,a.id,{status,resolved_at:new Date().toISOString()});setMsg('Record updated.');await onReload?.()}catch(e){setMsg(e.message)}finally{setBusy('')}};
  const sectionTitle={overview:'Operations',access:'Manage cohort',reviews:'Assess submissions',communications:'Warnings & feedback',reminders:'Reminders',complaints:'Complaints',certificates:'Certificates',reports:'Reports'}[view]||'Operations';
@@ -416,7 +422,7 @@ function ManagerOperations({snapshot,session,onReload,view='overview'}){
     <button onClick={()=>go('/canopy/manage/reports')}><BarChart3/><span><b>Reports</b><small>Monitor delivery and completion.</small></span><ArrowRight/></button>
    </section>
   </>}
-  {view==='access'&&<section className="canopyManagerTable canopyManagerAccessTable"><header><b>Participant</b><b>Country</b><b>Access</b><b>Action</b></header>{learners.map(p=>{const e=enrolFor(p.user_id),active=e?.status==='active';return <div key={p.user_id}><span>{p.full_name||'Unnamed learner'}</span><span>{p.country||'—'}</span><span><b className={'canopyAccessStatus '+(active?'isActive':'isWaiting')}>{active?'Active':'Waiting'}</b></span><span><button className={active?'canopySecondary':'canopyPrimary'} disabled={busy===p.user_id} onClick={()=>activate(p.user_id,active?'inactive':'active')}>{busy===p.user_id?'Updating…':active?'Deactivate':'Activate access'}</button></span></div>})}</section>}
+  {view==='access'&&<section className="canopyManagerTable canopyManagerAccessTable"><header><b>Participant</b><b>Country</b><b>Access</b><b>Action</b></header>{learners.map(p=>{const e=enrolFor(p.user_id),active=e?.status==='active',withdrawn=Boolean(withdrawalFor(p.user_id));return <div key={p.user_id}><span>{p.full_name||'Unnamed learner'}</span><span>{p.country||'—'}</span><span><b className={'canopyAccessStatus '+(withdrawn?'isWithdrawn':active?'isActive':'isWaiting')}>{withdrawn?'Withdrawn':active?'Active':'Waiting'}</b></span><span className="canopyAccessActions">{withdrawn?<>{trueAdmin&&<button className="canopySecondary" disabled={busy===p.user_id} onClick={()=>restore(p.user_id)}>{busy===p.user_id?'Updating…':'Restore eligibility'}</button>}</>:<><button className={active?'canopySecondary':'canopyPrimary'} disabled={busy===p.user_id} onClick={()=>activate(p.user_id,active?'inactive':'active')}>{busy===p.user_id?'Updating…':active?'Deactivate':'Activate access'}</button>{trueAdmin&&<button className="canopyDangerButton" disabled={busy===p.user_id} onClick={()=>withdraw(p.user_id)}>Withdraw</button>}</>}</span></div>})}</section>}
   {view==='reviews'&&<section className="canopyReviewWorkspace">
    <div className="canopyReviewToolbar">
     <div><span>SUBMISSION REVIEW</span><strong>{snapshot.submissions.length} total</strong></div>
@@ -491,6 +497,7 @@ export default function CanopyApp(){
    const pending=sessionStorage.getItem('canopy_team_access_code_pending');
    if(pending){try{await activateTeamAccess(session,pending);sessionStorage.removeItem('canopy_team_access_code_pending')}catch(err){console.warn('Pending Canopy team access activation failed:',err)}}
    const v=await getViewer(session);if(!v){setViewer(null);return}
+   if(v?.profile?.role==='learner'&&v?.withdrawal?.active){sessionStorage.setItem('canopy_withdrawn_notice','Your access to this Canopy cohort has been withdrawn by WOMATE. Your learning record is retained, but you cannot enter the participant workspace. Contact WOMATE Admin if you believe this is an error.');await signOut();window.location.replace('/canopy/login');return}
    let staffAccess=null;try{staffAccess=await getStaffAccess(v.session)}catch(err){console.warn('Canopy staff access lookup failed:',err)}
    const withAccess={...v,staffAccess};setViewer(withAccess);
    const manager=canManageCanopy(withAccess);const operational=isCanopyOperationsStaff(withAccess);
@@ -537,10 +544,10 @@ const manager=canManageCanopy(viewer);const operational=isCanopyOperationsStaff(
  if(operational){const home=staffRole==='programme_operations'?'/canopy/operations':staffRole==='module_coordinator'?'/canopy/coordinator':'/canopy/fellow';if(![home,'/canopy/profile','/canopy/notifications','/canopy/team-access'].includes(path)){go(home);return null}}
  const active=tester||viewer.enrollments?.some(e=>e.status==='active');let content;
  if(path==='/canopy/team-access')content=<CanopyTeamActivation viewer={viewer} onActivated={()=>{setLoading(true);load().then(()=>window.location.assign('/canopy/classroom'))}}/>;
- else if(manager&&path==='/canopy/manage/team-access')content=legacyAdmin?<CanopyTeamAccessAdmin viewer={viewer}/>:<ManagerOperations snapshot={snapshot} session={viewer.session} onReload={load} view="overview"/>;
- else if(manager&&path==='/canopy/manage/role-preview')content=legacyAdmin?<CanopyAdminRolePreview viewer={viewer}/>:<ManagerOperations snapshot={snapshot} session={viewer.session} onReload={load} view="overview"/>;
+ else if(manager&&path==='/canopy/manage/team-access')content=legacyAdmin?<CanopyTeamAccessAdmin viewer={viewer}/>:<ManagerOperations snapshot={snapshot} session={viewer.session} onReload={load} viewer={viewer} view="overview"/>;
+ else if(manager&&path==='/canopy/manage/role-preview')content=legacyAdmin?<CanopyAdminRolePreview viewer={viewer}/>:<ManagerOperations snapshot={snapshot} session={viewer.session} onReload={load} viewer={viewer} view="overview"/>;
  else if(manager&&path==='/canopy/manage/spotlight'&&staffRole==='programme_manager')content=<CanopyStaffDashboard viewer={viewer} access={viewer.staffAccess} data={staffDashboard} onReload={async()=>{try{setStaffDashboard(await getStaffDashboard(viewer.session))}catch(err){console.error(err)}}}/>;
- else if(manager&&path.startsWith('/canopy/manage')){const sub=path.split('/').pop();const view=path==='/canopy/manage'?'overview':sub;content=view==='selection-codes'?<CanopySelectionCodes session={viewer.session}/>:<ManagerOperations snapshot={snapshot} session={viewer.session} onReload={load} view={view}/>}
+ else if(manager&&path.startsWith('/canopy/manage')){const sub=path.split('/').pop();const view=path==='/canopy/manage'?'overview':sub;content=view==='selection-codes'?<CanopySelectionCodes session={viewer.session}/>:<ManagerOperations snapshot={snapshot} session={viewer.session} onReload={load} viewer={viewer} view={view}/>}
  else if(operational&&['/canopy/operations','/canopy/coordinator','/canopy/fellow'].includes(path))content=<CanopyStaffDashboard viewer={viewer} access={viewer.staffAccess} data={staffDashboard} onReload={async()=>{try{setStaffDashboard(await getStaffDashboard(viewer.session))}catch(err){console.error(err)}}}/>;
  else if(path==='/canopy/classroom')content=tester?<TesterDashboard viewer={viewer} progress={progress}/>:<Dashboard viewer={viewer} progress={progress} submissions={submissions}/>;
  else if(!active&&!['/canopy/profile','/canopy/notifications','/canopy/help','/canopy/certificate'].includes(path))content=<Dashboard viewer={viewer} progress={progress} submissions={submissions}/>;

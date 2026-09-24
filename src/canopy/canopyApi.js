@@ -98,7 +98,9 @@ export async function getViewer(session){
     rest(`canopy_enrollments?select=*&user_id=eq.${userId}&order=created_at.desc`,{token:fresh.access_token}),
     rest(`canopy_announcements?select=*&published=eq.true&order=published_at.desc&limit=8`,{token:fresh.access_token})
   ]);
-  return {session:fresh,user:fresh.user,profile:profiles?.[0]||null,enrollments:enrollments||[],announcements:announcements||[]};
+  let withdrawal=null;
+  try{withdrawal=await rest('rpc/canopy_get_own_withdrawal_status',{token:fresh.access_token,method:'POST',body:{}})}catch{}
+  return {session:fresh,user:fresh.user,profile:profiles?.[0]||null,enrollments:enrollments||[],announcements:announcements||[],withdrawal};
 }
 export async function getProgress(session){
   const s=await refreshSession(session||getStoredSession());if(!s?.access_token)return[];
@@ -124,13 +126,16 @@ export async function getManagerSnapshot(session){
     rest('canopy_certificates?select=*&order=issued_at.desc',{token:s.access_token})
   ]);
   const testerIds=new Set((profiles||[]).filter(p=>p.role==='tester').map(p=>p.user_id));
+  let withdrawals=[];
+  try{const rows=await rest('rpc/canopy_admin_list_withdrawals',{token:s.access_token,method:'POST',body:{}});withdrawals=Array.isArray(rows)?rows:[]}catch{}
   return {
     profiles:(profiles||[]).filter(p=>!testerIds.has(p.user_id)),
     enrollments:(enrollments||[]).filter(x=>!testerIds.has(x.user_id)),
     progress:(progress||[]).filter(x=>!testerIds.has(x.user_id)),
     submissions:(submissions||[]).filter(x=>!testerIds.has(x.user_id)),
     actions:(actions||[]).filter(x=>!testerIds.has(x.learner_id)),
-    certificates:(certificates||[]).filter(x=>!testerIds.has(x.user_id))
+    certificates:(certificates||[]).filter(x=>!testerIds.has(x.user_id)),
+    withdrawals:(withdrawals||[]).filter(x=>!testerIds.has(x.user_id))
   };
 }
 
@@ -150,6 +155,18 @@ export async function setLearnerEnrollmentStatus(session,userId,status){
   return rest(`canopy_enrollments?${key}`,{token:s.access_token,method:'PATCH',prefer:'return=representation',body:{status:dbStatus}});
 }
 
+
+export async function withdrawCanopyLearner(session,userId,reason=''){
+  const s=await refreshSession(session||getStoredSession());
+  if(!s?.access_token)throw new Error('Your Canopy session has expired. Sign in again.');
+  return rest('rpc/canopy_admin_withdraw_learner',{token:s.access_token,method:'POST',body:{p_user_id:userId,p_reason:String(reason||'').trim()||null}});
+}
+
+export async function restoreCanopyLearnerEligibility(session,userId){
+  const s=await refreshSession(session||getStoredSession());
+  if(!s?.access_token)throw new Error('Your Canopy session has expired. Sign in again.');
+  return rest('rpc/canopy_admin_restore_learner',{token:s.access_token,method:'POST',body:{p_user_id:userId}});
+}
 
 export async function submitLearnerComplaint(session,{subject,message}){
   const s=await refreshSession(session||getStoredSession());

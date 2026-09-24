@@ -1,5 +1,5 @@
-import React,{useEffect,useMemo,useState} from 'react';
-import {ArrowRight,BriefcaseBusiness,Check,ExternalLink,Printer,Sparkles,Star} from 'lucide-react';
+import React,{useEffect,useMemo,useRef,useState} from 'react';
+import {ArrowRight,Brain,BriefcaseBusiness,Check,ExternalLink,Play,Printer,RotateCcw,Sparkles,Star,Trophy,Users,Zap} from 'lucide-react';
 import {modules} from './canopyData';
 import {CANOPY_ASSIGNMENT_SCHEDULE,formatCanopyDate,getLiveSessionAt} from './canopySchedule';
 import {getFeaturedSpotlights} from './canopyApi';
@@ -14,30 +14,86 @@ export const CANOPY_JOURNEY_STAGES=[
 
 const REFLECTION_PROMPTS={
   '02.1':'Whose experience is easy to miss when we describe this climate issue?',
-  '02.2':'What barrier could stop an otherwise good climate solution from benefiting women equally?',
-  '02.3':'Where do you see agency, knowledge or leadership that should be recognised rather than “rescued”?',
-  '02.4':'What would make participation in this decision genuinely meaningful?',
-  '03.1':'Who actually has the authority to change the issue you are thinking about?',
-  '03.2':'What evidence would make your policy ask harder to ignore?',
-  '03.3':'Where could a young woman realistically enter this decision-making process?',
   '03.4':'Write the one sentence you would want a decision-maker to remember.',
-  '04.1':'What single action do you want your audience to take after seeing your message?',
-  '04.2':'What evidence would make your advocacy credible rather than just loud?',
-  '04.3':'What ethical risk should you avoid when telling this story?',
   '04.4':'Which result would prove your campaign worked beyond views and likes?',
-  '05.1':'What kind of climate leader do you want people to experience you as?',
-  '05.2':'Which strength do you already have that could become climate leadership evidence?',
-  '05.3':'Who should be in your professional climate network six months from now?',
-  '05.4':'What is one credible action you can complete in the next 30 days?'
+  '05.1':'What kind of climate leader do you want people to experience you as?'
+};
+
+const LESSON_ACTIVITIES={
+  '02.2':{type:'truth-myth',eyebrow:'MYTH BUSTER',title:'Climate justice, fast.',intro:'You have 3 seconds per card. Swipe left for Myth, right for Truth — or use the buttons.',items:[
+    ['All women experience climate impacts in the same way.',false,'Age, income, disability, location and livelihood can change both risk and capacity.'],
+    ['Access to finance can change a person’s ability to adapt.',true,'Finance can affect whether someone can invest in safer livelihoods, tools or recovery.'],
+    ['Migration is an equally available adaptation option for everyone.',false,'Money, care responsibilities, health, culture and safety can all shape whether someone can move.'],
+    ['Care responsibilities can shape climate vulnerability.',true,'Extra care work can affect time, mobility, income and recovery after a shock.']
+  ]},
+  '02.3':{type:'scramble',eyebrow:'BRAIN TEASER',title:'Unscramble the justice lens.',intro:'Decode each climate-justice word. No grades, just a quick reset for your brain.',rounds:[
+    ['YTIUQE','EQUITY',['EQUITY','ENERGY','EQUALITY']],
+    ['ECIOV','VOICE',['VOICE','CHOICE','VALUE']],
+    ['REWOP','POWER',['POWER','POLICY','PEOPLE']],
+    ['YCNAGE','AGENCY',['AGENCY','ACCESS','ACTION']]
+  ]},
+  '02.4':{type:'choice',eyebrow:'30-SECOND DECISION',title:'Who gets a real seat at the table?',rounds:[
+    {q:'A district is planning flood adaptation. Which option is most meaningful?',options:['Invite women after the plan is finished.','Include affected women early, listen to priorities and show how input changed the plan.','Ask one woman to speak for every community.'],answer:1,explanation:'Participation is meaningful when people can influence the decision, not simply attend.'}
+  ]},
+  '03.1':{type:'choice',eyebrow:'POLICY POWER CHECK',title:'Who can actually move the rule?',rounds:[
+    {q:'A market needs enforceable waste-separation rules. Which actor is most likely to have formal authority?',options:['A random social-media account','The relevant local authority or regulator','A visiting influencer'],answer:1,explanation:'Good advocacy identifies the institution with the mandate to act.'}
+  ]},
+  '03.2':{type:'scramble',eyebrow:'BRAIN TEASER',title:'Policy word sprint.',rounds:[
+    ['YCLIOP','POLICY',['POLICY','PUBLIC','PLAN']],
+    ['TEGDUB','BUDGET',['BUDGET','TARGET','BRIDGE']],
+    ['ATAD','DATA',['DATA','DATE','DUTY']],
+    ['TYLIBATNUOCCA','ACCOUNTABILITY',['ACCOUNTABILITY','ADAPTABILITY','AVAILABILITY']]
+  ]},
+  '03.3':{type:'truth-myth',eyebrow:'POLICY MYTH BUSTER',title:'Ambition is not implementation.',items:[
+    ['A strong policy on paper guarantees strong delivery.',false,'Delivery still depends on budget, capacity, coordination, timelines and accountability.'],
+    ['Evidence can strengthen a policy ask.',true,'Specific evidence helps decision-makers understand scale, urgency and practical options.'],
+    ['Young people can only influence policy after they hold public office.',false,'Consultations, research, coalitions, public comment and organised advocacy can all create entry points.'],
+    ['Clear responsibility makes implementation easier to track.',true,'Named institutions, timelines and measurable actions make accountability more practical.']
+  ]},
+  '04.1':{type:'choice',eyebrow:'ADVOCACY SPRINT',title:'Choose the strongest call to action.',rounds:[
+    {q:'Which ending gives an audience the clearest next step?',options:['Climate change is serious.','Someone should do something.','This Saturday, join the community drain clean-up and bring one reusable sack.'],answer:2,explanation:'A specific action, time and behaviour is easier to act on than a vague appeal.'}
+  ]},
+  '04.2':{type:'truth-myth',eyebrow:'TRUTH / MYTH',title:'Credible climate communication.',items:[
+    ['A personal flood story can replace broader evidence about climate trends.',false,'Lived experience adds meaning, but it should not be presented as comprehensive scientific proof.'],
+    ['A strong climate message can be emotional and evidence-based at the same time.',true,'Human stories and reliable evidence can strengthen each other when their roles are clear.'],
+    ['More views always means a campaign created real-world change.',false,'Reach matters, but action, participation, policy response or behaviour change are stronger outcome measures.'],
+    ['A clear audience makes an advocacy message easier to design.',true,'Knowing who must think, feel or act differently sharpens the message and call to action.']
+  ]},
+  '04.3':{type:'choice',eyebrow:'ETHICS QUICK CHECK',title:'Tell the story without exploiting it.',rounds:[
+    {q:'You filmed a person affected by flooding. What is the strongest next step before publishing?',options:['Post immediately because the issue is important.','Get informed permission and avoid exposing details that could harm or embarrass them.','Add dramatic music so the clip performs better.'],answer:1,explanation:'Advocacy should protect dignity, consent and safety while communicating the issue.'}
+  ]},
+  '05.2':{type:'scramble',eyebrow:'CAREER BRAIN TEASER',title:'Decode your next move.',rounds:[
+    ['KROWETN','NETWORK',['NETWORK','NOTEBOOK','TEAMWORK']],
+    ['LLIKS','SKILL',['SKILL','SCALE','STORY']],
+    ['TIOFOLROP','PORTFOLIO',['PORTFOLIO','PROTOCOL','POSITION']],
+    ['NOITCA','ACTION',['ACTION','IMPACT','VISION']]
+  ]},
+  '05.3':{type:'choice',eyebrow:'NETWORKING DECISION',title:'Which follow-up builds a real relationship?',rounds:[
+    {q:'You meet a climate professional after a session. What is the strongest follow-up?',options:['Send “Hi” every week.','Send one specific note about what you learned, connect it to your interest, and ask for one reasonable next step.','Immediately ask them to find you a job.'],answer:1,explanation:'Specific, respectful follow-up makes it easier for someone to remember you and respond.'}
+  ]},
+  '05.4':{type:'truth-myth',pair:true,eyebrow:'FINAL QUICKFIRE',title:'Play solo or challenge a colleague.',intro:'Fast cards, 3 seconds each. Build a combo. In colleague mode, turns alternate automatically.',items:[
+    ['Leadership requires having the biggest title in the room.',false,'Leadership can be demonstrated through initiative, trust, delivery and influence.'],
+    ['A portfolio can show evidence of what you can actually do.',true,'Practical work gives employers and fellowships something concrete to assess.'],
+    ['Networking works best when every interaction starts with asking for a favour.',false,'Strong networks grow through relevance, reciprocity and thoughtful follow-up.'],
+    ['A 30-day action can be more useful than a vague one-year ambition.',true,'A near-term action creates evidence, momentum and learning.'],
+    ['Climate leadership can happen in communities, schools, policy, research, business and technology.',true,'There is no single climate-career pathway.']
+  ]}
 };
 
 const NOTES_KEY='womate_canopy_reflection_notes_v1';
+const PLAY_KEY='womate_canopy_learning_play_v1';
 
 export function getCanopyReflectionNotes(){
   try{return JSON.parse(localStorage.getItem(NOTES_KEY)||'{}')||{}}catch{return {}}
 }
 function persistCanopyReflectionNotes(notes){
   try{localStorage.setItem(NOTES_KEY,JSON.stringify(notes))}catch{}
+}
+function getPlayProgress(){
+  try{return JSON.parse(localStorage.getItem(PLAY_KEY)||'{}')||{}}catch{return {}}
+}
+function persistPlayProgress(progress){
+  try{localStorage.setItem(PLAY_KEY,JSON.stringify(progress))}catch{}
 }
 
 export function CanopyJourneyMap({progress=[],compact=false}){
@@ -81,13 +137,17 @@ export function CanopyLiveCountdown({item}){
   const speakerAt=new Date(item.speakerOpensAt);
   const now=new Date();
   const liveEnded=now>=speakerAt;
-  return <section className={`cx-live ${liveEnded?'is-complete':countdown.ended?'is-live':''}`}>
-    <div className="cx-live-pulse" aria-hidden="true"><span/></div>
-    <div className="cx-live-copy"><small>{liveEnded?'SESSION COMPLETE':countdown.ended?'LIVE SESSION · NOW':'NEXT LIVE SESSION'}</small><h3>Module {item.moduleId} · {item.title}</h3><p>Thursday · 4:00 PM GMT{liveEnded?' · Speaker Challenge is now available.':''}</p></div>
-    {!liveEnded&&!countdown.ended&&<div className="cx-countdown" aria-label={`${countdown.days} days ${countdown.hours} hours ${countdown.minutes} minutes until live session`}>
-      {[['DAYS',countdown.days],['HRS',countdown.hours],['MIN',countdown.minutes],['SEC',countdown.seconds]].map(([label,value])=><div key={label}><strong>{String(value).padStart(2,'0')}</strong><span>{label}</span></div>)}
-    </div>}
-    <button type="button" className="cx-link" onClick={()=>{window.history.pushState({},'','/canopy/notifications');window.dispatchEvent(new PopStateEvent('popstate'))}}>Session details <ArrowRight size={14}/></button>
+  const actionLabel=liveEnded?'Watch session / replay':countdown.ended?'Join live on YouTube':'Open YouTube session';
+  return <section className={`cx-live ${item.livePoster?'has-poster':''} ${liveEnded?'is-complete':countdown.ended?'is-live':''}`}>
+    {item.livePoster&&<img className="cx-live-poster" src={item.livePoster} alt={`Module ${item.moduleId} live session flyer`} loading="lazy"/>}
+    <div className="cx-live-body">
+      <div className="cx-live-pulse" aria-hidden="true"><span/></div>
+      <div className="cx-live-copy"><small>{liveEnded?'SESSION COMPLETE':countdown.ended?'LIVE SESSION · NOW':'NEXT LIVE SESSION'}</small><h3>Module {item.moduleId} · {item.title}</h3><p>Thursday · 4:00 PM GMT{item.liveSpeaker?` · ${item.liveSpeaker}`:''}</p>{item.liveSpeakerRole&&<span className="cx-live-speaker-role">{item.liveSpeakerRole}</span>}</div>
+      {!liveEnded&&!countdown.ended&&<div className="cx-countdown" aria-label={`${countdown.days} days ${countdown.hours} hours ${countdown.minutes} minutes until live session`}>
+        {[['DAYS',countdown.days],['HRS',countdown.hours],['MIN',countdown.minutes],['SEC',countdown.seconds]].map(([label,value])=><div key={label}><strong>{String(value).padStart(2,'0')}</strong><span>{label}</span></div>)}
+      </div>}
+      {item.liveUrl?<a className="cx-link" href={item.liveUrl} target="_blank" rel="noreferrer">{actionLabel} <ExternalLink size={14}/></a>:<button type="button" className="cx-link" onClick={()=>{window.history.pushState({},'','/canopy/notifications');window.dispatchEvent(new PopStateEvent('popstate'))}}>Session details <ArrowRight size={14}/></button>}
+    </div>
   </section>;
 }
 
@@ -116,21 +176,104 @@ export function CanopyThisWeek({progress=[],submissions=[],next}){
   </section>;
 }
 
-export function CanopyReflectionPrompt({moduleId,lessonId}){
+function savePlayResult(lessonId,result){
+  const all=getPlayProgress();
+  const next={...all,[lessonId]:{...result,lessonId,completedAt:new Date().toISOString()}};
+  persistPlayProgress(next);
+  return next[lessonId];
+}
+
+function ActivityComplete({saved,onReplay,pairMode=false}){
+  return <div className="cx-game-complete"><div className="cx-game-trophy"><Trophy size={20}/></div><div><small>QUICK ACTIVITY COMPLETE</small><h4>{pairMode?'Nice teamwork.':'Nice work.'}</h4><p>{pairMode&&saved?.pairScores?`Player 1: ${saved.pairScores[0]} · Player 2: ${saved.pairScores[1]}`:`${saved?.score||0}/${saved?.total||0} correct${saved?.points?` · ${saved.points} pts`:''}${saved?.bestCombo>1?` · Best combo ×${saved.bestCombo}`:''}`}</p></div><button type="button" onClick={onReplay}><RotateCcw size={14}/> Replay</button></div>;
+}
+
+function TruthMythGame({lessonId,activity}){
+  const stored=getPlayProgress()[lessonId];
+  const[complete,setComplete]=useState(stored||null);
+  const[playing,setPlaying]=useState(false);
+  const[index,setIndex]=useState(0);
+  const[time,setTime]=useState(3);
+  const[score,setScore]=useState(0);
+  const[points,setPoints]=useState(0);
+  const[streak,setStreak]=useState(0);
+  const[bestCombo,setBestCombo]=useState(0);
+  const[feedback,setFeedback]=useState(null);
+  const[pairMode,setPairMode]=useState(false);
+  const[pairScores,setPairScores]=useState([0,0]);
+  const dragStart=useRef(null);
+  const items=activity.items||[];
+  const current=items[index];
+  function reset(){setComplete(null);setPlaying(false);setIndex(0);setTime(3);setScore(0);setPoints(0);setStreak(0);setBestCombo(0);setFeedback(null);setPairScores([0,0])}
+  function finish(nextScore,nextPoints,nextBest,nextPair){setPlaying(false);setComplete(savePlayResult(lessonId,{type:'truth-myth',score:nextScore,points:nextPoints,total:items.length,bestCombo:nextBest,pairMode,pairScores:nextPair}))}
+  function answer(choice){
+    if(!playing||feedback||!current)return;
+    const correct=choice===current[1];
+    const nextStreak=correct?streak+1:0;
+    const nextBest=Math.max(bestCombo,nextStreak);
+    const correctPoint=correct?1:0;
+    const nextScore=score+correctPoint;
+    const earned=correct?Math.max(1,nextStreak):0;
+    const nextPoints=points+earned;
+    const player=index%2;
+    const nextPair=[...pairScores];if(pairMode&&correct)nextPair[player]+=1;
+    setScore(nextScore);setPoints(nextPoints);setStreak(nextStreak);setBestCombo(nextBest);setPairScores(nextPair);setFeedback(correct?'correct':'wrong');
+    try{navigator.vibrate?.(correct?25:[35,30,35])}catch{}
+    window.setTimeout(()=>{setFeedback(null);if(index>=items.length-1)finish(nextScore,nextPoints,nextBest,nextPair);else{setIndex(i=>i+1);setTime(3)}},520);
+  }
+  useEffect(()=>{if(!playing||feedback||complete)return;const t=window.setTimeout(()=>{if(time<=1)answer(null);else setTime(v=>v-1)},1000);return()=>window.clearTimeout(t)},[playing,feedback,complete,time,index]);
+  if(complete)return <ActivityComplete saved={complete} pairMode={complete.pairMode} onReplay={reset}/>;
+  if(!playing)return <div className="cx-game-start"><div><Brain size={20}/><small>{activity.eyebrow||'QUICK GAME'}</small><h3>{activity.title}</h3><p>{activity.intro||'A quick, ungraded challenge to test your instinct.'}</p></div>{activity.pair&&<label className="cx-pair-toggle"><input type="checkbox" checked={pairMode} onChange={e=>setPairMode(e.target.checked)}/><span><Users size={15}/> Play with a colleague</span></label>}<button type="button" onClick={()=>{setPlaying(true);setTime(3)}}><Play size={15}/> Start challenge</button></div>;
+  const activePlayer=pairMode?(index%2)+1:null;
+  return <div className={`cx-game cx-truthmyth ${feedback?`is-${feedback}`:''}`}>
+    <div className="cx-game-top"><span>{activity.eyebrow||'MYTH BUSTER'}</span><div><b>{activePlayer?`PLAYER ${activePlayer}`:`COMBO ×${Math.max(1,streak)}`}</b><em>{time}s</em></div></div>
+    <div className="cx-timer"><span style={{width:`${(time/3)*100}%`}}/></div>
+    <div className="cx-game-card" onPointerDown={e=>{dragStart.current=e.clientX}} onPointerUp={e=>{if(dragStart.current==null)return;const delta=e.clientX-dragStart.current;dragStart.current=null;if(delta>55)answer(true);else if(delta<-55)answer(false)}}>
+      <small>{index+1} / {items.length}</small><h3>{current?.[0]}</h3>{feedback&&<p>{current?.[2]}</p>}
+    </div>
+    <div className="cx-swipe-actions"><button type="button" className="is-myth" onClick={()=>answer(false)}>← Myth</button><button type="button" className="is-truth" onClick={()=>answer(true)}>Truth →</button></div>
+    <p className="cx-swipe-hint">Swipe the card or tap a side. Not graded.</p>
+  </div>;
+}
+
+function ScrambleGame({lessonId,activity}){
+  const stored=getPlayProgress()[lessonId];
+  const[complete,setComplete]=useState(stored||null);const[index,setIndex]=useState(0);const[score,setScore]=useState(0);const[feedback,setFeedback]=useState(null);
+  const round=activity.rounds?.[index];
+  function reset(){setComplete(null);setIndex(0);setScore(0);setFeedback(null)}
+  function choose(option){if(feedback)return;const correct=option===round[1];const next=score+(correct?1:0);setScore(next);setFeedback(correct?'correct':'wrong');try{navigator.vibrate?.(correct?20:[30,25,30])}catch{};window.setTimeout(()=>{setFeedback(null);if(index>=activity.rounds.length-1)setComplete(savePlayResult(lessonId,{type:'scramble',score:next,total:activity.rounds.length}));else setIndex(i=>i+1)},500)}
+  if(complete)return <ActivityComplete saved={complete} onReplay={reset}/>;
+  return <div className={`cx-game cx-scramble ${feedback?`is-${feedback}`:''}`}><div className="cx-game-top"><span>{activity.eyebrow}</span><b>{index+1}/{activity.rounds.length}</b></div><h3>{activity.title}</h3>{activity.intro&&<p className="cx-game-intro">{activity.intro}</p>}<div className="cx-scramble-word">{round?.[0]}</div><div className="cx-choice-grid">{round?.[2].map(option=><button type="button" key={option} onClick={()=>choose(option)}>{option}</button>)}</div></div>;
+}
+
+function ChoiceGame({lessonId,activity}){
+  const stored=getPlayProgress()[lessonId];
+  const[complete,setComplete]=useState(stored||null);const[index,setIndex]=useState(0);const[score,setScore]=useState(0);const[feedback,setFeedback]=useState(null);
+  const round=activity.rounds?.[index];
+  function reset(){setComplete(null);setIndex(0);setScore(0);setFeedback(null)}
+  function choose(choiceIndex){if(feedback)return;const correct=choiceIndex===round.answer;const next=score+(correct?1:0);setScore(next);setFeedback({correct,text:round.explanation});try{navigator.vibrate?.(correct?20:[30,25,30])}catch{};window.setTimeout(()=>{if(index>=activity.rounds.length-1)setComplete(savePlayResult(lessonId,{type:'choice',score:next,total:activity.rounds.length}));else{setIndex(i=>i+1);setFeedback(null)}},900)}
+  if(complete)return <ActivityComplete saved={complete} onReplay={reset}/>;
+  return <div className={`cx-game cx-choice ${feedback?(feedback.correct?'is-correct':'is-wrong'):''}`}><div className="cx-game-top"><span>{activity.eyebrow}</span><Zap size={16}/></div><h3>{activity.title}</h3><p className="cx-choice-question">{round?.q}</p><div className="cx-choice-grid">{round?.options.map((option,i)=><button type="button" key={option} onClick={()=>choose(i)}>{option}</button>)}</div>{feedback&&<p className="cx-game-feedback">{feedback.text}</p>}</div>;
+}
+
+function ReflectionCard({moduleId,lessonId,prompt}){
+  const[notes,setNotes]=useState(()=>getCanopyReflectionNotes());
+  const existing=notes[lessonId]?.text||'';
+  const[value,setValue]=useState(existing);
+  const[editing,setEditing]=useState(!existing);
+  function save(){const text=value.trim();if(!text)return;const next={...notes,[lessonId]:{lessonId,moduleId,text,savedAt:new Date().toISOString()}};setNotes(next);persistCanopyReflectionNotes(next);setEditing(false)}
+  if(existing&&!editing)return <aside className="cx-reflect is-saved"><div className="cx-reflect-icon"><Check size={17}/></div><div className="cx-reflect-main"><small>PAUSE & APPLY · SAVED</small><h3>{prompt}</h3><blockquote>{existing}</blockquote><div><button type="button" onClick={()=>setEditing(true)}>Edit note</button><span>Saved on this device</span></div></div></aside>;
+  return <aside className="cx-reflect"><div className="cx-reflect-icon"><Sparkles size={17}/></div><div className="cx-reflect-main"><small>PAUSE & APPLY · PRIVATE NOTE</small><h3>{prompt}</h3><p>Not graded. Keep one thought for yourself and watch your thinking evolve across the programme.</p><textarea rows="3" value={value} onChange={e=>setValue(e.target.value)} placeholder="Write one honest thought…" maxLength={360}/><div><button type="button" onClick={save} disabled={!value.trim()}>Save reflection</button><span>{value.length}/360</span></div></div></aside>;
+}
+
+export function CanopyLessonActivity({moduleId,lessonId}){
   if(!['02','03','04','05'].includes(String(moduleId)))return null;
   const prompt=REFLECTION_PROMPTS[lessonId];
-  if(!prompt)return null;
-  const[notes,setNotes]=useState(()=>getCanopyReflectionNotes());
-  const[value,setValue]=useState(()=>notes[lessonId]?.text||'');
-  const[saved,setSaved]=useState(Boolean(notes[lessonId]?.text));
-  function save(){
-    const next={...notes,[lessonId]:{lessonId,moduleId,text:value.trim(),savedAt:new Date().toISOString()}};
-    setNotes(next);persistCanopyReflectionNotes(next);setSaved(true);
-  }
-  return <aside className="cx-reflect">
-    <div className="cx-reflect-icon"><Sparkles size={17}/></div>
-    <div className="cx-reflect-main"><small>PAUSE & APPLY · PRIVATE NOTE</small><h3>{prompt}</h3><p>Not graded. Keep one thought for yourself and watch your thinking evolve across the programme.</p><textarea rows="3" value={value} onChange={e=>{setValue(e.target.value);setSaved(false)}} placeholder="Write one honest thought…" maxLength={360}/><div><button type="button" onClick={save} disabled={!value.trim()}>{saved?'Saved on this device':'Save reflection'}</button><span>{value.length}/360</span></div></div>
-  </aside>;
+  if(prompt)return <ReflectionCard moduleId={moduleId} lessonId={lessonId} prompt={prompt}/>;
+  const activity=LESSON_ACTIVITIES[lessonId];
+  if(!activity)return null;
+  if(activity.type==='truth-myth')return <TruthMythGame lessonId={lessonId} activity={activity}/>;
+  if(activity.type==='scramble')return <ScrambleGame lessonId={lessonId} activity={activity}/>;
+  return <ChoiceGame lessonId={lessonId} activity={activity}/>;
 }
 
 export function CanopyReflectionTimeline(){
