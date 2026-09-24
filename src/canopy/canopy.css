@@ -1231,86 +1231,115 @@
 .askCanopyPanel>footer{display:flex;align-items:center;gap:6px;padding:0 13px 10px;background:#fff;color:#72857f;font-size:8px}
 @media(max-width:620px){.askCanopyWidget{right:12px;bottom:12px}.askCanopyPanel{width:calc(100vw - 24px);height:min(620px,calc(100vh - 92px));border-radius:20px}.askCanopyLauncher{padding-right:11px}.askCanopyLauncherAvatar{width:44px;height:44px}.askCanopyQuick{padding-left:10px;padding-right:10px}.askCanopyTranscript{padding:12px 10px}.askCanopyBubble{max-width:92%}}
 
-/* WOMATE CANOPY · PROFILE SETTINGS REFINEMENT + DARK MODE · 2026-09-24 */
-.canopyProfileSettings{width:100%;max-width:1180px}
-.canopyProfileHero{display:flex;align-items:center;justify-content:space-between;gap:28px;margin-bottom:22px;padding:30px 32px;border:1px solid rgba(14,77,74,.11);border-radius:26px;background:linear-gradient(135deg,#ffffff 0%,#f7fbf8 70%,rgba(198,255,82,.16) 100%);box-shadow:0 18px 46px rgba(18,64,55,.07)}
-.canopyProfileIdentity{display:flex;align-items:center;gap:18px;min-width:0}
-.canopyProfileAvatar{width:66px;height:66px;flex:0 0 66px;border-radius:22px;display:grid;place-items:center;background:var(--canopy);color:var(--canopy-lime);font-size:20px;font-weight:950;letter-spacing:.04em;box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}
-.canopyProfileIdentity .canopyEyebrow{margin:0 0 6px}
-.canopyProfileIdentity h1{margin:0;font-size:clamp(30px,4vw,46px);line-height:1.02;letter-spacing:-.045em}
-.canopyProfileIdentity p{margin:8px 0 0;color:var(--canopy-muted);line-height:1.55}
-.canopyProfileStatusRow{display:flex;justify-content:flex-end;flex-wrap:wrap;gap:8px}
-.canopyProfileStatusRow span{min-height:34px;padding:0 11px;border-radius:999px;display:inline-flex;align-items:center;gap:7px;border:1px solid rgba(14,77,74,.13);background:#fff;color:#315c54;font-size:11px;font-weight:850;white-space:nowrap}
-.canopyProfileStatusRow span.isActive{background:rgba(198,255,82,.28);border-color:rgba(111,157,21,.28);color:#31520f}
-.canopyProfileStatusRow span.isWaiting{background:#f4f7f5;color:#667b77}
-.canopyProfileLayout{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(300px,.85fr);gap:18px;align-items:start}
-.canopySettingsStack{display:grid;gap:18px}
-.canopySettingsCard{border:1px solid rgba(14,77,74,.12);border-radius:22px;background:#fff;box-shadow:0 14px 36px rgba(18,64,55,.055)}
-.canopyPersonalSettings{padding:26px}
-.canopyAppearanceCard,.canopyAccountSummary{padding:22px}
-.canopySettingsHeader{display:flex;align-items:flex-start;gap:13px;margin-bottom:22px}
-.canopySettingsHeader.compact{margin-bottom:14px}
-.canopySettingsIcon{width:42px;height:42px;flex:0 0 42px;border-radius:14px;display:grid;place-items:center;background:rgba(14,77,74,.08);color:var(--canopy)}
-.canopySettingsHeader>div:last-child>span,.canopySettingsKicker{display:block;margin-bottom:4px;color:var(--canopy);font-size:10px;font-weight:950;letter-spacing:.11em}
-.canopySettingsHeader h2,.canopyAccountSummary h2{margin:0;font-size:22px;letter-spacing:-.025em}
-.canopySettingsHeader p{margin:6px 0 0;color:var(--canopy-muted);font-size:13px;line-height:1.55}
-.canopyProfileFields{display:grid;grid-template-columns:1fr 1fr;gap:15px}
-.canopyProfileFields label{display:grid;gap:8px;color:var(--canopy-ink);font-size:12px;font-weight:850}
-.canopyProfileFields label>small{font-weight:600;color:var(--canopy-muted);line-height:1.45}
-.canopyProfileFields input{width:100%;height:50px;border:1px solid #c8d7d2;border-radius:13px;padding:0 14px;outline:none;background:#fff;color:var(--canopy-ink);transition:border-color .16s ease,box-shadow .16s ease,background .16s ease}
+/* WOMATE CANOPY · MODERN PROFILE SETTINGS · 2026-09-24 */
+.canopyProfileModern{width:100%;max-width:1120px;margin:0 auto}
+.canopyProfilePageHead{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:22px}
+.canopyProfilePageHead .canopyEyebrow{margin:0 0 8px}
+.canopyProfilePageHead h1{margin:0;font-size:clamp(32px,4vw,46px);line-height:1.02;letter-spacing:-.045em;color:var(--canopy-ink)}
+.canopyProfilePageHead p{margin:9px 0 0;color:var(--canopy-muted);font-size:14px;line-height:1.55}
+.canopyProfilePageStatus{flex:0 0 auto}
+.canopyProfilePageStatus>span{display:inline-flex;align-items:center;gap:8px;min-height:34px;padding:0 12px;border:1px solid var(--canopy-line);border-radius:999px;background:#fff;color:var(--canopy-muted);font-size:11px;font-weight:800}
+.canopyProfilePageStatus>span.isActive{color:#31520f;background:rgba(198,255,82,.22);border-color:rgba(111,157,21,.25)}
+.canopyStatusDot{width:7px;height:7px;border-radius:50%;background:#a8b9b3;box-shadow:0 0 0 3px rgba(168,185,179,.14)}
+.canopyProfilePageStatus>span.isActive .canopyStatusDot{background:#6da615;box-shadow:0 0 0 3px rgba(109,166,21,.13)}
+
+.canopyProfileShell{display:grid;grid-template-columns:270px minmax(0,1fr);border:1px solid rgba(14,77,74,.12);border-radius:24px;overflow:hidden;background:#fff;box-shadow:0 20px 48px rgba(18,64,55,.07)}
+.canopyProfileRail{padding:28px 24px;background:linear-gradient(180deg,#f3f8f5 0%,#edf5f0 100%);border-right:1px solid rgba(14,77,74,.1);min-width:0}
+.canopyProfileIdentityModern{display:grid;gap:15px;justify-items:start}
+.canopyProfileAvatar{width:64px;height:64px;border-radius:19px;display:grid;place-items:center;background:var(--canopy);color:var(--canopy-lime);font-size:19px;font-weight:950;letter-spacing:.04em;box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}
+.canopyProfileIdentityText{min-width:0;width:100%}
+.canopyProfileIdentityText h2{margin:0;color:var(--canopy-ink);font-size:20px;line-height:1.15;letter-spacing:-.025em;overflow-wrap:anywhere}
+.canopyProfileIdentityText p{margin:6px 0 0;color:var(--canopy-muted);font-size:12px;line-height:1.45;overflow-wrap:anywhere}
+.canopyProfileRailMeta{display:grid;gap:0;margin-top:24px;border-top:1px solid rgba(14,77,74,.11)}
+.canopyProfileRailMeta>div{display:grid;gap:6px;padding:16px 0;border-bottom:1px solid rgba(14,77,74,.11)}
+.canopyProfileRailMeta small{font-size:9px;font-weight:950;letter-spacing:.12em;color:#738a83}
+.canopyProfileRailMeta strong{display:flex;align-items:center;gap:8px;color:#244c42;font-size:12px;line-height:1.4;text-transform:capitalize}
+.canopyProfileRailMeta svg{color:var(--canopy)}
+.canopyProfileRailNote{margin:18px 0 0;color:#6a817a;font-size:11px;line-height:1.6}
+
+.canopyProfileMain{min-width:0;background:#fff}
+.canopyProfileSection{padding:28px 32px;border-bottom:1px solid #e7eeeb;background:transparent}
+.canopyProfileSection:last-child{border-bottom:0}
+.canopyProfileSectionHead{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;margin-bottom:20px}
+.canopyProfileSectionHead h2{margin:0;color:var(--canopy-ink);font-size:18px;letter-spacing:-.02em}
+.canopyProfileSectionHead p{margin:6px 0 0;color:var(--canopy-muted);font-size:12px;line-height:1.55;max-width:640px}
+.canopyProfileFields{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.canopyProfileFields label{display:grid;gap:8px;color:var(--canopy-ink);font-size:12px;font-weight:800}
+.canopyProfileFields label>small{font-weight:550;color:var(--canopy-muted);line-height:1.45}
+.canopyProfileFields input{width:100%;height:48px;border:1px solid #cbd9d4;border-radius:12px;padding:0 13px;outline:none;background:#fff;color:var(--canopy-ink);transition:border-color .16s ease,box-shadow .16s ease,background .16s ease}
 .canopyProfileFields input:focus{border-color:var(--canopy);box-shadow:0 0 0 4px rgba(14,77,74,.08)}
-.canopyProfileFields input:disabled{opacity:.66;cursor:not-allowed;background:#f4f7f5}
+.canopyProfileFields input:disabled{opacity:.68;cursor:not-allowed;background:#f4f7f5}
 .canopyFieldWithIcon{position:relative}
-.canopyFieldWithIcon>svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#6d8781;pointer-events:none}
-.canopyFieldWithIcon input{padding-left:42px}
-.canopyReadOnlyField{margin-top:18px;padding:14px 15px;border-radius:15px;background:#f5f8f6;border:1px solid #e2ebe7;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;color:#36554e}
-.canopyReadOnlyField>svg{color:var(--canopy)}
-.canopyReadOnlyField>div{display:grid;gap:2px;min-width:0}
-.canopyReadOnlyField small{font-size:9px;font-weight:900;letter-spacing:.11em;color:#778c86}
-.canopyReadOnlyField b{font-size:13px;overflow-wrap:anywhere}
-.canopyReadOnlyField>span{font-size:11px;color:#778c86}
+.canopyFieldWithIcon>svg{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:#6d8781;pointer-events:none}
+.canopyFieldWithIcon input{padding-left:40px}
+
+.canopyInlineSetting{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-top:18px;padding:14px 0;border-top:1px solid #edf2ef}
+.canopyInlineSettingLabel{display:flex;align-items:center;gap:11px;min-width:0}
+.canopyInlineSettingLabel>svg{color:var(--canopy);flex:0 0 auto}
+.canopyInlineSettingLabel>div{display:grid;gap:2px;min-width:0}
+.canopyInlineSettingLabel b{font-size:12px;color:var(--canopy-ink)}
+.canopyInlineSettingLabel span{font-size:12px;color:var(--canopy-muted);overflow-wrap:anywhere}
+.canopyInlineSetting>small{font-size:10px;color:var(--canopy-muted);white-space:nowrap}
 .canopySettingsActions{display:flex;justify-content:flex-end;margin-top:20px}
-.canopySettingsActions .canopyPrimary{min-width:180px}
-.canopySettingsNote{margin:18px 0 0;padding:13px 14px;border-radius:13px;background:#f3f7f4;color:var(--canopy-muted);font-size:12px;line-height:1.55}
-.canopyAppearanceCard>p{margin:0 0 18px;color:var(--canopy-muted);font-size:13px;line-height:1.6}
-.canopyThemeSwitch{width:100%;border:1px solid #d8e4df;border-radius:16px;background:#f7faf8;padding:14px;display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:center;text-align:left;color:var(--canopy-ink)}
-.canopyThemeSwitch:hover{border-color:#a9c0b8;background:#f2f7f4}
-.canopyThemeSwitchTrack{width:46px;height:26px;border-radius:999px;padding:3px;background:#cfdcd7;display:flex;align-items:center;transition:.2s ease}
-.canopyThemeSwitchTrack>span{width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 2px 7px rgba(8,36,31,.18);transition:.2s ease}
-.canopyThemeSwitch[aria-checked="true"] .canopyThemeSwitchTrack{background:var(--canopy-lime)}
-.canopyThemeSwitch[aria-checked="true"] .canopyThemeSwitchTrack>span{transform:translateX(20px);background:#153d30}
-.canopyThemeSwitch>span:last-child{display:grid;gap:3px}
-.canopyThemeSwitch b{font-size:13px}
-.canopyThemeSwitch small{color:var(--canopy-muted);font-size:11px;line-height:1.4}
-.canopyAccountSummary>div{display:flex;justify-content:space-between;gap:18px;padding:13px 0;border-top:1px solid #e6eeea}
-.canopyAccountSummary>div:first-of-type{margin-top:16px}
-.canopyAccountSummary small{color:var(--canopy-muted);font-size:11px}.canopyAccountSummary b{font-size:12px;text-transform:capitalize}
-.canopyDangerZoneRefined{margin-top:18px!important;padding:22px!important;border-radius:22px!important;display:grid;grid-template-columns:minmax(0,1.2fr) minmax(280px,.8fr);gap:24px;align-items:end;box-shadow:none!important}
-.canopyDangerZoneRefined .canopyDangerIntro{margin:0!important}
-.canopyDangerZoneRefined .canopyEyebrow{color:#a23d35;margin-bottom:7px}
-.canopyDeleteControls{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:end}
-.canopyDeleteControls label{margin:0!important;font-size:12px}
-.canopyDeleteControls input{height:46px}
+.canopySettingsActions .canopyPrimary{min-width:132px}
+.canopySettingsNote{margin:18px 0 0;padding:12px 13px;border-radius:12px;background:#f3f7f4;color:var(--canopy-muted);font-size:12px;line-height:1.55}
+
+.canopyProfileSectionRow{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:22px}
+.canopyProfileSectionRow .canopyProfileSectionHead{margin:0}
+.canopyThemeSwitchModern{border:0;background:transparent;padding:0;display:grid;grid-template-columns:auto auto auto;align-items:center;gap:10px;text-align:left;color:var(--canopy-ink);cursor:pointer}
+.canopyThemeModeIcon{width:36px;height:36px;border-radius:11px;display:grid;place-items:center;background:#f0f6f2;color:var(--canopy)}
+.canopyThemeModeCopy{display:grid;gap:1px;min-width:52px}
+.canopyThemeModeCopy b{font-size:12px;line-height:1.1}
+.canopyThemeModeCopy small{font-size:10px;color:var(--canopy-muted)}
+.canopyThemeSwitchTrack{width:44px;height:25px;border-radius:999px;padding:3px;background:#cfdcd7;display:flex;align-items:center;transition:.2s ease}
+.canopyThemeSwitchTrack>span{width:19px;height:19px;border-radius:50%;background:#fff;box-shadow:0 2px 7px rgba(8,36,31,.18);transition:.2s ease}
+.canopyThemeSwitchModern[aria-checked="true"] .canopyThemeSwitchTrack{background:var(--canopy-lime)}
+.canopyThemeSwitchModern[aria-checked="true"] .canopyThemeSwitchTrack>span{transform:translateX(19px);background:#153d30}
+.canopyThemeSwitchModern:focus-visible{outline:3px solid rgba(40,227,194,.32);outline-offset:5px;border-radius:13px}
+
+.canopyProfileAccessRows{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid #e5ece8;border-radius:14px;overflow:hidden}
+.canopyProfileAccessRows>div{display:grid;gap:5px;padding:15px 16px;background:#fafcfb}
+.canopyProfileAccessRows>div+div{border-left:1px solid #e5ece8}
+.canopyProfileAccessRows span{font-size:10px;color:var(--canopy-muted);font-weight:750}
+.canopyProfileAccessRows strong{font-size:12px;color:var(--canopy-ink);text-transform:capitalize}
+.canopyProfileAccessRows strong.isActive{color:#4d760e}
+.canopyProfileAccessRows strong.isWaiting{color:#7b8e88}
+
+.canopyProfileDangerSection{background:#fffdfc}
+.canopyProfileDangerSection .canopyProfileSectionHead h2{color:#8f3932}
+.canopyProfileDangerSection .canopyProfileSectionHead p{max-width:720px}
+.canopyDeleteControlsModern{display:grid;grid-template-columns:minmax(220px,320px) auto;gap:12px;align-items:end}
+.canopyDeleteControlsModern label{display:grid;gap:7px;font-size:11px;color:var(--canopy-ink);font-weight:750}
+.canopyDeleteControlsModern input{height:44px;border:1px solid #d7c5c2;border-radius:11px;padding:0 12px;background:#fff;color:var(--canopy-ink);outline:none}
+.canopyDeleteControlsModern input:focus{border-color:#a95f56;box-shadow:0 0 0 4px rgba(169,95,86,.08)}
+.canopyDeletionPending{display:inline-grid;gap:3px;padding:12px 14px;border:1px solid #e7d8a8;border-radius:12px;background:#fff9e8}
+.canopyDeletionPending b{font-size:12px;color:#7f5712}.canopyDeletionPending span{font-size:11px;color:#7c6a3b}
 .canopyProfileToast{position:sticky;bottom:18px;width:fit-content;max-width:min(520px,calc(100vw - 30px));margin:18px auto 0;padding:12px 16px;border-radius:999px;background:#123f31;color:#fff;font-size:12px;font-weight:800;box-shadow:0 14px 34px rgba(8,39,31,.22);z-index:8}
 
-@media(max-width:980px){
- .canopyProfileHero{align-items:flex-start;flex-direction:column}.canopyProfileStatusRow{justify-content:flex-start}
- .canopyProfileLayout{grid-template-columns:1fr}.canopySettingsStack{grid-template-columns:1fr 1fr}
- .canopyDangerZoneRefined{grid-template-columns:1fr}
+@media(max-width:900px){
+ .canopyProfilePageHead{align-items:flex-start;flex-direction:column}
+ .canopyProfileShell{grid-template-columns:1fr}
+ .canopyProfileRail{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:20px;align-items:start;border-right:0;border-bottom:1px solid rgba(14,77,74,.1);padding:22px 24px}
+ .canopyProfileIdentityModern{grid-template-columns:58px minmax(0,1fr);align-items:center}
+ .canopyProfileAvatar{width:58px;height:58px}
+ .canopyProfileRailMeta{display:flex;gap:22px;margin:0;border:0}
+ .canopyProfileRailMeta>div{padding:0;border:0;min-width:120px}
+ .canopyProfileRailNote{grid-column:1/3;margin:0}
 }
 @media(max-width:680px){
- .canopyProfileSettings{padding:18px 14px!important}.canopyProfileHero{padding:22px 18px;border-radius:22px}
- .canopyProfileIdentity{align-items:flex-start}.canopyProfileAvatar{width:54px;height:54px;flex-basis:54px;border-radius:17px;font-size:17px}
- .canopyProfileIdentity h1{font-size:30px}.canopyProfileStatusRow{width:100%}.canopyProfileStatusRow span{white-space:normal}
- .canopyPersonalSettings,.canopyAppearanceCard,.canopyAccountSummary{padding:18px}.canopyProfileFields,.canopySettingsStack{grid-template-columns:1fr}
- .canopyReadOnlyField{grid-template-columns:auto minmax(0,1fr)}.canopyReadOnlyField>span{grid-column:2}
+ .canopyProfileModern{padding:20px 14px!important}
+ .canopyProfilePageHead{margin-bottom:16px;gap:14px}.canopyProfilePageHead h1{font-size:32px}
+ .canopyProfileShell{border-radius:19px}
+ .canopyProfileRail{grid-template-columns:1fr;padding:20px 18px;gap:18px}.canopyProfileRailMeta{display:grid;grid-template-columns:1fr 1fr;gap:12px}.canopyProfileRailNote{grid-column:auto}
+ .canopyProfileSection{padding:22px 18px}.canopyProfileFields{grid-template-columns:1fr}.canopyProfileSectionRow{grid-template-columns:1fr;align-items:start}.canopyThemeSwitchModern{width:100%;grid-template-columns:auto 1fr auto;padding-top:2px}
+ .canopyInlineSetting{align-items:flex-start}.canopyInlineSetting>small{display:none}
  .canopySettingsActions{justify-content:stretch}.canopySettingsActions .canopyPrimary{width:100%}
- .canopyDangerZoneRefined{padding:18px!important}.canopyDeleteControls{grid-template-columns:1fr}.canopyDangerButton{width:100%}
+ .canopyProfileAccessRows{grid-template-columns:1fr}.canopyProfileAccessRows>div+div{border-left:0;border-top:1px solid #e5ece8}
+ .canopyDeleteControlsModern{grid-template-columns:1fr}.canopyDangerButton{width:100%}
 }
 @media(max-width:420px){
- .canopyProfileIdentity{display:grid;grid-template-columns:48px 1fr;gap:13px}.canopyProfileAvatar{width:48px;height:48px;flex-basis:48px;border-radius:15px}
- .canopyProfileIdentity p{grid-column:1/3}.canopyProfileStatusRow{display:grid;grid-template-columns:1fr}.canopyProfileStatusRow span{justify-content:flex-start}
- .canopySettingsHeader{gap:10px}.canopySettingsIcon{width:38px;height:38px;flex-basis:38px;border-radius:12px}
+ .canopyProfileRailMeta{grid-template-columns:1fr}.canopyProfileIdentityModern{grid-template-columns:50px minmax(0,1fr);gap:12px}.canopyProfileAvatar{width:50px;height:50px;border-radius:15px;font-size:16px}
+ .canopyProfileIdentityText h2{font-size:18px}.canopyProfileSection{padding:20px 16px}.canopyProfilePageStatus>span{white-space:normal}
 }
 
 /* Canopy dark theme. Scoped to Canopy so the main WOMATE site is untouched. */
@@ -1639,3 +1668,39 @@ html[data-canopy-theme="dark"] .canopyComplaintMessage{
 html[data-canopy-theme="dark"] .canopyComplaintReply label{
   color:#d8ebe5!important;
 }
+
+/* Modern profile dark-mode contrast */
+html[data-canopy-theme="dark"] .canopyProfilePageStatus>span{background:#102f2b;border-color:#31514a;color:#cfe1db}
+html[data-canopy-theme="dark"] .canopyProfilePageStatus>span.isActive{background:rgba(198,255,82,.14);border-color:rgba(198,255,82,.26);color:#dcff93}
+html[data-canopy-theme="dark"] .canopyProfileShell{background:#0e2a27;border-color:#2a4a44;box-shadow:0 20px 50px rgba(0,0,0,.22)}
+html[data-canopy-theme="dark"] .canopyProfileRail{background:linear-gradient(180deg,#102f2b 0%,#0b2522 100%);border-color:#2a4a44}
+html[data-canopy-theme="dark"] .canopyProfileIdentityText h2,
+html[data-canopy-theme="dark"] .canopyProfileRailMeta strong{color:#f4fff9}
+html[data-canopy-theme="dark"] .canopyProfileIdentityText p,
+html[data-canopy-theme="dark"] .canopyProfileRailNote,
+html[data-canopy-theme="dark"] .canopyProfileRailMeta small{color:#abc2bb}
+html[data-canopy-theme="dark"] .canopyProfileRailMeta,
+html[data-canopy-theme="dark"] .canopyProfileRailMeta>div{border-color:#2a4a44}
+html[data-canopy-theme="dark"] .canopyProfileRailMeta svg{color:#42e6ca}
+html[data-canopy-theme="dark"] .canopyProfileMain{background:#0e2a27}
+html[data-canopy-theme="dark"] .canopyProfileSection{border-color:#294942;background:transparent;color:#f4fff9}
+html[data-canopy-theme="dark"] .canopyProfileSectionHead h2,
+html[data-canopy-theme="dark"] .canopyInlineSettingLabel b,
+html[data-canopy-theme="dark"] .canopyProfileAccessRows strong,
+html[data-canopy-theme="dark"] .canopyDeleteControlsModern label{color:#f4fff9}
+html[data-canopy-theme="dark"] .canopyProfileSectionHead p,
+html[data-canopy-theme="dark"] .canopyInlineSettingLabel span,
+html[data-canopy-theme="dark"] .canopyInlineSetting>small,
+html[data-canopy-theme="dark"] .canopyThemeModeCopy small,
+html[data-canopy-theme="dark"] .canopyProfileAccessRows span{color:#abc2bb}
+html[data-canopy-theme="dark"] .canopyInlineSetting{border-color:#294942}
+html[data-canopy-theme="dark"] .canopyThemeModeIcon{background:#153a34;color:#42e6ca}
+html[data-canopy-theme="dark"] .canopyProfileAccessRows{border-color:#31514a}
+html[data-canopy-theme="dark"] .canopyProfileAccessRows>div{background:#102f2b}
+html[data-canopy-theme="dark"] .canopyProfileAccessRows>div+div{border-color:#31514a}
+html[data-canopy-theme="dark"] .canopyProfileAccessRows strong.isActive{color:#dcff93}
+html[data-canopy-theme="dark"] .canopyProfileAccessRows strong.isWaiting{color:#c0d1cc}
+html[data-canopy-theme="dark"] .canopyProfileDangerSection{background:#181f1d}
+html[data-canopy-theme="dark"] .canopyProfileDangerSection .canopyProfileSectionHead h2{color:#ff9a8f}
+html[data-canopy-theme="dark"] .canopyDeleteControlsModern input{background:#0a211e;color:#f4fff9;border-color:#573f3a}
+html[data-canopy-theme="dark"] .canopyDeleteControlsModern input:focus{border-color:#ff9a8f;box-shadow:0 0 0 4px rgba(255,154,143,.1)}

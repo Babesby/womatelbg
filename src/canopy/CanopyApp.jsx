@@ -285,84 +285,97 @@ function Profile({viewer,onReload}){
  const courseActive=viewer.enrollments?.some(e=>e.status==='active');
  const initials=(name||viewer.user?.email||'C').split(/\s+/).filter(Boolean).slice(0,2).map(x=>x[0]).join('').toUpperCase();
 
- return <main className="canopyProfile canopyProfileSettings">
-  <section className="canopyProfileHero">
-   <div className="canopyProfileIdentity">
-    <div className="canopyProfileAvatar" aria-hidden="true">{initials}</div>
-    <div>
-     <span className="canopyEyebrow">PROFILE & SETTINGS</span>
-     <h1>{name||'Your profile'}</h1>
-     <p>Manage your participant details, appearance and account preferences.</p>
-    </div>
+ return <main className="canopyProfile canopyProfileSettings canopyProfileModern">
+  <header className="canopyProfilePageHead">
+   <div>
+    <span className="canopyEyebrow">PROFILE & SETTINGS</span>
+    <h1>Account settings</h1>
+    <p>Manage your participant details, appearance and programme access.</p>
    </div>
-   <div className="canopyProfileStatusRow">
-    <span><ShieldCheck size={15}/>{role==='tester'?'Tester account':'Participant account'}</span>
-    <span className={courseActive?'isActive':'isWaiting'}>{courseActive?'Course access active':'Course access not active'}</span>
+   <div className="canopyProfilePageStatus">
+    <span className={courseActive?'isActive':'isWaiting'}><span className="canopyStatusDot"/>{courseActive?'Course access active':'Awaiting course access'}</span>
    </div>
-  </section>
+  </header>
 
-  <div className="canopyProfileLayout">
-   <form className="canopySettingsCard canopyPersonalSettings" onSubmit={saveProfile}>
-    <header className="canopySettingsHeader">
-     <div className="canopySettingsIcon"><UserRound size={20}/></div>
-     <div><span>PERSONAL DETAILS</span><h2>Your information</h2><p>Keep these details accurate for your WOMATE learning record.</p></div>
-    </header>
-    <div className="canopyProfileFields">
-     <label>Full name
-      <input required minLength="2" maxLength="120" value={name} disabled={!participantEditable}
-       onChange={e=>setName(e.target.value)} autoComplete="name"/>
-      <small>Certificate names are protected after a certificate has been issued.</small>
-     </label>
-     <label>Country
-      <div className="canopyFieldWithIcon"><Globe2 size={17}/><input required minLength="2" maxLength="80" value={country} disabled={!participantEditable}
-       onChange={e=>setCountry(e.target.value)} autoComplete="country-name" placeholder="Your country"/></div>
-      <small>Used for programme records and cohort reporting.</small>
-     </label>
+  <div className="canopyProfileShell">
+   <aside className="canopyProfileRail">
+    <div className="canopyProfileIdentityModern">
+     <div className="canopyProfileAvatar" aria-hidden="true">{initials}</div>
+     <div className="canopyProfileIdentityText">
+      <h2>{name||'Your profile'}</h2>
+      <p>{viewer.user?.email}</p>
+     </div>
     </div>
-    <div className="canopyReadOnlyField"><Mail size={17}/><div><small>EMAIL ADDRESS</small><b>{viewer.user?.email}</b></div><span>Sign-in email</span></div>
-    {participantEditable?<div className="canopySettingsActions"><button className="canopyPrimary" disabled={busy==='profile'||!name.trim()||!country.trim()}>{busy==='profile'?'Saving changes…':'Save profile changes'}</button></div>:<p className="canopySettingsNote">Profile detail editing is reserved for participant accounts. Contact WOMATE Support if this operational account needs a correction.</p>}
-   </form>
+    <div className="canopyProfileRailMeta">
+     <div><small>ACCOUNT</small><strong><ShieldCheck size={15}/>{role==='tester'?'Tester':'Participant'}</strong></div>
+     <div><small>COUNTRY</small><strong><Globe2 size={15}/>{country||'Not set'}</strong></div>
+    </div>
+    <p className="canopyProfileRailNote">Your profile is used across Canopy and your WOMATE learning record.</p>
+   </aside>
 
-   <aside className="canopySettingsStack">
-    <section className="canopySettingsCard canopyAppearanceCard">
-     <header className="canopySettingsHeader compact">
-      <div className="canopySettingsIcon">{theme==='dark'?<Moon size={20}/>:<Sun size={20}/>}</div>
-      <div><span>APPEARANCE</span><h2>Canopy theme</h2></div>
-     </header>
-     <p>Choose the reading mode that feels best. Your preference stays on this device.</p>
-     <button type="button" className="canopyThemeSwitch" role="switch" aria-checked={theme==='dark'} onClick={changeTheme}>
+   <div className="canopyProfileMain">
+    <form className="canopyProfileSection" onSubmit={saveProfile}>
+     <div className="canopyProfileSectionHead">
+      <div><h2>Personal information</h2><p>Keep your learner record accurate and up to date.</p></div>
+     </div>
+     <div className="canopyProfileFields">
+      <label>Full name
+       <input required minLength="2" maxLength="120" value={name} disabled={!participantEditable}
+        onChange={e=>setName(e.target.value)} autoComplete="name"/>
+       <small>Certificate names are protected after a certificate has been issued.</small>
+      </label>
+      <label>Country
+       <div className="canopyFieldWithIcon"><Globe2 size={17}/><input required minLength="2" maxLength="80" value={country} disabled={!participantEditable}
+        onChange={e=>setCountry(e.target.value)} autoComplete="country-name" placeholder="Your country"/></div>
+       <small>Used for programme records and cohort reporting.</small>
+      </label>
+     </div>
+     <div className="canopyInlineSetting canopyInlineSettingReadOnly">
+      <div className="canopyInlineSettingLabel"><Mail size={17}/><div><b>Email address</b><span>{viewer.user?.email}</span></div></div>
+      <small>Sign-in email</small>
+     </div>
+     {participantEditable?<div className="canopySettingsActions"><button className="canopyPrimary" disabled={busy==='profile'||!name.trim()||!country.trim()}>{busy==='profile'?'Saving changes…':'Save changes'}</button></div>:<p className="canopySettingsNote">Profile detail editing is reserved for participant accounts. Contact WOMATE Support if this operational account needs a correction.</p>}
+    </form>
+
+    <section className="canopyProfileSection canopyProfileSectionRow">
+     <div className="canopyProfileSectionHead">
+      <div><h2>Appearance</h2><p>Choose how Canopy looks on this device.</p></div>
+     </div>
+     <button type="button" className="canopyThemeSwitch canopyThemeSwitchModern" role="switch" aria-checked={theme==='dark'} onClick={changeTheme}>
+      <span className="canopyThemeModeIcon">{theme==='dark'?<Moon size={17}/>:<Sun size={17}/>}</span>
+      <span className="canopyThemeModeCopy"><b>{theme==='dark'?'Dark':'Light'}</b><small>mode</small></span>
       <span className="canopyThemeSwitchTrack"><span/></span>
-      <span><b>{theme==='dark'?'Dark mode':'Light mode'}</b><small>{theme==='dark'?'Deep forest surfaces with high-contrast type.':'Clean light surfaces with WOMATE green accents.'}</small></span>
      </button>
     </section>
 
-    <section className="canopySettingsCard canopyAccountSummary">
-     <span className="canopySettingsKicker">ACCOUNT</span>
-     <h2>Programme access</h2>
-     <div><small>Role</small><b>{role}</b></div>
-     <div><small>Course access</small><b>{courseActive?'Active':'Not active'}</b></div>
-    </section>
-   </aside>
-  </div>
-
-  {canRequestDeletion&&<section className="canopyDangerZone canopyDangerZoneRefined">
-   <div className="canopyDangerIntro">
-    <span className="canopyEyebrow">ACCOUNT DELETION</span>
-    <h2>Request account deletion</h2>
-    <p>Canopy does not instantly erase programme records. A request pauses active course access and lets WOMATE complete the required record checks before permanent deletion.</p>
-   </div>
-   {pending
-    ? <div className="canopyDeletionPending"><b>Deletion requested</b><span>Your request is awaiting WOMATE review.</span></div>
-    : <div className="canopyDeleteControls">
-      <label>Type <b>DELETE</b> to confirm
-       <input value={confirmDelete} onChange={e=>setConfirmDelete(e.target.value)} placeholder="DELETE" autoComplete="off"/>
-      </label>
-      <button type="button" className="canopyDangerButton" disabled={busy==='delete'||confirmDelete!=='DELETE'} onClick={requestDeletion}>
-       {busy==='delete'?'Submitting request…':'Request deletion'}
-      </button>
+    <section className="canopyProfileSection">
+     <div className="canopyProfileSectionHead">
+      <div><h2>Programme access</h2><p>Your current Canopy account and cohort access.</p></div>
      </div>
-   }
-  </section>}
+     <div className="canopyProfileAccessRows">
+      <div><span>Account type</span><strong>{role==='tester'?'Tester':'Participant'}</strong></div>
+      <div><span>Course access</span><strong className={courseActive?'isActive':'isWaiting'}>{courseActive?'Active':'Not active'}</strong></div>
+     </div>
+    </section>
+
+    {canRequestDeletion&&<section className="canopyProfileSection canopyProfileDangerSection">
+     <div className="canopyProfileSectionHead">
+      <div><h2>Delete account</h2><p>Request deletion when you no longer want to use Canopy. WOMATE reviews programme records before permanent deletion.</p></div>
+     </div>
+     {pending
+      ? <div className="canopyDeletionPending"><b>Deletion requested</b><span>Your request is awaiting WOMATE review.</span></div>
+      : <div className="canopyDeleteControls canopyDeleteControlsModern">
+        <label>Type <b>DELETE</b> to confirm
+         <input value={confirmDelete} onChange={e=>setConfirmDelete(e.target.value)} placeholder="DELETE" autoComplete="off"/>
+        </label>
+        <button type="button" className="canopyDangerButton" disabled={busy==='delete'||confirmDelete!=='DELETE'} onClick={requestDeletion}>
+         {busy==='delete'?'Submitting…':'Request deletion'}
+        </button>
+       </div>
+     }
+    </section>}
+   </div>
+  </div>
 
   {msg&&<p className="canopyProfileToast" role="status" aria-live="polite">{msg}</p>}
  </main>
