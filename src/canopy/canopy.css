@@ -2048,3 +2048,75 @@ html[data-canopy-theme="dark"] .canopyAccessStatus.isWithdrawn{background:#3b211
 .cx-live:not(.has-poster) .cx-live-body{grid-template-columns:auto minmax(0,1fr) auto auto;padding:18px 20px}
 @media(max-width:760px){.cx-live:not(.has-poster) .cx-live-body{grid-template-columns:38px 1fr}.cx-live:not(.has-poster) .cx-countdown{grid-column:1/-1}.cx-live:not(.has-poster) .cx-link{grid-column:2}}
 @media(max-width:520px){.cx-live:not(.has-poster) .cx-live-body{grid-template-columns:1fr}.cx-live:not(.has-poster) .cx-live-pulse{display:none}.cx-live:not(.has-poster) .cx-link{grid-column:1}}
+
+
+/* WOMATE CANOPY · DEEP LEARNER UX FIX · 2026-09-24
+   Less carding, shorter copy, responsive live sessions, large examples, word search. */
+
+/* Minimal learning journey */
+.cx-journey{margin:18px 0 22px;padding:10px 0 2px;border:0;border-radius:0;background:transparent;box-shadow:none}
+.cx-journey-head{display:block;margin:0 0 14px}.cx-journey-head h2{font-size:18px;margin:0;color:var(--canopy-ink)}
+.cx-journey-track{gap:0}.cx-journey-track:before{top:17px;left:7%;right:7%;height:1px}
+.cx-journey-stop{gap:7px;padding:0 4px}.cx-journey-node{width:34px;height:34px;box-shadow:none;font-size:10px}
+.cx-journey-stop>strong{font-size:12px;color:var(--canopy-ink)}
+.cx-journey-stop>div:last-child,.cx-journey-stop small,.cx-journey-stop span{display:none!important}
+.cx-journey.is-compact{padding:8px 0;margin:12px 0 18px}.cx-journey.is-compact .cx-journey-head{display:none}
+
+/* Dashboard: one compact progress/action strip instead of three cards */
+.canopyDashStrip{margin-top:14px;padding:18px 0;border-top:1px solid var(--canopy-line);border-bottom:1px solid var(--canopy-line);display:flex;align-items:center;justify-content:space-between;gap:22px}
+.canopyDashProgress{min-width:0;flex:1}.canopyDashProgress small{display:block;font-size:10px;font-weight:900;letter-spacing:.09em;color:var(--canopy);margin-bottom:5px}.canopyDashProgress strong{font-size:17px}.canopyDashProgress .canopyLine{max-width:520px;margin:10px 0 0}
+.canopyDashActions{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.canopyDashActions .canopyTextBtn{min-height:42px;padding:0 6px}
+
+/* This week: rows, not cards */
+.cx-week{margin:18px 0 10px;border:0;border-radius:0;padding:18px 0 8px;background:transparent;box-shadow:none;border-top:1px solid var(--canopy-line)}
+.cx-week>header{margin:0 0 8px;align-items:center}.cx-week>header>span{font-size:10px;font-weight:900;letter-spacing:.12em;color:var(--canopy)}.cx-week>header>strong{font-size:11px;color:var(--canopy-muted)}
+.cx-week-list{display:grid}.cx-week-row{display:grid;grid-template-columns:92px minmax(0,1fr) auto;gap:14px;align-items:center;padding:12px 0;border-top:1px solid var(--canopy-line)}
+.cx-week-row small{font-size:9px;font-weight:900;letter-spacing:.1em;color:var(--canopy-muted)}.cx-week-row strong{font-size:13px;color:var(--canopy-ink);min-width:0;overflow-wrap:anywhere}.cx-week-row .cx-text-action{white-space:nowrap}
+
+/* Live session: robust inside laptop widths / sidebar */
+.cx-live,.cx-live.has-poster,.cx-live-body,.cx-live-copy,.cx-countdown{min-width:0;max-width:100%}
+.cx-live.has-poster{width:100%;grid-template-columns:clamp(120px,18vw,180px) minmax(0,1fr);padding:0;align-items:stretch}
+.cx-live-poster{width:100%;height:100%;min-height:235px;object-fit:cover;object-position:50% 20%}
+.cx-live-body,.cx-live.has-poster .cx-live-body,.cx-live:not(.has-poster) .cx-live-body{display:grid;grid-template-columns:minmax(0,1fr);grid-template-areas:"copy" "countdown" "action";gap:11px;padding:17px 18px;align-content:center}
+.cx-live-body .cx-live-pulse{display:none}.cx-live-copy{grid-area:copy}.cx-live-body .cx-countdown,.cx-live.has-poster .cx-countdown,.cx-live:not(.has-poster) .cx-countdown{grid-area:countdown;grid-column:auto}.cx-live-body .cx-link,.cx-live.has-poster .cx-link,.cx-live:not(.has-poster) .cx-link{grid-area:action;grid-column:auto;justify-self:start}
+.cx-live-copy h3{font-size:clamp(15px,1.7vw,18px);line-height:1.25;overflow-wrap:anywhere}.cx-live-copy p,.cx-live-speaker-role{overflow-wrap:anywhere}
+.cx-countdown{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;width:min(100%,420px)}.cx-countdown>div{min-width:0;width:100%;padding:8px 4px 7px}.cx-countdown strong{font-size:clamp(16px,2vw,20px)}.cx-live .cx-link{white-space:normal;line-height:1.35}
+
+/* Games: compact + word-search brain teaser */
+.cx-game-start,.cx-game,.cx-game-complete{box-shadow:none;border-radius:16px;padding:18px}
+.cx-wordsearch-layout{display:grid;grid-template-columns:120px minmax(0,1fr);gap:16px;align-items:start;margin-top:14px}
+.cx-wordsearch-words{display:flex;flex-direction:column;gap:5px;padding-top:2px}.cx-wordsearch-words span{font-size:10px;font-weight:900;letter-spacing:.05em;color:#567068}.cx-wordsearch-words span.is-found{color:var(--canopy);text-decoration:line-through;text-decoration-thickness:1px}
+.cx-wordsearch-grid{--cols:12;display:grid;grid-template-columns:repeat(var(--cols),minmax(0,1fr));width:min(100%,520px);aspect-ratio:1;border:1px solid #cbd9d2;background:#fff;overflow:hidden}
+.cx-wordsearch-grid button{min-width:0;aspect-ratio:1;border:0;border-right:1px solid #eef3f0;border-bottom:1px solid #eef3f0;background:#fff;color:#173f38;padding:0;display:grid;place-items:center;font:800 clamp(9px,1.25vw,14px)/1 ui-monospace,SFMono-Regular,Menlo,monospace;cursor:pointer}
+.cx-wordsearch-grid button:hover{background:#f0f7f3}.cx-wordsearch-grid button.is-start{background:#dff9a9;box-shadow:inset 0 0 0 2px #8acb2b}.cx-wordsearch-grid button.is-found{background:#dff5ea;color:#0e4d4a}
+.cx-wordsearch-grid.is-wrong{animation:cxShake .3s ease}.cx-wordsearch-feedback{margin:9px 0 0!important;font-size:11px!important;color:#5c726b!important}
+
+/* Assignment examples: one large example at a time */
+.ca-practical-example{margin-top:16px}.ca-practical-example-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}.ca-practical-example-head small,.ca-practical-example>small{font-size:.72rem;font-weight:850;color:#0E4D4A}.ca-practical-example-head span{font-size:.72rem;color:#687572}
+.ca-practical-slider{position:relative;width:100%;overflow:hidden;border-radius:16px;background:#edf3f0}.ca-practical-slider figure{margin:0;width:100%;min-height:360px;display:grid;place-items:center}.ca-practical-slider img{display:block;width:100%;height:min(62vh,640px);min-height:360px;object-fit:contain;background:#eef3f0}
+.ca-slide-prev,.ca-slide-next{position:absolute;top:50%;transform:translateY(-50%);width:42px;height:42px;border:0;border-radius:50%;background:rgba(9,38,29,.84);color:#fff;font-size:28px;line-height:1;display:grid;place-items:center;cursor:pointer}.ca-slide-prev{left:12px}.ca-slide-next{right:12px}.ca-slide-dots{display:flex;justify-content:center;gap:6px;margin-top:9px}.ca-slide-dots button{width:7px;height:7px;padding:0;border:0;border-radius:50%;background:#c4d3cd}.ca-slide-dots button.active{background:#0E4D4A}
+.ca-practical-video .ca-practical-frame{border-radius:16px;overflow:hidden}
+
+/* Less visual carding in assignments */
+.ca-card{box-shadow:none}.ca-threefold{gap:0;border-top:1px solid #e1e9e6;border-bottom:1px solid #e1e9e6}.ca-threefold>div{background:transparent;border-radius:0;padding:18px}.ca-threefold>div+div{border-left:1px solid #e1e9e6}.ca-instructions{margin:10px 0}.ca-instructions summary{cursor:pointer;font-size:.82rem;font-weight:850;color:#0E4D4A}.ca-instructions p{margin:.55rem 0 0!important}
+
+/* Course page is content, not another card */
+.canopyCourseHero{border:0;border-radius:0;padding:24px 0 34px;background:transparent;border-bottom:1px solid var(--canopy-line)}
+
+html[data-canopy-theme="dark"] .canopyDashStrip,html[data-canopy-theme="dark"] .cx-week,html[data-canopy-theme="dark"] .cx-week-row,html[data-canopy-theme="dark"] .canopyCourseHero{border-color:#31514a}
+html[data-canopy-theme="dark"] .cx-journey-head h2,html[data-canopy-theme="dark"] .cx-journey-stop>strong,html[data-canopy-theme="dark"] .cx-week-row strong,html[data-canopy-theme="dark"] .canopyDashProgress strong{color:#f4fff9}
+html[data-canopy-theme="dark"] .cx-wordsearch-grid{border-color:#31514a;background:#0a211e}
+html[data-canopy-theme="dark"] .cx-wordsearch-grid button{background:#0a211e;border-color:#173b35;color:#e9fff6}html[data-canopy-theme="dark"] .cx-wordsearch-grid button:hover{background:#14332e}html[data-canopy-theme="dark"] .cx-wordsearch-grid button.is-found{background:#194a3d;color:#c6ff52}html[data-canopy-theme="dark"] .cx-wordsearch-words span{color:#abc2bb}html[data-canopy-theme="dark"] .ca-practical-slider,html[data-canopy-theme="dark"] .ca-practical-slider img{background:#102f2b}
+
+@media(max-width:1100px){
+ .cx-live.has-poster{grid-template-columns:110px minmax(0,1fr)}.cx-live-poster{min-height:220px}.cx-live-body,.cx-live.has-poster .cx-live-body,.cx-live:not(.has-poster) .cx-live-body{padding:15px}
+ .canopyDashStrip{align-items:flex-start}.canopyDashActions{justify-content:flex-end}
+}
+@media(max-width:760px){
+ .cx-week-row{grid-template-columns:76px minmax(0,1fr) auto;gap:9px}.cx-live.has-poster{grid-template-columns:1fr}.cx-live-poster{height:190px;min-height:0;object-position:50% 22%}.cx-live-body,.cx-live.has-poster .cx-live-body,.cx-live:not(.has-poster) .cx-live-body{padding:14px}.cx-countdown{width:100%}
+ .canopyDashStrip{display:grid}.canopyDashActions{justify-content:flex-start}.cx-wordsearch-layout{grid-template-columns:1fr}.cx-wordsearch-words{flex-direction:row;flex-wrap:wrap;gap:6px 12px}.cx-wordsearch-grid{width:100%}.ca-threefold{grid-template-columns:1fr}.ca-threefold>div+div{border-left:0;border-top:1px solid #e1e9e6}.ca-practical-slider figure,.ca-practical-slider img{min-height:260px;height:auto;max-height:520px}
+}
+@media(max-width:480px){
+ .cx-journey-node{width:30px;height:30px}.cx-journey-track:before{top:15px}.cx-journey-stop>strong{font-size:10px}.cx-week-row{grid-template-columns:1fr auto}.cx-week-row small{grid-column:1/-1}.cx-countdown{gap:4px}.cx-countdown>div{padding:7px 2px 6px}.cx-countdown strong{font-size:16px}.cx-wordsearch-grid button{font-size:8.5px}.ca-slide-prev,.ca-slide-next{width:36px;height:36px;font-size:23px}
+}
+@media(prefers-reduced-motion:reduce){.cx-wordsearch-grid.is-wrong{animation:none!important}}

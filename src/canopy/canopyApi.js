@@ -145,14 +145,7 @@ export async function setLearnerEnrollmentStatus(session,userId,status){
   if(!s?.access_token)throw new Error('Your Canopy session has expired. Sign in again.');
   if(!['active','inactive','paused'].includes(status))throw new Error('Invalid enrolment status.');
   const dbStatus=status==='inactive'?'paused':status;
-  const existing=await rest(`canopy_enrollments?select=*&user_id=eq.${encodeURIComponent(userId)}&course_slug=eq.she-leads&order=created_at.desc&limit=1`,{token:s.access_token});
-  if(!existing?.length){
-    const cohorts=await rest(`canopy_cohorts?select=id&course_slug=eq.she-leads&name=eq.${encodeURIComponent('Cohort 2 · 2026')}&order=created_at.desc&limit=1`,{token:s.access_token});
-    if(!cohorts?.length)throw new Error('She Leads Cohort 2 is missing from Canopy. Run the launch hardening SQL before activating learners.');
-    return rest('canopy_enrollments',{token:s.access_token,method:'POST',prefer:'return=representation',body:{user_id:userId,cohort_id:cohorts[0].id,course_slug:'she-leads',status:dbStatus}});
-  }
-  const row=existing[0],key=row.id?`id=eq.${encodeURIComponent(row.id)}`:`user_id=eq.${encodeURIComponent(userId)}`;
-  return rest(`canopy_enrollments?${key}`,{token:s.access_token,method:'PATCH',prefer:'return=representation',body:{status:dbStatus}});
+  return rest('rpc/canopy_programme_manager_set_learner_access',{token:s.access_token,method:'POST',body:{p_user_id:userId,p_status:dbStatus}});
 }
 
 

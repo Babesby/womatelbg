@@ -55,10 +55,13 @@ const PUZZLES={
 };
 
 function PracticalExample({assignment}){
+  const[index,setIndex]=useState(0);
   if(!assignment)return null;
-  if(assignment.exampleEmbed)return <div className="ca-practical-example ca-practical-video"><div className="ca-practical-frame"><iframe loading="lazy" src={assignment.exampleEmbed} title={assignment.exampleLabel||'Practical challenge example'} allowFullScreen allow="fullscreen"/></div><small>{assignment.exampleLabel||'Example'}</small></div>;
-  if(assignment.exampleImages?.length)return <div className={`ca-practical-example ${assignment.exampleImages.length>1?'is-gallery':''}`}><small>{assignment.exampleLabel||'Examples'}</small><div className="ca-practical-gallery">{assignment.exampleImages.map((src,index)=><figure key={src}><img src={src} loading="lazy" alt={`Module practical example ${index+1}`}/></figure>)}</div></div>;
-  return null;
+  if(assignment.exampleEmbed)return <div className="ca-practical-example ca-practical-video"><div className="ca-practical-frame"><iframe loading="lazy" src={assignment.exampleEmbed} title={assignment.exampleLabel||'Practical example'} allowFullScreen allow="fullscreen"/></div><small>{assignment.exampleLabel||'Example'}</small></div>;
+  const images=assignment.exampleImages||[];
+  if(!images.length)return null;
+  const active=Math.min(index,images.length-1);
+  return <div className="ca-practical-example ca-practical-slider-wrap"><div className="ca-practical-example-head"><small>{assignment.exampleLabel||'Example'}</small>{images.length>1&&<span>{active+1}/{images.length}</span>}</div><div className="ca-practical-slider"><figure><img src={images[active]} loading="lazy" alt={`Practical example ${active+1}`}/></figure>{images.length>1&&<><button type="button" className="ca-slide-prev" aria-label="Previous example" onClick={()=>setIndex(i=>(i-1+images.length)%images.length)}>‹</button><button type="button" className="ca-slide-next" aria-label="Next example" onClick={()=>setIndex(i=>(i+1)%images.length)}>›</button></>}</div>{images.length>1&&<div className="ca-slide-dots" aria-label="Example slides">{images.map((_,i)=><button type="button" key={i} className={i===active?'active':''} onClick={()=>setIndex(i)} aria-label={`Show example ${i+1}`}/>)}</div>}</div>;
 }
 
 function PuzzleShell({completed,title,intro,children}){
@@ -337,7 +340,7 @@ export default function CanopyAssignmentsV2({viewer}){
   }
 
   return <section className="ca-page">
-    <div className="ca-head"><span className="ca-kicker">ASSIGNMENTS</span><h1>Work that follows the cohort.</h1><p>Each week opens on Monday. Complete the work in stages: save your paragraph and practical challenge evidence when they are ready, then add the speaker challenge after Thursday’s live session. Saving progress does not use an attempt. Complete all three required parts by Sunday.</p></div>
+    <div className="ca-head"><span className="ca-kicker">ASSIGNMENTS</span><h1>Weekly work.</h1><p>Save Parts 01–02 as you work. Part 03 opens after Thursday’s live session.</p></div>
     {!available.length&&<div className="ca-empty"><h2>Your first assignment is not open yet.</h2><p>Module 01 opens Monday, 21 September 2026.</p></div>}
     <div className="ca-stack">
       {available.map(item=>{
@@ -359,8 +362,8 @@ export default function CanopyAssignmentsV2({viewer}){
           <div className="ca-card-head"><div><small>MODULE {item.moduleId}</small><h2>{item.title}</h2></div><div className="ca-dates"><span>Due {formatCanopyDate(item.dueAt)}</span>{count>0&&<strong>Attempt {count} of 3</strong>}</div></div>
           <div className="ca-threefold">
             <div><b>01</b><h3>Paragraph response</h3><p>{paragraphPrompt}</p></div>
-            <div className="ca-practical-brief"><b>02</b><small className="ca-challenge-tag">PRACTICAL CHALLENGE</small><h3>{practicalTitle}</h3><p>{practicalBrief}</p><p>{practicalInstructions}</p>{practicalHref&&<a href={practicalHref}>{practicalActionLabel||'Open tool →'}</a>}<PracticalExample assignment={curriculum?.assignment}/></div>
-            <div><b>03</b><h3>Speaker challenge</h3>{speakerOpen?<><p>{item.speakerPrompt}</p><p>Submit the public LinkedIn post link.</p></>:<><p>Unlocks after Thursday’s live expert session.</p><p>Parts 01 and 02 are available now.</p></>}</div>
+            <div className="ca-practical-brief"><b>02</b><small className="ca-challenge-tag">PRACTICAL</small><h3>{practicalTitle}</h3><p>{practicalBrief}</p>{practicalInstructions&&<details className="ca-instructions"><summary>How to submit</summary><p>{practicalInstructions}</p></details>}{practicalHref&&<a href={practicalHref}>{practicalActionLabel||'Open tool →'}</a>}<PracticalExample assignment={curriculum?.assignment}/></div>
+            <div><b>03</b><h3>Speaker challenge</h3>{speakerOpen?<><p>{item.speakerPrompt}</p><p>Submit the LinkedIn post link.</p></>:<p>Opens after Thursday’s live session.</p>}</div>
           </div>
           {sub&&<div className="ca-status">
             <div><span>Latest submission</span><strong>{new Date(sub.submitted_at).toLocaleString()}</strong></div>
