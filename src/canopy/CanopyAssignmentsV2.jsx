@@ -216,7 +216,7 @@ export default function CanopyAssignmentsV2({viewer}){
       .test((d?.canvas_link||'').trim());
 
     const linkedinReady=!!speakerOpen &&
-      /^https:\/\/(www\.)?linkedin\.com\//i
+      /^https:\/\/(?:(?:[a-z0-9-]+\.)*linkedin\.com\/|lnkd\.in\/)/i
         .test((d?.linkedin_link||'').trim());
 
     const completed=[
@@ -304,7 +304,7 @@ export default function CanopyAssignmentsV2({viewer}){
       setMessage(`Upload your completed ${practicalTitle.toLowerCase()} to Google Drive, make it viewable by link, then paste the Drive link here.`);return
     }
     if(!tester&&!speakerChallengeOpen(item,now)){setMessage('Parts 01 and 02 are open now. The speaker challenge opens after Thursday’s live session.');return}
-    if(!/^https:\/\/(www\.)?linkedin\.com\//i.test(linkedin)){setMessage('Paste the LinkedIn post link for the speaker challenge.');return}
+    if(!/^https:\/\/(?:(?:[a-z0-9-]+\.)*linkedin\.com\/|lnkd\.in\/)/i.test(linkedin)){setMessage('Paste a LinkedIn post link. LinkedIn.com and lnkd.in short links are accepted.');return}
     setBusy(item.weekKey);setMessage('');
     try{
       await (tester?submitTesterWeeklyAssignment:submitWeeklyAssignment)(
@@ -467,7 +467,7 @@ export default function CanopyAssignmentsV2({viewer}){
 
             {speakerOpen&&
               <label>
-                LinkedIn speaker-task post link
+                LinkedIn speaker-task post link (LinkedIn or lnkd.in)
 
                 <input
                   inputMode="url"
@@ -479,7 +479,7 @@ export default function CanopyAssignmentsV2({viewer}){
                       linkedin_link:e.target.value
                     }
                   }))}
-                  placeholder="https://www.linkedin.com/posts/…"
+                  placeholder="https://linkedin.com/… or https://lnkd.in/…"
                 />
               </label>
             }
