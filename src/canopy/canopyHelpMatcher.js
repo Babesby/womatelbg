@@ -20,17 +20,21 @@ function topicScore(topic,query){
   if(!normalized)return 0;
   const queryTokens=new Set(tokens(normalized));
   let score=0;
+  let bestPhraseScore=0;
   const phrases=[topic.title,...(topic.phrases||[])];
   for(const phrase of phrases){
     const p=normalizeCanopyHelpText(phrase);
     if(!p)continue;
-    if(normalized===p)score=Math.max(score,28);
-    else if(p.length>=6&&normalized.includes(p))score+=11;
-    else if(normalized.length>=6&&p.includes(normalized))score+=6;
+    let phraseScore=0;
+    if(normalized===p)phraseScore=28;
+    else if(p.length>=6&&normalized.includes(p))phraseScore+=11;
+    else if(normalized.length>=6&&p.includes(normalized))phraseScore+=6;
     const pTokens=tokens(p);
     const overlap=pTokens.filter(token=>queryTokens.has(token)).length;
-    if(overlap)score+=overlap*(pTokens.length===1?2:3);
+    if(overlap)phraseScore+=overlap*(pTokens.length===1?2:3);
+    bestPhraseScore=Math.max(bestPhraseScore,phraseScore);
   }
+  score+=bestPhraseScore;
   for(const keyword of topic.keywords||[]){
     const key=normalizeCanopyHelpText(keyword);
     if(!key)continue;

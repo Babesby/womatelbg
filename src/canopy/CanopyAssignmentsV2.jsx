@@ -288,7 +288,10 @@ export default function CanopyAssignmentsV2({viewer}){
     const canvas=(d.canvas_link||'').trim();
     const linkedin=(d.linkedin_link||'').trim();
     if(paragraph.split(/\s+/).filter(Boolean).length<80){setMessage('Your paragraph needs at least 80 words. Add enough detail to show what you learned and how you would apply it.');return}
-    if(!/^https:\/\/(drive|docs)\.google\.com\//i.test(canvas)){setMessage('Upload your downloaded CanopyCanvas graphic to Google Drive, make it viewable by link, then paste the Drive link here.');return}
+    if(!/^https:\/\/(drive|docs)\.google\.com\//i.test(canvas)){
+      const practicalTitle=moduleContent(item.moduleId)?.assignment?.practicalTitle||'practical challenge';
+      setMessage(`Upload your completed ${practicalTitle.toLowerCase()} to Google Drive, make it viewable by link, then paste the Drive link here.`);return
+    }
     if(!tester&&!speakerChallengeOpen(item,now)){setMessage('Parts 01 and 02 are open now. The speaker challenge opens after Thursday’s live session.');return}
     if(!/^https:\/\/(www\.)?linkedin\.com\//i.test(linkedin)){setMessage('Paste the LinkedIn post link for the speaker challenge.');return}
     setBusy(item.weekKey);setMessage('');
@@ -327,7 +330,7 @@ export default function CanopyAssignmentsV2({viewer}){
   }
 
   return <section className="ca-page">
-    <div className="ca-head"><span className="ca-kicker">ASSIGNMENTS</span><h1>Work that follows the cohort.</h1><p>Each week opens on Monday. Complete the work in stages: save your paragraph and CanopyCanvas evidence when they are ready, then add the speaker challenge after Thursday’s live session. Saving progress does not use an attempt. Complete all three required parts by Sunday.</p></div>
+    <div className="ca-head"><span className="ca-kicker">ASSIGNMENTS</span><h1>Work that follows the cohort.</h1><p>Each week opens on Monday. Complete the work in stages: save your paragraph and practical challenge evidence when they are ready, then add the speaker challenge after Thursday’s live session. Saving progress does not use an attempt. Complete all three required parts by Sunday.</p></div>
     {!available.length&&<div className="ca-empty"><h2>Your first assignment is not open yet.</h2><p>Module 01 opens Monday, 21 September 2026.</p></div>}
     <div className="ca-stack">
       {available.map(item=>{
@@ -339,12 +342,17 @@ export default function CanopyAssignmentsV2({viewer}){
         const visible=scoreVisible(sub),score=finalScore(sub),status=(sub?.assessment_status||sub?.status||'submitted').replaceAll('_',' ');
         const curriculum=moduleContent(item.moduleId);
         const paragraphPrompt=curriculum?.assignment?.paragraphPrompt||'Respond to the weekly learning task with reflection, analysis and a concrete application to climate action.';
-        const canvasBrief=curriculum?.assignment?.canvasBrief||'Create a campaign graphic in CanopyCanvas that applies the week’s learning to a defined audience and action.';
+        const practicalTitle=curriculum?.assignment?.practicalTitle||'Practical challenge';
+        const practicalBrief=curriculum?.assignment?.practicalBrief||curriculum?.assignment?.canvasBrief||'Create the practical work for this module and submit a viewable Google Drive link.';
+        const practicalInstructions=curriculum?.assignment?.practicalInstructions||'Upload the completed work to your own Google Drive, make the file viewable by link, and attach that link below.';
+        const practicalHref=curriculum?.assignment?.practicalHref||'';
+        const practicalActionLabel=curriculum?.assignment?.practicalActionLabel||'';
+        const practicalLinkLabel=curriculum?.assignment?.practicalLinkLabel||'Practical challenge Google Drive link';
         return <article className="ca-card" key={item.weekKey}>
           <div className="ca-card-head"><div><small>MODULE {item.moduleId}</small><h2>{item.title}</h2></div><div className="ca-dates"><span>Due {formatCanopyDate(item.dueAt)}</span>{count>0&&<strong>Attempt {count} of 3</strong>}</div></div>
           <div className="ca-threefold">
             <div><b>01</b><h3>Paragraph response</h3><p>{paragraphPrompt}</p></div>
-            <div><b>02</b><h3>CanopyCanvas campaign</h3><p>{canvasBrief}</p><p>Download your finished graphic, upload it to your own Google Drive, make the file viewable by link, and attach that link below.</p><a href="/canopy/canvas">Open CanopyCanvas →</a></div>
+            <div><b>02</b><h3>{practicalTitle}</h3><p>{practicalBrief}</p><p>{practicalInstructions}</p>{practicalHref&&<a href={practicalHref}>{practicalActionLabel||'Open tool →'}</a>}</div>
             <div><b>03</b><h3>Speaker challenge</h3>{speakerOpen?<><p>{item.speakerPrompt}</p><p>Submit the public LinkedIn post link.</p></>:<><p>Unlocks after Thursday’s live expert session.</p><p>Parts 01 and 02 are available now.</p></>}</div>
           </div>
           {sub&&<div className="ca-status">
@@ -375,7 +383,7 @@ export default function CanopyAssignmentsV2({viewer}){
                 </span>
 
                 <span className={parts.canvasReady?'ready':''}>
-                  {parts.canvasReady?'✓':'02'} CanopyCanvas
+                  {parts.canvasReady?'✓':'02'} Practical task
                 </span>
 
                 <span className={
@@ -430,7 +438,7 @@ export default function CanopyAssignmentsV2({viewer}){
             </label>
 
             <label>
-              CanopyCanvas Google Drive link
+              {practicalLinkLabel}
 
               <input
                 inputMode="url"

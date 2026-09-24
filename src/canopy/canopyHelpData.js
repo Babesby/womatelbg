@@ -61,7 +61,7 @@ function speakerAnswer(query,now){
   if(!item)return 'Speaker Challenge timing is not currently configured.';
   const open=now>=new Date(item.speakerOpensAt);
   const state=open?'is open':'is still locked';
-  return `For Module ${item.moduleId} — ${item.title}, the Speaker Challenge ${state}. The Thursday live session is at ${canopyCurriculumMeta.liveSessionTime}, and Part 03 unlocks afterward at ${formatGmt(item.speakerOpensAt)}. Before it opens, you can complete and Save Progress on your paragraph and CanopyCanvas link. Final submission stays unavailable until Part 03 is open and all three required parts are ready. When it opens, submit the public LinkedIn post link for the speaker task.`;
+  return `For Module ${item.moduleId} — ${item.title}, the Speaker Challenge ${state}. The Thursday live session is at ${canopyCurriculumMeta.liveSessionTime}, and Part 03 unlocks afterward at ${formatGmt(item.speakerOpensAt)}. Before it opens, you can complete and Save Progress on your paragraph and Part 02 practical challenge Drive link. Final submission stays unavailable until Part 03 is open and all three required parts are ready. When it opens, submit the public LinkedIn post link for the speaker task.`;
 }
 
 function attemptsAnswer(query){
@@ -85,7 +85,7 @@ function programmeScheduleAnswer(){
 
 function participationAnswer(){
   const c=canopyCurriculumMeta.completion;
-  return `Once WOMATE activates your course enrolment, work through the lessons and knowledge checks in each module, join the Thursday live sessions, and complete each weekly assignment by its deadline. The current completion requirements are: ${c.liveSessions} ${c.assignments} ${c.finalNote} ${c.graduation} Weekly assignments have three required parts: a paragraph response, a CanopyCanvas/Google Drive link, and the Speaker Challenge LinkedIn link. Use Save Progress when you are still working; final submission should be completed on time.`;
+  return `Once WOMATE activates your course enrolment, work through the lessons and knowledge checks in each module, join the Thursday live sessions, and complete each weekly assignment by its deadline. The current completion requirements are: ${c.liveSessions} ${c.assignments} ${c.finalNote} ${c.graduation} Weekly assignments have three required parts: a paragraph response, a module-specific practical challenge uploaded to Google Drive, and the Speaker Challenge LinkedIn link. Use Save Progress when you are still working; final submission should be completed on time.`;
 }
 
 function schedulePhrases(kind){
@@ -117,7 +117,7 @@ export const CANOPY_HELP_QUICK_TOPICS=[
   {label:'Assignments',question:'How do weekly assignments work?'},
   {label:'Live sessions',question:'When are the live sessions?'},
   {label:'Speaker Challenge',question:'Why is the Speaker Challenge locked?'},
-  {label:'CanopyCanvas',question:'What do I need to do for CanopyCanvas?'},
+  {label:'Practical task',question:'What is the practical task for each module?'},
   {label:'Next cohort',question:'I was not selected this year. How do I register interest for next year?'},
   {label:'Certificates',question:'How do certificates work?'},
   {label:'Profile',question:'How do I change my name?'},
@@ -192,14 +192,14 @@ export const CANOPY_HELP_TOPICS=[
     id:'weekly-assignments',title:'Weekly assignments',
     phrases:['how do weekly assignments work','weekly assignment','assignment requirements','what do i submit','final assignment submission','submit my assignment'],
     keywords:['assignment','weekly','submit','submission','required','parts'],
-    answer:'Each open module assignment has three required parts: 01 a paragraph response, 02 a CanopyCanvas campaign uploaded to your Google Drive with a shareable link, and 03 the Thursday Speaker Challenge with a public LinkedIn post link. Parts 01 and 02 can be prepared early. Final submission is available only after Part 03 opens and all three parts are ready. Complete the assignment by the module deadline shown in Canopy.',
+    answer:'Each open module assignment has three required parts: 01 a paragraph response, 02 a practical creation task uploaded to Google Drive with a shareable link, and 03 the Thursday Speaker Challenge with a public LinkedIn post link. Part 02 changes by module: Module 01 uses CanopyCanvas; Module 02 is an AI-voice picture slideshow story; Module 03 is a one-rule climate-policy visual; Module 04 is a short real-world climate advocacy video; and Module 05 is a Canva climate-leadership vision board. Parts 01 and 02 can be prepared early. Final submission is available only after Part 03 opens and all three parts are ready.',
     route:'/canopy/assignments',actionLabel:'Open assignments'
   },
   {
     id:'save-progress',title:'Save Progress',
     phrases:['save progress','save my work','can i save early','can i save part 1','can i save part 2','does save progress count as an attempt','draft assignment'],
     keywords:['save','progress','draft','attempt','early','persist'],
-    answer:'Save Progress stores the work you have entered without making a final assignment submission. You can save the paragraph, CanopyCanvas link, or Speaker Challenge link as they become available. Saving progress does not use an assignment attempt. Canopy shows how many of the three required parts are ready.',
+    answer:'Save Progress stores the work you have entered without making a final assignment submission. You can save the paragraph, your practical-challenge Google Drive link, or the Speaker Challenge link as they become available. Saving progress does not use an assignment attempt. Canopy shows how many of the three required parts are ready.',
     route:'/canopy/assignments',actionLabel:'Open assignments'
   },
   {
@@ -217,17 +217,24 @@ export const CANOPY_HELP_TOPICS=[
     route:'/canopy/assignments',actionLabel:'View paragraph prompt'
   },
   {
+    id:'practical-challenges',title:'Module practical challenges',
+    phrases:['practical task','practical challenge','module 2 practical','module 3 practical','module 4 practical','module 5 practical','ai voice slideshow','picture story','policy visual','climate rule visual','advocacy video','vision board'],
+    keywords:['practical','slideshow','voice','policy','visual','video','vision','board','module'],
+    answer:'Part 02 is intentionally different each week. Module 01: CanopyCanvas campaign graphic. Module 02: 30–60 second picture slideshow story with 4–7 visuals and an AI voiceover on a gender-and-climate justice issue. Module 03: one short climate rule presented as a bold public visual, such as a signboard, bus advert, billboard, street banner or skywriting. Module 04: 30–90 second real-world advocacy video using yourself, your surroundings or both, focused on waste or another climate issue you care about. Module 05: Canva climate-leadership vision board with your issue, leadership direction, opportunities and next steps. Upload the finished work to Google Drive and submit the shareable link.',
+    route:'/canopy/assignments',actionLabel:'View practical task'
+  },
+  {
     id:'canopy-canvas',title:'CanopyCanvas requirement',
     phrases:['canopycanvas','canopy canvas','campaign graphic','canvas requirement','create my graphic','where do i make the campaign'],
     keywords:['canopycanvas','canvas','campaign','graphic','design'],
-    answer:'Use CanopyCanvas to create the campaign graphic required for the weekly assignment. After finishing it, download the graphic, upload it to your own Google Drive, make the file viewable by link, and paste that Google Drive link into the assignment.',
+    answer:'CanopyCanvas is the practical creation tool for Module 01 only. Modules 02–05 use different creative practical tasks shown inside each assignment card. After completing any Part 02 task, upload the finished file to your own Google Drive, make it viewable by link, and paste that Drive link into the assignment.',
     route:'/canopy/canvas',actionLabel:'Open CanopyCanvas'
   },
   {
-    id:'drive-link',title:'Google Drive CanopyCanvas link',
+    id:'drive-link',title:'Google Drive practical-task link',
     phrases:['google drive link','canvas link','drive link','how do i submit canvas','upload canvas','docs google link'],
     keywords:['google','drive','link','canvas','upload','viewable','share'],
-    answer:'The CanopyCanvas evidence field accepts a Google Drive or Google Docs URL. Download your finished CanopyCanvas graphic, upload it to your own Google Drive, make the file viewable by link, then paste that link into the assignment field.',
+    answer:'Part 02 accepts a Google Drive or Google Docs URL. Complete the practical task shown for your module, upload the finished file to your own Google Drive, set access so anyone with the link can view it, then paste that link into the assignment field.',
     route:'/canopy/assignments',actionLabel:'Open assignment'
   },
   {

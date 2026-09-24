@@ -102,6 +102,12 @@ export const canopyModules2026 = [
     },
     assignment:{
       paragraphPrompt:'Identify one climate-related issue you can observe in your community. Describe the evidence you can directly observe, then explain the likely hazard, who or what is exposed, what creates vulnerability, and one realistic adaptation or mitigation response. Separate what you know from what you infer.',
+      practicalTitle:'CanopyCanvas campaign',
+      practicalBrief:'Create a CanopyCanvas awareness graphic for a clearly defined local audience. The graphic should communicate the issue responsibly and ask for one realistic action.',
+      practicalInstructions:'Download your finished graphic, upload it to your own Google Drive, set access so anyone with the link can view it, and paste that Drive link into Part 02.',
+      practicalHref:'/canopy/canvas',
+      practicalActionLabel:'Open CanopyCanvas →',
+      practicalLinkLabel:'CanopyCanvas Google Drive link',
       canvasBrief:'Create a CanopyCanvas awareness graphic for a clearly defined local audience. The graphic should communicate the issue responsibly and ask for one realistic action.',
       puzzle:['CLIMATE','HAZARD','EXPOSURE','ADAPTATION'],
       rubric:{climateUnderstanding:25,application:25,evidenceReasoning:20,actionQuality:15,communication:15}
@@ -176,7 +182,11 @@ export const canopyModules2026 = [
     },
     assignment:{
       paragraphPrompt:'Choose one climate response in Ghana or your own community. Analyse who is expected to benefit, what gender-related barrier could prevent equal benefit, what existing agency or local knowledge should be recognised, and one design change that would make the response more just.',
-      canvasBrief:'Create a CanopyCanvas campaign that communicates a gender-and-climate issue without portraying women only as helpless victims. Show agency and identify one concrete institutional or community action.',
+      practicalTitle:'AI voice picture story',
+      practicalBrief:'Create a 30–60 second picture slideshow story about a gender-and-climate justice issue. Use 4–7 images or slides and an AI voiceover to show the climate impact, who is affected, and women’s agency — not women only as victims.',
+      practicalInstructions:'You may use ChatGPT to help shape a short narration, then build the slideshow in Canva or another simple video tool. Export it as MP4, upload it to Google Drive, set access so anyone with the link can view it, and paste the Drive link into Part 02.',
+      practicalLinkLabel:'AI voice picture-story Google Drive link',
+      canvasBrief:'Create a 30–60 second picture slideshow story about a gender-and-climate justice issue. Use 4–7 images or slides and an AI voiceover to show the climate impact, who is affected, and women’s agency — not women only as victims.',
       puzzle:['JUSTICE','EQUITY','AGENCY','ACCESS'],
       rubric:{genderAnalysis:25,justiceReasoning:25,application:20,agencyFraming:15,communication:15}
     },
@@ -250,7 +260,11 @@ export const canopyModules2026 = [
     },
     assignment:{
       paragraphPrompt:'Choose one climate issue and identify a real decision-maker or institution with authority over part of the response. Write a concise policy analysis: the problem, affected group, current gap, evidence you would use, and one specific action you want that decision-maker to take.',
-      canvasBrief:'Create a CanopyCanvas public-interest graphic that translates your policy ask for a defined audience without oversimplifying the evidence.',
+      practicalTitle:'One-rule climate policy visual',
+      practicalBrief:'Imagine you are the leader with authority to introduce one climate rule. Write one short, memorable rule and turn that single phrase into a bold public visual.',
+      practicalInstructions:'Place the rule creatively in a realistic scene — for example on a signboard held by a woman, a bus advert, a billboard, a street banner, or skywriting from a jet. Create the mock-up in Canva or with an AI image tool, export it as an image or PDF, upload it to Google Drive, set access so anyone with the link can view it, and paste the Drive link into Part 02.',
+      practicalLinkLabel:'Climate policy visual Google Drive link',
+      canvasBrief:'Imagine you are the leader with authority to introduce one climate rule. Write one short, memorable rule and turn that single phrase into a bold public visual.',
       puzzle:['POLICY','NDC','GOVERNANCE','ACCOUNTABILITY'],
       rubric:{governanceUnderstanding:25,actorMapping:20,evidenceUse:20,policyAsk:20,communication:15}
     },
@@ -264,7 +278,7 @@ export const canopyModules2026 = [
     liveDate:'15 October 2026',
     title:'Climate Advocacy & Digital Innovation',
     framingQuestion:'How can storytelling and technology make climate issues credible and capable of mobilising action?',
-    overview:'Teach participants to move from awareness content to responsible advocacy: evidence, audience, message, action, channel, ethics and measurement — with CanopyCanvas as the practical creation environment.',
+    overview:'Teach participants to move from awareness content to responsible advocacy: evidence, audience, message, action, channel, ethics and measurement — with a short real-world advocacy video as the practical creation exercise.',
     outcomes:[
       'Distinguish awareness from advocacy.',
       'Build an evidence-to-message chain.',
@@ -307,10 +321,10 @@ export const canopyModules2026 = [
         sources:['ipccConcepts']
       },
       {
-        id:'04.4',title:'CanopyCanvas and campaign measurement',minutes:16,
+        id:'04.4',title:'Real-world advocacy video and campaign measurement',minutes:16,
         body:[
-          'CanopyCanvas guides participants through cause selection, audience, desired action, message, tone, format, background, texture and a live campaign preview. The tool is intentionally focused: it supports climate and climate-wellbeing awareness rather than unrestricted graphic design.',
-          'Participants download the finished campaign graphic to their own device, upload it to their own Google Drive, make the file viewable by link and attach that link to their Canopy assignment.',
+          'A strong digital advocacy video does not need expensive production. A phone, a clear point of view and honest footage of yourself or your surroundings can make a climate issue visible, specific and human.',
+          'Participants should connect the footage to evidence, identify who is affected, avoid exploiting people or communities for impact, and end with one realistic action or call to action. The finished video is uploaded to Google Drive and submitted by shareable link.',
           'Campaign evaluation should match the objective. Reach and impressions describe exposure; comments and shares can indicate engagement; link clicks or registrations can indicate response; a policy commitment or completed community action can indicate deeper influence. Vanity metrics alone do not prove impact.'
         ],
         keyIdea:'Measure the behaviour or decision you wanted — not only how many people saw the post.',
@@ -319,12 +333,16 @@ export const canopyModules2026 = [
       }
     ],
     caseStudy:{
-      title:'The Future We Want · From vision board to action campaign',
-      text:'Last year’s adaptation session asked participants to create a digital vision board for a climate-resilient Africa. Canopy evolves that creative exercise into an audience-specific campaign: the participant must connect the desired future to a credible action someone can take now.'
+      title:'From local footage to an action campaign',
+      text:'Participants turn a climate concern they can see, experience or care deeply about into a short advocacy video. The challenge is to connect a real issue to a defined audience, credible evidence and one action someone can actually take.'
     },
     assignment:{
       paragraphPrompt:'Choose one climate issue you want to advocate on. Define the audience, the evidence you rely on, the insight that matters to that audience, the exact action you want, one ethical risk in communicating the issue, and how you would measure whether the campaign worked.',
-      canvasBrief:'Use CanopyCanvas to create the campaign described in your paragraph. The final graphic must have a clear audience, responsible message and one actionable call to action.',
+      practicalTitle:'Real-world climate advocacy video',
+      practicalBrief:'Create a 30–90 second advocacy video about waste or another climate issue you genuinely care about. Use footage of yourself, your surroundings, or both so the issue feels real and locally grounded.',
+      practicalInstructions:'Show the issue, explain why it matters and who is affected, then end with one realistic action or call to action. Export the video as MP4, upload it to Google Drive, set access so anyone with the link can view it, and paste the Drive link into Part 02.',
+      practicalLinkLabel:'Climate advocacy video Google Drive link',
+      canvasBrief:'Create a 30–90 second advocacy video about waste or another climate issue you genuinely care about. Use footage of yourself, your surroundings, or both so the issue feels real and locally grounded.',
       puzzle:['ADVOCACY','EVIDENCE','AUDIENCE','ACTION'],
       rubric:{strategy:25,evidenceIntegrity:20,audienceFit:20,ethicalCommunication:20,measurement:15}
     },
@@ -398,7 +416,11 @@ export const canopyModules2026 = [
     },
     assignment:{
       paragraphPrompt:'Draft your one-page Climate Action Note: define the climate problem, why it matters, the contribution you can realistically make, who you need to engage, three actions for the next 90 days, one likely constraint, the support you need, and how you will know whether you made progress.',
-      canvasBrief:'Create a CanopyCanvas graphic that communicates the public-facing part of your 90-day commitment without overstating what you can achieve.',
+      practicalTitle:'Climate leadership vision board',
+      practicalBrief:'Create a Canva vision board showing the climate issue you care about, the kind of leader you want to become, the skills and opportunities you want to pursue, and the impact you want to build.',
+      practicalInstructions:'Include a few clear next steps or 90-day goals. Export the vision board as PNG or PDF, upload it to Google Drive, set access so anyone with the link can view it, and paste the Drive link into Part 02.',
+      practicalLinkLabel:'Climate leadership vision-board Google Drive link',
+      canvasBrief:'Create a Canva vision board showing the climate issue you care about, the kind of leader you want to become, the skills and opportunities you want to pursue, and the impact you want to build.',
       puzzle:['LEADERSHIP','PATHWAY','NETWORK','IMPACT'],
       rubric:{clarity:20,feasibility:25,application:20,stakeholderPlan:20,measurement:15}
     },
