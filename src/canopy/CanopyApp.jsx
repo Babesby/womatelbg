@@ -1,4 +1,4 @@
-import React,{useEffect,useMemo,useState}from'react';
+import React,{lazy,Suspense,useEffect,useMemo,useState}from'react';
 import {Helmet}from'react-helmet-async';
 import CanopyAssignmentsV2 from './CanopyAssignmentsV2';
 import CanopyCanvas from './CanopyCanvas';
@@ -12,7 +12,9 @@ import CanopyStaffWorkspace from './CanopyStaffWorkspace';
 import{ArrowLeft,ArrowRight,BookOpen,Check,ChevronRight,ClipboardCheck,Clock,FileText,GraduationCap,Leaf,Lock,LogOut,Menu,PlayCircle,Sparkles,UserRound,X,BookMarked,UsersRound,PenLine,TrendingUp,Eye,EyeOff,MessageSquare,ShieldAlert,Award,BarChart3,Bell} from 'lucide-react';
 import'./canopy.css';
 import{CANOPY_BRAND,modules,resources}from'./canopyData';
-import{canopyConfigured,consumeAuthCallback,getStoredSession,getViewer,getProgress,getManagerSnapshot,markLesson,requestPasswordReset,resendConfirmation,saveQuiz,signIn,signOut,signUp,updatePassword,setLearnerEnrollmentStatus,createManagerAction,updateManagerAction,reviewWeeklyAssignment,getUnreadNotificationCount,submitLearnerComplaint,getLearnerComplaints,getWeeklyAssignmentSubmissions,issueCanopyCertificate,signInWithGoogle,updateOwnCanopyProfileName,getOwnCanopyDeletionRequest,requestOwnCanopyAccountDeletion} from './canopyApi';
+import{canopyConfigured,consumeAuthCallback,getStoredSession,getViewer,getProgress,getManagerSnapshot,markLesson,requestPasswordReset,resendConfirmation,saveQuiz,signIn,signOut,signUp,updatePassword,setLearnerEnrollmentStatus,createManagerAction,updateManagerAction,reviewWeeklyAssignment,getUnreadNotificationCount,getWeeklyAssignmentSubmissions,issueCanopyCertificate,signInWithGoogle,updateOwnCanopyProfileName,getOwnCanopyDeletionRequest,requestOwnCanopyAccountDeletion} from './canopyApi';
+
+const CanopyHelp=lazy(()=>import('./CanopyHelp'));
 
 const route=()=>window.location.pathname.replace(/\/$/,'')||'/canopy';
 
@@ -413,22 +415,6 @@ function CanopyHeroDemo(){
  </section>;
 }
 
-const CANOPY_AGENT_SCRIPT='https://cdn.jotfor.ms/agent/embedjs/01a0758b42c07000893310f980bc32c2a80c/embed.js';
-const CANOPY_AGENT_STYLE_ID='canopy-jotform-guide-guard';
-function CanopyLearningGuide({path,viewer}){
- const manager=isAnyCanopyStaff(viewer);
- const knowledgeCheck=/^\/canopy\/course\/she-leads\/[^/]+\/quiz$/.test(path);
- const learnerArea=Boolean(viewer)&&!manager&&path.startsWith('/canopy/');
- useEffect(()=>{
-  let style=document.getElementById(CANOPY_AGENT_STYLE_ID);
-  if(!style){style=document.createElement('style');style.id=CANOPY_AGENT_STYLE_ID;style.textContent='body.canopyKnowledgeCheck iframe[src*="jotfor"],body.canopyKnowledgeCheck iframe[src*="jotform"],body.canopyKnowledgeCheck [id*="jotform" i],body.canopyKnowledgeCheck [class*="jotform" i],body.canopyKnowledgeCheck [id*="agent" i][style*="fixed"],body.canopyKnowledgeCheck [class*="agent" i][style*="fixed"]{display:none!important;visibility:hidden!important;pointer-events:none!important}';document.head.appendChild(style)}
-  document.body.classList.toggle('canopyKnowledgeCheck',knowledgeCheck);
-  if(learnerArea&&!knowledgeCheck&&!document.querySelector(`script[src="${CANOPY_AGENT_SCRIPT}"]`)){const script=document.createElement('script');script.src=CANOPY_AGENT_SCRIPT;script.async=true;script.dataset.canopyGuide='true';document.body.appendChild(script)}
-  return()=>document.body.classList.remove('canopyKnowledgeCheck');
- },[learnerArea,knowledgeCheck,path]);
- return null;
-}
-
 export default function CanopyApp(){
  const[path,setPath]=useState(route());const[loading,setLoading]=useState(true);const[viewer,setViewer]=useState(null);const[progress,setProgress]=useState([]);const[submissions,setSubmissions]=useState([]);const[snapshot,setSnapshot]=useState(null);const[staffDashboard,setStaffDashboard]=useState(null);
  const load=async()=>{const session=getStoredSession();if(!session){setViewer(null);setProgress([]);setSubmissions([]);setSnapshot(null);setStaffDashboard(null);setLoading(false);return}try{
@@ -491,13 +477,13 @@ const manager=canManageCanopy(viewer);const operational=isCanopyOperationsStaff(
  else if(path==='/canopy/course/she-leads')content=<CourseOverview progress={progress} tester={tester}/>;
  else if(path==='/canopy/canvas')content=<CanopyCanvas viewer={viewer}/>;
  else if(path==='/canopy/notifications')content=<CanopyNotifications viewer={viewer}/>;
- else if(path==='/canopy/help')content=<CanopyHelp viewer={viewer}/>;
+ else if(path==='/canopy/help')content=<Suspense fallback={<main className="canopyHelp"><div className="canopyHelpLazyState">Opening Canopy Help…</div></main>}><CanopyHelp viewer={viewer}/></Suspense>;
  else if(path==='/canopy/certificate')content=<CanopyCertificate viewer={viewer}/>;
  else if(path==='/canopy/assignments')content=<CanopyAssignmentsV2 viewer={viewer}/>;
  else if(path==='/canopy/progress')content=<Progress progress={progress} submissions={submissions}/>;
  else if(path==='/canopy/resources')content=<Resources/>;
  else if(path==='/canopy/profile')content=<Profile viewer={viewer} onReload={load}/>;
  else{const match=path.match(/^\/canopy\/course\/she-leads\/([^/]+)\/([^/]+)$/);if(match){const[,moduleId,last]=match;content=last==='quiz'?<Quiz moduleId={moduleId} session={viewer.session} reload={load} tester={tester}/>:<Lesson moduleId={moduleId} lessonId={last} progress={progress} session={viewer.session} reload={load} tester={tester}/>}else content=tester?<TesterDashboard viewer={viewer} progress={progress}/>:<Dashboard viewer={viewer} progress={progress}/>}
- return <><Helmet><title>{isAnyCanopyStaff(viewer)?'Canopy Operations':'My Canopy'} | WOMATE</title></Helmet><CanopyLearningGuide path={path} viewer={viewer}/><LearnerShell viewer={viewer} progress={progress}>{content}</LearnerShell></>
+ return <><Helmet><title>{isAnyCanopyStaff(viewer)?'Canopy Operations':'My Canopy'} | WOMATE</title></Helmet><LearnerShell viewer={viewer} progress={progress}>{content}</LearnerShell></>
 }
 
