@@ -1,7 +1,7 @@
 import React from "react";
 import "./she-leads-interest.css";
 
-const FORM_URL = "https://forms.gle/bfvyE7TryQ76LsLEA";
+const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSf1_Q93ikq52r7bsFDxFjSYu38cvRiD7gAa8ARrOF5y13A08A/viewform?embedded=true";
 
 export default function SheLeads2027Interest() {
   return (
@@ -25,7 +25,6 @@ export default function SheLeads2027Interest() {
           src={FORM_URL}
           title="She Leads 2027 Expression of Interest"
           loading="lazy"
-          sandbox="allow-forms allow-scripts allow-same-origin"
           referrerPolicy="strict-origin-when-cross-origin"
         >
           Your browser does not support embedded forms.
