@@ -112,10 +112,13 @@ export const CANOPY_HELP_COPY={
 
 export const CANOPY_HELP_QUICK_TOPICS=[
   {label:'Selection & enrolment',question:'Have I been selected and enrolled?'},
+  {label:'Sign in',question:'I am having trouble signing in with email and password'},
+  {label:'Selection graphic',question:'Why can’t I generate my selection graphic?'},
   {label:'Assignments',question:'How do weekly assignments work?'},
   {label:'Live sessions',question:'When are the live sessions?'},
   {label:'Speaker Challenge',question:'Why is the Speaker Challenge locked?'},
   {label:'CanopyCanvas',question:'What do I need to do for CanopyCanvas?'},
+  {label:'Next cohort',question:'I was not selected this year. How do I register interest for next year?'},
   {label:'Certificates',question:'How do certificates work?'},
   {label:'Profile',question:'How do I change my name?'},
   {label:'Technical help',question:'Canopy is not working properly in my browser'}
@@ -130,6 +133,20 @@ export const CANOPY_HELP_TOPICS=[
     route:'/selected',actionLabel:'Verify selection code'
   },
   {
+    id:'selection-graphic',title:'Selection graphic and selection code',
+    phrases:['cannot generate my selection graphic','cant generate my selection graphic','can’t generate my selection graphic','selection graphic not working','selection card not working','cannot create selected graphic','cannot create selection card','selection code expired','selection code has expired','expired selection code','my selection code is not working','selection code not accepted'],
+    keywords:['selection graphic','selection card','selected graphic','selection code','expired','generate','verify'],
+    answer:'If you were selected but cannot generate your WOMATE selection graphic because the selection code from your selection message is no longer being accepted, the code may have expired. Reach out to the programme admins in the official WhatsApp group and request a new selection code, then return to the selection page and try again.',
+    route:'/selected',actionLabel:'Open selection graphic'
+  },
+  {
+    id:'next-cohort-interest',title:'Register interest for the next cohort',
+    phrases:['i was not selected this year','not selected this year','i was not selected','not selected for this cohort','register for next year','register interest for next year','next year cohort','next cohort','2027 interest','expression of interest 2027','can i apply next year'],
+    keywords:['not selected','next year','next cohort','2027','interest','apply'],
+    answer:'If you were not selected for this year’s She Leads cohort, you do not need to log in to Canopy. You can register your interest for the next She Leads cohort through WOMATE’s 2027 Expression of Interest section.',
+    route:'/she-leads#she-leads-2027-interest',actionLabel:'Register 2027 interest'
+  },
+  {
     id:'enrolment',title:'Canopy enrolment and activation',
     phrases:['am i enrolled','have i been enrolled','when will i be enrolled','why am i not enrolled','awaiting cohort enrolment','awaiting enrollment','course access not active','not active','i logged in but cannot access the course','does login mean enrolled','i can login am i enrolled','how long until enrollment'],
     keywords:['enrolled','enrolment','enrollment','active','activation','waiting','awaiting','course access','login'],
@@ -138,9 +155,9 @@ export const CANOPY_HELP_TOPICS=[
   },
   {
     id:'login',title:'Login and sign-in',
-    phrases:['how do i sign in','i cannot login','i cannot sign in','login help','sign in help','confirmation email','resend confirmation'],
-    keywords:['login','sign in','signin','account','confirmation','confirmed','email','google'],
-    answer:'Canopy supports sign-in with email and password, and Continue with Google. If your email account has not been confirmed, use “Resend confirmation” on the sign-in page and use the newest confirmation link. Signing in does not by itself mean your She Leads course enrolment is active. If your password is the problem, use “Forgot password?” instead.',
+    phrases:['how do i sign in','i cannot login','i cannot sign in','login help','sign in help','confirmation email','resend confirmation','email and password not working','password login not working','use google sign in','continue with google','google sign in'],
+    keywords:['login','sign in','signin','account','confirmation','confirmed','email','password','google'],
+    answer:'Canopy supports email/password sign-in and Continue with Google. If you are having trouble signing in with your email and password, use “Continue with Google” on the Canopy sign-in page. If your email account has not been confirmed, you can also use “Resend confirmation” and the newest confirmation link. Signing in does not by itself mean your She Leads course enrolment is active.',
     route:'/canopy/login',actionLabel:'Open sign in'
   },
   {

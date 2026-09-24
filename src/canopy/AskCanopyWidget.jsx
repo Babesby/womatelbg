@@ -13,7 +13,13 @@ export default function AskCanopyWidget(){
 
   useEffect(()=>{if(open)transcriptRef.current?.scrollTo({top:transcriptRef.current.scrollHeight,behavior:'smooth'})},[messages,open]);
 
-  function go(route){if(route)window.location.assign(route)}
+  function go(path){
+  if(!path)return;
+  if(!String(path).startsWith('/canopy')){window.location.assign(path);return}
+  window.history.pushState({},'',path);
+  window.dispatchEvent(new PopStateEvent('popstate'));
+  window.scrollTo({top:0,behavior:'smooth'});
+}
 
   function ask(raw){
     const text=String(raw||'').trim();
@@ -32,7 +38,7 @@ export default function AskCanopyWidget(){
       </header>
 
       <div className="askCanopyQuick" aria-label="Quick help topics">
-        {CANOPY_HELP_QUICK_TOPICS.slice(0,7).map(item=><button type="button" key={item.label} onClick={()=>ask(item.question)}>{item.label}</button>)}
+        {CANOPY_HELP_QUICK_TOPICS.slice(0,8).map(item=><button type="button" key={item.label} onClick={()=>ask(item.question)}>{item.label}</button>)}
       </div>
 
       <div className="askCanopyTranscript" ref={transcriptRef} aria-live="polite">

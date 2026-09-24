@@ -417,10 +417,11 @@ function CanopyHeroDemo(){
 }
 
 function CanopyLearningGuide({path,viewer}){
- const manager=isAnyCanopyStaff(viewer);
+ const manager=Boolean(viewer)&&isAnyCanopyStaff(viewer);
  const knowledgeCheck=/^\/canopy\/course\/she-leads\/[^/]+\/quiz$/.test(path);
+ const publicHelpRoute=!viewer&&['/canopy','/canopy/','/canopy/login','/canopy/signup'].includes(path);
  const learnerArea=Boolean(viewer)&&!manager&&path.startsWith('/canopy/');
- if(!learnerArea||knowledgeCheck)return null;
+ if((!publicHelpRoute&&!learnerArea)||knowledgeCheck)return null;
  return <Suspense fallback={null}><AskCanopyWidget/></Suspense>;
 }
 
@@ -444,8 +445,8 @@ export default function CanopyApp(){
  useEffect(()=>{setLoading(true);load()},[path]);
  const publicRoute=path==='/canopy'||path==='/canopy/';const authRoute=path==='/canopy/login'||path==='/canopy/signup';
  if(path==='/canopy/auth/callback')return <AuthCallback/>;if(path==='/canopy/reset-password')return <ResetPassword/>;
- if(publicRoute)return <><Helmet><title>WOMATE Canopy | Climate Learning</title><meta name="description" content="WOMATE Canopy is the learning environment for structured climate education and She Leads Climate Mentorship."/></Helmet><Landing/></>;
- if(authRoute)return <Auth mode={path.endsWith('signup')?'signup':'login'}/>;
+ if(publicRoute)return <><Helmet><title>WOMATE Canopy | Climate Learning</title><meta name="description" content="WOMATE Canopy is the learning environment for structured climate education and She Leads Climate Mentorship."/></Helmet><Landing/><CanopyLearningGuide path={path} viewer={viewer}/></>;
+ if(authRoute)return <><Auth mode={path.endsWith('signup')?'signup':'login'}/><CanopyLearningGuide path={path} viewer={viewer}/></>;
  if(loading)return <div className="canopyLoading"><Leaf/><span>Opening Canopy…</span></div>;
  if(!viewer){go('/canopy/login');return null}
  
