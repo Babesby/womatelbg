@@ -1413,3 +1413,229 @@ html[data-canopy-theme="dark"] .canopyAuth .canopyGoogleAuth{background:#102f2b;
 html[data-canopy-theme="dark"] .canopyAuth input{background:#091f1c;color:#f4fff9;border-color:#36564f}
 html[data-canopy-theme="dark"] .canopyAuth input:focus{border-color:#42e6ca;box-shadow:0 0 0 3px rgba(66,230,202,.12)}
 html[data-canopy-theme="dark"] .canopyModulePreview article{border-color:#294842}
+
+/* Canopy dark-mode contrast hardening · 2026-09-24
+   Keep learning, assignment, certificate and complaint surfaces readable
+   without changing their light-mode appearance or layout. */
+html[data-canopy-theme="dark"] .canopyCoursePage .canopySectionHead h2,
+html[data-canopy-theme="dark"] .canopyCoursePage .canopyModuleRow h3,
+html[data-canopy-theme="dark"] .canopyLessonLayout>article h1,
+html[data-canopy-theme="dark"] .canopyLessonLayout>article h2,
+html[data-canopy-theme="dark"] .canopyLessonLayout>article h3{
+  color:#f4fff9!important;
+}
+html[data-canopy-theme="dark"] .canopyLessonLayout>article{
+  background:#0e2a27!important;
+  color:#f4fff9!important;
+  border:1px solid #2a4a44!important;
+}
+html[data-canopy-theme="dark"] .canopyLessonBody p{
+  color:#c8d8d3!important;
+}
+html[data-canopy-theme="dark"] .canopyTakeaway{
+  background:#123630!important;
+  border-left-color:#c6ff52!important;
+  color:#f4fff9!important;
+}
+html[data-canopy-theme="dark"] .canopyTakeaway svg,
+html[data-canopy-theme="dark"] .canopyTakeaway span{
+  color:#c6ff52!important;
+}
+html[data-canopy-theme="dark"] .canopyTakeaway p{
+  color:#e3f2ed!important;
+}
+
+html[data-canopy-theme="dark"] .ca-head h1,
+html[data-canopy-theme="dark"] .ca-card h2,
+html[data-canopy-theme="dark"] .ca-card h3,
+html[data-canopy-theme="dark"] .ca-card label,
+html[data-canopy-theme="dark"] .ca-card strong{
+  color:#f4fff9;
+}
+html[data-canopy-theme="dark"] .ca-head p,
+html[data-canopy-theme="dark"] .ca-card p,
+html[data-canopy-theme="dark"] .ca-dates,
+html[data-canopy-theme="dark"] .ca-card small{
+  color:#abc2bb;
+}
+html[data-canopy-theme="dark"] .ca-kicker,
+html[data-canopy-theme="dark"] .ca-card-head small,
+html[data-canopy-theme="dark"] .ca-threefold a{
+  color:#42e6ca!important;
+}
+html[data-canopy-theme="dark"] .ca-threefold>div,
+html[data-canopy-theme="dark"] .ca-empty,
+html[data-canopy-theme="dark"] .ca-match-row,
+html[data-canopy-theme="dark"] .ca-anagram-grid label,
+html[data-canopy-theme="dark"] .ca-jigsaw-piece{
+  background:#102f2b!important;
+  border-color:#31514a!important;
+  color:#f4fff9!important;
+}
+html[data-canopy-theme="dark"] .ca-threefold p,
+html[data-canopy-theme="dark"] .ca-match-row p,
+html[data-canopy-theme="dark"] .ca-crossword span,
+html[data-canopy-theme="dark"] .ca-crossword small,
+html[data-canopy-theme="dark"] .ca-anagram-grid small,
+html[data-canopy-theme="dark"] .ca-jigsaw-piece>span{
+  color:#b8cec7!important;
+}
+html[data-canopy-theme="dark"] .ca-threefold b,
+html[data-canopy-theme="dark"] .ca-match-row>b,
+html[data-canopy-theme="dark"] .ca-anagram-grid span,
+html[data-canopy-theme="dark"] .ca-jigsaw-piece>b{
+  color:#c6ff52!important;
+}
+html[data-canopy-theme="dark"] .ca-form input,
+html[data-canopy-theme="dark"] .ca-form textarea,
+html[data-canopy-theme="dark"] .ca-puzzle-grid input,
+html[data-canopy-theme="dark"] .ca-match-row select,
+html[data-canopy-theme="dark"] .ca-crossword input,
+html[data-canopy-theme="dark"] .ca-anagram-grid input{
+  background:#091f1c!important;
+  color:#f4fff9!important;
+  border-color:#36564f!important;
+}
+html[data-canopy-theme="dark"] .ca-form input::placeholder,
+html[data-canopy-theme="dark"] .ca-form textarea::placeholder,
+html[data-canopy-theme="dark"] .ca-puzzle-grid input::placeholder,
+html[data-canopy-theme="dark"] .ca-crossword input::placeholder,
+html[data-canopy-theme="dark"] .ca-anagram-grid input::placeholder{
+  color:#78958d!important;
+}
+html[data-canopy-theme="dark"] .ca-assignment-progress{
+  background:#0b2723!important;
+  border-color:#31514a!important;
+}
+html[data-canopy-theme="dark"] .ca-assignment-progress-head{
+  color:#42e6ca!important;
+}
+html[data-canopy-theme="dark"] .ca-assignment-progress-track{
+  background:#173e37!important;
+}
+html[data-canopy-theme="dark"] .ca-assignment-progress-track>span{
+  background:#42e6ca!important;
+}
+html[data-canopy-theme="dark"] .ca-assignment-progress-parts>span{
+  background:#102f2b!important;
+  color:#d7ebe5!important;
+  border-color:#31514a!important;
+}
+html[data-canopy-theme="dark"] .ca-assignment-progress-parts>span.ready{
+  background:#c6ff52!important;
+  border-color:#c6ff52!important;
+  color:#102b20!important;
+}
+html[data-canopy-theme="dark"] .ca-assignment-form-actions .ca-save-progress{
+  background:#102f2b!important;
+  color:#d9fff2!important;
+  border-color:#42675e!important;
+}
+html[data-canopy-theme="dark"] .ca-puzzle{
+  border-top-color:#2a4a44!important;
+}
+html[data-canopy-theme="dark"] .ca-crossword label{
+  border-bottom-color:#2a4a44!important;
+}
+html[data-canopy-theme="dark"] .ca-jigsaw .ca-jigsaw-move{
+  background:#163a34!important;
+  color:#c6ff52!important;
+}
+html[data-canopy-theme="dark"] .ca-draft-note,
+html[data-canopy-theme="dark"] .ca-part-ready{
+  color:#42e6ca!important;
+}
+html[data-canopy-theme="dark"] .ca-part-pending{
+  color:#abc2bb!important;
+}
+
+html[data-canopy-theme="dark"] .ccert-page h1,
+html[data-canopy-theme="dark"] .ccert-page h2{
+  color:#f4fff9!important;
+}
+html[data-canopy-theme="dark"] .ccert-kicker,
+html[data-canopy-theme="dark"] .ccert-grid a{
+  color:#42e6ca!important;
+}
+html[data-canopy-theme="dark"] .ccert-empty,
+html[data-canopy-theme="dark"] .ccert-grid article{
+  background:#0e2a27!important;
+  border:1px solid #2a4a44!important;
+  color:#f4fff9!important;
+}
+html[data-canopy-theme="dark"] .ccert-empty p,
+html[data-canopy-theme="dark"] .ccert-grid article p,
+html[data-canopy-theme="dark"] .ccert-grid article small{
+  color:#abc2bb!important;
+}
+
+html[data-canopy-theme="dark"] .canopyHelp .canopyPageHead h1,
+html[data-canopy-theme="dark"] .canopyHelpForm h2,
+html[data-canopy-theme="dark"] .canopyHelpHistory h2,
+html[data-canopy-theme="dark"] .canopyHelpHistory h3{
+  color:#f4fff9!important;
+}
+html[data-canopy-theme="dark"] .canopyHelpForm,
+html[data-canopy-theme="dark"] .canopyHelpHistory,
+html[data-canopy-theme="dark"] .canopyHelpLazyState{
+  background:#0e2a27!important;
+  border-color:#2a4a44!important;
+  color:#f4fff9!important;
+}
+html[data-canopy-theme="dark"] .canopyHelpForm label{
+  color:#d8ebe5!important;
+}
+html[data-canopy-theme="dark"] .canopyHelpForm input,
+html[data-canopy-theme="dark"] .canopyHelpForm textarea{
+  background:#091f1c!important;
+  color:#f4fff9!important;
+  border-color:#36564f!important;
+}
+html[data-canopy-theme="dark"] .canopyHelpForm input::placeholder,
+html[data-canopy-theme="dark"] .canopyHelpForm textarea::placeholder{
+  color:#78958d!important;
+}
+html[data-canopy-theme="dark"] .canopyHelpMessage{
+  background:#123630!important;
+  color:#d9fff2!important;
+  border:1px solid #31514a!important;
+}
+html[data-canopy-theme="dark"] .canopyHelpHistory article{
+  border-top-color:#2a4a44!important;
+}
+html[data-canopy-theme="dark"] .canopyHelpHistory article p{
+  color:#b8cec7!important;
+}
+html[data-canopy-theme="dark"] .canopyHelpStatus{
+  background:#3a2b18!important;
+  color:#ffe39a!important;
+  border:1px solid #66502a!important;
+}
+html[data-canopy-theme="dark"] .canopyHelpStatus.is-resolved,
+html[data-canopy-theme="dark"] .canopyHelpStatus.is-closed{
+  background:rgba(198,255,82,.14)!important;
+  color:#dcff93!important;
+  border-color:rgba(198,255,82,.28)!important;
+}
+html[data-canopy-theme="dark"] .canopyHelpEmpty{
+  border-color:#42675e!important;
+  color:#abc2bb!important;
+}
+html[data-canopy-theme="dark"] .canopyHelpResponse,
+html[data-canopy-theme="dark"] .canopyComplaintResponse{
+  background:#123630!important;
+  border-color:#42e6ca!important;
+  color:#f4fff9!important;
+}
+html[data-canopy-theme="dark"] .canopyHelpResponse b,
+html[data-canopy-theme="dark"] .canopyComplaintResponse b{
+  color:#42e6ca!important;
+}
+html[data-canopy-theme="dark"] .canopyHelpResponse p,
+html[data-canopy-theme="dark"] .canopyComplaintResponse p,
+html[data-canopy-theme="dark"] .canopyComplaintMessage{
+  color:#d5e8e2!important;
+}
+html[data-canopy-theme="dark"] .canopyComplaintReply label{
+  color:#d8ebe5!important;
+}
