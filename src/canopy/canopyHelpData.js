@@ -1,7 +1,8 @@
 import {CANOPY_ACCESS_DATE,CANOPY_ASSIGNMENT_SCHEDULE} from './canopySchedule';
 import {CANOPY_BRAND,modules} from './canopyData';
+import {canopyCurriculumMeta} from './canopyCurriculum2026';
 
-const SUPPORT_ANCHOR='#canopy-help-support';
+const SUPPORT_ROUTE='/canopy/help';
 
 function formatGmt(value,{time=true}={}){
   const options={weekday:'short',day:'numeric',month:'short',year:'numeric',timeZone:'UTC'};
@@ -11,7 +12,6 @@ function formatGmt(value,{time=true}={}){
 }
 
 function moduleNumberText(id){return String(Number(id))}
-
 function moduleForSchedule(item){return modules.find(module=>module.id===item.moduleId)}
 
 function referencedSchedule(query=''){
@@ -40,7 +40,12 @@ function scheduleForQuestion(query,now){return referencedSchedule(query)||curren
 function moduleScheduleLine(item){
   const module=moduleForSchedule(item);
   const liveDate=module?.liveDate||formatGmt(item.speakerOpensAt,{time:false});
-  return `Module ${item.moduleId} — ${item.title}: opens ${formatGmt(item.weekStartsAt,{time:false})}; live session ${liveDate}; assignment due ${formatGmt(item.dueAt)}.`;
+  return `Module ${item.moduleId} — ${item.title}: opens ${formatGmt(item.weekStartsAt,{time:false})}; live session ${liveDate} at ${canopyCurriculumMeta.liveSessionTime}; assignment due ${formatGmt(item.dueAt)}.`;
+}
+
+function sessionLine(item){
+  const module=moduleForSchedule(item);
+  return `Module ${item.moduleId} — ${item.title}: ${module?.liveDate||formatGmt(item.speakerOpensAt,{time:false})} at ${canopyCurriculumMeta.liveSessionTime}.`;
 }
 
 function deadlineAnswer(query){
@@ -56,7 +61,7 @@ function speakerAnswer(query,now){
   if(!item)return 'Speaker Challenge timing is not currently configured.';
   const open=now>=new Date(item.speakerOpensAt);
   const state=open?'is open':'is still locked';
-  return `For Module ${item.moduleId} — ${item.title}, the Speaker Challenge ${state}. It unlocks ${formatGmt(item.speakerOpensAt)} after the Thursday live expert session. Before it opens, you can complete and Save Progress on your paragraph and CanopyCanvas link. Final submission stays unavailable until Part 03 is open and all three required parts are ready. When it opens, submit the public LinkedIn post link for the speaker task.`;
+  return `For Module ${item.moduleId} — ${item.title}, the Speaker Challenge ${state}. The Thursday live session is at ${canopyCurriculumMeta.liveSessionTime}, and Part 03 unlocks afterward at ${formatGmt(item.speakerOpensAt)}. Before it opens, you can complete and Save Progress on your paragraph and CanopyCanvas link. Final submission stays unavailable until Part 03 is open and all three required parts are ready. When it opens, submit the public LinkedIn post link for the speaker task.`;
 }
 
 function attemptsAnswer(query){
@@ -69,13 +74,18 @@ function liveSessionAnswer(query){
   const item=referencedSchedule(query);
   if(item){
     const module=moduleForSchedule(item);
-    return `Module ${item.moduleId} — ${item.title} has its live expert session on ${module?.liveDate||formatGmt(item.speakerOpensAt,{time:false})}. The current source does not publish a separate live-session join time or join link in Canopy Help. The Speaker Challenge unlocks afterward at ${formatGmt(item.speakerOpensAt)}.`;
+    return `Module ${item.moduleId} — ${item.title} has its live expert session on ${module?.liveDate||formatGmt(item.speakerOpensAt,{time:false})} at ${canopyCurriculumMeta.liveSessionTime}. The Speaker Challenge unlocks after the session at ${formatGmt(item.speakerOpensAt)}. Check Canopy notifications/programme communication for the current join details.`;
   }
-  return `She Leads uses a Thursday live expert session for each module. Current dates are:\n${CANOPY_ASSIGNMENT_SCHEDULE.map(item=>{const module=moduleForSchedule(item);return `Module ${item.moduleId}: ${module?.liveDate||formatGmt(item.speakerOpensAt,{time:false})}`}).join('\n')}\nThe source does not expose a separate join link or live-session start time here. Speaker Challenge unlock times are configured independently at 18:00 GMT after each session.`;
+  return `All five She Leads live expert sessions are on Thursdays at ${canopyCurriculumMeta.liveSessionTime}:\n${CANOPY_ASSIGNMENT_SCHEDULE.map(sessionLine).join('\n')}\nParticipants are expected to attend at least 4 of the 5 live sessions. The Speaker Challenge unlocks later the same Thursday after each live session.`;
 }
 
 function programmeScheduleAnswer(){
   return `${CANOPY_BRAND.programme} · ${CANOPY_BRAND.cohort}. Participant Canopy access opens ${CANOPY_ACCESS_DATE}. The configured module schedule is:\n${CANOPY_ASSIGNMENT_SCHEDULE.map(moduleScheduleLine).join('\n')}`;
+}
+
+function participationAnswer(){
+  const c=canopyCurriculumMeta.completion;
+  return `Once WOMATE activates your course enrolment, work through the lessons and knowledge checks in each module, join the Thursday live sessions, and complete each weekly assignment by its deadline. The current completion requirements are: ${c.liveSessions} ${c.assignments} ${c.finalNote} ${c.graduation} Weekly assignments have three required parts: a paragraph response, a CanopyCanvas/Google Drive link, and the Speaker Challenge LinkedIn link. Use Save Progress when you are still working; final submission should be completed on time.`;
 }
 
 function schedulePhrases(kind){
@@ -92,17 +102,16 @@ function schedulePhrases(kind){
 export const CANOPY_HELP_COPY={
   eyebrow:'WOMATE · VERIFIED PARTICIPANT HELP',
   title:'Ask Canopy',
-  intro:'Ask about your course, assignments, schedule or account. Answers come from the current WOMATE Canopy rules and configuration.',
+  intro:'Ask about selection, enrolment, your course, assignments, schedule or account. Answers come from verified WOMATE programme rules and the current Canopy configuration.',
   welcome:'Hi, I’m Canopy Help. What do you need help with?',
   placeholder:'Type a Canopy question…',
   localNote:'Answers are matched locally. No external AI service is used.',
   unknown:'I couldn’t find a verified Canopy answer for that. Please contact WOMATE Support or use the support option in Canopy.',
-  supportTitle:'WOMATE Support',
-  supportIntro:'If the verified help answers do not resolve your issue, send WOMATE a support request. This is the only part of this page that writes to Canopy.',
-  supportButton:'Contact WOMATE Support'
+    supportButton:'Open Help & complaints'
 };
 
 export const CANOPY_HELP_QUICK_TOPICS=[
+  {label:'Selection & enrolment',question:'Have I been selected and enrolled?'},
   {label:'Assignments',question:'How do weekly assignments work?'},
   {label:'Live sessions',question:'When are the live sessions?'},
   {label:'Speaker Challenge',question:'Why is the Speaker Challenge locked?'},
@@ -114,10 +123,24 @@ export const CANOPY_HELP_QUICK_TOPICS=[
 
 export const CANOPY_HELP_TOPICS=[
   {
+    id:'selection',title:'Selection status',
+    phrases:['have i been selected','am i selected','was i selected','how do i know if i was selected','how do i know if i have been selected','selection email','selection code','did i get selected','i can log in does that mean i was selected'],
+    keywords:['selected','selection','code','email','official','chosen'],
+    answer:'Your selection is confirmed by an official WOMATE selection email containing your selection code and instructions to complete the required programme steps. If you received that email, you have been selected. If you did not receive an official selection email, do not treat a Canopy login or account as proof of selection; people who were not selected are not required to log in to Canopy. She Leads Cohort 2 is a programme for young African women. Male applicants are not eligible to participate in this cohort.',
+    route:'/selected',actionLabel:'Verify selection code'
+  },
+  {
+    id:'enrolment',title:'Canopy enrolment and activation',
+    phrases:['am i enrolled','have i been enrolled','when will i be enrolled','why am i not enrolled','awaiting cohort enrolment','awaiting enrollment','course access not active','not active','i logged in but cannot access the course','does login mean enrolled','i can login am i enrolled','how long until enrollment'],
+    keywords:['enrolled','enrolment','enrollment','active','activation','waiting','awaiting','course access','login'],
+    answer:'Signing in to Canopy does not mean you are enrolled in the She Leads course. A selected participant may be able to create or access a Canopy account while course access still shows “Not active” or “Awaiting cohort enrolment”. WOMATE must verify that the required selection/onboarding steps have been completed before activating the course enrolment. If you have the official selection email and have completed the required steps, please allow WOMATE time to verify and enrol you. Do not create another account just because activation is still pending.',
+    route:'/canopy/classroom',actionLabel:'Check course access'
+  },
+  {
     id:'login',title:'Login and sign-in',
     phrases:['how do i sign in','i cannot login','i cannot sign in','login help','sign in help','confirmation email','resend confirmation'],
     keywords:['login','sign in','signin','account','confirmation','confirmed','email','google'],
-    answer:'Canopy supports sign-in with email and password, and Continue with Google. If your email account has not been confirmed, use “Resend confirmation” on the sign-in page and use the newest confirmation link. If your password is the problem, use “Forgot password?” instead.',
+    answer:'Canopy supports sign-in with email and password, and Continue with Google. If your email account has not been confirmed, use “Resend confirmation” on the sign-in page and use the newest confirmation link. Signing in does not by itself mean your She Leads course enrolment is active. If your password is the problem, use “Forgot password?” instead.',
     route:'/canopy/login',actionLabel:'Open sign in'
   },
   {
@@ -136,16 +159,23 @@ export const CANOPY_HELP_TOPICS=[
   },
   {
     id:'live-sessions',title:'Live sessions',
-    phrases:['live session','live sessions','expert session','speaker session','when is the live session','how do i join the live session',...schedulePhrases('live')],
-    keywords:['live','session','expert','speaker','thursday','join'],
+    phrases:['live session','live sessions','expert session','speaker session','when is the live session','what time is the live session','what time are the sessions','session time','times for each session','how do i join the live session',...schedulePhrases('live')],
+    keywords:['live','session','sessions','expert','speaker','thursday','join','time'],
     answer:({query})=>liveSessionAnswer(query),
     route:'/canopy/notifications',actionLabel:'Check notifications'
+  },
+  {
+    id:'participation-expectations',title:'What participants are expected to do',
+    phrases:['what am i expected to do in canopy','what do i need to do in canopy','what are the course requirements','what are the programme requirements','what do participants need to do','how do i complete the course','completion requirements','what should i do each week'],
+    keywords:['expected','requirements','complete','completion','lessons','attend','assignments','progress','course'],
+    answer:()=>participationAnswer(),
+    route:'/canopy/course/she-leads',actionLabel:'Continue the course'
   },
   {
     id:'weekly-assignments',title:'Weekly assignments',
     phrases:['how do weekly assignments work','weekly assignment','assignment requirements','what do i submit','final assignment submission','submit my assignment'],
     keywords:['assignment','weekly','submit','submission','required','parts'],
-    answer:'Each open module assignment has three required parts: 01 a paragraph response, 02 a CanopyCanvas campaign uploaded to your Google Drive with a shareable link, and 03 the Thursday Speaker Challenge with a public LinkedIn post link. Parts 01 and 02 can be prepared early. Final submission is available only after Part 03 opens and all three parts are ready.',
+    answer:'Each open module assignment has three required parts: 01 a paragraph response, 02 a CanopyCanvas campaign uploaded to your Google Drive with a shareable link, and 03 the Thursday Speaker Challenge with a public LinkedIn post link. Parts 01 and 02 can be prepared early. Final submission is available only after Part 03 opens and all three parts are ready. Complete the assignment by the module deadline shown in Canopy.',
     route:'/canopy/assignments',actionLabel:'Open assignments'
   },
   {
@@ -208,7 +238,7 @@ export const CANOPY_HELP_TOPICS=[
     id:'certificates',title:'Certificates',
     phrases:['certificate','certificates','when do i get my certificate','where is my certificate','certificate link','completion record'],
     keywords:['certificate','completion','issued','drive','eligibility'],
-    answer:'Certificates are issued by WOMATE after completion eligibility is confirmed, including attendance and required assignments. Once issued, your certificate appears in the Certificates area as a Google Drive completion record. If no certificate has been issued yet, the page will say so.',
+    answer:`Certificates are issued by WOMATE after completion eligibility is confirmed. Current programme completion requirements include: ${canopyCurriculumMeta.completion.liveSessions} ${canopyCurriculumMeta.completion.assignments} ${canopyCurriculumMeta.completion.finalNote} ${canopyCurriculumMeta.completion.graduation} Once issued, your certificate appears in the Certificates area as a Google Drive completion record.`,
     route:'/canopy/certificate',actionLabel:'Open certificates'
   },
   {
@@ -229,15 +259,15 @@ export const CANOPY_HELP_TOPICS=[
     id:'complaints-support',title:'Complaints and WOMATE Support',
     phrases:['contact support','womate support','submit complaint','make a complaint','report a problem','need help from womate','support request'],
     keywords:['support','complaint','womate','problem','issue','report'],
-    answer:'Use WOMATE Support on this Help page when the verified answers do not resolve your issue. A support request is recorded in Canopy for authorised WOMATE staff to review and respond to. You can return here to see the request status and any WOMATE response.',
-    route:SUPPORT_ANCHOR,actionLabel:'Open WOMATE Support'
+    answer:'Open Help & complaints when a verified Ask Canopy answer does not resolve your issue. Your complaint is recorded in Canopy for authorised WOMATE staff to review, respond to and resolve. You can return to the Help page to see its status and WOMATE response.',
+    route:SUPPORT_ROUTE,actionLabel:'Open WOMATE Support'
   },
   {
     id:'technical',title:'Technical and browser issues',
     phrases:['technical help','browser issue','page not loading','canopy not working','button not working','something is broken','error message','blank page'],
     keywords:['technical','browser','loading','load','broken','error','button','page','refresh'],
-    answer:'For a browser or loading problem, refresh the page once, confirm your internet connection, then sign out and sign back in if Canopy is still responsive enough to do so. If the issue continues, use WOMATE Support below and include the page you were on, what you clicked, and the exact error message you saw.',
-    route:SUPPORT_ANCHOR,actionLabel:'Report technical issue'
+    answer:'For a browser or loading problem, refresh the page once, confirm your internet connection, then sign out and sign back in if Canopy is still responsive enough to do so. If the issue continues, open Help & complaints and include the page you were on, what you clicked, and the exact error message you saw.',
+    route:SUPPORT_ROUTE,actionLabel:'Report technical issue'
   }
 ];
 
@@ -245,6 +275,6 @@ export const CANOPY_HELP_FALLBACK={
   id:'unknown',
   title:'Verified answer not found',
   answer:CANOPY_HELP_COPY.unknown,
-  route:SUPPORT_ANCHOR,
+  route:SUPPORT_ROUTE,
   actionLabel:CANOPY_HELP_COPY.supportButton
 };

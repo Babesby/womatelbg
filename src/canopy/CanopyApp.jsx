@@ -15,6 +15,7 @@ import{CANOPY_BRAND,modules,resources}from'./canopyData';
 import{canopyConfigured,consumeAuthCallback,getStoredSession,getViewer,getProgress,getManagerSnapshot,markLesson,requestPasswordReset,resendConfirmation,saveQuiz,signIn,signOut,signUp,updatePassword,setLearnerEnrollmentStatus,createManagerAction,updateManagerAction,reviewWeeklyAssignment,getUnreadNotificationCount,getWeeklyAssignmentSubmissions,issueCanopyCertificate,signInWithGoogle,updateOwnCanopyProfileName,getOwnCanopyDeletionRequest,requestOwnCanopyAccountDeletion} from './canopyApi';
 
 const CanopyHelp=lazy(()=>import('./CanopyHelp'));
+const AskCanopyWidget=lazy(()=>import('./AskCanopyWidget'));
 
 const route=()=>window.location.pathname.replace(/\/$/,'')||'/canopy';
 
@@ -415,6 +416,14 @@ function CanopyHeroDemo(){
  </section>;
 }
 
+function CanopyLearningGuide({path,viewer}){
+ const manager=isAnyCanopyStaff(viewer);
+ const knowledgeCheck=/^\/canopy\/course\/she-leads\/[^/]+\/quiz$/.test(path);
+ const learnerArea=Boolean(viewer)&&!manager&&path.startsWith('/canopy/');
+ if(!learnerArea||knowledgeCheck)return null;
+ return <Suspense fallback={null}><AskCanopyWidget/></Suspense>;
+}
+
 export default function CanopyApp(){
  const[path,setPath]=useState(route());const[loading,setLoading]=useState(true);const[viewer,setViewer]=useState(null);const[progress,setProgress]=useState([]);const[submissions,setSubmissions]=useState([]);const[snapshot,setSnapshot]=useState(null);const[staffDashboard,setStaffDashboard]=useState(null);
  const load=async()=>{const session=getStoredSession();if(!session){setViewer(null);setProgress([]);setSubmissions([]);setSnapshot(null);setStaffDashboard(null);setLoading(false);return}try{
@@ -477,13 +486,13 @@ const manager=canManageCanopy(viewer);const operational=isCanopyOperationsStaff(
  else if(path==='/canopy/course/she-leads')content=<CourseOverview progress={progress} tester={tester}/>;
  else if(path==='/canopy/canvas')content=<CanopyCanvas viewer={viewer}/>;
  else if(path==='/canopy/notifications')content=<CanopyNotifications viewer={viewer}/>;
- else if(path==='/canopy/help')content=<Suspense fallback={<main className="canopyHelp"><div className="canopyHelpLazyState">Opening Canopy Help…</div></main>}><CanopyHelp viewer={viewer}/></Suspense>;
+ else if(path==='/canopy/help')content=<Suspense fallback={<main className="canopyHelp"><div className="canopyHelpLazyState">Opening Help & complaints…</div></main>}><CanopyHelp viewer={viewer}/></Suspense>;
  else if(path==='/canopy/certificate')content=<CanopyCertificate viewer={viewer}/>;
  else if(path==='/canopy/assignments')content=<CanopyAssignmentsV2 viewer={viewer}/>;
  else if(path==='/canopy/progress')content=<Progress progress={progress} submissions={submissions}/>;
  else if(path==='/canopy/resources')content=<Resources/>;
  else if(path==='/canopy/profile')content=<Profile viewer={viewer} onReload={load}/>;
  else{const match=path.match(/^\/canopy\/course\/she-leads\/([^/]+)\/([^/]+)$/);if(match){const[,moduleId,last]=match;content=last==='quiz'?<Quiz moduleId={moduleId} session={viewer.session} reload={load} tester={tester}/>:<Lesson moduleId={moduleId} lessonId={last} progress={progress} session={viewer.session} reload={load} tester={tester}/>}else content=tester?<TesterDashboard viewer={viewer} progress={progress}/>:<Dashboard viewer={viewer} progress={progress}/>}
- return <><Helmet><title>{isAnyCanopyStaff(viewer)?'Canopy Operations':'My Canopy'} | WOMATE</title></Helmet><LearnerShell viewer={viewer} progress={progress}>{content}</LearnerShell></>
+ return <><Helmet><title>{isAnyCanopyStaff(viewer)?'Canopy Operations':'My Canopy'} | WOMATE</title></Helmet><CanopyLearningGuide path={path} viewer={viewer}/><LearnerShell viewer={viewer} progress={progress}>{content}</LearnerShell></>
 }
 
