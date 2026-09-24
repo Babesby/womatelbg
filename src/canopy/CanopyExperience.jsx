@@ -3,6 +3,7 @@ import {ArrowRight,Brain,BriefcaseBusiness,Check,ExternalLink,Play,Printer,Rotat
 import {modules} from './canopyData';
 import {CANOPY_ASSIGNMENT_SCHEDULE,formatCanopyDate,getLiveSessionAt} from './canopySchedule';
 import {getFeaturedSpotlights} from './canopyApi';
+import {playCanopyCorrectSound,playCanopyErrorSound,primeCanopyFeedbackAudio} from './canopyFeedbackAudio';
 
 export const CANOPY_JOURNEY_STAGES=[
   {moduleId:'01',label:'Understand'},
@@ -214,11 +215,12 @@ function TruthMythGame({lessonId,activity}){
     const nextPair=[...pairScores];if(pairMode&&correct)nextPair[player]+=1;
     setScore(nextScore);setPoints(nextPoints);setStreak(nextStreak);setBestCombo(nextBest);setPairScores(nextPair);setFeedback(correct?'correct':'wrong');
     try{navigator.vibrate?.(correct?25:[35,30,35])}catch{}
+    if(correct)playCanopyCorrectSound();else playCanopyErrorSound();
     window.setTimeout(()=>{setFeedback(null);if(index>=items.length-1)finish(nextScore,nextPoints,nextBest,nextPair);else{setIndex(i=>i+1);setTime(GAME_SECONDS)}},520);
   }
   useEffect(()=>{if(!playing||feedback||complete)return;const t=window.setTimeout(()=>{if(time<=1)answer(null);else setTime(v=>v-1)},1000);return()=>window.clearTimeout(t)},[playing,feedback,complete,time,index]);
   if(complete)return <ActivityComplete saved={complete} pairMode={complete.pairMode} onReplay={reset}/>;
-  if(!playing)return <div className="cx-game-start"><div><Brain size={20}/><small>{activity.eyebrow||'QUICK GAME'}</small><h3>{activity.title}</h3><p>{activity.intro||'A quick, ungraded challenge to test your instinct.'}</p></div>{activity.pair&&<label className="cx-pair-toggle"><input type="checkbox" checked={pairMode} onChange={e=>setPairMode(e.target.checked)}/><span><Users size={15}/> Play with a colleague</span></label>}<button type="button" onClick={()=>{setPlaying(true);setTime(GAME_SECONDS)}}><Play size={15}/> Start challenge</button></div>;
+  if(!playing)return <div className="cx-game-start"><div><Brain size={20}/><small>{activity.eyebrow||'QUICK GAME'}</small><h3>{activity.title}</h3><p>{activity.intro||'A quick, ungraded challenge to test your instinct.'}</p></div>{activity.pair&&<label className="cx-pair-toggle"><input type="checkbox" checked={pairMode} onChange={e=>setPairMode(e.target.checked)}/><span><Users size={15}/> Play with a colleague</span></label>}<button type="button" onClick={()=>{primeCanopyFeedbackAudio();setPlaying(true);setTime(GAME_SECONDS)}}><Play size={15}/> Start challenge</button></div>;
   const activePlayer=pairMode?(index%2)+1:null;
   return <div className={`cx-game cx-truthmyth ${feedback?`is-${feedback}`:''}`}>
     <div className="cx-game-top"><span>{activity.eyebrow||'MYTH BUSTER'}</span><div><b>{activePlayer?`PLAYER ${activePlayer}`:`COMBO ×${Math.max(1,streak)}`}</b><em>{time}s</em></div></div>
@@ -251,12 +253,12 @@ function WordSearchGame({lessonId,activity}){
   function reset(){setComplete(null);setFound(new Set());setStartCell(null);setFeedback('')}
   function tap(r,c){
     if(complete)return;
-    if(!startCell){setStartCell([r,c]);setFeedback('');return}
+    if(!startCell){primeCanopyFeedbackAudio();setStartCell([r,c]);setFeedback('');return}
     const selection=[startCell[0],startCell[1],r,c];
     const word=words.find(w=>!found.has(w)&&(isSameSegment(placements[w],selection)||isSameSegment(reverse(placements[w]),selection)));
     setStartCell(null);
-    if(!word){setFeedback('Try another line.');try{navigator.vibrate?.([25,20,25])}catch{};window.setTimeout(()=>setFeedback(''),700);return}
-    const next=new Set(found);next.add(word);setFound(next);setFeedback(`${word} found`);try{navigator.vibrate?.(20)}catch{}
+    if(!word){setFeedback('Try another line.');try{navigator.vibrate?.([25,20,25])}catch{};playCanopyErrorSound();window.setTimeout(()=>setFeedback(''),700);return}
+    const next=new Set(found);next.add(word);setFound(next);setFeedback(`${word} found`);try{navigator.vibrate?.(20)}catch{};playCanopyCorrectSound()
     if(next.size===words.length)setComplete(savePlayResult(lessonId,{type:'word-search',score:next.size,total:words.length}));
     else window.setTimeout(()=>setFeedback(''),650);
   }
@@ -284,7 +286,7 @@ function ChoiceGame({lessonId,activity}){
   const[complete,setComplete]=useState(stored||null);const[index,setIndex]=useState(0);const[score,setScore]=useState(0);const[feedback,setFeedback]=useState(null);
   const round=activity.rounds?.[index];
   function reset(){setComplete(null);setIndex(0);setScore(0);setFeedback(null)}
-  function choose(choiceIndex){if(feedback)return;const correct=choiceIndex===round.answer;const next=score+(correct?1:0);setScore(next);setFeedback({correct,text:round.explanation});try{navigator.vibrate?.(correct?20:[30,25,30])}catch{};window.setTimeout(()=>{if(index>=activity.rounds.length-1)setComplete(savePlayResult(lessonId,{type:'choice',score:next,total:activity.rounds.length}));else{setIndex(i=>i+1);setFeedback(null)}},900)}
+  function choose(choiceIndex){if(feedback)return;const correct=choiceIndex===round.answer;const next=score+(correct?1:0);setScore(next);setFeedback({correct,text:round.explanation});try{navigator.vibrate?.(correct?20:[30,25,30])}catch{};if(correct)playCanopyCorrectSound();else playCanopyErrorSound();window.setTimeout(()=>{if(index>=activity.rounds.length-1)setComplete(savePlayResult(lessonId,{type:'choice',score:next,total:activity.rounds.length}));else{setIndex(i=>i+1);setFeedback(null)}},900)}
   if(complete)return <ActivityComplete saved={complete} onReplay={reset}/>;
   return <div className={`cx-game cx-choice ${feedback?(feedback.correct?'is-correct':'is-wrong'):''}`}><div className="cx-game-top"><span>{activity.eyebrow}</span><Zap size={16}/></div><h3>{activity.title}</h3><p className="cx-choice-question">{round?.q}</p><div className="cx-choice-grid">{round?.options.map((option,i)=><button type="button" key={option} onClick={()=>choose(i)}>{option}</button>)}</div>{feedback&&<p className="cx-game-feedback">{feedback.text}</p>}</div>;
 }

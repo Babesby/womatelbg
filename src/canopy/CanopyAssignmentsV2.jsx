@@ -2,6 +2,7 @@ import React,{useEffect,useState} from 'react';
 import {CANOPY_ASSIGNMENT_SCHEDULE,formatCanopyDate,openAssignments,speakerChallengeOpen} from './canopySchedule';
 import {getWeeklyAssignmentSubmissions,submitWeeklyAssignment,submitTesterWeeklyAssignment,getPuzzleProgress,savePuzzleCompletion,refreshLearningAutomation,getWeeklyAssignmentDrafts,saveWeeklyAssignmentDraft} from './canopyApi';
 import {canopyModules2026} from './canopyCurriculum2026';
+import {playCanopyCorrectSound,playCanopyErrorSound} from './canopyFeedbackAudio';
 
 function scramble(word){
   return word.split('').map((c,i)=>({c,k:(i*17+word.charCodeAt(i))%97})).sort((a,b)=>a.k-b.k).map(x=>x.c).join('');
@@ -80,10 +81,10 @@ function WeeklyPuzzle({viewer,item,completed,onComplete}){
   const[busy,setBusy]=useState(false);
 
   async function saveIfCorrect(isCorrect,wrongMessage='Keep going — check each answer and try again.'){
-    if(!isCorrect){setMsg(wrongMessage);return}
+    if(!isCorrect){setMsg(wrongMessage);playCanopyErrorSound();return}
     setBusy(true);setMsg('');
-    try{await savePuzzleCompletion(viewer.session,item.weekKey);setMsg('Puzzle complete. This optional activity does not affect your score.');await onComplete?.()}
-    catch(e){setMsg(e?.message||'The puzzle result could not be saved. Try again.')}
+    try{await savePuzzleCompletion(viewer.session,item.weekKey);playCanopyCorrectSound();setMsg('Puzzle complete. This optional activity does not affect your score.');await onComplete?.()}
+    catch(e){playCanopyErrorSound();setMsg(e?.message||'The puzzle result could not be saved. Try again.')}
     finally{setBusy(false)}
   }
 
