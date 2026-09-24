@@ -306,6 +306,11 @@ export async function saveWeeklyAssignmentDraft(
 
 
 // ---- WOMATE Canopy participant profile self-service -------------------------
+export async function updateOwnCanopyProfile(session,{fullName,country}){
+  const s=await refreshSession(session||getStoredSession());
+  if(!s?.access_token)throw new Error('Your Canopy session has expired. Sign in again.');
+  return rest('rpc/canopy_update_own_profile_details',{token:s.access_token,method:'POST',body:{p_full_name:String(fullName||'').trim(),p_country:String(country||'').trim()}});
+}
 export async function updateOwnCanopyProfileName(session,fullName){
   const s=await refreshSession(session||getStoredSession());
   if(!s?.access_token)throw new Error('Your Canopy session has expired. Sign in again.');

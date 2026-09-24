@@ -9,10 +9,11 @@ import {activateTeamAccess,getStaffAccess,getStaffDashboard} from './canopyTeamA
 import {CanopyAdminRolePreview,CanopyTeamAccessAdmin,CanopyTeamActivation,CanopyStaffDashboard,teamRoleLabel} from './CanopyTeamAccess';
 import {CANOPY_ASSIGNMENT_SCHEDULE,CANOPY_ACCESS_DATE} from './canopySchedule';
 import CanopyStaffWorkspace from './CanopyStaffWorkspace';
-import{ArrowLeft,ArrowRight,BookOpen,Check,ChevronRight,ClipboardCheck,Clock,FileText,GraduationCap,Leaf,Lock,LogOut,Menu,PlayCircle,Sparkles,UserRound,X,BookMarked,UsersRound,PenLine,TrendingUp,Eye,EyeOff,MessageSquare,ShieldAlert,Award,BarChart3,Bell} from 'lucide-react';
+import{ArrowLeft,ArrowRight,BookOpen,Check,ChevronRight,ClipboardCheck,Clock,FileText,GraduationCap,Leaf,Lock,LogOut,Menu,PlayCircle,Sparkles,UserRound,X,BookMarked,UsersRound,PenLine,TrendingUp,Eye,EyeOff,MessageSquare,ShieldAlert,Award,BarChart3,Bell,Moon,Sun,Globe2,Mail,ShieldCheck} from 'lucide-react';
 import'./canopy.css';
 import{CANOPY_BRAND,modules,resources}from'./canopyData';
-import{canopyConfigured,consumeAuthCallback,getStoredSession,getViewer,getProgress,getManagerSnapshot,markLesson,requestPasswordReset,resendConfirmation,saveQuiz,signIn,signOut,signUp,updatePassword,setLearnerEnrollmentStatus,createManagerAction,updateManagerAction,reviewWeeklyAssignment,getUnreadNotificationCount,getWeeklyAssignmentSubmissions,issueCanopyCertificate,signInWithGoogle,updateOwnCanopyProfileName,getOwnCanopyDeletionRequest,requestOwnCanopyAccountDeletion} from './canopyApi';
+import{canopyConfigured,consumeAuthCallback,getStoredSession,getViewer,getProgress,getManagerSnapshot,markLesson,requestPasswordReset,resendConfirmation,saveQuiz,signIn,signOut,signUp,updatePassword,setLearnerEnrollmentStatus,createManagerAction,updateManagerAction,reviewWeeklyAssignment,getUnreadNotificationCount,getWeeklyAssignmentSubmissions,issueCanopyCertificate,signInWithGoogle,updateOwnCanopyProfile,getOwnCanopyDeletionRequest,requestOwnCanopyAccountDeletion} from './canopyApi';
+import{applyCanopyTheme,getCanopyTheme}from'./canopyTheme';
 
 const CanopyHelp=lazy(()=>import('./CanopyHelp'));
 const AskCanopyWidget=lazy(()=>import('./AskCanopyWidget'));
@@ -230,7 +231,10 @@ function Resources(){return <main className="canopyResources"><div className="ca
 function Profile({viewer,onReload}){
  const p=viewer.profile||{};
  const initialName=p.full_name||viewer.user?.user_metadata?.full_name||'';
+ const initialCountry=p.country||viewer.user?.user_metadata?.country||'';
  const[name,setName]=useState(initialName);
+ const[country,setCountry]=useState(initialCountry);
+ const[theme,setTheme]=useState(()=>getCanopyTheme());
  const[busy,setBusy]=useState('');
  const[msg,setMsg]=useState('');
  const[deletion,setDeletion]=useState(null);
@@ -242,16 +246,24 @@ function Profile({viewer,onReload}){
    return()=>{live=false};
  },[viewer?.session?.access_token]);
 
- async function saveName(e){
+ async function saveProfile(e){
    e.preventDefault();
-   setBusy('name');setMsg('');
+   setBusy('profile');setMsg('');
    try{
-     const result=await updateOwnCanopyProfileName(viewer.session,name);
+     const result=await updateOwnCanopyProfile(viewer.session,{fullName:name,country});
      setName(result?.full_name||name.trim());
-     setMsg(result?.changed===false?'Your name is already up to date.':'Name updated successfully.');
+     setCountry(result?.country||country.trim());
+     setMsg(result?.changed===false?'Your profile is already up to date.':'Profile updated successfully.');
      await onReload?.();
-   }catch(err){setMsg(err?.message||'Could not update your name.')}
+   }catch(err){setMsg(err?.message||'Could not update your profile.')}
    finally{setBusy('')}
+ }
+
+ function changeTheme(){
+   const next=theme==='dark'?'light':'dark';
+   applyCanopyTheme(next);
+   setTheme(next);
+   setMsg(`${next==='dark'?'Dark':'Light'} mode is on.`);
  }
 
  async function requestDeletion(){
@@ -267,62 +279,94 @@ function Profile({viewer,onReload}){
  }
 
  const pending=deletion?.status==='requested';
+ const role=p.role||'learner';
+ const participantEditable=['learner','tester'].includes(role);
+ const canRequestDeletion=role==='learner';
+ const courseActive=viewer.enrollments?.some(e=>e.status==='active');
+ const initials=(name||viewer.user?.email||'C').split(/\s+/).filter(Boolean).slice(0,2).map(x=>x[0]).join('').toUpperCase();
 
  return <main className="canopyProfile canopyProfileSettings">
-  <div className="canopyPageHead">
-   <span className="canopyEyebrow">PROFILE & SETTINGS</span>
-   <h1>{name||'Your profile'}</h1>
-   <p>Keep your participant name accurate for programme records and certificates.</p>
-  </div>
-
-  <section className="canopyProfileFacts">
-   <div><small>Email</small><b>{viewer.user?.email}</b></div>
-   <div><small>Country</small><b>{p.country||viewer.user?.user_metadata?.country||'—'}</b></div>
-   <div><small>Role</small><b>{p.role||'learner'}</b></div>
-   <div><small>Course access</small><b>{viewer.enrollments?.some(e=>e.status==='active')?'Active':'Not active'}</b></div>
+  <section className="canopyProfileHero">
+   <div className="canopyProfileIdentity">
+    <div className="canopyProfileAvatar" aria-hidden="true">{initials}</div>
+    <div>
+     <span className="canopyEyebrow">PROFILE & SETTINGS</span>
+     <h1>{name||'Your profile'}</h1>
+     <p>Manage your participant details, appearance and account preferences.</p>
+    </div>
+   </div>
+   <div className="canopyProfileStatusRow">
+    <span><ShieldCheck size={15}/>{role==='tester'?'Tester account':'Participant account'}</span>
+    <span className={courseActive?'isActive':'isWaiting'}>{courseActive?'Course access active':'Course access not active'}</span>
+   </div>
   </section>
 
-  <form className="canopyProfileEdit" onSubmit={saveName}>
-   <div>
-    <span className="canopyEyebrow">NAME</span>
-    <h2>Participant name</h2>
-    <p>This name is used across Canopy. Once a certificate has been issued, name corrections must go through WOMATE Support.</p>
-   </div>
-   <label>
-    Full name
-    <input required minLength="2" maxLength="120" value={name}
-      onChange={e=>setName(e.target.value)} autoComplete="name"/>
-   </label>
-   <button className="canopyPrimary" disabled={busy==='name'||!name.trim()}>
-    {busy==='name'?'Saving…':'Save settings'}
-   </button>
-  </form>
+  <div className="canopyProfileLayout">
+   <form className="canopySettingsCard canopyPersonalSettings" onSubmit={saveProfile}>
+    <header className="canopySettingsHeader">
+     <div className="canopySettingsIcon"><UserRound size={20}/></div>
+     <div><span>PERSONAL DETAILS</span><h2>Your information</h2><p>Keep these details accurate for your WOMATE learning record.</p></div>
+    </header>
+    <div className="canopyProfileFields">
+     <label>Full name
+      <input required minLength="2" maxLength="120" value={name} disabled={!participantEditable}
+       onChange={e=>setName(e.target.value)} autoComplete="name"/>
+      <small>Certificate names are protected after a certificate has been issued.</small>
+     </label>
+     <label>Country
+      <div className="canopyFieldWithIcon"><Globe2 size={17}/><input required minLength="2" maxLength="80" value={country} disabled={!participantEditable}
+       onChange={e=>setCountry(e.target.value)} autoComplete="country-name" placeholder="Your country"/></div>
+      <small>Used for programme records and cohort reporting.</small>
+     </label>
+    </div>
+    <div className="canopyReadOnlyField"><Mail size={17}/><div><small>EMAIL ADDRESS</small><b>{viewer.user?.email}</b></div><span>Sign-in email</span></div>
+    {participantEditable?<div className="canopySettingsActions"><button className="canopyPrimary" disabled={busy==='profile'||!name.trim()||!country.trim()}>{busy==='profile'?'Saving changes…':'Save profile changes'}</button></div>:<p className="canopySettingsNote">Profile detail editing is reserved for participant accounts. Contact WOMATE Support if this operational account needs a correction.</p>}
+   </form>
 
-  <section className="canopyDangerZone">
-   <div>
-    <span className="canopyEyebrow">ACCOUNT</span>
-    <h2>Account deletion</h2>
-    <p>For programme-record safety, Canopy does not instantly erase your learning history. A deletion request pauses your course access immediately and sends the request to WOMATE for permanent account deletion after record checks.</p>
+   <aside className="canopySettingsStack">
+    <section className="canopySettingsCard canopyAppearanceCard">
+     <header className="canopySettingsHeader compact">
+      <div className="canopySettingsIcon">{theme==='dark'?<Moon size={20}/>:<Sun size={20}/>}</div>
+      <div><span>APPEARANCE</span><h2>Canopy theme</h2></div>
+     </header>
+     <p>Choose the reading mode that feels best. Your preference stays on this device.</p>
+     <button type="button" className="canopyThemeSwitch" role="switch" aria-checked={theme==='dark'} onClick={changeTheme}>
+      <span className="canopyThemeSwitchTrack"><span/></span>
+      <span><b>{theme==='dark'?'Dark mode':'Light mode'}</b><small>{theme==='dark'?'Deep forest surfaces with high-contrast type.':'Clean light surfaces with WOMATE green accents.'}</small></span>
+     </button>
+    </section>
+
+    <section className="canopySettingsCard canopyAccountSummary">
+     <span className="canopySettingsKicker">ACCOUNT</span>
+     <h2>Programme access</h2>
+     <div><small>Role</small><b>{role}</b></div>
+     <div><small>Course access</small><b>{courseActive?'Active':'Not active'}</b></div>
+    </section>
+   </aside>
+  </div>
+
+  {canRequestDeletion&&<section className="canopyDangerZone canopyDangerZoneRefined">
+   <div className="canopyDangerIntro">
+    <span className="canopyEyebrow">ACCOUNT DELETION</span>
+    <h2>Request account deletion</h2>
+    <p>Canopy does not instantly erase programme records. A request pauses active course access and lets WOMATE complete the required record checks before permanent deletion.</p>
    </div>
    {pending
     ? <div className="canopyDeletionPending"><b>Deletion requested</b><span>Your request is awaiting WOMATE review.</span></div>
-    : <>
+    : <div className="canopyDeleteControls">
       <label>Type <b>DELETE</b> to confirm
-       <input value={confirmDelete} onChange={e=>setConfirmDelete(e.target.value)}
-        placeholder="DELETE" autoComplete="off"/>
+       <input value={confirmDelete} onChange={e=>setConfirmDelete(e.target.value)} placeholder="DELETE" autoComplete="off"/>
       </label>
-      <button type="button" className="canopyDangerButton"
-       disabled={busy==='delete'||confirmDelete!=='DELETE'} onClick={requestDeletion}>
-       {busy==='delete'?'Submitting request…':'Request account deletion'}
+      <button type="button" className="canopyDangerButton" disabled={busy==='delete'||confirmDelete!=='DELETE'} onClick={requestDeletion}>
+       {busy==='delete'?'Submitting request…':'Request deletion'}
       </button>
-     </>
+     </div>
    }
-  </section>
+  </section>}
 
-  {msg&&<p className="canopyFormMsg" role="status">{msg}</p>}
+  {msg&&<p className="canopyProfileToast" role="status" aria-live="polite">{msg}</p>}
  </main>
 }
-
 function ManagerNotice({children}){return children?<p className="canopyFormMsg" role="status">{children}</p>:null}
 function ManagerOperations({snapshot,session,onReload,view='overview'}){
  const[busy,setBusy]=useState('');const[msg,setMsg]=useState('');const[form,setForm]=useState({learner_id:'',action_type:'reminder',subject:'',message:''});const[reviewFilter,setReviewFilter]=useState('all');const[reviewDrafts,setReviewDrafts]=useState({});
@@ -427,6 +471,7 @@ function CanopyLearningGuide({path,viewer}){
 
 export default function CanopyApp(){
  const[path,setPath]=useState(route());const[loading,setLoading]=useState(true);const[viewer,setViewer]=useState(null);const[progress,setProgress]=useState([]);const[submissions,setSubmissions]=useState([]);const[snapshot,setSnapshot]=useState(null);const[staffDashboard,setStaffDashboard]=useState(null);
+ useEffect(()=>{applyCanopyTheme(getCanopyTheme(),{persist:false})},[]);
  const load=async()=>{const session=getStoredSession();if(!session){setViewer(null);setProgress([]);setSubmissions([]);setSnapshot(null);setStaffDashboard(null);setLoading(false);return}try{
    const pending=sessionStorage.getItem('canopy_team_access_code_pending');
    if(pending){try{await activateTeamAccess(session,pending);sessionStorage.removeItem('canopy_team_access_code_pending')}catch(err){console.warn('Pending Canopy team access activation failed:',err)}}

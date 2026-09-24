@@ -1230,3 +1230,186 @@
 .askCanopyAsk button:disabled{opacity:.4;cursor:not-allowed}
 .askCanopyPanel>footer{display:flex;align-items:center;gap:6px;padding:0 13px 10px;background:#fff;color:#72857f;font-size:8px}
 @media(max-width:620px){.askCanopyWidget{right:12px;bottom:12px}.askCanopyPanel{width:calc(100vw - 24px);height:min(620px,calc(100vh - 92px));border-radius:20px}.askCanopyLauncher{padding-right:11px}.askCanopyLauncherAvatar{width:44px;height:44px}.askCanopyQuick{padding-left:10px;padding-right:10px}.askCanopyTranscript{padding:12px 10px}.askCanopyBubble{max-width:92%}}
+
+/* WOMATE CANOPY · PROFILE SETTINGS REFINEMENT + DARK MODE · 2026-09-24 */
+.canopyProfileSettings{width:100%;max-width:1180px}
+.canopyProfileHero{display:flex;align-items:center;justify-content:space-between;gap:28px;margin-bottom:22px;padding:30px 32px;border:1px solid rgba(14,77,74,.11);border-radius:26px;background:linear-gradient(135deg,#ffffff 0%,#f7fbf8 70%,rgba(198,255,82,.16) 100%);box-shadow:0 18px 46px rgba(18,64,55,.07)}
+.canopyProfileIdentity{display:flex;align-items:center;gap:18px;min-width:0}
+.canopyProfileAvatar{width:66px;height:66px;flex:0 0 66px;border-radius:22px;display:grid;place-items:center;background:var(--canopy);color:var(--canopy-lime);font-size:20px;font-weight:950;letter-spacing:.04em;box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}
+.canopyProfileIdentity .canopyEyebrow{margin:0 0 6px}
+.canopyProfileIdentity h1{margin:0;font-size:clamp(30px,4vw,46px);line-height:1.02;letter-spacing:-.045em}
+.canopyProfileIdentity p{margin:8px 0 0;color:var(--canopy-muted);line-height:1.55}
+.canopyProfileStatusRow{display:flex;justify-content:flex-end;flex-wrap:wrap;gap:8px}
+.canopyProfileStatusRow span{min-height:34px;padding:0 11px;border-radius:999px;display:inline-flex;align-items:center;gap:7px;border:1px solid rgba(14,77,74,.13);background:#fff;color:#315c54;font-size:11px;font-weight:850;white-space:nowrap}
+.canopyProfileStatusRow span.isActive{background:rgba(198,255,82,.28);border-color:rgba(111,157,21,.28);color:#31520f}
+.canopyProfileStatusRow span.isWaiting{background:#f4f7f5;color:#667b77}
+.canopyProfileLayout{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(300px,.85fr);gap:18px;align-items:start}
+.canopySettingsStack{display:grid;gap:18px}
+.canopySettingsCard{border:1px solid rgba(14,77,74,.12);border-radius:22px;background:#fff;box-shadow:0 14px 36px rgba(18,64,55,.055)}
+.canopyPersonalSettings{padding:26px}
+.canopyAppearanceCard,.canopyAccountSummary{padding:22px}
+.canopySettingsHeader{display:flex;align-items:flex-start;gap:13px;margin-bottom:22px}
+.canopySettingsHeader.compact{margin-bottom:14px}
+.canopySettingsIcon{width:42px;height:42px;flex:0 0 42px;border-radius:14px;display:grid;place-items:center;background:rgba(14,77,74,.08);color:var(--canopy)}
+.canopySettingsHeader>div:last-child>span,.canopySettingsKicker{display:block;margin-bottom:4px;color:var(--canopy);font-size:10px;font-weight:950;letter-spacing:.11em}
+.canopySettingsHeader h2,.canopyAccountSummary h2{margin:0;font-size:22px;letter-spacing:-.025em}
+.canopySettingsHeader p{margin:6px 0 0;color:var(--canopy-muted);font-size:13px;line-height:1.55}
+.canopyProfileFields{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+.canopyProfileFields label{display:grid;gap:8px;color:var(--canopy-ink);font-size:12px;font-weight:850}
+.canopyProfileFields label>small{font-weight:600;color:var(--canopy-muted);line-height:1.45}
+.canopyProfileFields input{width:100%;height:50px;border:1px solid #c8d7d2;border-radius:13px;padding:0 14px;outline:none;background:#fff;color:var(--canopy-ink);transition:border-color .16s ease,box-shadow .16s ease,background .16s ease}
+.canopyProfileFields input:focus{border-color:var(--canopy);box-shadow:0 0 0 4px rgba(14,77,74,.08)}
+.canopyProfileFields input:disabled{opacity:.66;cursor:not-allowed;background:#f4f7f5}
+.canopyFieldWithIcon{position:relative}
+.canopyFieldWithIcon>svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#6d8781;pointer-events:none}
+.canopyFieldWithIcon input{padding-left:42px}
+.canopyReadOnlyField{margin-top:18px;padding:14px 15px;border-radius:15px;background:#f5f8f6;border:1px solid #e2ebe7;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;color:#36554e}
+.canopyReadOnlyField>svg{color:var(--canopy)}
+.canopyReadOnlyField>div{display:grid;gap:2px;min-width:0}
+.canopyReadOnlyField small{font-size:9px;font-weight:900;letter-spacing:.11em;color:#778c86}
+.canopyReadOnlyField b{font-size:13px;overflow-wrap:anywhere}
+.canopyReadOnlyField>span{font-size:11px;color:#778c86}
+.canopySettingsActions{display:flex;justify-content:flex-end;margin-top:20px}
+.canopySettingsActions .canopyPrimary{min-width:180px}
+.canopySettingsNote{margin:18px 0 0;padding:13px 14px;border-radius:13px;background:#f3f7f4;color:var(--canopy-muted);font-size:12px;line-height:1.55}
+.canopyAppearanceCard>p{margin:0 0 18px;color:var(--canopy-muted);font-size:13px;line-height:1.6}
+.canopyThemeSwitch{width:100%;border:1px solid #d8e4df;border-radius:16px;background:#f7faf8;padding:14px;display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:center;text-align:left;color:var(--canopy-ink)}
+.canopyThemeSwitch:hover{border-color:#a9c0b8;background:#f2f7f4}
+.canopyThemeSwitchTrack{width:46px;height:26px;border-radius:999px;padding:3px;background:#cfdcd7;display:flex;align-items:center;transition:.2s ease}
+.canopyThemeSwitchTrack>span{width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 2px 7px rgba(8,36,31,.18);transition:.2s ease}
+.canopyThemeSwitch[aria-checked="true"] .canopyThemeSwitchTrack{background:var(--canopy-lime)}
+.canopyThemeSwitch[aria-checked="true"] .canopyThemeSwitchTrack>span{transform:translateX(20px);background:#153d30}
+.canopyThemeSwitch>span:last-child{display:grid;gap:3px}
+.canopyThemeSwitch b{font-size:13px}
+.canopyThemeSwitch small{color:var(--canopy-muted);font-size:11px;line-height:1.4}
+.canopyAccountSummary>div{display:flex;justify-content:space-between;gap:18px;padding:13px 0;border-top:1px solid #e6eeea}
+.canopyAccountSummary>div:first-of-type{margin-top:16px}
+.canopyAccountSummary small{color:var(--canopy-muted);font-size:11px}.canopyAccountSummary b{font-size:12px;text-transform:capitalize}
+.canopyDangerZoneRefined{margin-top:18px!important;padding:22px!important;border-radius:22px!important;display:grid;grid-template-columns:minmax(0,1.2fr) minmax(280px,.8fr);gap:24px;align-items:end;box-shadow:none!important}
+.canopyDangerZoneRefined .canopyDangerIntro{margin:0!important}
+.canopyDangerZoneRefined .canopyEyebrow{color:#a23d35;margin-bottom:7px}
+.canopyDeleteControls{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:end}
+.canopyDeleteControls label{margin:0!important;font-size:12px}
+.canopyDeleteControls input{height:46px}
+.canopyProfileToast{position:sticky;bottom:18px;width:fit-content;max-width:min(520px,calc(100vw - 30px));margin:18px auto 0;padding:12px 16px;border-radius:999px;background:#123f31;color:#fff;font-size:12px;font-weight:800;box-shadow:0 14px 34px rgba(8,39,31,.22);z-index:8}
+
+@media(max-width:980px){
+ .canopyProfileHero{align-items:flex-start;flex-direction:column}.canopyProfileStatusRow{justify-content:flex-start}
+ .canopyProfileLayout{grid-template-columns:1fr}.canopySettingsStack{grid-template-columns:1fr 1fr}
+ .canopyDangerZoneRefined{grid-template-columns:1fr}
+}
+@media(max-width:680px){
+ .canopyProfileSettings{padding:18px 14px!important}.canopyProfileHero{padding:22px 18px;border-radius:22px}
+ .canopyProfileIdentity{align-items:flex-start}.canopyProfileAvatar{width:54px;height:54px;flex-basis:54px;border-radius:17px;font-size:17px}
+ .canopyProfileIdentity h1{font-size:30px}.canopyProfileStatusRow{width:100%}.canopyProfileStatusRow span{white-space:normal}
+ .canopyPersonalSettings,.canopyAppearanceCard,.canopyAccountSummary{padding:18px}.canopyProfileFields,.canopySettingsStack{grid-template-columns:1fr}
+ .canopyReadOnlyField{grid-template-columns:auto minmax(0,1fr)}.canopyReadOnlyField>span{grid-column:2}
+ .canopySettingsActions{justify-content:stretch}.canopySettingsActions .canopyPrimary{width:100%}
+ .canopyDangerZoneRefined{padding:18px!important}.canopyDeleteControls{grid-template-columns:1fr}.canopyDangerButton{width:100%}
+}
+@media(max-width:420px){
+ .canopyProfileIdentity{display:grid;grid-template-columns:48px 1fr;gap:13px}.canopyProfileAvatar{width:48px;height:48px;flex-basis:48px;border-radius:15px}
+ .canopyProfileIdentity p{grid-column:1/3}.canopyProfileStatusRow{display:grid;grid-template-columns:1fr}.canopyProfileStatusRow span{justify-content:flex-start}
+ .canopySettingsHeader{gap:10px}.canopySettingsIcon{width:38px;height:38px;flex-basis:38px;border-radius:12px}
+}
+
+/* Canopy dark theme. Scoped to Canopy so the main WOMATE site is untouched. */
+html[data-canopy-theme="dark"]{color-scheme:dark;--canopy-ink:#f4fff9;--canopy-muted:#abc2bb;--canopy-line:#2a4a44;--canopy-soft:#0d2926;--canopy-white:#10312d}
+html[data-canopy-theme="dark"] .canopyApp{background:#071a18;color:var(--canopy-ink)}
+html[data-canopy-theme="dark"] .canopySidebar,
+html[data-canopy-theme="dark"] .canopyAppTop{background:#0c2421;border-color:var(--canopy-line)}
+html[data-canopy-theme="dark"] .canopySidebar nav button{color:#b7cbc5}
+html[data-canopy-theme="dark"] .canopySidebar nav button:hover{background:#12302c;color:#eafff5}
+html[data-canopy-theme="dark"] .canopySidebar nav button.active{background:#163a34;color:#c6ff52}
+html[data-canopy-theme="dark"] .canopySideBottom{border-color:var(--canopy-line)}
+html[data-canopy-theme="dark"] .canopySignout,
+html[data-canopy-theme="dark"] .canopyTopNotification,
+html[data-canopy-theme="dark"] .canopyProfileTrigger{background:#102c28!important;border-color:#31514a!important;color:#e9fff5!important}
+html[data-canopy-theme="dark"] .canopyApp .canopyEyebrow,
+html[data-canopy-theme="dark"] .canopyApp a,
+html[data-canopy-theme="dark"] .canopyApp .canopySubmitted{color:#42e6ca}
+html[data-canopy-theme="dark"] .canopyApp p,
+html[data-canopy-theme="dark"] .canopyApp small{color:var(--canopy-muted)}
+html[data-canopy-theme="dark"] .canopyContinue,
+html[data-canopy-theme="dark"] .canopyDashGrid article,
+html[data-canopy-theme="dark"] .canopyLockedState,
+html[data-canopy-theme="dark"] .canopyCourseHero,
+html[data-canopy-theme="dark"] .canopyLessonLayout>aside,
+html[data-canopy-theme="dark"] .canopyLessonLayout>article,
+html[data-canopy-theme="dark"] .canopyQuiz>section,
+html[data-canopy-theme="dark"] .canopyAssignments>section>article,
+html[data-canopy-theme="dark"] .canopyModalPanel,
+html[data-canopy-theme="dark"] .canopyProgressModules article,
+html[data-canopy-theme="dark"] .canopyResources a,
+html[data-canopy-theme="dark"] .canopyManagerTable,
+html[data-canopy-theme="dark"] .canopyOpsForm,
+html[data-canopy-theme="dark"] .canopyOpsList>article,
+html[data-canopy-theme="dark"] .canopyOpsReport article,
+html[data-canopy-theme="dark"] .ca-card,
+html[data-canopy-theme="dark"] .cn-item,
+html[data-canopy-theme="dark"] .canopyReviewCard,
+html[data-canopy-theme="dark"] .canopyReviewEmpty,
+html[data-canopy-theme="dark"] .canopyHelpHistory,
+html[data-canopy-theme="dark"] .canopyHelpStatus,
+html[data-canopy-theme="dark"] .canopyComplaintAdmin>article,
+html[data-canopy-theme="dark"] .canopyTesterStatus article,
+html[data-canopy-theme="dark"] .canopyTeamActivate>section,
+html[data-canopy-theme="dark"] .canopyTeamAdminSection,
+html[data-canopy-theme="dark"] .canopyPreviewLoading,
+html[data-canopy-theme="dark"] .canopySettingsCard{background:#0e2a27!important;border-color:var(--canopy-line)!important;color:var(--canopy-ink)}
+html[data-canopy-theme="dark"] .canopyManagerTable header,
+html[data-canopy-theme="dark"] .canopyReviewToolbar,
+html[data-canopy-theme="dark"] .canopyReviewFilters button,
+html[data-canopy-theme="dark"] .canopyProfileStatusRow span,
+html[data-canopy-theme="dark"] .canopyReadOnlyField,
+html[data-canopy-theme="dark"] .canopyThemeSwitch,
+html[data-canopy-theme="dark"] .canopySettingsNote{background:#102f2b!important;border-color:#31514a!important;color:#eafff5!important}
+html[data-canopy-theme="dark"] .canopyProfileHero{background:linear-gradient(135deg,#102d29 0%,#0d2623 72%,rgba(198,255,82,.09) 100%);border-color:#2d4d47;box-shadow:0 18px 50px rgba(0,0,0,.22)}
+html[data-canopy-theme="dark"] .canopyProfileStatusRow span.isActive{background:rgba(198,255,82,.14)!important;color:#dcff93!important;border-color:rgba(198,255,82,.26)!important}
+html[data-canopy-theme="dark"] .canopyProfileStatusRow span.isWaiting{color:#c0d1cc!important}
+html[data-canopy-theme="dark"] .canopySettingsIcon{background:#153a34;color:#42e6ca}
+html[data-canopy-theme="dark"] .canopySettingsHeader>div:last-child>span,
+html[data-canopy-theme="dark"] .canopySettingsKicker{color:#42e6ca}
+html[data-canopy-theme="dark"] .canopyProfileFields input,
+html[data-canopy-theme="dark"] .canopyDangerZone input,
+html[data-canopy-theme="dark"] .canopyOpsForm input,
+html[data-canopy-theme="dark"] .canopyOpsForm select,
+html[data-canopy-theme="dark"] .canopyOpsForm textarea,
+html[data-canopy-theme="dark"] .canopyModalPanel textarea,
+html[data-canopy-theme="dark"] .canopyHelpForm textarea,
+html[data-canopy-theme="dark"] .cc-form input,
+html[data-canopy-theme="dark"] .cc-form select,
+html[data-canopy-theme="dark"] .cc-form textarea{background:#0a211e!important;color:#f4fff9!important;border-color:#36564f!important}
+html[data-canopy-theme="dark"] .canopyProfileFields input:focus,
+html[data-canopy-theme="dark"] .canopyDangerZone input:focus{border-color:#42e6ca!important;box-shadow:0 0 0 4px rgba(66,230,202,.12)!important}
+html[data-canopy-theme="dark"] .canopyProfileFields input:disabled{background:#102823!important;color:#9fb5ae!important}
+html[data-canopy-theme="dark"] .canopyReadOnlyField>svg{color:#42e6ca}
+html[data-canopy-theme="dark"] .canopyAccountSummary>div{border-color:#274640}
+html[data-canopy-theme="dark"] .canopyThemeSwitch:hover{background:#153731!important;border-color:#497068!important}
+html[data-canopy-theme="dark"] .canopyDangerZoneRefined{background:#251b1a!important;border-color:#57322f!important}
+html[data-canopy-theme="dark"] .canopyDangerZoneRefined .canopyEyebrow{color:#ff9a8f!important}
+html[data-canopy-theme="dark"] .canopyDangerButton{background:#3b211f!important;border-color:#75433e!important;color:#ffd6d1!important}
+html[data-canopy-theme="dark"] .canopyDeletionPending{background:#352b18!important;border-color:#725f2c!important}.canopyDeletionPending b{color:#7f5712}
+html[data-canopy-theme="dark"] .canopyDeletionPending b{color:#ffe08a!important}html[data-canopy-theme="dark"] .canopyDeletionPending span{color:#d8cda9!important}
+html[data-canopy-theme="dark"] .canopyPrimary{background:#c6ff52;color:#102b20}
+html[data-canopy-theme="dark"] .canopySecondary{background:#102f2b;border-color:#42675e;color:#d9fff2}
+html[data-canopy-theme="dark"] .canopyLine{background:#173530}
+html[data-canopy-theme="dark"] .canopyModalBack{background:rgba(0,0,0,.72)}
+html[data-canopy-theme="dark"] .canopyManagerTable header{color:#c6ff52}
+html[data-canopy-theme="dark"] .canopyManagerTable>div{border-color:#284741}
+html[data-canopy-theme="dark"] .canopyProfileToast{background:#c6ff52;color:#123325}
+
+html[data-canopy-theme="dark"] .canopyPublic,
+html[data-canopy-theme="dark"] .canopyAuth{background:#071a18;color:#f4fff9}
+html[data-canopy-theme="dark"] .canopyPublicTop,
+html[data-canopy-theme="dark"] .canopyAuthPanelWrap,
+html[data-canopy-theme="dark"] .canopyAuthPanel{background:#0b2421!important;border-color:#2a4a44!important;color:#f4fff9}
+html[data-canopy-theme="dark"] .canopyLandingHero{background:linear-gradient(135deg,#071a18 0%,#0c2824 72%,#102f28 100%)}
+html[data-canopy-theme="dark"] .canopyHeroCopy p,
+html[data-canopy-theme="dark"] .canopyCourseIntro p{color:#b2cac2}
+html[data-canopy-theme="dark"] .canopyPublicTop{border-color:#2a4a44}
+html[data-canopy-theme="dark"] .canopyPublic .canopySecondary,
+html[data-canopy-theme="dark"] .canopyAuth .canopyGoogleAuth{background:#102f2b;border-color:#42675e;color:#effff8}
+html[data-canopy-theme="dark"] .canopyAuth input{background:#091f1c;color:#f4fff9;border-color:#36564f}
+html[data-canopy-theme="dark"] .canopyAuth input:focus{border-color:#42e6ca;box-shadow:0 0 0 3px rgba(66,230,202,.12)}
+html[data-canopy-theme="dark"] .canopyModulePreview article{border-color:#294842}
