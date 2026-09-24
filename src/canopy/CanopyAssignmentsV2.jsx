@@ -54,6 +54,13 @@ const PUZZLES={
   }
 };
 
+function PracticalExample({assignment}){
+  if(!assignment)return null;
+  if(assignment.exampleEmbed)return <div className="ca-practical-example ca-practical-video"><div className="ca-practical-frame"><iframe loading="lazy" src={assignment.exampleEmbed} title={assignment.exampleLabel||'Practical challenge example'} allowFullScreen allow="fullscreen"/></div><small>{assignment.exampleLabel||'Example'}</small></div>;
+  if(assignment.exampleImages?.length)return <div className={`ca-practical-example ${assignment.exampleImages.length>1?'is-gallery':''}`}><small>{assignment.exampleLabel||'Examples'}</small><div className="ca-practical-gallery">{assignment.exampleImages.map((src,index)=><figure key={src}><img src={src} loading="lazy" alt={`Module practical example ${index+1}`}/></figure>)}</div></div>;
+  return null;
+}
+
 function PuzzleShell({completed,title,intro,children}){
   return <details className="ca-puzzle">
     <summary>{title} {completed?'· Complete':''}</summary>
@@ -352,7 +359,7 @@ export default function CanopyAssignmentsV2({viewer}){
           <div className="ca-card-head"><div><small>MODULE {item.moduleId}</small><h2>{item.title}</h2></div><div className="ca-dates"><span>Due {formatCanopyDate(item.dueAt)}</span>{count>0&&<strong>Attempt {count} of 3</strong>}</div></div>
           <div className="ca-threefold">
             <div><b>01</b><h3>Paragraph response</h3><p>{paragraphPrompt}</p></div>
-            <div><b>02</b><h3>{practicalTitle}</h3><p>{practicalBrief}</p><p>{practicalInstructions}</p>{practicalHref&&<a href={practicalHref}>{practicalActionLabel||'Open tool →'}</a>}</div>
+            <div className="ca-practical-brief"><b>02</b><small className="ca-challenge-tag">PRACTICAL CHALLENGE</small><h3>{practicalTitle}</h3><p>{practicalBrief}</p><p>{practicalInstructions}</p>{practicalHref&&<a href={practicalHref}>{practicalActionLabel||'Open tool →'}</a>}<PracticalExample assignment={curriculum?.assignment}/></div>
             <div><b>03</b><h3>Speaker challenge</h3>{speakerOpen?<><p>{item.speakerPrompt}</p><p>Submit the public LinkedIn post link.</p></>:<><p>Unlocks after Thursday’s live expert session.</p><p>Parts 01 and 02 are available now.</p></>}</div>
           </div>
           {sub&&<div className="ca-status">

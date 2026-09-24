@@ -5,13 +5,45 @@ import {matchCanopyHelpQuestion} from './canopyHelpMatcher';
 
 const firstMessage={role:'assistant',title:'Canopy Help',text:CANOPY_HELP_COPY.welcome};
 
-export default function AskCanopyWidget(){
+export default function AskCanopyWidget({path=window.location.pathname}){
   const[open,setOpen]=useState(false);
   const[question,setQuestion]=useState('');
   const[messages,setMessages]=useState([firstMessage]);
   const transcriptRef=useRef(null);
 
   useEffect(()=>{if(open)transcriptRef.current?.scrollTo({top:transcriptRef.current.scrollHeight,behavior:'smooth'})},[messages,open]);
+
+  const contextualTopics=(()=>{
+    if(path.includes('/assignments'))return [
+      {label:'Practical challenge',question:'What is the practical challenge for this module?'},
+      {label:'Drive link',question:'How do I submit my Google Drive link?'},
+      {label:'Speaker Challenge',question:'Why is the Speaker Challenge locked?'},
+      {label:'Attempts',question:'How many assignment attempts do I have?'},
+      {label:'Save Progress',question:'Does Save Progress use an attempt?'}
+    ];
+    if(path.includes('/certificate'))return [
+      {label:'Eligibility',question:'What do I need to complete before I can get my certificate?'},
+      {label:'Certificate',question:'Where is my certificate?'},
+      {label:'Assignments',question:'How do weekly assignments work?'}
+    ];
+    if(path.includes('/portfolio'))return [
+      {label:'Portfolio',question:'How do I use my She Leads portfolio?'},
+      {label:'Drive links',question:'How do I submit my Google Drive link?'},
+      {label:'Certificates',question:'How do certificates work?'}
+    ];
+    if(path.includes('/course/she-leads/'))return [
+      {label:'This module',question:'What am I expected to do in Canopy?'},
+      {label:'Live session',question:'When is the live session?'},
+      {label:'Assignments',question:'How do weekly assignments work?'}
+    ];
+    if(path.includes('/login')||path==='/canopy')return [
+      {label:'Sign in',question:'I am having trouble signing in with email and password'},
+      {label:'Selection',question:'Have I been selected and enrolled?'},
+      {label:'Selection graphic',question:'Why can’t I generate my selection graphic?'},
+      {label:'Next cohort',question:'I was not selected this year. How do I register interest for next year?'}
+    ];
+    return CANOPY_HELP_QUICK_TOPICS;
+  })();
 
   function go(path){
   if(!path)return;
@@ -38,7 +70,7 @@ export default function AskCanopyWidget(){
       </header>
 
       <div className="askCanopyQuick" aria-label="Quick help topics">
-        {CANOPY_HELP_QUICK_TOPICS.slice(0,8).map(item=><button type="button" key={item.label} onClick={()=>ask(item.question)}>{item.label}</button>)}
+        {contextualTopics.slice(0,8).map(item=><button type="button" key={item.label} onClick={()=>ask(item.question)}>{item.label}</button>)}
       </div>
 
       <div className="askCanopyTranscript" ref={transcriptRef} aria-live="polite">

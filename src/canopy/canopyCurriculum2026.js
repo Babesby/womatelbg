@@ -186,6 +186,10 @@ export const canopyModules2026 = [
       practicalBrief:'Create a 30–60 second picture slideshow story about a gender-and-climate justice issue. Use 4–7 images or slides and an AI voiceover to show the climate impact, who is affected, and women’s agency — not women only as victims.',
       practicalInstructions:'You may use ChatGPT to help shape a short narration, then build the slideshow in Canva or another simple video tool. Export it as MP4, upload it to Google Drive, set access so anyone with the link can view it, and paste the Drive link into Part 02.',
       practicalLinkLabel:'AI voice picture-story Google Drive link',
+      exampleEmbed:'https://www.canva.com/design/DAHWEuP3sGE/xTrzpwdCTLmahgyqzw-f9w/watch?embed',
+      exampleLabel:'Example · AI-voice flood awareness picture story',
+      portfolioLabel:'GENDER & CLIMATE STORYTELLING',
+      portfolioSummary:'A short visual story combining climate justice analysis, images and AI voice narration.',
       canvasBrief:'Create a 30–60 second picture slideshow story about a gender-and-climate justice issue. Use 4–7 images or slides and an AI voiceover to show the climate impact, who is affected, and women’s agency — not women only as victims.',
       puzzle:['JUSTICE','EQUITY','AGENCY','ACCESS'],
       rubric:{genderAnalysis:25,justiceReasoning:25,application:20,agencyFraming:15,communication:15}
@@ -264,6 +268,10 @@ export const canopyModules2026 = [
       practicalBrief:'Imagine you are the leader with authority to introduce one climate rule. Write one short, memorable rule and turn that single phrase into a bold public visual.',
       practicalInstructions:'Place the rule creatively in a realistic scene — for example on a signboard held by a woman, a bus advert, a billboard, a street banner, or skywriting from a jet. Create the mock-up in Canva or with an AI image tool, export it as an image or PDF, upload it to Google Drive, set access so anyone with the link can view it, and paste the Drive link into Part 02.',
       practicalLinkLabel:'Climate policy visual Google Drive link',
+      exampleImages:['/assets/canopy/challenges/module-03-bus.webp','/assets/canopy/challenges/module-03-banner.webp','/assets/canopy/challenges/module-03-sign.webp'],
+      exampleLabel:'Examples · one-rule climate policy visuals',
+      portfolioLabel:'CLIMATE POLICY COMMUNICATION',
+      portfolioSummary:'One clear climate rule translated into a memorable public-facing visual.',
       canvasBrief:'Imagine you are the leader with authority to introduce one climate rule. Write one short, memorable rule and turn that single phrase into a bold public visual.',
       puzzle:['POLICY','NDC','GOVERNANCE','ACCOUNTABILITY'],
       rubric:{governanceUnderstanding:25,actorMapping:20,evidenceUse:20,policyAsk:20,communication:15}
@@ -342,6 +350,8 @@ export const canopyModules2026 = [
       practicalBrief:'Create a 30–90 second advocacy video about waste or another climate issue you genuinely care about. Use footage of yourself, your surroundings, or both so the issue feels real and locally grounded.',
       practicalInstructions:'Show the issue, explain why it matters and who is affected, then end with one realistic action or call to action. Export the video as MP4, upload it to Google Drive, set access so anyone with the link can view it, and paste the Drive link into Part 02.',
       practicalLinkLabel:'Climate advocacy video Google Drive link',
+      portfolioLabel:'REAL-WORLD CLIMATE ADVOCACY',
+      portfolioSummary:'A short locally grounded advocacy video that moves an audience from issue to action.',
       canvasBrief:'Create a 30–90 second advocacy video about waste or another climate issue you genuinely care about. Use footage of yourself, your surroundings, or both so the issue feels real and locally grounded.',
       puzzle:['ADVOCACY','EVIDENCE','AUDIENCE','ACTION'],
       rubric:{strategy:25,evidenceIntegrity:20,audienceFit:20,ethicalCommunication:20,measurement:15}
@@ -420,6 +430,10 @@ export const canopyModules2026 = [
       practicalBrief:'Create a Canva vision board showing the climate issue you care about, the kind of leader you want to become, the skills and opportunities you want to pursue, and the impact you want to build.',
       practicalInstructions:'Include a few clear next steps or 90-day goals. Export the vision board as PNG or PDF, upload it to Google Drive, set access so anyone with the link can view it, and paste the Drive link into Part 02.',
       practicalLinkLabel:'Climate leadership vision-board Google Drive link',
+      exampleImages:['/assets/canopy/challenges/module-05-vision-board.webp'],
+      exampleLabel:'Example · climate leadership vision board',
+      portfolioLabel:'CLIMATE LEADERSHIP VISION',
+      portfolioSummary:'A visual roadmap connecting climate purpose, leadership identity, professional spaces and next steps.',
       canvasBrief:'Create a Canva vision board showing the climate issue you care about, the kind of leader you want to become, the skills and opportunities you want to pursue, and the impact you want to build.',
       puzzle:['LEADERSHIP','PATHWAY','NETWORK','IMPACT'],
       rubric:{clarity:20,feasibility:25,application:20,stakeholderPlan:20,measurement:15}

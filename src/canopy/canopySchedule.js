@@ -68,3 +68,10 @@ export function formatCanopyDate(value){
     hour:'2-digit',minute:'2-digit',timeZone:'UTC',timeZoneName:'short'
   }).format(new Date(value));
 }
+
+// Live sessions start at 4:00 PM GMT; the Speaker Challenge unlocks at 6:00 PM GMT.
+// Derive the live-session time from the existing speaker gate so dates stay single-source.
+export function getLiveSessionAt(item){
+  if(!item?.speakerOpensAt)return null;
+  return new Date(new Date(item.speakerOpensAt).getTime()-(2*60*60*1000)).toISOString();
+}

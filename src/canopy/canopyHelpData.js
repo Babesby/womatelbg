@@ -259,6 +259,13 @@ export const CANOPY_HELP_TOPICS=[
     route:'/canopy/assignments',actionLabel:'Check assignment status'
   },
   {
+    id:'portfolio',title:'My She Leads Portfolio',
+    phrases:['portfolio','my portfolio','download portfolio','save portfolio as pdf','climate job portfolio','job application evidence'],
+    keywords:['portfolio','pdf','job','career','evidence','practical'],
+    answer:'Your My She Leads Portfolio organises your submitted practical work and LinkedIn challenge links into one professional evidence page. Open Portfolio, check that your Google Drive links can be viewed, then use Export / Save as PDF if you want a clean record for climate jobs, internships, fellowships or professional opportunities.',
+    route:'/canopy/portfolio',actionLabel:'Open portfolio'
+  },
+  {
     id:'certificates',title:'Certificates',
     phrases:['certificate','certificates','when do i get my certificate','where is my certificate','certificate link','completion record'],
     keywords:['certificate','completion','issued','drive','eligibility'],
