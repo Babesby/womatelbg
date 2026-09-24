@@ -2120,3 +2120,223 @@ html[data-canopy-theme="dark"] .cx-wordsearch-grid button{background:#0a211e;bor
  .cx-journey-node{width:30px;height:30px}.cx-journey-track:before{top:15px}.cx-journey-stop>strong{font-size:10px}.cx-week-row{grid-template-columns:1fr auto}.cx-week-row small{grid-column:1/-1}.cx-countdown{gap:4px}.cx-countdown>div{padding:7px 2px 6px}.cx-countdown strong{font-size:16px}.cx-wordsearch-grid button{font-size:8.5px}.ca-slide-prev,.ca-slide-next{width:36px;height:36px;font-size:23px}
 }
 @media(prefers-reduced-motion:reduce){.cx-wordsearch-grid.is-wrong{animation:none!important}}
+
+/* WOMATE CANOPY · PREMIUM UI ARCHITECTURE PASS · 2026-09-24
+   Global-standard spacing, typography, contrast, responsive rhythm and reduced carding. */
+
+:root{
+  --canopy:#0E4D4A;
+  --canopy-2:#0A3836;
+  --canopy-deep:#092F2C;
+  --canopy-lime:#C6FF52;
+  --canopy-ink:#142A27;
+  --canopy-muted:#60736E;
+  --canopy-line:#DDE7E3;
+  --canopy-soft:#F3F7F5;
+  --canopy-page:#F7F9F8;
+}
+
+/* Overall application rhythm */
+.canopyApp{grid-template-columns:232px minmax(0,1fr);background:var(--canopy-page)}
+.canopyMain{min-width:0;width:100%}
+.canopyDashboard,.canopyCoursePage,.canopyLesson,.canopyQuiz,.canopyAssignments,.canopyProgressPage,.canopyResources,.canopyProfile,.canopyManager{max-width:1240px;padding:clamp(26px,3.2vw,46px) clamp(20px,3vw,42px) 72px}
+.canopyPageHead{margin-bottom:26px}.canopyPageHead h1{font-size:clamp(34px,4.2vw,54px);line-height:1;letter-spacing:-.045em;margin:7px 0 0;color:var(--canopy-ink)}
+.canopyEyebrow{font-size:10px;letter-spacing:.13em;font-weight:900}
+
+/* Sidebar: navigation, not a stack of cards */
+.canopySidebar{padding:24px 14px 18px;background:#fff}
+.canopySidebar nav{gap:1px;margin-top:34px}
+.canopySidebar nav button{min-height:43px;border-radius:8px;padding:0 11px;font-size:13px;font-weight:750;color:#667A75;position:relative}
+.canopySidebar nav button svg{width:17px;height:17px;stroke-width:1.8}
+.canopySidebar nav button:hover{background:#F4F7F5;color:var(--canopy)}
+.canopySidebar nav button.active{background:#EEF5F1;color:var(--canopy);font-weight:850}
+.canopySidebar nav button.active:before{content:"";position:absolute;left:0;top:10px;bottom:10px;width:3px;border-radius:999px;background:var(--canopy)}
+.canopySideBottom{padding:16px 8px 0}.canopySideBottom b{line-height:1.35}
+.canopyAppTop{height:66px;padding:0 clamp(18px,2.7vw,34px);gap:18px;background:rgba(255,255,255,.96);backdrop-filter:blur(12px)}
+.canopySignout{border-radius:10px;padding:8px 10px}
+
+/* HOME — strong contrast and deliberate hierarchy */
+.canopyWelcome{min-height:220px;align-items:center;background:linear-gradient(125deg,#092F2C 0%,#0E4D4A 70%,#125A55 100%);padding:clamp(30px,4vw,50px);border-radius:24px;box-shadow:0 24px 70px rgba(9,47,44,.12)}
+.canopyWelcome,.canopyWelcome h1,.canopyWelcome h2,.canopyWelcome h3,.canopyWelcome strong,.canopyWelcome b{color:#fff!important}
+.canopyWelcome .canopyEyebrow{color:var(--canopy-lime)!important}
+.canopyWelcome h1{font-size:clamp(38px,4.6vw,58px);line-height:.98;letter-spacing:-.05em;margin:6px 0 10px}
+.canopyWelcome p{margin:0;color:#D0E3DD!important;font-size:15px;line-height:1.55}
+.canopyProgressRing{width:118px;height:118px;background:conic-gradient(var(--canopy-lime) var(--p),rgba(255,255,255,.14) 0)}
+.canopyProgressRing>div{width:94px;height:94px;background:#0B403C}
+.canopyProgressRing strong{font-size:26px;color:#fff!important}.canopyProgressRing span{color:#CBE1DA!important}
+
+/* One flat progress strip — no extra quick-link cards */
+.canopyDashStrip{margin:0;padding:22px 0;border-top:0;border-bottom:1px solid var(--canopy-line)}
+.canopyDashProgress small{font-size:9px}.canopyDashProgress strong{font-size:18px;letter-spacing:-.01em;color:var(--canopy-ink)}
+.canopyDashProgress .canopyLine{height:5px;max-width:560px;margin-top:11px}
+.canopyDashActions .canopyPrimary{min-height:44px;padding:0 18px}
+
+/* THIS WEEK — one section with rows, not nested cards */
+.cx-week{margin:26px 0 0;padding:0;border:0;background:transparent;box-shadow:none}
+.cx-week>header{padding-bottom:10px;margin:0;border-bottom:1px solid var(--canopy-line)}
+.cx-week>header>span{font-size:9px}.cx-week>header>strong{font-size:11px}
+.cx-week-list{border-bottom:1px solid var(--canopy-line)}
+.cx-week-row{grid-template-columns:84px minmax(0,1fr) auto;padding:12px 0;border-top:0;border-bottom:1px solid #E7EEEA}
+.cx-week-row:last-child{border-bottom:0}
+.cx-week-row strong{font-size:13px;font-weight:760}.cx-week-row .cx-text-action{font-size:11px}
+
+/* LIVE SESSION — use the full horizontal space on laptop */
+.cx-live,.cx-live.has-poster{margin-top:22px;width:100%;min-height:230px;border-radius:22px;background:linear-gradient(118deg,#092F2C,#0E4D4A);box-shadow:0 24px 60px rgba(9,47,44,.14);overflow:hidden;color:#fff}
+.cx-live.has-poster{display:grid;grid-template-columns:clamp(150px,17%,205px) minmax(0,1fr)}
+.cx-live-poster{width:100%;height:100%;min-height:230px;object-fit:cover;object-position:50% 18%}
+.cx-live-body,.cx-live.has-poster .cx-live-body,.cx-live:not(.has-poster) .cx-live-body{display:grid;grid-template-columns:minmax(220px,1.2fr) minmax(280px,.95fr) minmax(150px,.55fr);grid-template-areas:"copy countdown action";align-items:center;gap:clamp(18px,2.4vw,34px);padding:clamp(24px,3vw,38px);min-width:0}
+.cx-live-copy{grid-area:copy;align-self:center;display:grid;gap:6px;min-width:0}
+.cx-live-copy small{font-size:9px;letter-spacing:.14em;color:#9FE5D7!important}
+.cx-live-copy h3{margin:0;color:#fff!important;font-size:clamp(20px,2vw,28px);line-height:1.12;letter-spacing:-.025em;max-width:440px}
+.cx-live-copy p{margin:0;color:#D5E7E1!important;font-size:13px;line-height:1.45}
+.cx-live-speaker-role{display:block;color:#AFCFC7!important;font-size:11px;line-height:1.45;max-width:380px}
+.cx-live-body .cx-countdown{grid-area:countdown;display:grid;grid-template-columns:repeat(4,minmax(54px,1fr));width:100%;max-width:none;gap:0;align-items:center}
+.cx-countdown>div{padding:4px 10px;text-align:center;border-left:1px solid rgba(255,255,255,.18);background:transparent!important;border-radius:0!important}
+.cx-countdown>div:first-child{border-left:0}
+.cx-countdown strong{display:block;color:#fff!important;font-size:clamp(25px,2.5vw,36px);line-height:1;font-weight:800;letter-spacing:-.035em}
+.cx-countdown span{display:block;margin-top:5px;color:#A9CBC3!important;font-size:8px;letter-spacing:.11em;font-weight:850}
+.cx-live-body .cx-link{grid-area:action;justify-self:end;align-self:center;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:0 14px;border-radius:11px;background:var(--canopy-lime)!important;color:#092F2C!important;text-decoration:none;font-size:11px;font-weight:900;white-space:normal;text-align:center;max-width:170px}
+.cx-live-body .cx-live-pulse{display:none!important}
+
+/* Journey is a visual tracker, not another card */
+.cx-journey{margin:20px 0 4px;padding:18px 0 0;border:0;background:transparent;box-shadow:none}
+.cx-journey-track:before{top:17px;height:1px;background:#CDDAD5}
+.cx-journey-node{width:34px;height:34px;background:var(--canopy-page);box-shadow:none}
+.cx-journey-stop>strong{font-size:11px;font-weight:760;color:#536A64}
+
+/* COURSE — premium dark hero, then a clean module list */
+.canopyCourseHero{display:block;margin:0;padding:clamp(34px,4vw,52px);border:0;border-radius:24px;background:linear-gradient(125deg,#092F2C,#0E4D4A);box-shadow:0 24px 70px rgba(9,47,44,.11)}
+.canopyCourseHero .canopyEyebrow{color:var(--canopy-lime)!important}
+.canopyCourseHero h1{max-width:850px;margin:8px 0 20px;color:#fff!important;font-size:clamp(38px,4.8vw,62px);line-height:.98;letter-spacing:-.05em}
+.canopyCourseMetaLine{display:flex;gap:10px;flex-wrap:wrap}
+.canopyCourseMetaLine span{font-size:11px;font-weight:850;color:#D7E7E2;border:1px solid rgba(255,255,255,.16);border-radius:999px;padding:7px 10px}
+.canopyCoursePage>.cx-journey{margin-top:18px}
+.canopyCurriculum{margin-top:28px}
+.canopySectionHead{display:flex;align-items:end;justify-content:space-between;gap:20px;padding-bottom:13px;border-bottom:1px solid var(--canopy-line)}
+.canopySectionHead h2{font-size:clamp(24px,3vw,34px);margin:0;color:var(--canopy-ink)}
+.canopySectionHead span{font-size:9px}
+.canopyCurriculum article{border-top:0;border-bottom:1px solid var(--canopy-line)}
+.canopyModuleRow{grid-template-columns:46px minmax(0,1fr) auto;gap:16px;padding:20px 2px;border-radius:0}
+.canopyModuleRow:hover:not(:disabled){background:linear-gradient(90deg,rgba(14,77,74,.035),transparent)}
+.canopyModuleNo{width:34px;height:34px;border:1px solid #D5E1DC;border-radius:50%;display:grid;place-items:center;font-size:11px}
+.canopyModuleNo svg{width:15px;height:15px}
+.canopyModuleRow small{font-size:9px;letter-spacing:.06em}.canopyModuleRow h3{font-size:clamp(18px,2vw,23px);line-height:1.2;margin:4px 0 6px;color:var(--canopy-ink)}
+.canopyModuleRow>div>span{font-size:10px;color:#6E817B;font-weight:700}
+.canopyModuleArrow{display:flex;align-items:center;gap:8px;color:var(--canopy)}
+
+/* Progress — one metric band, not three cards */
+.canopyProgressHero{display:flex;align-items:stretch;gap:0;border-top:1px solid var(--canopy-line);border-bottom:1px solid var(--canopy-line);margin:6px 0 22px}
+.canopyProgressHero>div{flex:1;background:transparent!important;color:var(--canopy-ink)!important;border-radius:0!important;padding:20px 18px 18px;border-right:1px solid var(--canopy-line)}
+.canopyProgressHero>div:first-child{padding-left:0}.canopyProgressHero>div:last-child{border-right:0}
+.canopyProgressHero strong{font-size:30px!important;color:var(--canopy)!important;line-height:1}.canopyProgressHero span{margin-top:6px;font-size:10px!important;color:var(--canopy-muted)!important}
+.canopyProgressModules{gap:0;border-top:1px solid var(--canopy-line)}
+.canopyProgressModules article{background:transparent;border:0;border-bottom:1px solid var(--canopy-line);border-radius:0;padding:18px 0}
+
+/* Resources — editorial rows, no card wall */
+.canopyResources>section{gap:0;border-top:1px solid var(--canopy-line)}
+.canopyResources a{grid-template-columns:34px minmax(0,1fr) 28px;border:0;border-bottom:1px solid var(--canopy-line);border-radius:0;background:transparent;padding:18px 2px}
+.canopyResources a:hover{background:linear-gradient(90deg,rgba(14,77,74,.035),transparent)}
+.canopyResources h3{font-size:17px;margin:2px 0;color:var(--canopy-ink)}
+
+/* Assignments — preserve richness, remove container-on-container feeling */
+.ca-page{max-width:1240px;padding:34px clamp(20px,3vw,42px) 74px}
+.ca-card{border-radius:20px;border-color:#DDE7E3;box-shadow:0 12px 34px rgba(20,55,47,.035)}
+.ca-threefold>div{padding:20px 18px}
+.ca-practical-slider{border:1px solid #DDE7E3;border-radius:18px;background:#F2F6F4}
+.ca-practical-slider figure{min-height:420px}.ca-practical-slider img{height:min(68vh,700px);min-height:420px;padding:10px}
+
+/* CANOPYCANVAS — workspace architecture instead of a scattered control wall */
+.cc-page{max-width:1260px;padding:34px clamp(18px,3vw,42px) 76px}
+.cc-head{max-width:760px;margin-bottom:24px}.cc-head h1{font-size:clamp(36px,4.5vw,58px);line-height:.98;letter-spacing:-.05em;margin:8px 0 10px;color:var(--canopy-ink)}
+.cc-head p{max-width:640px;font-size:15px;line-height:1.5;color:var(--canopy-muted);margin:0}.cc-kicker{font-size:9px;font-weight:900;letter-spacing:.13em;color:var(--canopy)}
+.cc-grid,.cc-grid-upgraded{grid-template-columns:minmax(340px,420px) minmax(0,1fr);gap:clamp(28px,4vw,52px);align-items:start;margin-top:0}
+.cc-form{gap:14px;min-width:0}.cc-core-fields{display:grid;gap:14px}
+.cc-form label{font-size:12px;font-weight:800;color:#304B46}.cc-form select,.cc-form textarea,.cc-form input{border-radius:10px;border-color:#CBD9D4;padding:12px 12px;background:#fff;color:var(--canopy-ink)}
+.cc-form select:focus,.cc-form textarea:focus,.cc-form input:focus{outline:0;border-color:var(--canopy);box-shadow:0 0 0 3px rgba(14,77,74,.08)}
+.cc-message-helper{max-width:82%;font-size:10px!important;color:#6B7C77!important}.cc-message-meta b{font-size:10px}.cc-use-suggestion{font-size:11px}
+.cc-options{border-top:1px solid var(--canopy-line);border-bottom:1px solid var(--canopy-line)}
+.cc-options+ .cc-options{border-top:0}
+.cc-options>summary{list-style:none;min-height:48px;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;font-size:12px;font-weight:900;color:var(--canopy-ink)}
+.cc-options>summary::-webkit-details-marker{display:none}.cc-options>summary:after{content:"+";font-size:20px;line-height:1;color:#7A8E87}.cc-options[open]>summary:after{content:"–"}
+.cc-options>summary small{margin-left:auto;margin-right:8px;color:#81918C;font-size:9px;font-weight:750}
+.cc-options-body{display:grid;gap:14px;padding:2px 0 18px}
+.cc-palette-grid,.cc-texture-grid{gap:7px}.cc-palette-grid button,.cc-texture-grid button{border-radius:10px;box-shadow:none!important}
+.cc-graphic-grid{display:grid;grid-auto-flow:column;grid-auto-columns:112px;grid-template-columns:none;gap:8px;max-height:none;overflow-x:auto;overflow-y:hidden;padding:2px 2px 10px;scroll-snap-type:x proximity}
+.cc-graphic-grid button{scroll-snap-align:start;grid-template-rows:72px auto;padding:7px;border-radius:11px}.cc-graphic-grid button img,.cc-no-graphic{height:72px}.cc-graphic-grid button b{font-size:9px;min-height:22px}
+.cc-canvas-actions{display:grid;gap:8px;margin-top:2px}.cc-download{min-height:48px;border-radius:11px}
+.cc-brand-note{display:none!important}
+.cc-preview,.cc-preview-upgraded{position:sticky!important;top:86px;justify-self:center;width:min(100%,700px)!important;max-height:calc(100vh - 110px);box-shadow:0 28px 75px rgba(9,47,44,.15);border-radius:24px}
+.cc-preview-upgraded>.cc-preview-graphic{object-fit:contain!important;object-position:center!important}
+.cc-preview h2{font-size:clamp(28px,4vw,58px)}
+
+/* Ensure all text over deep-green surfaces is legible */
+.canopyWelcome *, .canopyCourseHero *, .cx-live *, .canopyHow *{text-shadow:none}
+.canopyCourseHero .canopyCourseMetaLine span,.cx-live .cx-countdown span{color:#D4E5DF}
+
+/* Dark mode parity */
+html[data-canopy-theme="dark"] .canopyWelcome,
+html[data-canopy-theme="dark"] .canopyCourseHero,
+html[data-canopy-theme="dark"] .cx-live{background:linear-gradient(125deg,#061F1D,#0A3836)!important}
+html[data-canopy-theme="dark"] .canopyModuleRow:hover:not(:disabled),
+html[data-canopy-theme="dark"] .canopyResources a:hover{background:rgba(66,230,202,.045)}
+html[data-canopy-theme="dark"] .canopySectionHead,
+html[data-canopy-theme="dark"] .canopyCurriculum article,
+html[data-canopy-theme="dark"] .canopyProgressHero,
+html[data-canopy-theme="dark"] .canopyProgressHero>div,
+html[data-canopy-theme="dark"] .canopyProgressModules,
+html[data-canopy-theme="dark"] .canopyProgressModules article,
+html[data-canopy-theme="dark"] .canopyResources>section,
+html[data-canopy-theme="dark"] .canopyResources a,
+html[data-canopy-theme="dark"] .cc-options{border-color:#31514A!important}
+html[data-canopy-theme="dark"] .canopyPageHead h1,
+html[data-canopy-theme="dark"] .canopySectionHead h2,
+html[data-canopy-theme="dark"] .canopyModuleRow h3,
+html[data-canopy-theme="dark"] .canopyResources h3,
+html[data-canopy-theme="dark"] .cc-head h1,
+html[data-canopy-theme="dark"] .cc-options>summary{color:#F4FFF9!important}
+html[data-canopy-theme="dark"] .cc-head p{color:#ABC2BB}
+
+/* Laptop: keep horizontal balance with sidebar open */
+@media(max-width:1240px){
+ .canopyApp{grid-template-columns:218px minmax(0,1fr)}
+ .canopyDashboard,.canopyCoursePage,.canopyLesson,.canopyQuiz,.canopyAssignments,.canopyProgressPage,.canopyResources,.canopyProfile,.canopyManager{padding-left:28px;padding-right:28px}
+ .cx-live.has-poster{grid-template-columns:140px minmax(0,1fr)}
+ .cx-live-body,.cx-live.has-poster .cx-live-body,.cx-live:not(.has-poster) .cx-live-body{grid-template-columns:minmax(200px,1.05fr) minmax(240px,.9fr);grid-template-areas:"copy countdown" "action countdown";gap:14px 24px;padding:24px}
+ .cx-live-body .cx-link{justify-self:start;max-width:200px}
+ .cc-grid,.cc-grid-upgraded{grid-template-columns:minmax(310px,390px) minmax(0,1fr);gap:30px}
+}
+
+@media(max-width:980px){
+ .canopyApp{grid-template-columns:1fr}
+ .canopySidebar{position:fixed;left:-280px;width:260px;z-index:80;transition:left .25s ease;box-shadow:18px 0 45px rgba(9,38,29,.12)}
+ .canopySidebar.open{left:0}.canopyMenu,.canopySideClose{display:inline-grid}
+ .canopyAppTop{justify-content:space-between}.canopyAppTop>.canopyMenu{margin-right:auto}
+ .cx-live.has-poster{grid-template-columns:135px minmax(0,1fr)}
+ .cc-grid,.cc-grid-upgraded{grid-template-columns:1fr}.cc-preview,.cc-preview-upgraded{position:relative!important;top:auto;order:-1;width:min(100%,620px)!important;max-height:none}
+}
+
+@media(max-width:760px){
+ .canopyDashboard,.canopyCoursePage,.canopyLesson,.canopyQuiz,.canopyAssignments,.canopyProgressPage,.canopyResources,.canopyProfile,.canopyManager{padding:22px 16px 56px}
+ .canopyWelcome{min-height:0;border-radius:20px;padding:26px 22px;align-items:flex-start}.canopyWelcome h1{font-size:38px}.canopyProgressRing{width:94px;height:94px}.canopyProgressRing>div{width:74px;height:74px}
+ .cx-week-row{grid-template-columns:70px minmax(0,1fr) auto}
+ .cx-live.has-poster{grid-template-columns:1fr}.cx-live-poster{height:220px;min-height:0;object-position:50% 18%}
+ .cx-live-body,.cx-live.has-poster .cx-live-body,.cx-live:not(.has-poster) .cx-live-body{grid-template-columns:1fr;grid-template-areas:"copy" "countdown" "action";gap:18px;padding:22px}
+ .cx-live-copy{text-align:center}.cx-live-copy h3,.cx-live-speaker-role{margin-left:auto;margin-right:auto}.cx-live-body .cx-link{justify-self:stretch;max-width:none}
+ .cx-countdown>div{padding:2px 5px}.cx-countdown strong{font-size:26px}
+ .canopyCourseHero{border-radius:20px;padding:28px 22px}.canopyCourseHero h1{font-size:39px}
+ .canopyCourseMetaLine span{font-size:10px}
+ .canopyModuleRow{grid-template-columns:38px minmax(0,1fr) 28px;gap:11px;padding:17px 0}.canopyModuleOpenDate{display:none}
+ .canopyProgressHero{display:grid;grid-template-columns:repeat(3,1fr)}.canopyProgressHero>div{padding:16px 10px!important}.canopyProgressHero strong{font-size:24px!important}
+ .ca-practical-slider figure{min-height:280px}.ca-practical-slider img{height:auto;min-height:280px;max-height:560px;padding:6px}
+ .cc-page{padding:24px 15px 60px}.cc-head h1{font-size:40px}.cc-two{grid-template-columns:1fr}.cc-preview,.cc-preview-upgraded{border-radius:18px}
+}
+
+@media(max-width:520px){
+ .canopyAppTop{padding:0 14px;gap:10px}.canopyAppTop>div{display:none}
+ .canopyWelcome{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px}.canopyWelcome p{grid-column:1/-1}.canopyProgressRing{width:80px;height:80px}.canopyProgressRing>div{width:64px;height:64px}.canopyProgressRing strong{font-size:21px}
+ .cx-week-row{grid-template-columns:1fr auto}.cx-week-row small{grid-column:1/-1}
+ .cx-countdown strong{font-size:22px}.cx-countdown span{font-size:7px}
+ .cx-journey-stop>strong{font-size:9px}.cx-journey-node{width:30px;height:30px}.cx-journey-track:before{top:15px}
+ .canopyProgressHero{grid-template-columns:1fr}.canopyProgressHero>div{border-right:0;border-bottom:1px solid var(--canopy-line);padding:14px 0!important}.canopyProgressHero>div:last-child{border-bottom:0}
+ .cc-head h1{font-size:35px}.cc-graphic-grid{grid-auto-columns:100px}
+}
