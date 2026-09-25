@@ -177,6 +177,12 @@ export async function updateCanopySpotlightDecision(session,nominationId,status)
   return rest('rpc/canopy_update_spotlight_status',{token:s.access_token,method:'POST',body:{p_nomination_id:nominationId,p_status:status}});
 }
 
+export async function toggleCanopySpotlightLove(session,submissionId){
+  const s=await refreshSession(session||getStoredSession());
+  if(!s?.access_token)throw new Error('Your Canopy session has expired. Sign in again.');
+  return rest('rpc/canopy_admin_toggle_spotlight_love',{token:s.access_token,method:'POST',body:{p_submission_id:submissionId}});
+}
+
 export async function submitLearnerComplaint(session,{subject,message}){
   const s=await refreshSession(session||getStoredSession());
   if(!s?.access_token)throw new Error('Your Canopy session has expired. Sign in again.');
