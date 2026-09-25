@@ -128,6 +128,8 @@ export async function getManagerSnapshot(session){
   const testerIds=new Set((profiles||[]).filter(p=>p.role==='tester').map(p=>p.user_id));
   let withdrawals=[];
   try{const rows=await rest('rpc/canopy_admin_list_withdrawals',{token:s.access_token,method:'POST',body:{}});withdrawals=Array.isArray(rows)?rows:[]}catch{}
+  let spotlight={nominations:[],weekly:[]};
+  try{const data=await rest('rpc/canopy_admin_spotlight_dashboard',{token:s.access_token,method:'POST',body:{}});if(data&&typeof data==='object')spotlight=data}catch{}
   return {
     profiles:(profiles||[]).filter(p=>!testerIds.has(p.user_id)),
     enrollments:(enrollments||[]).filter(x=>!testerIds.has(x.user_id)),
@@ -135,7 +137,8 @@ export async function getManagerSnapshot(session){
     submissions:(submissions||[]).filter(x=>!testerIds.has(x.user_id)),
     actions:(actions||[]).filter(x=>!testerIds.has(x.learner_id)),
     certificates:(certificates||[]).filter(x=>!testerIds.has(x.user_id)),
-    withdrawals:(withdrawals||[]).filter(x=>!testerIds.has(x.user_id))
+    withdrawals:(withdrawals||[]).filter(x=>!testerIds.has(x.user_id)),
+    spotlight
   };
 }
 
@@ -159,6 +162,19 @@ export async function restoreCanopyLearnerEligibility(session,userId){
   const s=await refreshSession(session||getStoredSession());
   if(!s?.access_token)throw new Error('Your Canopy session has expired. Sign in again.');
   return rest('rpc/canopy_admin_restore_learner',{token:s.access_token,method:'POST',body:{p_user_id:userId}});
+}
+
+
+export async function adminFeatureCanopySpotlight(session,{submissionId,category='emerging_leadership',note=''}){
+  const s=await refreshSession(session||getStoredSession());
+  if(!s?.access_token)throw new Error('Your Canopy session has expired. Sign in again.');
+  return rest('rpc/canopy_admin_feature_spotlight',{token:s.access_token,method:'POST',body:{p_submission_id:submissionId,p_category:category,p_note:String(note||'').trim()||null}});
+}
+
+export async function updateCanopySpotlightDecision(session,nominationId,status){
+  const s=await refreshSession(session||getStoredSession());
+  if(!s?.access_token)throw new Error('Your Canopy session has expired. Sign in again.');
+  return rest('rpc/canopy_update_spotlight_status',{token:s.access_token,method:'POST',body:{p_nomination_id:nominationId,p_status:status}});
 }
 
 export async function submitLearnerComplaint(session,{subject,message}){
