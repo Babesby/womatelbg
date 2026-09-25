@@ -328,9 +328,26 @@ export function CanopyModuleComplete({module,onClose}){
 
 export function CanopySpotlight({session}){
   const[items,setItems]=useState([]);
-  useEffect(()=>{let live=true;getFeaturedSpotlights(session).then(x=>{if(live)setItems(x||[])}).catch(()=>{});return()=>{live=false}},[session?.access_token]);
+  useEffect(()=>{let live=true;getFeaturedSpotlights(session,5).then(x=>{if(live)setItems(x||[])}).catch(()=>{});return()=>{live=false}},[session?.access_token]);
   if(!items.length)return null;
-  return <section className="cx-spotlight"><header><div><span>CANOPY SPOTLIGHT</span><h2>Work worth seeing.</h2></div><p>Selected by the WOMATE learning team for insight, application or leadership — not popularity.</p></header><div className="cx-spotlight-row">{items.slice(0,5).map(item=><article key={item.id}><div className="cx-spotlight-star"><Star size={16}/></div><small>MODULE {String(item.module_id||'').replace('module-','')}</small><h3>{item.learner_name||'She Leads fellow'}</h3><p>{item.note||'Featured learner work selected by WOMATE.'}</p>{item.artifact_url&&<a href={item.artifact_url} target="_blank" rel="noreferrer">View featured work <ExternalLink size={13}/></a>}</article>)}</div></section>;
+  return <section className="cx-spotlight">
+    <header><div><span>CANOPY SPOTLIGHT</span><h2>Featured this week.</h2></div></header>
+    <div className="cx-spotlight-row">
+      {items.slice(0,5).map(item=>{
+        const moduleNo=String(item.module_id||item.week_key||'').replace('module-','').replace(/[^0-9]/g,'').slice(-2)||'';
+        const practicalLabel=moduleNo==='01'?'Open CanopyCanvas':'Open practical work';
+        return <article key={item.id}>
+          <div className="cx-spotlight-topline"><div className="cx-spotlight-star"><Star size={16}/></div><small>{moduleNo?`MODULE ${moduleNo}`:'FEATURED'}</small></div>
+          <h3>{item.learner_name||'She Leads fellow'}</h3>
+          {item.paragraph_response&&<div className="cx-spotlight-response"><span>LEARNER RESPONSE</span><p>{item.paragraph_response}</p></div>}
+          <div className="cx-spotlight-actions">
+            {item.canvas_link&&<a href={item.canvas_link} target="_blank" rel="noreferrer">{practicalLabel} <ExternalLink size={13}/></a>}
+            {item.linkedin_link&&<a href={item.linkedin_link} target="_blank" rel="noreferrer">LinkedIn post <ExternalLink size={13}/></a>}
+          </div>
+        </article>;
+      })}
+    </div>
+  </section>;
 }
 
 function latestByWeek(submissions=[]){

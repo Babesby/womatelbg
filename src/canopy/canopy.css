@@ -2445,3 +2445,24 @@ html[data-canopy-theme='dark'] .canopySpotlightWeekTabs,html[data-canopy-theme='
 
 /* WOMATE CANOPY · SPOTLIGHT REVIEW FILTERS + LOVE IT · 2026-09-25 */
 .canopySpotlightFilterBar{display:flex;align-items:end;gap:10px;flex-wrap:wrap;padding:2px 0 4px}.canopySpotlightFilterBar label{display:grid;gap:6px;min-width:150px;font-size:10px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--canopy-muted)}.canopySpotlightFilterBar select{min-height:42px;border:1px solid var(--canopy-line);border-radius:11px;padding:0 12px;background:var(--canopy-white);color:var(--canopy-ink);font-size:13px;font-weight:700;letter-spacing:0;text-transform:none}.canopySpotlightLoveFilter,.canopySpotlightLove{border:1px solid var(--canopy-line);background:transparent;color:var(--canopy-muted);display:inline-flex;align-items:center;justify-content:center;gap:7px;font-weight:850;border-radius:999px}.canopySpotlightLoveFilter{min-height:42px;padding:0 14px}.canopySpotlightLove{padding:8px 11px}.canopySpotlightLoveFilter.active,.canopySpotlightLove.isLoved{border-color:#e7a0ad;background:#fff2f4;color:#b72643}.canopySpotlightAdminList>article.is-loved{background:linear-gradient(90deg,rgba(255,242,244,.78),transparent 55%)}.canopySpotlightCandidateMeta{display:flex;align-items:center;gap:7px;flex-wrap:wrap}.canopySpotlightCandidateMeta>span{font-size:9px;font-weight:850;padding:4px 7px;border-radius:999px;background:#eef4f1;color:var(--canopy-muted);text-transform:capitalize}.canopySpotlightCandidateMain blockquote{margin:7px 0 9px;padding:8px 11px;border-left:2px solid var(--canopy-lime);background:rgba(198,255,82,.08);font-size:12px;line-height:1.45;color:var(--canopy-ink)}html[data-canopy-theme='dark'] .canopySpotlightFilterBar select{background:#0f2624;border-color:#2b4541;color:#fff}html[data-canopy-theme='dark'] .canopySpotlightLoveFilter.active,html[data-canopy-theme='dark'] .canopySpotlightLove.isLoved{background:#3a1820;border-color:#7b3544;color:#ffb8c4}html[data-canopy-theme='dark'] .canopySpotlightAdminList>article.is-loved{background:linear-gradient(90deg,rgba(82,30,41,.34),transparent 55%)}html[data-canopy-theme='dark'] .canopySpotlightCandidateMain blockquote{color:#fff;background:rgba(198,255,82,.05)}@media(max-width:700px){.canopySpotlightFilterBar{display:grid;grid-template-columns:1fr 1fr}.canopySpotlightFilterBar label{min-width:0}.canopySpotlightLoveFilter{width:100%}}@media(max-width:460px){.canopySpotlightFilterBar{grid-template-columns:1fr}.canopySpotlightCandidateMeta{gap:5px}.canopySpotlightCandidateAction{align-items:stretch}.canopySpotlightLove{width:auto!important}}
+
+/* WOMATE CANOPY · participant Spotlight full submission view · 2026-09-25 */
+.cx-spotlight>header{margin-bottom:16px;align-items:flex-start}
+.cx-spotlight>header>div{min-width:0}
+.cx-spotlight-row{grid-auto-columns:minmax(360px,440px);gap:14px;scrollbar-width:none;padding:0 0 2px}
+.cx-spotlight-row::-webkit-scrollbar{display:none}
+.cx-spotlight-row article{min-height:0;padding:22px;border-radius:18px}
+.cx-spotlight-topline{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.cx-spotlight-topline .cx-spotlight-star{margin:0;width:32px;height:32px;border-radius:10px}
+.cx-spotlight-topline small{margin:0}
+.cx-spotlight article h3{font-size:20px;line-height:1.2;margin:0 0 14px}
+.cx-spotlight-response{padding:14px 0 16px;border-top:1px solid #e6ede9;border-bottom:1px solid #e6ede9}
+.cx-spotlight-response>span{display:block;margin-bottom:7px;font-size:8px;font-weight:900;letter-spacing:.12em;color:#71867e}
+.cx-spotlight-response p{margin:0!important;font-size:13px!important;line-height:1.65!important;color:#405a53!important;white-space:pre-wrap}
+.cx-spotlight-actions{display:flex;gap:10px;flex-wrap:wrap;padding-top:14px}
+.cx-spotlight article .cx-spotlight-actions a{margin:0;padding:9px 12px;border-radius:999px;background:#eef6f1;color:#0e4d4a;border:1px solid #d9e7e0;font-size:10px;font-weight:900}
+.cx-spotlight article .cx-spotlight-actions a:hover{background:#e6f1eb;border-color:#c6dcd2}
+html[data-canopy-theme='dark'] .cx-spotlight-response{border-color:#29423e}
+html[data-canopy-theme='dark'] .cx-spotlight-response p{color:#dbe8e3!important}
+html[data-canopy-theme='dark'] .cx-spotlight article .cx-spotlight-actions a{background:#16312d;border-color:#2b4944;color:#d9ff77}
+@media(max-width:700px){.cx-spotlight{padding:20px 16px}.cx-spotlight-row{grid-auto-columns:minmax(0,88vw)}.cx-spotlight-row article{padding:18px}.cx-spotlight-response p{font-size:12.5px!important}.cx-spotlight-actions{display:grid;grid-template-columns:1fr}.cx-spotlight article .cx-spotlight-actions a{justify-content:center;text-align:center}}
