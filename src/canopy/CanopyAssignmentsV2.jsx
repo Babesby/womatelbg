@@ -65,6 +65,22 @@ function PracticalExample({assignment}){
   return <div className="ca-practical-example ca-practical-slider-wrap"><div className="ca-practical-example-head"><small>{assignment.exampleLabel||'Example'}</small>{images.length>1&&<span>{active+1}/{images.length}</span>}</div><div className="ca-practical-slider"><figure><img src={images[active]} loading="lazy" alt={`Practical example ${active+1}`}/></figure>{images.length>1&&<><button type="button" className="ca-slide-prev" aria-label="Previous example" onClick={()=>setIndex(i=>(i-1+images.length)%images.length)}>‹</button><button type="button" className="ca-slide-next" aria-label="Next example" onClick={()=>setIndex(i=>(i+1)%images.length)}>›</button></>}</div>{images.length>1&&<div className="ca-slide-dots" aria-label="Example slides">{images.map((_,i)=><button type="button" key={i} className={i===active?'active':''} onClick={()=>setIndex(i)} aria-label={`Show example ${i+1}`}/>)}</div>}</div>;
 }
 
+function ModuleOneCanvasGuide(){
+  return <div className="ca-canvas-guide">
+    <div className="ca-canvas-guide-head"><small>CANOPYCANVAS GUIDE</small><span>Module 01</span></div>
+    <div className="ca-canvas-guide-frame">
+      <iframe
+        loading="lazy"
+        src="https://www.youtube-nocookie.com/embed/DxpkYuSxxic?rel=0"
+        title="How to complete and submit the Module 01 CanopyCanvas practical"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        referrerPolicy="strict-origin-when-cross-origin"
+        allowFullScreen
+      />
+    </div>
+  </div>;
+}
+
 function PuzzleShell({completed,title,intro,children}){
   return <details className="ca-puzzle">
     <summary>{title} {completed?'· Complete':''}</summary>
@@ -353,6 +369,9 @@ export default function CanopyAssignmentsV2({viewer}){
         const speakerOpen=tester||speakerChallengeOpen(item,now);
         const parts=assignmentPartState(d,speakerOpen);
         const visible=scoreVisible(sub),score=finalScore(sub),status=(sub?.assessment_status||sub?.status||'submitted').replaceAll('_',' ');
+        const scoreReleased=!!sub&&!!sub.release_at&&now>=new Date(sub.release_at)&&score!=null;
+        const archived=scoreReleased&&!manualRevision;
+        const remark=finalFeedback(sub)||sub?.score_band||status;
         const curriculum=moduleContent(item.moduleId);
         const paragraphPrompt=curriculum?.assignment?.paragraphPrompt||'Respond to the weekly learning task with reflection, analysis and a concrete application to climate action.';
         const practicalTitle=curriculum?.assignment?.practicalTitle||'Practical challenge';
@@ -361,11 +380,16 @@ export default function CanopyAssignmentsV2({viewer}){
         const practicalHref=curriculum?.assignment?.practicalHref||'';
         const practicalActionLabel=curriculum?.assignment?.practicalActionLabel||'';
         const practicalLinkLabel=curriculum?.assignment?.practicalLinkLabel||'Practical challenge Google Drive link';
+        if(archived)return <article className="ca-card ca-archive-row" key={item.weekKey}>
+          <div className="ca-archive-title"><small>MODULE {item.moduleId}</small><h2>{item.title}</h2></div>
+          <div className="ca-archive-score"><span>FINAL SCORE</span><strong>{score}/100</strong></div>
+          <div className="ca-archive-remark"><span>REMARKS</span><p>{remark}</p></div>
+        </article>;
         return <article className="ca-card" key={item.weekKey}>
           <div className="ca-card-head"><div><small>MODULE {item.moduleId}</small><h2>{item.title}</h2></div><div className="ca-dates"><span>Due {formatCanopyDate(item.dueAt)}</span>{count>0&&<strong>Attempt {count} of 3</strong>}</div></div>
           <div className="ca-threefold">
             <div><b>01</b><h3>Paragraph response</h3><p>{paragraphPrompt}</p></div>
-            <div className="ca-practical-brief"><b>02</b><small className="ca-challenge-tag">PRACTICAL</small><h3>{practicalTitle}</h3><p>{practicalBrief}</p>{practicalInstructions&&<details className="ca-instructions"><summary>How to submit</summary><p>{practicalInstructions}</p></details>}{practicalHref&&<a href={practicalHref}>{practicalActionLabel||'Open tool →'}</a>}<PracticalExample assignment={curriculum?.assignment}/></div>
+            <div className="ca-practical-brief"><b>02</b><small className="ca-challenge-tag">PRACTICAL</small><h3>{practicalTitle}</h3><p>{practicalBrief}</p>{item.moduleId==='01'&&<ModuleOneCanvasGuide/>}{practicalInstructions&&<details className="ca-instructions"><summary>How to submit</summary><p>{practicalInstructions}</p></details>}{practicalHref&&<a href={practicalHref}>{practicalActionLabel||'Open tool →'}</a>}<PracticalExample assignment={curriculum?.assignment}/></div>
             <div><b>03</b><h3>Speaker challenge</h3>{speakerOpen?<><p>{item.speakerPrompt}</p><p>Submit the LinkedIn post link.</p></>:<p>Opens after Thursday’s live session.</p>}</div>
           </div>
           {sub&&<div className="ca-status">
