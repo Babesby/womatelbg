@@ -2466,3 +2466,23 @@ html[data-canopy-theme='dark'] .cx-spotlight-response{border-color:#29423e}
 html[data-canopy-theme='dark'] .cx-spotlight-response p{color:#dbe8e3!important}
 html[data-canopy-theme='dark'] .cx-spotlight article .cx-spotlight-actions a{background:#16312d;border-color:#2b4944;color:#d9ff77}
 @media(max-width:700px){.cx-spotlight{padding:20px 16px}.cx-spotlight-row{grid-auto-columns:minmax(0,88vw)}.cx-spotlight-row article{padding:18px}.cx-spotlight-response p{font-size:12.5px!important}.cx-spotlight-actions{display:grid;grid-template-columns:1fr}.cx-spotlight article .cx-spotlight-actions a{justify-content:center;text-align:center}}
+
+
+/* WOMATE CANOPY · Learner access filters · 2026-09-25 */
+.canopyAccessWorkspace{display:grid;gap:14px}
+.canopyAccessFilterBar{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:4px 0 2px}
+.canopyAccessFilterBar>div:first-child{display:grid;gap:3px}
+.canopyAccessFilterBar>div:first-child>span{font-size:10px;letter-spacing:.13em;font-weight:900;color:var(--canopy);text-transform:uppercase}
+.canopyAccessFilterBar>div:first-child>strong{font-size:13px;color:var(--canopy-muted);font-weight:750}
+.canopyAccessFilters{display:flex;align-items:center;gap:7px;flex-wrap:wrap;justify-content:flex-end}
+.canopyAccessFilters button{min-height:34px;border:1px solid rgba(14,77,74,.14);background:transparent;color:var(--canopy-ink);border-radius:999px;padding:6px 10px;font-size:12px;font-weight:800;display:inline-flex;align-items:center;gap:7px;transition:background .18s ease,border-color .18s ease,color .18s ease}
+.canopyAccessFilters button small{min-width:20px;height:20px;padding:0 5px;border-radius:999px;display:grid;place-items:center;background:rgba(14,77,74,.07);font-size:10px;font-weight:900}
+.canopyAccessFilters button:hover{border-color:rgba(14,77,74,.32)}
+.canopyAccessFilters button.active{background:var(--canopy);border-color:var(--canopy);color:#fff}
+.canopyAccessFilters button.active small{background:rgba(255,255,255,.15);color:#fff}
+.canopyAccessEmpty{display:block!important;min-width:0!important;padding:24px!important;text-align:center;color:var(--canopy-muted)}
+html[data-canopy-theme="dark"] .canopyAccessFilters button{border-color:rgba(255,255,255,.14);color:#eaf5f0}
+html[data-canopy-theme="dark"] .canopyAccessFilters button small{background:rgba(255,255,255,.08)}
+html[data-canopy-theme="dark"] .canopyAccessFilters button.active{background:var(--canopy-lime);border-color:var(--canopy-lime);color:#102322}
+html[data-canopy-theme="dark"] .canopyAccessFilters button.active small{background:rgba(16,35,34,.12);color:#102322}
+@media(max-width:760px){.canopyAccessFilterBar{align-items:stretch;display:grid;gap:10px}.canopyAccessFilters{justify-content:flex-start;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.canopyAccessFilters button{justify-content:space-between;width:100%}}
