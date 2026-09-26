@@ -2486,3 +2486,14 @@ html[data-canopy-theme="dark"] .canopyAccessFilters button small{background:rgba
 html[data-canopy-theme="dark"] .canopyAccessFilters button.active{background:var(--canopy-lime);border-color:var(--canopy-lime);color:#102322}
 html[data-canopy-theme="dark"] .canopyAccessFilters button.active small{background:rgba(16,35,34,.12);color:#102322}
 @media(max-width:760px){.canopyAccessFilterBar{align-items:stretch;display:grid;gap:10px}.canopyAccessFilters{justify-content:flex-start;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.canopyAccessFilters button{justify-content:space-between;width:100%}}
+
+/* WOMATE CANOPY · targeted admin communications + submission lock · 2026-09-26 */
+.ca-feedback.ca-awaiting-review{background:rgba(14,77,74,.055);border-color:rgba(14,77,74,.12)}
+.ca-feedback.ca-awaiting-review span{color:var(--canopy)}
+.canopyCommunicationComposer{display:grid;gap:18px}
+.canopyAudiencePicker{display:grid;gap:10px;padding:16px 0 2px;border-top:1px solid rgba(14,77,74,.08)}
+.canopyAudienceLabel{display:flex;align-items:end;justify-content:space-between;gap:16px}.canopyAudienceLabel strong{font-size:13px}.canopyAudienceLabel small{color:var(--canopy-muted);font-size:11px}
+.canopyAudienceBadges{display:flex;flex-wrap:wrap;gap:8px}.canopyAudienceBadges button{border:1px solid rgba(14,77,74,.14);background:#fff;color:var(--canopy-ink);border-radius:999px;min-height:38px;padding:7px 11px;display:inline-flex;align-items:center;gap:8px;font-weight:800;font-size:12px}.canopyAudienceBadges button b{min-width:22px;height:22px;padding:0 6px;border-radius:999px;display:grid;place-items:center;background:#edf4f1;color:var(--canopy);font-size:10px}.canopyAudienceBadges button.active{background:var(--canopy);border-color:var(--canopy);color:#fff}.canopyAudienceBadges button.active b{background:rgba(255,255,255,.14);color:#fff}
+.canopyCommunicationSend{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.canopyCommunicationSend small{color:var(--canopy-muted);font-size:11px}
+html[data-canopy-theme="dark"] .canopyAudiencePicker{border-color:rgba(255,255,255,.08)}html[data-canopy-theme="dark"] .canopyAudienceBadges button{background:#183630;border-color:rgba(255,255,255,.11);color:#eef8f3}html[data-canopy-theme="dark"] .canopyAudienceBadges button b{background:rgba(255,255,255,.08);color:#c6ff52}html[data-canopy-theme="dark"] .canopyAudienceBadges button.active{background:var(--canopy-lime);border-color:var(--canopy-lime);color:#102322}html[data-canopy-theme="dark"] .canopyAudienceBadges button.active b{background:rgba(16,35,34,.12);color:#102322}
+@media(max-width:700px){.canopyAudienceLabel{display:grid;gap:3px}.canopyAudienceBadges{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.canopyAudienceBadges button{justify-content:space-between;width:100%}.canopyCommunicationSend{align-items:stretch;display:grid}.canopyCommunicationSend .canopyPrimary{width:100%}}

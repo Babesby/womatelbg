@@ -347,7 +347,8 @@ export default function CanopyAssignmentsV2({viewer}){
       {available.map(item=>{
         const sub=latest(item.weekKey),count=attempts(item.weekKey),d=drafts[item.weekKey]||{};
         const manualCompleted=!!sub&&sub.review_source==='manual'&&sub.assessment_status==='completed';
-        const mayResubmit=!manualCompleted&&(tester||(count<3&&now<=new Date(item.resubmitUntil)));
+        const manualRevision=!!sub&&sub.review_source==='manual'&&sub.assessment_status==='revision_required';
+        const mayResubmit=tester||(manualRevision&&count<3&&now<=new Date(item.resubmitUntil));
         const puzzleDone=puzzles.some(p=>p.week_key===item.weekKey&&p.completed);
         const speakerOpen=tester||speakerChallengeOpen(item,now);
         const parts=assignmentPartState(d,speakerOpen);
@@ -373,7 +374,8 @@ export default function CanopyAssignmentsV2({viewer}){
             <div><span>Final score</span><strong>{visible?`${score}/100 · ${sub.score_band||''}`:'Releases after the week closes'}</strong>{visible&&<small>{reviewLabel(sub)}</small>}</div>
             {visible&&finalFeedback(sub)&&<div className="ca-feedback"><span>Feedback</span><strong>{finalFeedback(sub)}</strong></div>}
             {manualCompleted&&<div className="ca-feedback ca-complete-locked"><span>Completed</span><strong>WOMATE has completed the manual review. This assignment is closed and no further resubmission is required.</strong></div>}
-            {visible&&!manualCompleted&&(['revision_required','needs_manual_review'].includes(sub.assessment_status)||Number(score)<70)&&<div className="ca-feedback ca-revision"><span>Next step</span><strong>Revision required. Use the feedback above and submit again within the resubmission window if an attempt remains.</strong></div>}
+            {manualRevision&&<div className="ca-feedback ca-revision"><span>Revision required</span><strong>WOMATE has requested a revision. Update the work below and submit the next attempt.</strong></div>}
+            {sub&&!manualCompleted&&!manualRevision&&<div className="ca-feedback ca-awaiting-review"><span>Submitted</span><strong>Your assignment is closed while WOMATE reviews it. It will reopen only if a revision is requested.</strong></div>}
           </div>}
           {(!sub||mayResubmit)&&<div className="ca-form">
 
@@ -529,9 +531,9 @@ export default function CanopyAssignmentsV2({viewer}){
               </small>
             }
 
-            {sub&&!tester&&
+            {manualRevision&&!tester&&
               <small>
-                {Math.max(0,3-count)} resubmission
+                {Math.max(0,3-count)} revision attempt
                 {3-count===1?'':'s'} remaining.
               </small>
             }
@@ -543,7 +545,7 @@ export default function CanopyAssignmentsV2({viewer}){
             }
 
           </div>}
-          {sub&&!mayResubmit&&<p className="ca-locked">Submission window closed or all three attempts have been used.</p>}
+          {sub&&!mayResubmit&&<p className="ca-locked">{manualCompleted?'Completed and closed.':'Submitted. Resubmission opens only when WOMATE requests a revision.'}</p>}
           <WeeklyPuzzle viewer={viewer} item={item} completed={puzzleDone} onComplete={load}/>
         </article>
       })}

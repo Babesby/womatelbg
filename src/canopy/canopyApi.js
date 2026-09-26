@@ -210,6 +210,18 @@ export async function createManagerAction(session,payload){
   if(!s?.access_token)throw new Error('Your Canopy session has expired. Sign in again.');
   return rest('canopy_manager_actions',{token:s.access_token,method:'POST',prefer:'return=representation',body:{...payload,created_by:s.user.id}});
 }
+
+export async function createBulkManagerAction(session,{actionType,subject,message,audience='all',weekKey=null}){
+  const s=await refreshSession(session||getStoredSession());
+  if(!s?.access_token)throw new Error('Your Canopy session has expired. Sign in again.');
+  return rest('rpc/canopy_admin_send_bulk_communication',{token:s.access_token,method:'POST',body:{
+    p_action_type:actionType,
+    p_subject:String(subject||'').trim(),
+    p_message:String(message||'').trim(),
+    p_audience:audience,
+    p_week_key:weekKey&&weekKey!=='all'?weekKey:null
+  }});
+}
 export async function updateManagerAction(session,id,body){
   const s=await refreshSession(session||getStoredSession());
   if(!s?.access_token)throw new Error('Your Canopy session has expired. Sign in again.');
