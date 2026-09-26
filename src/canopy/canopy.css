@@ -2497,3 +2497,76 @@ html[data-canopy-theme="dark"] .canopyAccessFilters button.active small{backgrou
 .canopyCommunicationSend{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.canopyCommunicationSend small{color:var(--canopy-muted);font-size:11px}
 html[data-canopy-theme="dark"] .canopyAudiencePicker{border-color:rgba(255,255,255,.08)}html[data-canopy-theme="dark"] .canopyAudienceBadges button{background:#183630;border-color:rgba(255,255,255,.11);color:#eef8f3}html[data-canopy-theme="dark"] .canopyAudienceBadges button b{background:rgba(255,255,255,.08);color:#c6ff52}html[data-canopy-theme="dark"] .canopyAudienceBadges button.active{background:var(--canopy-lime);border-color:var(--canopy-lime);color:#102322}html[data-canopy-theme="dark"] .canopyAudienceBadges button.active b{background:rgba(16,35,34,.12);color:#102322}
 @media(max-width:700px){.canopyAudienceLabel{display:grid;gap:3px}.canopyAudienceBadges{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.canopyAudienceBadges button{justify-content:space-between;width:100%}.canopyCommunicationSend{align-items:stretch;display:grid}.canopyCommunicationSend .canopyPrimary{width:100%}}
+
+
+/* WOMATE CANOPY · mobile profile + Spotlight responsive/reactions + lesson read-aloud · 2026-09-26 */
+.canopyMobileProfileAvatar{display:none;width:38px;height:38px;flex:0 0 38px;border:0;border-radius:50%;place-items:center;background:#0e4d4a;color:#fff;font-size:11px;font-weight:900;letter-spacing:.04em;box-shadow:0 0 0 3px rgba(14,77,74,.08);cursor:pointer}
+.canopyLessonHeader{display:flex;align-items:flex-start;justify-content:space-between;gap:18px}
+.canopyLessonHeader>div{min-width:0}
+.canopyReadAloud{flex:0 0 auto;min-height:38px;padding:0 13px;border:1px solid #d6e4de;border-radius:999px;background:#fff;color:#0e4d4a;display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:900;cursor:pointer;transition:.18s ease}
+.canopyReadAloud:hover{background:#eef6f1;border-color:#bdd4c9}
+.canopyReadAloud.is-reading{background:#0e4d4a;color:#fff;border-color:#0e4d4a}
+
+/* Spotlight uses a true responsive grid — never a forced horizontal feed. */
+.cx-spotlight{overflow:hidden}
+.cx-spotlight-row{display:grid!important;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))!important;grid-auto-flow:row!important;grid-auto-columns:unset!important;gap:14px!important;overflow:visible!important;scroll-snap-type:none!important;padding:0!important}
+.cx-spotlight-row article{width:100%;min-width:0;min-height:0!important;padding:20px!important;border-radius:18px!important;overflow:hidden}
+.cx-spotlight-response p{display:block;overflow-wrap:anywhere;word-break:normal}
+.cx-spotlight-more{display:inline;border:0;background:transparent;color:#0e4d4a;font:inherit;font-weight:950;padding:0 2px;margin-left:2px;cursor:pointer;vertical-align:baseline}
+.cx-spotlight-more:hover{text-decoration:underline}
+.cx-spotlight-reactions{display:flex;align-items:center;gap:7px;flex-wrap:wrap;padding-top:14px;margin-top:auto}
+.cx-spotlight-reactions button{min-height:34px;border:1px solid #dbe7e1;border-radius:999px;background:#fff;color:#49625b;padding:6px 9px;display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:800;cursor:pointer;transition:.16s ease}
+.cx-spotlight-reactions button:hover{background:#f1f7f4;border-color:#cbdcd4}
+.cx-spotlight-reactions button.is-active{background:#e8f6ef;border-color:#9dcbb7;color:#0e4d4a;box-shadow:inset 0 0 0 1px rgba(14,77,74,.04)}
+.cx-spotlight-reactions button:disabled{opacity:.65;cursor:wait}
+.cx-spotlight-reactions button b{font-size:10px}
+.cx-spotlight-reactions button em{font-style:normal;min-width:13px;text-align:center;color:#6e837b}
+.cx-spotlight-modal{position:fixed;inset:0;z-index:140;background:rgba(4,20,16,.62);backdrop-filter:blur(8px);display:grid;place-items:center;padding:24px}
+.cx-spotlight-modal>section{position:relative;width:min(720px,100%);max-height:min(78vh,760px);overflow:auto;background:#fff;border-radius:24px;padding:30px 32px;box-shadow:0 34px 100px rgba(0,0,0,.28)}
+.cx-spotlight-modal>section>small{font-size:9px;font-weight:900;letter-spacing:.13em;color:#0e4d4a}
+.cx-spotlight-modal h3{font-size:24px;line-height:1.15;margin:8px 44px 18px 0;color:#123d36}
+.cx-spotlight-modal p{white-space:pre-wrap;font-size:15px;line-height:1.8;color:#405a53;margin:0}
+.cx-spotlight-modal-close{position:absolute;right:18px;top:16px;width:36px;height:36px;border:0;border-radius:50%;background:#eef5f1;color:#0e4d4a;font-size:24px;line-height:1;display:grid;place-items:center;cursor:pointer}
+
+html[data-canopy-theme="dark"] .canopyMobileProfileAvatar{background:#c6ff52;color:#09261d;box-shadow:0 0 0 3px rgba(198,255,82,.1)}
+html[data-canopy-theme="dark"] .canopyReadAloud{background:#102c28;border-color:#31514a;color:#e9fff5}
+html[data-canopy-theme="dark"] .canopyReadAloud.is-reading{background:#c6ff52;border-color:#c6ff52;color:#09261d}
+html[data-canopy-theme="dark"] .cx-spotlight-more{color:#c6ff52}
+html[data-canopy-theme="dark"] .cx-spotlight-reactions button{background:#102f2b;border-color:#31514a;color:#dce9e4}
+html[data-canopy-theme="dark"] .cx-spotlight-reactions button.is-active{background:#153b35;border-color:#6b9f8f;color:#d9ff77}
+html[data-canopy-theme="dark"] .cx-spotlight-reactions button em{color:#a8bbb5}
+html[data-canopy-theme="dark"] .cx-spotlight-modal>section{background:#0f2925}
+html[data-canopy-theme="dark"] .cx-spotlight-modal h3{color:#f2fff8}
+html[data-canopy-theme="dark"] .cx-spotlight-modal p{color:#d9e6e1}
+html[data-canopy-theme="dark"] .cx-spotlight-modal-close{background:#173a34;color:#d9ff77}
+
+@media(max-width:760px){
+ .canopyLearnerIdentity{display:none!important}
+ .canopyMobileProfileAvatar{display:grid}
+ .canopyAppTop{gap:9px}
+ .canopyLessonHeader{align-items:flex-start}
+ .canopyReadAloud span{display:none}
+ .canopyReadAloud{width:38px;height:38px;min-height:38px;padding:0;justify-content:center}
+ .cx-spotlight{padding:20px 14px!important;border-radius:20px!important}
+ .cx-spotlight>header{margin-bottom:14px!important}
+ .cx-spotlight-row{grid-template-columns:1fr!important;gap:12px!important}
+ .cx-spotlight-row article{padding:17px!important;border-radius:16px!important}
+ .cx-spotlight article h3{font-size:18px!important;margin-bottom:11px!important}
+ .cx-spotlight-response{padding:12px 0 13px!important}
+ .cx-spotlight-response p{font-size:13px!important;line-height:1.55!important}
+ .cx-spotlight-actions{display:flex!important;gap:7px!important;flex-wrap:wrap!important;padding-top:12px!important}
+ .cx-spotlight article .cx-spotlight-actions a{width:auto!important;justify-content:flex-start!important;padding:8px 10px!important}
+ .cx-spotlight-reactions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;padding-top:12px}
+ .cx-spotlight-reactions button{justify-content:center;padding:6px 5px;min-width:0}
+ .cx-spotlight-reactions button b{display:none}
+ .cx-spotlight-modal{align-items:end;padding:0}
+ .cx-spotlight-modal>section{width:100%;max-height:84vh;border-radius:24px 24px 0 0;padding:28px 20px 34px}
+ .cx-spotlight-modal h3{font-size:21px}
+ .cx-spotlight-modal p{font-size:14px;line-height:1.7}
+}
+
+@media(max-width:380px){
+ .canopyAppTop{padding-left:10px;padding-right:10px;gap:7px}
+ .canopyMobileProfileAvatar{width:34px;height:34px;flex-basis:34px;font-size:10px}
+ .cx-spotlight-reactions button{font-size:9px}
+}

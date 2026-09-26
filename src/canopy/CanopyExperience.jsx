@@ -2,7 +2,7 @@ import React,{useEffect,useMemo,useRef,useState} from 'react';
 import {ArrowRight,Brain,BriefcaseBusiness,Check,ExternalLink,Play,Printer,RotateCcw,Sparkles,Star,Trophy,Users,Zap} from 'lucide-react';
 import {modules} from './canopyData';
 import {CANOPY_ASSIGNMENT_SCHEDULE,formatCanopyDate,getLiveSessionAt} from './canopySchedule';
-import {getFeaturedSpotlights} from './canopyApi';
+import {getFeaturedSpotlights,reactToCanopySpotlight} from './canopyApi';
 import {playCanopyCorrectSound,playCanopyErrorSound,primeCanopyFeedbackAudio} from './canopyFeedbackAudio';
 
 export const CANOPY_JOURNEY_STAGES=[
@@ -328,7 +328,19 @@ export function CanopyModuleComplete({module,onClose}){
 
 export function CanopySpotlight({session}){
   const[items,setItems]=useState([]);
+  const[expanded,setExpanded]=useState(null);
+  const[reacting,setReacting]=useState('');
   useEffect(()=>{let live=true;getFeaturedSpotlights(session,5).then(x=>{if(live)setItems(x||[])}).catch(()=>{});return()=>{live=false}},[session?.access_token]);
+  useEffect(()=>{if(!expanded)return;const close=e=>{if(e.key==='Escape')setExpanded(null)};window.addEventListener('keydown',close);return()=>window.removeEventListener('keydown',close)},[expanded]);
+  async function react(item,reaction){
+    if(reacting)return;
+    const key=`${item.id}:${reaction}`;setReacting(key);
+    try{
+      const next=item.my_reaction===reaction?null:reaction;
+      const result=await reactToCanopySpotlight(session,item.id,next);
+      setItems(rows=>rows.map(row=>row.id===item.id?{...row,my_reaction:result?.my_reaction||null,reaction_counts:result?.reaction_counts||row.reaction_counts}:row));
+    }catch{}finally{setReacting('')}
+  }
   if(!items.length)return null;
   return <section className="cx-spotlight">
     <header><div><span>CANOPY SPOTLIGHT</span><h2>Featured this week.</h2></div></header>
@@ -336,17 +348,26 @@ export function CanopySpotlight({session}){
       {items.slice(0,5).map(item=>{
         const moduleNo=String(item.module_id||item.week_key||'').replace('module-','').replace(/[^0-9]/g,'').slice(-2)||'';
         const practicalLabel=moduleNo==='01'?'Open CanopyCanvas':'Open practical work';
+        const response=String(item.paragraph_response||'').trim();
+        const long=response.length>180;
+        const preview=long?`${response.slice(0,180).trimEnd()}`:response;
+        const counts=item.reaction_counts||{};
+        const reactions=[['love','❤️','Like'],['clap','👏','Clap'],['insightful','💡','Insightful']];
         return <article key={item.id}>
           <div className="cx-spotlight-topline"><div className="cx-spotlight-star"><Star size={16}/></div><small>{moduleNo?`MODULE ${moduleNo}`:'FEATURED'}</small></div>
           <h3>{item.learner_name||'She Leads fellow'}</h3>
-          {item.paragraph_response&&<div className="cx-spotlight-response"><span>LEARNER RESPONSE</span><p>{item.paragraph_response}</p></div>}
+          {response&&<div className="cx-spotlight-response"><span>LEARNER RESPONSE</span><p>{preview}{long&&<button type="button" className="cx-spotlight-more" onClick={()=>setExpanded(item)} aria-label={`Read ${item.learner_name||'learner'} full response`}>…</button>}</p></div>}
           <div className="cx-spotlight-actions">
             {item.canvas_link&&<a href={item.canvas_link} target="_blank" rel="noreferrer">{practicalLabel} <ExternalLink size={13}/></a>}
             {item.linkedin_link&&<a href={item.linkedin_link} target="_blank" rel="noreferrer">LinkedIn post <ExternalLink size={13}/></a>}
           </div>
+          <div className="cx-spotlight-reactions" aria-label="React to this Spotlight">
+            {reactions.map(([key,emoji,label])=><button type="button" key={key} className={item.my_reaction===key?'is-active':''} disabled={Boolean(reacting)} onClick={()=>react(item,key)} aria-pressed={item.my_reaction===key}><span aria-hidden="true">{emoji}</span><b>{label}</b><em>{Number(counts[key])||0}</em></button>)}
+          </div>
         </article>;
       })}
     </div>
+    {expanded&&<div className="cx-spotlight-modal" role="dialog" aria-modal="true" aria-label={`${expanded.learner_name||'Learner'} response`} onMouseDown={e=>{if(e.target===e.currentTarget)setExpanded(null)}}><section><button type="button" className="cx-spotlight-modal-close" onClick={()=>setExpanded(null)} aria-label="Close full response">×</button><small>LEARNER RESPONSE</small><h3>{expanded.learner_name||'She Leads fellow'}</h3><p>{expanded.paragraph_response}</p></section></div>}
   </section>;
 }
 
