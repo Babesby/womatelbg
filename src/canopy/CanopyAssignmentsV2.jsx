@@ -19,6 +19,15 @@ function resultCelebrationGif(moduleId){
   return RESULT_CELEBRATION_GIFS[(numeric-1)%RESULT_CELEBRATION_GIFS.length];
 }
 
+function isSpeakerSocialUrl(value){
+  try{
+    const url=new URL(String(value||'').trim());
+    if(!['http:','https:'].includes(url.protocol))return false;
+    const host=url.hostname.toLowerCase().replace(/^www\./,'');
+    return host==='lnkd.in'||host==='t.co'||host==='linkedin.com'||host.endsWith('.linkedin.com')||host==='twitter.com'||host.endsWith('.twitter.com')||host==='x.com'||host.endsWith('.x.com');
+  }catch{return false}
+}
+
 const PUZZLES={
   'module-01':{
     type:'unscramble',
@@ -242,9 +251,7 @@ export default function CanopyAssignmentsV2({viewer}){
     const canvasReady=/^https:\/\/(drive|docs)\.google\.com\//i
       .test((d?.canvas_link||'').trim());
 
-    const linkedinReady=!!speakerOpen &&
-      /^https:\/\/(?:(?:[a-z0-9-]+\.)*linkedin\.com\/|lnkd\.in\/)/i
-        .test((d?.linkedin_link||'').trim());
+    const linkedinReady=!!speakerOpen && isSpeakerSocialUrl(d?.linkedin_link);
 
     const completed=[
       paragraphReady,
@@ -336,12 +343,7 @@ export default function CanopyAssignmentsV2({viewer}){
     const canvas=(d.canvas_link||'').trim();
     const linkedin=(d.linkedin_link||'').trim();
     if(paragraph.split(/\s+/).filter(Boolean).length<80){setMessage('Your paragraph needs at least 80 words. Add enough detail to show what you learned and how you would apply it.');return}
-    if(!/^https:\/\/(drive|docs)\.google\.com\//i.test(canvas)){
-      const practicalTitle=moduleContent(item.moduleId)?.assignment?.practicalTitle||'practical challenge';
-      setMessage(`Upload your completed ${practicalTitle.toLowerCase()} to Google Drive, make it viewable by link, then paste the Drive link here.`);return
-    }
-    if(!tester&&!speakerChallengeOpen(item,now)){setMessage('Parts 01 and 02 are open now. The speaker challenge opens after Thursday’s live session.');return}
-    if(!/^https:\/\/(?:(?:[a-z0-9-]+\.)*linkedin\.com\/|lnkd\.in\/)/i.test(linkedin)){setMessage('Paste a LinkedIn post link. LinkedIn.com and lnkd.in short links are accepted.');return}
+    if(!isSpeakerSocialUrl(linkedin)){setMessage('Paste a LinkedIn or X/Twitter post link. Standard, mobile and official short links are accepted.');return}
     setBusy(item.weekKey);setMessage('');
     try{
       await (tester?submitTesterWeeklyAssignment:submitWeeklyAssignment)(
@@ -404,11 +406,11 @@ export default function CanopyAssignmentsV2({viewer}){
         const practicalHref=curriculum?.assignment?.practicalHref||'';
         const practicalActionLabel=curriculum?.assignment?.practicalActionLabel||'';
         const practicalLinkLabel=curriculum?.assignment?.practicalLinkLabel||'Practical challenge Google Drive link';
-        if(archived)return <article className="ca-card ca-archive-row" key={item.weekKey}>
-          <div className="ca-archive-title"><small>MODULE {item.moduleId}</small><h2>{item.title}</h2><span className="ca-result-ready">Your result is ready</span></div>
-          <div className="ca-archive-score"><span>FINAL SCORE</span><strong>{score}/100</strong></div>
-          <div className="ca-archive-remark"><span>REMARKS</span><p>{remark}</p></div>
-          <div className="ca-archive-celebration" aria-label="Celebration">
+        if(archived)return <article className="ca-card ca-archive-row ca-result-card" key={item.weekKey}>
+          <div className="ca-archive-title ca-result-title"><small>MODULE {item.moduleId}</small><h2>{item.title}</h2><span className="ca-result-ready">Your result is ready</span></div>
+          <div className="ca-archive-score ca-result-score"><span>FINAL SCORE</span><strong>{score}/100</strong></div>
+          <div className="ca-archive-remark ca-result-remark"><span>REMARKS</span><p>{remark}</p></div>
+          <div className="ca-archive-celebration ca-result-gif" aria-label="Celebration">
             <iframe loading="lazy" src={resultCelebrationGif(item.moduleId)} title={`Celebrating your Module ${item.moduleId} result`} allow="fullscreen"/>
           </div>
         </article>;
@@ -417,7 +419,7 @@ export default function CanopyAssignmentsV2({viewer}){
           <div className="ca-threefold">
             <div><b>01</b><h3>Paragraph response</h3><p>{paragraphPrompt}</p></div>
             <div className="ca-practical-brief"><b>02</b><small className="ca-challenge-tag">PRACTICAL</small><h3>{practicalTitle}</h3><p>{practicalBrief}</p>{item.moduleId==='01'&&<ModuleOneCanvasGuide/>}{practicalInstructions&&<details className="ca-instructions"><summary>How to submit</summary><p>{practicalInstructions}</p></details>}{practicalHref&&<a href={practicalHref}>{practicalActionLabel||'Open tool →'}</a>}<PracticalExample assignment={curriculum?.assignment}/></div>
-            <div><b>03</b><h3>Speaker challenge</h3>{speakerOpen?<><p>{item.speakerPrompt}</p><p>Submit the LinkedIn post link.</p></>:<p>Opens after Thursday’s live session.</p>}</div>
+            <div><b>03</b><h3>Speaker challenge</h3>{speakerOpen?<><p>{item.speakerPrompt}</p><p>Submit your LinkedIn or X/Twitter post link.</p></>:<p>Opens after Thursday’s live session.</p>}</div>
           </div>
           {sub&&<div className="ca-status">
             <div><span>Latest submission</span><strong>{new Date(sub.submitted_at).toLocaleString()}</strong></div>
@@ -522,7 +524,7 @@ export default function CanopyAssignmentsV2({viewer}){
 
             {speakerOpen&&
               <label>
-                LinkedIn speaker-task post link (LinkedIn or lnkd.in)
+                Speaker-task post link (LinkedIn or X/Twitter)
 
                 <input
                   inputMode="url"

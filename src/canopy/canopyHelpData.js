@@ -61,7 +61,7 @@ function speakerAnswer(query,now){
   if(!item)return 'Speaker Challenge timing is not currently configured.';
   const open=now>=new Date(item.speakerOpensAt);
   const state=open?'is open':'is still locked';
-  return `For Module ${item.moduleId} — ${item.title}, the Speaker Challenge ${state}. The Thursday live session is at ${canopyCurriculumMeta.liveSessionTime}, and Part 03 unlocks afterward at ${formatGmt(item.speakerOpensAt)}. Before it opens, you can complete and Save Progress on your paragraph and Part 02 practical challenge Drive link. Final submission stays unavailable until Part 03 is open and all three required parts are ready. When it opens, submit the public LinkedIn post link for the speaker task.`;
+  return `For Module ${item.moduleId} — ${item.title}, the Speaker Challenge ${state}. The Thursday live session is at ${canopyCurriculumMeta.liveSessionTime}, and Part 03 unlocks afterward at ${formatGmt(item.speakerOpensAt)}. Before it opens, you can complete and Save Progress on your paragraph and Part 02 practical challenge Drive link. Final submission stays unavailable until Part 03 is open and all three required parts are ready. When it opens, submit the public LinkedIn or X/Twitter post link for the speaker task.`;
 }
 
 function attemptsAnswer(query){
@@ -85,7 +85,7 @@ function programmeScheduleAnswer(){
 
 function participationAnswer(){
   const c=canopyCurriculumMeta.completion;
-  return `Once WOMATE activates your course enrolment, work through the lessons and knowledge checks in each module, join the Thursday live sessions, and complete each weekly assignment by its deadline. The current completion requirements are: ${c.liveSessions} ${c.assignments} ${c.finalNote} ${c.graduation} Weekly assignments have three required parts: a paragraph response, a module-specific practical challenge uploaded to Google Drive, and the Speaker Challenge LinkedIn link. Use Save Progress when you are still working; final submission should be completed on time.`;
+  return `Once WOMATE activates your course enrolment, work through the lessons and knowledge checks in each module, join the Thursday live sessions, and complete each weekly assignment by its deadline. The current completion requirements are: ${c.liveSessions} ${c.assignments} ${c.finalNote} ${c.graduation} Weekly assignments have three required parts: a paragraph response, a module-specific practical challenge uploaded to Google Drive, and the Speaker Challenge LinkedIn or X/Twitter link. Use Save Progress when you are still working; final submission should be completed on time.`;
 }
 
 function schedulePhrases(kind){
@@ -192,7 +192,7 @@ export const CANOPY_HELP_TOPICS=[
     id:'weekly-assignments',title:'Weekly assignments',
     phrases:['how do weekly assignments work','weekly assignment','assignment requirements','what do i submit','final assignment submission','submit my assignment'],
     keywords:['assignment','weekly','submit','submission','required','parts'],
-    answer:'Each open module assignment has three required parts: 01 a paragraph response, 02 a practical creation task uploaded to Google Drive with a shareable link, and 03 the Thursday Speaker Challenge with a public LinkedIn post link. Part 02 changes by module: Module 01 uses CanopyCanvas; Module 02 is an AI-voice picture slideshow story; Module 03 is a one-rule climate-policy visual; Module 04 is a short real-world climate advocacy video; and Module 05 is a Canva climate-leadership vision board. Parts 01 and 02 can be prepared early. Final submission is available only after Part 03 opens and all three parts are ready.',
+    answer:'Each open module assignment has three required parts: 01 a paragraph response, 02 a practical creation task uploaded to Google Drive with a shareable link, and 03 the Thursday Speaker Challenge with a public LinkedIn or X/Twitter post link. Part 02 changes by module: Module 01 uses CanopyCanvas; Module 02 is an AI-voice picture slideshow story; Module 03 is a one-rule climate-policy visual; Module 04 is a short real-world climate advocacy video; and Module 05 is a Canva climate-leadership vision board. Parts 01 and 02 can be prepared early. Final submission is available only after Part 03 opens and all three parts are ready.',
     route:'/canopy/assignments',actionLabel:'Open assignments'
   },
   {
@@ -238,9 +238,9 @@ export const CANOPY_HELP_TOPICS=[
     route:'/canopy/assignments',actionLabel:'Open assignment'
   },
   {
-    id:'speaker-challenge',title:'Speaker Challenge and LinkedIn',
-    phrases:['speaker challenge','why is speaker challenge locked','when does the speaker challenge open','linkedin link','linkedin speaker task','cannot submit speaker challenge','thursday challenge available','when can i add my linkedin link',...schedulePhrases('speaker')],
-    keywords:['speaker','challenge','linkedin','locked','unlock','thursday','part 03','part 3'],
+    id:'speaker-challenge',title:'Speaker Challenge social post',
+    phrases:['speaker challenge','why is speaker challenge locked','when does the speaker challenge open','linkedin link','twitter link','x link','linkedin speaker task','twitter speaker task','cannot submit speaker challenge','thursday challenge available','when can i add my linkedin link',...schedulePhrases('speaker')],
+    keywords:['speaker','challenge','linkedin','twitter','x','locked','unlock','thursday','part 03','part 3'],
     answer:({query,now})=>speakerAnswer(query,now),
     route:'/canopy/assignments',actionLabel:'Open assignments'
   },

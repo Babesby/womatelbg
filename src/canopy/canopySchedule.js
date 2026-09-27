@@ -1,6 +1,6 @@
 // WOMATE CANOPY — She Leads Climate Mentorship · Cohort 2 · 2026
 // Weekly work opens Monday 00:00 GMT.
-// The speaker/LinkedIn task unlocks Thursday after the live session.
+// The speaker social-post task unlocks Thursday after the live session.
 // Everything required for that week is due Sunday 23:59 GMT.
 
 export const CANOPY_ACCESS_OPENS_AT='2026-09-20T00:00:00Z';
@@ -14,7 +14,7 @@ export const CANOPY_ASSIGNMENT_SCHEDULE = [
     dueAt:'2026-09-27T23:59:59Z',
     resubmitUntil:'2026-09-30T23:59:59Z',
     puzzleTerms:['CLIMATE','ADAPTATION','MITIGATION','RESILIENCE'],
-    speakerPrompt:'Complete the challenge announced by the expert during the Thursday live session and publish the required reflection or action post on LinkedIn.',
+    speakerPrompt:'Complete the challenge announced by the expert during the Thursday live session and publish the required reflection or action post on LinkedIn or X/Twitter.',
     liveUrl:'https://youtu.be/GjMa1LtDK5U',
     livePoster:'/assets/canopy/live/module-01-live.webp',
     liveHost:'Maame Ekua Nyarkomah Donkor',
@@ -28,7 +28,7 @@ export const CANOPY_ASSIGNMENT_SCHEDULE = [
     dueAt:'2026-10-04T23:59:59Z',
     resubmitUntil:'2026-10-07T23:59:59Z',
     puzzleTerms:['JUSTICE','EQUITY','GENDER','INCLUSION'],
-    speakerPrompt:'Complete the challenge announced by the expert during the Thursday live session and publish the required reflection or action post on LinkedIn.',
+    speakerPrompt:'Complete the challenge announced by the expert during the Thursday live session and publish the required reflection or action post on LinkedIn or X/Twitter.',
     liveUrl:'https://www.youtube.com/live/2prJ6c4gkAQ?si=GZhxK73WaG-K5wNL',
     livePoster:'/assets/canopy/live/module-02-live.webp',
     liveHost:'Sharon Nyarko',
@@ -42,7 +42,7 @@ export const CANOPY_ASSIGNMENT_SCHEDULE = [
     dueAt:'2026-10-11T23:59:59Z',
     resubmitUntil:'2026-10-14T23:59:59Z',
     puzzleTerms:['POLICY','NDC','UNFCCC','GOVERNANCE'],
-    speakerPrompt:'Complete the challenge announced by the expert during the Thursday live session and publish the required reflection or action post on LinkedIn.'
+    speakerPrompt:'Complete the challenge announced by the expert during the Thursday live session and publish the required reflection or action post on LinkedIn or X/Twitter.'
   },
   {
     weekKey:'module-04', moduleId:'04', title:'Climate Advocacy & Digital Innovation',
@@ -51,7 +51,7 @@ export const CANOPY_ASSIGNMENT_SCHEDULE = [
     dueAt:'2026-10-18T23:59:59Z',
     resubmitUntil:'2026-10-21T23:59:59Z',
     puzzleTerms:['ADVOCACY','EVIDENCE','DIGITAL','MOBILISE'],
-    speakerPrompt:'Complete the challenge announced by the expert during the Thursday live session and publish the required reflection or action post on LinkedIn.'
+    speakerPrompt:'Complete the challenge announced by the expert during the Thursday live session and publish the required reflection or action post on LinkedIn or X/Twitter.'
   },
   {
     weekKey:'module-05', moduleId:'05', title:'Leadership & Professional Pathways',
@@ -60,7 +60,7 @@ export const CANOPY_ASSIGNMENT_SCHEDULE = [
     dueAt:'2026-10-25T23:59:59Z',
     resubmitUntil:'2026-10-28T23:59:59Z',
     puzzleTerms:['LEADERSHIP','NETWORK','CAREER','ACTION'],
-    speakerPrompt:'Complete the final challenge announced by the expert during the Thursday live session and publish the required reflection or action post on LinkedIn.'
+    speakerPrompt:'Complete the final challenge announced by the expert during the Thursday live session and publish the required reflection or action post on LinkedIn or X/Twitter.'
   }
 ];
 
