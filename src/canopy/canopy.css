@@ -2927,3 +2927,22 @@ html[data-canopy-theme="dark"] .cx-mission-portfolio-record{border-color:#31514a
   box-shadow: none;
 }
 /* END WOMATE mission admin summary layout */
+
+/* WOMATE CANOPY - mobile Spotlight swipe only - 2026-09-27 */
+@media(max-width:760px){
+  .cx-spotlight-nav,
+  .cx-spotlight-prev,
+  .cx-spotlight-next{
+    display:none!important;
+    visibility:hidden!important;
+    pointer-events:none!important;
+  }
+  .cx-spotlight-slider{
+    overflow:hidden!important;
+  }
+  .cx-spotlight-module .cx-spotlight-row{
+    touch-action:pan-x pan-y!important;
+    overscroll-behavior-x:contain!important;
+    -webkit-overflow-scrolling:touch!important;
+  }
+}
