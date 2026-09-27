@@ -1,5 +1,5 @@
-import React,{useEffect,useMemo,useRef,useState} from 'react';
-import {ArrowRight,Brain,BriefcaseBusiness,Check,ExternalLink,Play,Printer,RotateCcw,Sparkles,Star,Trophy,Users,Zap} from 'lucide-react';
+﻿import React,{useEffect,useMemo,useRef,useState} from 'react';
+import {ArrowRight,BadgeCheck,Brain,BriefcaseBusiness,Check,ExternalLink,Leaf,Play,Printer,RotateCcw,Sparkles,Star,Trophy,Users,Zap} from 'lucide-react';
 import {modules} from './canopyData';
 import {CANOPY_ASSIGNMENT_SCHEDULE,formatCanopyDate,getLiveSessionAt} from './canopySchedule';
 import {getFeaturedSpotlights,reactToCanopySpotlight,submitCanopySpotlightProfessionalImage} from './canopyApi';
@@ -23,7 +23,7 @@ const REFLECTION_PROMPTS={
 const LESSON_ACTIVITIES={
   '02.2':{type:'truth-myth',eyebrow:'MYTH BUSTER',title:'Climate justice, fast.',intro:'10 seconds per card. Swipe or tap Truth / Myth.',items:[
     ['All women experience climate impacts in the same way.',false,'Age, income, disability, location and livelihood can change both risk and capacity.'],
-    ['Access to finance can change a person’s ability to adapt.',true,'Finance can affect whether someone can invest in safer livelihoods, tools or recovery.'],
+    ['Access to finance can change a personâ€™s ability to adapt.',true,'Finance can affect whether someone can invest in safer livelihoods, tools or recovery.'],
     ['Migration is an equally available adaptation option for everyone.',false,'Money, care responsibilities, health, culture and safety can all shape whether someone can move.'],
     ['Care responsibilities can shape climate vulnerability.',true,'Extra care work can affect time, mobility, income and recovery after a shock.']
   ]},
@@ -64,7 +64,7 @@ const LESSON_ACTIVITIES={
     'RYGZRLNOITCA','OHVDKILCZKXP','WJAYVOAZAPSJ','TTKKQEXKDKMP','EYOIGCQGEIDF','NNQEEREERACZ'
   ],placements:{PORTFOLIO:[0,5,8,5],NETWORK:[5,0,11,0],ACTION:[6,6,6,11],CAREER:[11,5,11,10],SKILL:[4,6,8,10],LEAD:[2,1,5,4]}},
   '05.3':{type:'choice',eyebrow:'NETWORKING',title:'Which follow-up builds a real relationship?',rounds:[
-    {q:'You meet a climate professional after a session. What is the strongest follow-up?',options:['Send “Hi” every week.','Send one specific note about what you learned, connect it to your interest, and ask for one reasonable next step.','Immediately ask them to find you a job.'],answer:1,explanation:'Specific, respectful follow-up makes it easier for someone to remember you and respond.'}
+    {q:'You meet a climate professional after a session. What is the strongest follow-up?',options:['Send â€œHiâ€ every week.','Send one specific note about what you learned, connect it to your interest, and ask for one reasonable next step.','Immediately ask them to find you a job.'],answer:1,explanation:'Specific, respectful follow-up makes it easier for someone to remember you and respond.'}
   ]},
   '05.4':{type:'truth-myth',pair:true,eyebrow:'FINAL QUICKFIRE',title:'Solo or with a colleague.',intro:'10 seconds per card. Build a combo.',items:[
     ['Leadership requires having the biggest title in the room.',false,'Leadership can be demonstrated through initiative, trust, delivery and influence.'],
@@ -138,7 +138,7 @@ export function CanopyLiveCountdown({item}){
     {item.livePoster&&<img className="cx-live-poster" src={item.livePoster} alt={`Module ${item.moduleId} live session flyer`} loading="lazy"/>}
     <div className="cx-live-body">
       <div className="cx-live-pulse" aria-hidden="true"><span/></div>
-      <div className="cx-live-copy"><small>{liveEnded?'SESSION COMPLETE':countdown.ended?'LIVE SESSION · NOW':'NEXT LIVE SESSION'}</small><h3>Module {item.moduleId} · {item.title}</h3><p>Thu · 4 PM GMT{item.liveSpeaker?` · ${item.liveSpeaker}`:''}</p>{item.liveSpeakerRole&&<span className="cx-live-speaker-role">{item.liveSpeakerRole}</span>}</div>
+      <div className="cx-live-copy"><small>{liveEnded?'SESSION COMPLETE':countdown.ended?'LIVE SESSION Â· NOW':'NEXT LIVE SESSION'}</small><h3>Module {item.moduleId} Â· {item.title}</h3><p>Thu Â· 4 PM GMT{item.liveSpeaker?` Â· ${item.liveSpeaker}`:''}</p>{item.liveSpeakerRole&&<span className="cx-live-speaker-role">{item.liveSpeakerRole}</span>}</div>
       {!liveEnded&&!countdown.ended&&<div className="cx-countdown" aria-label={`${countdown.days} days ${countdown.hours} hours ${countdown.minutes} minutes until live session`}>
         {[['DAYS',countdown.days],['HRS',countdown.hours],['MIN',countdown.minutes],['SEC',countdown.seconds]].map(([label,value])=><div key={label}><strong>{String(value).padStart(2,'0')}</strong><span>{label}</span></div>)}
       </div>}
@@ -167,7 +167,7 @@ export function CanopyThisWeek({progress=[],submissions=[],next}){
     <div className="cx-week-list">
       <div className="cx-week-row"><small>LEARN</small><strong>{next?next.l.title:'Caught up'}</strong><button className="cx-text-action" onClick={()=>goTo(next?`/canopy/course/she-leads/${next.m.id}/${next.l.id}`:'/canopy/course/she-leads')}>{next?'Continue':'Open course'} <ArrowRight size={14}/></button></div>
       <div className="cx-week-row"><small>ASSIGNMENT</small><strong>{submission?'Submitted':duePassed?'Closed':`Due ${formatCanopyDate(item.dueAt)}`}</strong><button className="cx-text-action" onClick={()=>goTo('/canopy/assignments')}>Open <ArrowRight size={14}/></button></div>
-      <div className="cx-week-row"><small>SPEAKER</small><strong>{speakerOpen?'Challenge open':'Opens Thu · 6 PM GMT'}</strong><button className="cx-text-action" onClick={()=>goTo('/canopy/assignments')}>View <ArrowRight size={14}/></button></div>
+      <div className="cx-week-row"><small>SPEAKER</small><strong>{speakerOpen?'Challenge open':'Opens Thu Â· 6 PM GMT'}</strong><button className="cx-text-action" onClick={()=>goTo('/canopy/assignments')}>View <ArrowRight size={14}/></button></div>
     </div>
     <CanopyLiveCountdown item={item}/>
   </section>;
@@ -181,7 +181,7 @@ function savePlayResult(lessonId,result){
 }
 
 function ActivityComplete({saved,onReplay,pairMode=false}){
-  return <div className="cx-game-complete"><div className="cx-game-trophy"><Trophy size={20}/></div><div><small>DONE</small><h4>{pairMode?'Team complete':'Complete'}</h4><p>{pairMode&&saved?.pairScores?`Player 1: ${saved.pairScores[0]} · Player 2: ${saved.pairScores[1]}`:`${saved?.score||0}/${saved?.total||0} correct${saved?.points?` · ${saved.points} pts`:''}${saved?.bestCombo>1?` · Combo ×${saved.bestCombo}`:''}`}</p></div><button type="button" onClick={onReplay}><RotateCcw size={14}/> Replay</button></div>;
+  return <div className="cx-game-complete"><div className="cx-game-trophy"><Trophy size={20}/></div><div><small>DONE</small><h4>{pairMode?'Team complete':'Complete'}</h4><p>{pairMode&&saved?.pairScores?`Player 1: ${saved.pairScores[0]} Â· Player 2: ${saved.pairScores[1]}`:`${saved?.score||0}/${saved?.total||0} correct${saved?.points?` Â· ${saved.points} pts`:''}${saved?.bestCombo>1?` Â· Combo Ã—${saved.bestCombo}`:''}`}</p></div><button type="button" onClick={onReplay}><RotateCcw size={14}/> Replay</button></div>;
 }
 
 function TruthMythGame({lessonId,activity}){
@@ -223,12 +223,12 @@ function TruthMythGame({lessonId,activity}){
   if(!playing)return <div className="cx-game-start"><div><Brain size={20}/><small>{activity.eyebrow||'QUICK GAME'}</small><h3>{activity.title}</h3><p>{activity.intro||'A quick, ungraded challenge to test your instinct.'}</p></div>{activity.pair&&<label className="cx-pair-toggle"><input type="checkbox" checked={pairMode} onChange={e=>setPairMode(e.target.checked)}/><span><Users size={15}/> Play with a colleague</span></label>}<button type="button" onClick={()=>{primeCanopyFeedbackAudio();setPlaying(true);setTime(GAME_SECONDS)}}><Play size={15}/> Start challenge</button></div>;
   const activePlayer=pairMode?(index%2)+1:null;
   return <div className={`cx-game cx-truthmyth ${feedback?`is-${feedback}`:''}`}>
-    <div className="cx-game-top"><span>{activity.eyebrow||'MYTH BUSTER'}</span><div><b>{activePlayer?`PLAYER ${activePlayer}`:`COMBO ×${Math.max(1,streak)}`}</b><em>{time}s</em></div></div>
+    <div className="cx-game-top"><span>{activity.eyebrow||'MYTH BUSTER'}</span><div><b>{activePlayer?`PLAYER ${activePlayer}`:`COMBO Ã—${Math.max(1,streak)}`}</b><em>{time}s</em></div></div>
     <div className="cx-timer"><span style={{width:`${(time/GAME_SECONDS)*100}%`}}/></div>
     <div className="cx-game-card" onPointerDown={e=>{dragStart.current=e.clientX}} onPointerUp={e=>{if(dragStart.current==null)return;const delta=e.clientX-dragStart.current;dragStart.current=null;if(delta>55)answer(true);else if(delta<-55)answer(false)}}>
       <small>{index+1} / {items.length}</small><h3>{current?.[0]}</h3>{feedback&&<p>{current?.[2]}</p>}
     </div>
-    <div className="cx-swipe-actions"><button type="button" className="is-myth" onClick={()=>answer(false)}>← Myth</button><button type="button" className="is-truth" onClick={()=>answer(true)}>Truth →</button></div>
+    <div className="cx-swipe-actions"><button type="button" className="is-myth" onClick={()=>answer(false)}>â† Myth</button><button type="button" className="is-truth" onClick={()=>answer(true)}>Truth â†’</button></div>
     <p className="cx-swipe-hint">Swipe the card or tap a side. Not graded.</p>
   </div>;
 }
@@ -268,7 +268,7 @@ function WordSearchGame({lessonId,activity}){
     <h3>{activity.title}</h3>
     <p className="cx-game-intro">Tap the first and last letter of each word.</p>
     <div className="cx-wordsearch-layout">
-      <div className="cx-wordsearch-words">{words.map(word=><span key={word} className={found.has(word)?'is-found':''}>{found.has(word)?'✓ ':''}{word}</span>)}</div>
+      <div className="cx-wordsearch-words">{words.map(word=><span key={word} className={found.has(word)?'is-found':''}>{found.has(word)?'âœ“ ':''}{word}</span>)}</div>
       <div className={`cx-wordsearch-grid ${feedback==='Try another line.'?'is-wrong':''}`} style={{'--cols':grid[0]?.length||12}}>
         {grid.flatMap((row,r)=>row.split('').map((letter,c)=>{
           const selected=startCell?.[0]===r&&startCell?.[1]===c;
@@ -297,8 +297,8 @@ function ReflectionCard({moduleId,lessonId,prompt}){
   const[value,setValue]=useState(existing);
   const[editing,setEditing]=useState(!existing);
   function save(){const text=value.trim();if(!text)return;const next={...notes,[lessonId]:{lessonId,moduleId,text,savedAt:new Date().toISOString()}};setNotes(next);persistCanopyReflectionNotes(next);setEditing(false)}
-  if(existing&&!editing)return <aside className="cx-reflect is-saved"><div className="cx-reflect-icon"><Check size={17}/></div><div className="cx-reflect-main"><small>PAUSE & APPLY · SAVED</small><h3>{prompt}</h3><blockquote>{existing}</blockquote><div><button type="button" onClick={()=>setEditing(true)}>Edit note</button><span>Saved on this device</span></div></div></aside>;
-  return <aside className="cx-reflect"><div className="cx-reflect-icon"><Sparkles size={17}/></div><div className="cx-reflect-main"><small>PAUSE & APPLY · PRIVATE NOTE</small><h3>{prompt}</h3><p>Private · not graded.</p><textarea rows="3" value={value} onChange={e=>setValue(e.target.value)} placeholder="Write one honest thought…" maxLength={360}/><div><button type="button" onClick={save} disabled={!value.trim()}>Save reflection</button><span>{value.length}/360</span></div></div></aside>;
+  if(existing&&!editing)return <aside className="cx-reflect is-saved"><div className="cx-reflect-icon"><Check size={17}/></div><div className="cx-reflect-main"><small>PAUSE & APPLY Â· SAVED</small><h3>{prompt}</h3><blockquote>{existing}</blockquote><div><button type="button" onClick={()=>setEditing(true)}>Edit note</button><span>Saved on this device</span></div></div></aside>;
+  return <aside className="cx-reflect"><div className="cx-reflect-icon"><Sparkles size={17}/></div><div className="cx-reflect-main"><small>PAUSE & APPLY Â· PRIVATE NOTE</small><h3>{prompt}</h3><p>Private Â· not graded.</p><textarea rows="3" value={value} onChange={e=>setValue(e.target.value)} placeholder="Write one honest thoughtâ€¦" maxLength={360}/><div><button type="button" onClick={save} disabled={!value.trim()}>Save reflection</button><span>{value.length}/360</span></div></div></aside>;
 }
 
 export function CanopyLessonActivity({moduleId,lessonId}){
@@ -376,16 +376,16 @@ export function CanopySpotlight({session}){
           {item.is_me&&<div className="cx-spotlight-congrats">
             <small>TOP 5 OUTSTANDING LEARNER</small>
             <h4>Congratulations{item.learner_name?`, ${String(item.learner_name).trim().split(/\s+/)[0]}`:''}.</h4>
-            <p>You’re one of WOMATE’s Top 5 Outstanding Learners for Module {moduleNo||''}. We’d love to celebrate you on WOMATE’s official channels.</p>
-            <label>Professional image · Google Drive
-              <input inputMode="url" value={photoDrafts[item.id]??submittedPhoto} onChange={e=>setPhotoDrafts(x=>({...x,[item.id]:e.target.value}))} placeholder="https://drive.google.com/…"/>
-              <span>Set sharing to <b>Anyone with the link → Viewer</b>.</span>
+            <p>Youâ€™re one of WOMATEâ€™s Top 5 Outstanding Learners for Module {moduleNo||''}. Weâ€™d love to celebrate you on WOMATEâ€™s official channels.</p>
+            <label>Professional image Â· Google Drive
+              <input inputMode="url" value={photoDrafts[item.id]??submittedPhoto} onChange={e=>setPhotoDrafts(x=>({...x,[item.id]:e.target.value}))} placeholder="https://drive.google.com/â€¦"/>
+              <span>Set sharing to <b>Anyone with the link â†’ Viewer</b>.</span>
             </label>
-            <label className="cx-spotlight-consent"><input type="checkbox" checked={Boolean(photoConsent[item.id])} onChange={e=>setPhotoConsent(x=>({...x,[item.id]:e.target.checked}))}/><span>I’m happy for WOMATE to use this image to celebrate my Spotlight recognition on its official channels.</span></label>
-            <div className="cx-spotlight-photo-actions"><button type="button" className="canopyPrimary" disabled={photoBusy===item.id} onClick={()=>submitProfessionalImage(item)}>{photoBusy===item.id?'Saving…':submittedPhoto?'Update image link':'Share professional image'}</button>{submittedPhoto&&<a href={submittedPhoto} target="_blank" rel="noreferrer">View submitted image <ExternalLink size={12}/></a>}</div>
+            <label className="cx-spotlight-consent"><input type="checkbox" checked={Boolean(photoConsent[item.id])} onChange={e=>setPhotoConsent(x=>({...x,[item.id]:e.target.checked}))}/><span>Iâ€™m happy for WOMATE to use this image to celebrate my Spotlight recognition on its official channels.</span></label>
+            <div className="cx-spotlight-photo-actions"><button type="button" className="canopyPrimary" disabled={photoBusy===item.id} onClick={()=>submitProfessionalImage(item)}>{photoBusy===item.id?'Savingâ€¦':submittedPhoto?'Update image link':'Share professional image'}</button>{submittedPhoto&&<a href={submittedPhoto} target="_blank" rel="noreferrer">View submitted image <ExternalLink size={12}/></a>}</div>
             {photoMessage[item.id]&&<p className="cx-spotlight-photo-message">{photoMessage[item.id]}</p>}
           </div>}
-          {response&&<div className="cx-spotlight-response"><span>LEARNER RESPONSE</span><p>{preview}{long&&<button type="button" className="cx-spotlight-more" onClick={()=>setExpanded(item)} aria-label={`Read ${item.learner_name||'learner'} full response`}>…</button>}</p></div>}
+          {response&&<div className="cx-spotlight-response"><span>LEARNER RESPONSE</span><p>{preview}{long&&<button type="button" className="cx-spotlight-more" onClick={()=>setExpanded(item)} aria-label={`Read ${item.learner_name||'learner'} full response`}>â€¦</button>}</p></div>}
           <div className="cx-spotlight-actions">
             {item.canvas_link&&<a href={item.canvas_link} target="_blank" rel="noreferrer">{practicalLabel} <ExternalLink size={13}/></a>}
             {item.linkedin_link&&<a href={item.linkedin_link} target="_blank" rel="noreferrer">LinkedIn post <ExternalLink size={13}/></a>}
@@ -396,7 +396,7 @@ export function CanopySpotlight({session}){
         </article>;
       })}
     </div>
-    {expanded&&<div className="cx-spotlight-modal" role="dialog" aria-modal="true" aria-label={`${expanded.learner_name||'Learner'} response`} onMouseDown={e=>{if(e.target===e.currentTarget)setExpanded(null)}}><section><button type="button" className="cx-spotlight-modal-close" onClick={()=>setExpanded(null)} aria-label="Close full response">×</button><small>LEARNER RESPONSE</small><h3>{expanded.learner_name||'She Leads fellow'}</h3><p>{expanded.paragraph_response}</p></section></div>}
+    {expanded&&<div className="cx-spotlight-modal" role="dialog" aria-modal="true" aria-label={`${expanded.learner_name||'Learner'} response`} onMouseDown={e=>{if(e.target===e.currentTarget)setExpanded(null)}}><section><button type="button" className="cx-spotlight-modal-close" onClick={()=>setExpanded(null)} aria-label="Close full response">Ã—</button><small>LEARNER RESPONSE</small><h3>{expanded.learner_name||'She Leads fellow'}</h3><p>{expanded.paragraph_response}</p></section></div>}
   </section>;
 }
 
@@ -412,14 +412,48 @@ export function CanopyPortfolioPage({viewer,submissions=[]}){
   const name=profile.full_name||viewer?.user?.user_metadata?.full_name||'She Leads Fellow';
   const country=profile.country||viewer?.user?.user_metadata?.country||'';
   const submitted=CANOPY_ASSIGNMENT_SCHEDULE.filter(item=>latest[item.weekKey]);
+  const verified=submitted.filter(item=>{const sub=latest[item.weekKey];return sub?.review_source==='manual'&&sub?.assessment_status==='completed'});
+  const practicalCount=submitted.filter(item=>Boolean(latest[item.weekKey]?.canvas_link)).length;
+  const publicActionCount=submitted.filter(item=>Boolean(latest[item.weekKey]?.linkedin_link)).length;
+  const impactStages=[
+    ['SEE','Notice what is happening, gather evidence and separate observation from assumption.'],
+    ['UNDERSTAND','Look beneath the visible problem to people, systems, vulnerability and power.'],
+    ['CONNECT','Connect climate knowledge to community, policy, opportunity and other people.'],
+    ['ACT','Turn learning into practical work, public communication and real-world action.'],
+    ['MULTIPLY','Use your leadership to help more people understand, participate and act.']
+  ];
+  const moduleImpact={
+    '01':'Observe & communicate',
+    '02':'Centre people & justice',
+    '03':'Influence systems',
+    '04':'Advocate publicly',
+    '05':'Lead & multiply'
+  };
   function print(){window.print()}
-  return <main className="cx-portfolio">
-    <header className="cx-portfolio-hero"><div><span>MY SHE LEADS PORTFOLIO</span><h1>{name}</h1><p>{country?`${country} · `:''}She Leads Climate Mentorship · Cohort 2 · 2026</p></div><button className="canopyPrimary cx-print" onClick={print}><Printer size={16}/> Export / Save as PDF</button></header>
-    <section className="cx-portfolio-intro"><BriefcaseBusiness/><div><h2>Evidence of learning, communication and climate leadership.</h2><p>This page organises your submitted practical work into a clean professional record. Keep your Google Drive links viewable before sharing the PDF with an employer, fellowship, internship or climate network.</p></div></section>
-    <section className="cx-portfolio-grid">
-      {CANOPY_ASSIGNMENT_SCHEDULE.map(item=>{const sub=latest[item.weekKey];const module=modules.find(m=>m.id===item.moduleId);const practical=module?.assignment||{};return <article className={sub?'is-ready':'is-pending'} key={item.weekKey}><div className="cx-portfolio-no">{item.moduleId}</div><div><small>{practical?.portfolioLabel||'PRACTICAL WORK'}</small><h2>{practical?.practicalTitle||module?.title}</h2><p>{practical?.portfolioSummary||practical?.practicalBrief||module?.summary}</p>{sub?<div className="cx-portfolio-links">{sub.canvas_link&&<a href={sub.canvas_link} target="_blank" rel="noreferrer">Open practical work <ExternalLink size={13}/></a>}{sub.linkedin_link&&<a href={sub.linkedin_link} target="_blank" rel="noreferrer">Open LinkedIn challenge <ExternalLink size={13}/></a>}</div>:<span className="cx-portfolio-pending">Not submitted yet</span>}</div></article>})}
+  return <main className="cx-portfolio cx-impact-profile">
+    <header className="cx-portfolio-hero cx-impact-hero"><div><span>CANOPY IMPACT PROFILE</span><h1>{name}</h1><p>{country?`${country} Â· `:''}She Leads Climate Mentorship Â· Cohort 2 Â· 2026</p></div><button className="canopyPrimary cx-print" onClick={print}><Printer size={16}/> Export / Save as PDF</button></header>
+
+    <section className="cx-impact-record" aria-label="Canopy Impact Record">
+      <div className="cx-impact-record-copy"><small>CANOPY IMPACT RECORD</small><h2>What you can prove matters.</h2><p>Your profile grows from work you have actually submitted and work WOMATE has manually completed. It is designed to become evidence you can carry into opportunities, applications and climate leadership spaces.</p></div>
+      <div className="cx-impact-stats">
+        <article><strong>{submitted.length}</strong><span>Evidence submitted</span><small>of {CANOPY_ASSIGNMENT_SCHEDULE.length} modules</small></article>
+        <article><strong>{verified.length}</strong><span>WOMATE verified</span><small>manual review completed</small></article>
+        <article><strong>{practicalCount}</strong><span>Practical builds</span><small>viewable work linked</small></article>
+        <article><strong>{publicActionCount}</strong><span>Public actions</span><small>LinkedIn / X evidence</small></article>
+      </div>
     </section>
-    {!submitted.length&&<p className="cx-portfolio-empty">Your portfolio will build automatically as you submit the weekly practical work.</p>}
-    <footer className="cx-portfolio-footer"><span>WOMATE · SHE LEADS CLIMATE MENTORSHIP</span><span>Portfolio links point to participant-owned Google Drive / LinkedIn work.</span></footer>
+
+    <section className="cx-canopy-way">
+      <div className="cx-canopy-way-mark"><Leaf size={22}/><span>THE CANOPY WAY</span></div>
+      <blockquote>We do not stand outside the Earth trying to save it. We live within it. Its systems are our systems, and women must be present wherever the future of those systems is being decided.</blockquote>
+      <div className="cx-canopy-way-grid">{impactStages.map(([title,copy],index)=><article key={title}><span>{String(index+1).padStart(2,'0')}</span><div><h3>{title}</h3><p>{copy}</p></div></article>)}</div>
+    </section>
+
+    <section className="cx-portfolio-intro cx-impact-intro"><BriefcaseBusiness/><div><span className="cx-impact-kicker">YOUR EVIDENCE</span><h2>Learning becomes more valuable when it leaves the classroom.</h2><p>Each module below becomes part of your professional climate record. Keep participant-owned links viewable before sharing this profile with an employer, fellowship, internship, funder or climate network.</p></div></section>
+    <section className="cx-portfolio-grid cx-impact-evidence">
+      {CANOPY_ASSIGNMENT_SCHEDULE.map(item=>{const sub=latest[item.weekKey];const module=modules.find(m=>m.id===item.moduleId);const practical=module?.assignment||{};const isVerified=sub?.review_source==='manual'&&sub?.assessment_status==='completed';return <article className={sub?'is-ready':'is-pending'} key={item.weekKey}><div className="cx-portfolio-no">{item.moduleId}</div><div><div className="cx-impact-evidence-top"><small>{practical?.portfolioLabel||'PRACTICAL WORK'}</small>{isVerified&&<span className="cx-impact-verified"><BadgeCheck size={13}/> WOMATE verified</span>}</div><h2>{practical?.practicalTitle||module?.title}</h2><p>{practical?.portfolioSummary||practical?.practicalBrief||module?.summary}</p><div className="cx-impact-capability"><span>{moduleImpact[item.moduleId]||'Climate action'}</span></div>{sub?<div className="cx-portfolio-links">{sub.canvas_link&&<a href={sub.canvas_link} target="_blank" rel="noreferrer">Open practical work <ExternalLink size={13}/></a>}{sub.linkedin_link&&<a href={sub.linkedin_link} target="_blank" rel="noreferrer">Open speaker challenge <ExternalLink size={13}/></a>}</div>:<span className="cx-portfolio-pending">Builds automatically when this module is submitted</span>}</div></article>})}
+    </section>
+    {!submitted.length&&<p className="cx-portfolio-empty">Your Impact Profile will build automatically as you submit real work through Canopy.</p>}
+    <footer className="cx-portfolio-footer"><span>WOMATE Â· SHE LEADS CLIMATE MENTORSHIP</span><span>Evidence links point to participant-owned Google Drive, LinkedIn or X/Twitter work.</span></footer>
   </main>;
 }
