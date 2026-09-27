@@ -368,7 +368,9 @@ export function CanopySpotlight({session}){
         return groups;
       },{})).sort(([a],[b])=>a.localeCompare(b,undefined,{numeric:true})).map(([moduleNo,moduleItems])=><section className="cx-spotlight-module" key={moduleNo}>
         <div className="cx-spotlight-module-head"><small>{moduleNo==='FEATURED'?'FEATURED':`MODULE ${moduleNo}`}</small><span>{moduleItems.length} spotlight{moduleItems.length===1?'':'s'}</span></div>
-        <div className="cx-spotlight-row" aria-label={`${moduleNo==='FEATURED'?'Featured':`Module ${moduleNo}`} Spotlights`} onScroll={e=>{
+        <div className="cx-spotlight-slider">
+          {moduleItems.length>1&&<button type="button" className="cx-spotlight-nav cx-spotlight-prev" aria-label={`Previous ${moduleNo==='FEATURED'?'featured':`Module ${moduleNo}`} Spotlight`} onClick={e=>{const track=e.currentTarget.parentElement?.querySelector('.cx-spotlight-row');track?.scrollBy({left:-track.clientWidth,behavior:'smooth'})}}>â€¹</button>}
+          <div className="cx-spotlight-row" aria-label={`${moduleNo==='FEATURED'?'Featured':`Module ${moduleNo}`} Spotlights`} onScroll={e=>{
           const track=e.currentTarget;
           const cards=Array.from(track.children);
           if(!cards.length)return;
@@ -409,6 +411,8 @@ export function CanopySpotlight({session}){
           </div>
         </article>;
           })}
+          </div>
+          {moduleItems.length>1&&<button type="button" className="cx-spotlight-nav cx-spotlight-next" aria-label={`Next ${moduleNo==='FEATURED'?'featured':`Module ${moduleNo}`} Spotlight`} onClick={e=>{const track=e.currentTarget.parentElement?.querySelector('.cx-spotlight-row');track?.scrollBy({left:track.clientWidth,behavior:'smooth'})}}>â€º</button>}
         </div>
         {moduleItems.length>1&&<div className="cx-spotlight-dots" aria-label={`Slide ${(slideIndex[moduleNo]||0)+1} of ${moduleItems.length}`}>{moduleItems.map((item,index)=><i key={item.id} className={(slideIndex[moduleNo]||0)===index?'active':''}/>)}</div>}
       </section>)}
