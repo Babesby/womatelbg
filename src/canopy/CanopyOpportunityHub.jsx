@@ -1,6 +1,6 @@
-// WOMATE CANOPY PHASE 2 MISSION CONTROL V2
+// WOMATE CANOPY PHASE 2 OPTIONAL MISSION CONTROL V3
 import React,{useEffect,useMemo,useState} from 'react';
-import {ArrowRight,BriefcaseBusiness,Check,ExternalLink,FolderOpen,Leaf,Lock,MapPin,Users} from 'lucide-react';
+import {ArrowRight,BriefcaseBusiness,Check,ExternalLink,FolderOpen,Leaf,MapPin,Users} from 'lucide-react';
 
 const MISSIONS=[
   {module:'01',stage:'SEE',title:'Local Climate Signal',brief:'Notice one climate-related change in your community and document what you can directly observe.',steps:['Choose one issue you can see locally.','Record what you directly observe.','Add one photo, note or short voice record as proof.','Write one realistic action that could help.'],proof:'Observation note plus one piece of evidence.'},
@@ -36,29 +36,30 @@ export default function CanopyOpportunityHub({viewer,submissions=[]}){
   const firstName=String(name).trim().split(/\s+/)[0]||'Learner';
   const owner=viewer?.user?.id||viewer?.user?.email||firstName;
   const storageKey=`womate-canopy-missions:${owner}`;
-  const [state,setState]=useState(()=>safeRead(storageKey,{mode:'solo',checks:{},folder:''}));
+  const [state,setState]=useState(()=>safeRead(storageKey,{mode:'solo',checks:{},folder:'',activeMission:0}));
 
   useEffect(()=>{try{window.localStorage.setItem(storageKey,JSON.stringify(state))}catch{}},[storageKey,state]);
 
+  const activeIndex=Math.max(0,Math.min(Number(state.activeMission||0),MISSIONS.length-1));
+  const current=MISSIONS[activeIndex];
   const missionDone=(m)=>m.steps.every((_,i)=>Boolean(state.checks?.[`${m.module}-${i}`]));
   const completedCount=MISSIONS.filter(m=>missionDone(m)).length;
-  const currentIndex=Math.min(completedCount,MISSIONS.length-1);
-  const current=MISSIONS[currentIndex];
-  const allDone=completedCount===MISSIONS.length;
   const stepCount=current.steps.filter((_,i)=>state.checks?.[`${current.module}-${i}`]).length;
-  const progress=allDone?100:Math.round((stepCount/current.steps.length)*100);
+  const progress=Math.round((stepCount/current.steps.length)*100);
   const toggleStep=(i)=>setState(prev=>({...prev,checks:{...prev.checks,[`${current.module}-${i}`]:!prev.checks?.[`${current.module}-${i}`]}}));
+  const goNext=()=>setState(prev=>({...prev,activeMission:Math.min(activeIndex+1,MISSIONS.length-1)}));
+  const goPrevious=()=>setState(prev=>({...prev,activeMission:Math.max(activeIndex-1,0)}));
 
   return <main className="cx-opportunity-hub">
     <header className="cx-opportunity-hero">
-      <div><span>OPPORTUNITIES</span><h1>Take your learning into the field.</h1><p>{firstName}, complete one mission at a time, keep your proof, and build a climate record you can actually use.</p></div>
-      <div className="cx-opportunity-hero-mark"><Leaf size={28}/><small>MISSION</small><strong>{allDone?'05':String(currentIndex+1).padStart(2,'0')}</strong><small>OF 05</small></div>
+      <div><span>OPPORTUNITIES</span><h1>Take your learning into the field.</h1><p>{firstName}, these missions are optional ways to turn each module into real-world evidence. Do them when they fit your life, solo or with others.</p></div>
+      <div className="cx-opportunity-hero-mark"><Leaf size={28}/><small>OPTIONAL MISSION</small><strong>{String(activeIndex+1).padStart(2,'0')}</strong><small>OF 05</small></div>
     </header>
 
     <section className="cx-mission-control">
       <div className="cx-mission-progress-head">
-        <div><span>MISSION CONTROL</span><h2>{allDone?'All missions complete':`Mission ${current.module}: ${current.title}`}</h2></div>
-        <div className="cx-mission-progress-value"><strong>{progress}%</strong><span>{allDone?'Complete':`${stepCount}/${current.steps.length} steps`}</span></div>
+        <div><span>MISSION CONTROL</span><h2>Module {current.module}: {current.title}</h2></div>
+        <div className="cx-mission-progress-value"><strong>{progress}%</strong><span>{stepCount}/{current.steps.length} steps</span></div>
       </div>
       <div className="cx-mission-progress-track"><i style={{width:`${progress}%`}}/></div>
 
@@ -66,9 +67,10 @@ export default function CanopyOpportunityHub({viewer,submissions=[]}){
         <article className="cx-mission-briefing">
           <div className="cx-mission-kicker"><MapPin size={15}/><span>MODULE {current.module}</span><b>{current.stage}</b>{verified.has(current.module)&&<em>Module verified</em>}</div>
           <h3>{current.brief}</h3>
+          <p style={{margin:'-8px 0 0',fontSize:12,lineHeight:1.5,color:'var(--canopy-muted)'}}>Optional. No deadline, no grade and no effect on your module progress.</p>
 
           <div className="cx-mission-mode">
-            <span>How are you doing this mission?</span>
+            <span>How would you like to do it?</span>
             <div><button className={state.mode==='solo'?'is-active':''} onClick={()=>setState(p=>({...p,mode:'solo'}))} type="button">Solo</button><button className={state.mode==='group'?'is-active':''} onClick={()=>setState(p=>({...p,mode:'group'}))} type="button"><Users size={14}/> Group</button></div>
           </div>
 
@@ -78,31 +80,30 @@ export default function CanopyOpportunityHub({viewer,submissions=[]}){
           </div>
 
           <div className="cx-mission-proof"><small>PROOF TO KEEP</small><p>{current.proof}</p></div>
+          <div style={{display:'flex',gap:12,flexWrap:'wrap',alignItems:'center'}}>
+            {activeIndex>0&&<button type="button" className="cx-impact-link" onClick={goPrevious}>Previous mission</button>}
+            {activeIndex<MISSIONS.length-1&&<button type="button" className="cx-impact-link" onClick={goNext}>{missionDone(current)?'Next optional mission':'Skip for now'} <ArrowRight size={14}/></button>}
+          </div>
         </article>
 
         <aside className="cx-proof-folder">
           <div className="cx-proof-folder-icon"><FolderOpen size={24}/></div>
           <span>MISSION PROOF FOLDER</span>
           <h3>Keep every mission in one place.</h3>
-          <p>Create one Google Drive folder called <strong>WOMATE Canopy Missions - {firstName}</strong>. Add a subfolder for each mission as you unlock it.</p>
+          <p>Create one Google Drive folder called <strong>WOMATE Canopy Missions - {firstName}</strong>. Add a subfolder whenever you choose to complete a mission.</p>
           <label><span>Optional folder link</span><input type="url" value={state.folder||''} onChange={e=>setState(p=>({...p,folder:e.target.value}))} placeholder="Paste your Google Drive folder link"/></label>
-          {state.folder&&<a href={state.folder} target="_blank" rel="noreferrer">Open my proof folder <ExternalLink size={14}/></a>}
-          <small>Your checklist and folder link are saved on this device so you can keep track as you go.</small>
+          {state.folder&&<a href={state.folder} target="_blank" rel="noreferrer">Open proof folder <ExternalLink size={13}/></a>}
+          <small>This folder belongs to you. Missions are optional and can be completed in any order over time.</small>
         </aside>
       </div>
 
-      <div className="cx-mission-queue">
-        <span>MISSION PATH</span>
-        <div>{MISSIONS.map((m,i)=>{const done=missionDone(m);const unlocked=i<=currentIndex;return <div key={m.module} className={`${done?'is-done':''} ${i===currentIndex&&!allDone?'is-current':''}`}><i>{done?<Check size={13}/>:unlocked?m.module:<Lock size={12}/>}</i><span>{i===currentIndex&&!allDone?m.title:`Mission ${m.module}`}</span></div>})}</div>
-      </div>
+      <div className="cx-mission-queue"><span>YOUR MISSION JOURNEY</span><div>{MISSIONS.map((m,i)=><div key={m.module} className={`${i===activeIndex?'is-current':''} ${missionDone(m)?'is-done':''}`}><i>{missionDone(m)?<Check size={12}/>:i+1}</i><span>Module {m.module}</span></div>)}</div><small style={{color:'var(--canopy-muted)',fontSize:10}}>{completedCount} of 5 optional missions completed</small></div>
     </section>
 
     <section className="cx-opportunity-board">
-      <header><div><span>OPPORTUNITY BOARD</span><h2>Explore where climate work already exists.</h2></div><p>Use trusted external sources to discover jobs, fellowships, internships and climate career pathways.</p></header>
-      <div className="cx-opportunity-list">
-        {OPPORTUNITY_SOURCES.map(o=><a key={o.name} href={o.href} target="_blank" rel="noreferrer"><div className="cx-opportunity-icon"><BriefcaseBusiness size={19}/></div><div><small>{o.type}</small><h3>{o.name}</h3><p>{o.note}</p></div><ExternalLink size={17}/></a>)}
-      </div>
-      <button type="button" className="cx-impact-link" onClick={()=>{window.history.pushState({},'','/canopy/portfolio');window.dispatchEvent(new PopStateEvent('popstate'));window.scrollTo({top:0,behavior:'smooth'})}}>Open Impact Profile <ArrowRight size={15}/></button>
+      <header><div><span>OPPORTUNITY BOARD</span><h2>Explore where climate skills can take you.</h2></div><p>Use these trusted sources to explore climate roles, fellowships and internships. Always confirm eligibility and closing dates on the official opportunity page.</p></header>
+      <div className="cx-opportunity-list">{OPPORTUNITY_SOURCES.map(item=><a key={item.name} href={item.href} target="_blank" rel="noreferrer"><div className="cx-opportunity-icon"><BriefcaseBusiness size={19}/></div><div><small>{item.type.toUpperCase()}</small><h3>{item.name}</h3><p>{item.note}</p></div><ExternalLink size={17}/></a>)}</div>
+      <button type="button" className="cx-impact-link" onClick={()=>{window.location.href='/canopy/portfolio'}}>View your Impact Profile <ArrowRight size={14}/></button>
     </section>
-  </main>;
+  </main>
 }
