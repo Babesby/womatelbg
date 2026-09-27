@@ -352,7 +352,7 @@ export function CanopySpotlight({session}){
         const long=response.length>180;
         const preview=long?`${response.slice(0,180).trimEnd()}`:response;
         const counts=item.reaction_counts||{};
-        const reactions=[['love','❤️','Like'],['clap','👏','Clap'],['insightful','💡','Insightful']];
+        const reactions=[['love','/assets/canopy/reactions/heart.webp','Love'],['clap','/assets/canopy/reactions/clap.webp','Clap'],['insightful','/assets/canopy/reactions/insightful.webp','Insightful']];
         return <article key={item.id}>
           <div className="cx-spotlight-topline"><div className="cx-spotlight-star"><Star size={16}/></div><small>{moduleNo?`MODULE ${moduleNo}`:'FEATURED'}</small></div>
           <h3>{item.learner_name||'She Leads fellow'}</h3>
@@ -362,7 +362,7 @@ export function CanopySpotlight({session}){
             {item.linkedin_link&&<a href={item.linkedin_link} target="_blank" rel="noreferrer">LinkedIn post <ExternalLink size={13}/></a>}
           </div>
           <div className="cx-spotlight-reactions" aria-label="React to this Spotlight">
-            {reactions.map(([key,emoji,label])=><button type="button" key={key} className={item.my_reaction===key?'is-active':''} disabled={Boolean(reacting)} onClick={()=>react(item,key)} aria-pressed={item.my_reaction===key}><span aria-hidden="true">{emoji}</span><b>{label}</b><em>{Number(counts[key])||0}</em></button>)}
+            {reactions.map(([key,icon,label])=><button type="button" key={key} className={item.my_reaction===key?'is-active':''} disabled={Boolean(reacting)} onClick={()=>react(item,key)} aria-pressed={item.my_reaction===key}><img src={icon} alt="" aria-hidden="true"/><b>{label}</b><em>{Number(counts[key])||0}</em></button>)}
           </div>
         </article>;
       })}

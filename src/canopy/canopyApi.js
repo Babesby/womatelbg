@@ -240,6 +240,19 @@ export async function reviewWeeklyAssignment(session,{submissionId,score,feedbac
   }});
 }
 
+export async function checkCanopyDriveAccess(session,url){
+  const s=await refreshSession(session||getStoredSession());
+  if(!s?.access_token)throw new Error('Your Canopy session has expired. Sign in again.');
+  const value=String(url||'').trim();
+  if(!value)throw new Error('A Google Drive link is required.');
+  const r=await fetch(`${URL}/functions/v1/canopy-drive-access-audit`,{
+    method:'POST',
+    headers:headers(s.access_token),
+    body:JSON.stringify({url:value})
+  });
+  return parse(r);
+}
+
 
 // ---- WOMATE CANOPY automated learning ---------------------------------------
 export async function refreshLearningAutomation(session){
