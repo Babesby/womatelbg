@@ -405,7 +405,7 @@ export default function CanopyAssignmentsV2({viewer}){
         const practicalActionLabel=curriculum?.assignment?.practicalActionLabel||'';
         const practicalLinkLabel=curriculum?.assignment?.practicalLinkLabel||'Practical challenge Google Drive link';
         if(archived)return <article className="ca-card ca-archive-row" key={item.weekKey}>
-          <div className="ca-archive-title"><small>MODULE {item.moduleId}</small><h2>{item.title}</h2><span className="ca-result-ready">Results are in âœ¨</span></div>
+          <div className="ca-archive-title"><small>MODULE {item.moduleId}</small><h2>{item.title}</h2><span className="ca-result-ready">Your result is ready</span></div>
           <div className="ca-archive-score"><span>FINAL SCORE</span><strong>{score}/100</strong></div>
           <div className="ca-archive-remark"><span>REMARKS</span><p>{remark}</p></div>
           <div className="ca-archive-celebration" aria-label="Celebration">
