@@ -410,6 +410,7 @@ export function CanopyPortfolioPage({viewer,submissions=[]}){
   const latest=useMemo(()=>latestByWeek(submissions),[submissions]);
   const profile=viewer?.profile||{};
   const name=profile.full_name||viewer?.user?.user_metadata?.full_name||'She Leads Fellow';
+  const firstName=(name||'Fellow').trim().split(/\s+/)[0]||'Fellow';
   const country=profile.country||viewer?.user?.user_metadata?.country||'';
   const submitted=CANOPY_ASSIGNMENT_SCHEDULE.filter(item=>latest[item.weekKey]);
   const verified=submitted.filter(item=>{const sub=latest[item.weekKey];return sub?.review_source==='manual'&&sub?.assessment_status==='completed'});
@@ -422,6 +423,13 @@ export function CanopyPortfolioPage({viewer,submissions=[]}){
     ['ACT','Turn learning into practical work, public communication and real-world action.'],
     ['MULTIPLY','Use your leadership to help more people understand, participate and act.']
   ];
+  const portfolioEvidenceCopy={
+    '01':`${firstName} created a CanopyCanvas awareness graphic for a defined local audience, communicating a climate issue responsibly and calling for one realistic action.`,
+    '02':`${firstName} created an AI voice picture story connecting gender, lived experience and climate justice for a public audience.`,
+    '03':`${firstName} translated a climate governance idea into one clear policy rule and presented it as a practical public-facing action.`,
+    '04':`${firstName} produced a locally grounded climate advocacy piece and shared a public speaker-challenge action on LinkedIn or X/Twitter.`,
+    '05':`${firstName} created a climate leadership vision board connecting the issue they care about with the leader, skills and impact they want to build.`
+  };
   const moduleImpact={
     '01':'Observe & communicate',
     '02':'Centre people & justice',
@@ -434,12 +442,12 @@ export function CanopyPortfolioPage({viewer,submissions=[]}){
     <header className="cx-portfolio-hero cx-impact-hero"><div><span>CANOPY IMPACT PROFILE</span><h1>{name}</h1><p>{country?`${country} · `:''}She Leads Climate Mentorship · Cohort 2 · 2026</p></div><button className="canopyPrimary cx-print" onClick={print}><Printer size={16}/> Export / Save as PDF</button></header>
 
     <section className="cx-impact-record" aria-label="Canopy Impact Record">
-      <div className="cx-impact-record-copy"><small>CANOPY IMPACT RECORD</small><h2>What you can prove matters.</h2><p>Your profile grows from work you have actually submitted and work WOMATE has manually completed. It is designed to become evidence you can carry into opportunities, applications and climate leadership spaces.</p></div>
-      <div className="cx-impact-stats">
-        <article><strong>{submitted.length}</strong><span>Evidence submitted</span><small>of {CANOPY_ASSIGNMENT_SCHEDULE.length} modules</small></article>
-        <article><strong>{verified.length}</strong><span>WOMATE verified</span><small>manual review completed</small></article>
-        <article><strong>{practicalCount}</strong><span>Practical builds</span><small>viewable work linked</small></article>
-        <article><strong>{publicActionCount}</strong><span>Public actions</span><small>LinkedIn / X evidence</small></article>
+      <div className="cx-impact-record-copy"><small>CANOPY IMPACT RECORD</small></div>
+      <div className="cx-impact-summary">
+        <span><strong>{submitted.length}</strong> evidence</span>
+        <span><strong>{verified.length}</strong> verified</span>
+        <span><strong>{practicalCount}</strong> practical builds</span>
+        <span><strong>{publicActionCount}</strong> public actions</span>
       </div>
     </section>
 
@@ -451,7 +459,7 @@ export function CanopyPortfolioPage({viewer,submissions=[]}){
 
     <section className="cx-portfolio-intro cx-impact-intro"><BriefcaseBusiness/><div><span className="cx-impact-kicker">YOUR EVIDENCE</span><h2>Learning becomes more valuable when it leaves the classroom.</h2><p>Each module below becomes part of your professional climate record. Keep participant-owned links viewable before sharing this profile with an employer, fellowship, internship, funder or climate network.</p></div></section>
     <section className="cx-portfolio-grid cx-impact-evidence">
-      {CANOPY_ASSIGNMENT_SCHEDULE.map(item=>{const sub=latest[item.weekKey];const module=modules.find(m=>m.id===item.moduleId);const practical=module?.assignment||{};const isVerified=sub?.review_source==='manual'&&sub?.assessment_status==='completed';return <article className={sub?'is-ready':'is-pending'} key={item.weekKey}><div className="cx-portfolio-no">{item.moduleId}</div><div><div className="cx-impact-evidence-top"><small>{practical?.portfolioLabel||'PRACTICAL WORK'}</small>{isVerified&&<span className="cx-impact-verified"><BadgeCheck size={13}/> WOMATE verified</span>}</div><h2>{practical?.practicalTitle||module?.title}</h2><p>{practical?.portfolioSummary||practical?.practicalBrief||module?.summary}</p><div className="cx-impact-capability"><span>{moduleImpact[item.moduleId]||'Climate action'}</span></div>{sub?<div className="cx-portfolio-links">{sub.canvas_link&&<a href={sub.canvas_link} target="_blank" rel="noreferrer">Open practical work <ExternalLink size={13}/></a>}{sub.linkedin_link&&<a href={sub.linkedin_link} target="_blank" rel="noreferrer">Open speaker challenge <ExternalLink size={13}/></a>}</div>:<span className="cx-portfolio-pending">Builds automatically when this module is submitted</span>}</div></article>})}
+      {CANOPY_ASSIGNMENT_SCHEDULE.map(item=>{const sub=latest[item.weekKey];const module=modules.find(m=>m.id===item.moduleId);const practical=module?.assignment||{};const isVerified=sub?.review_source==='manual'&&sub?.assessment_status==='completed';return <article className={sub?'is-ready':'is-pending'} key={item.weekKey}><div className="cx-portfolio-no">{item.moduleId}</div><div><div className="cx-impact-evidence-top"><small>{practical?.portfolioLabel||'PRACTICAL WORK'}</small>{isVerified&&<span className="cx-impact-verified"><BadgeCheck size={13}/> WOMATE verified</span>}</div><h2>{practical?.practicalTitle||module?.title}</h2><p>{sub?portfolioEvidenceCopy[item.moduleId]:(practical?.portfolioSummary||practical?.practicalBrief||module?.summary)}</p><div className="cx-impact-capability"><span>{moduleImpact[item.moduleId]||'Climate action'}</span></div>{sub?<div className="cx-portfolio-links">{sub.canvas_link&&<a href={sub.canvas_link} target="_blank" rel="noreferrer">Open practical work <ExternalLink size={13}/></a>}{sub.linkedin_link&&<a href={sub.linkedin_link} target="_blank" rel="noreferrer">Open speaker challenge <ExternalLink size={13}/></a>}</div>:<span className="cx-portfolio-pending">Builds automatically when this module is submitted</span>}</div></article>})}
     </section>
     {!submitted.length&&<p className="cx-portfolio-empty">Your Impact Profile will build automatically as you submit real work through Canopy.</p>}
     <footer className="cx-portfolio-footer"><span>WOMATE · SHE LEADS CLIMATE MENTORSHIP</span><span>Evidence links point to participant-owned Google Drive, LinkedIn or X/Twitter work.</span></footer>
