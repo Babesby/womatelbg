@@ -310,6 +310,16 @@ export default function CanopyAssignmentsV2({viewer}){
   }
 
   async function send(item){
+    const currentSubmission=latest(item.weekKey);
+    const currentManualRevision=!!currentSubmission&&currentSubmission.review_source==='manual'&&currentSubmission.assessment_status==='revision_required';
+    if(!tester&&!currentSubmission&&now>new Date(item.dueAt)){
+      setMessage('Submission closed. The Sunday deadline has passed.');
+      return;
+    }
+    if(!tester&&currentManualRevision&&now>new Date(item.resubmitUntil)){
+      setMessage('Revision window closed. The Wednesday deadline has passed.');
+      return;
+    }
     const d=drafts[item.weekKey]||{};
     const paragraph=(d.paragraph_response||'').trim();
     const canvas=(d.canvas_link||'').trim();
@@ -364,7 +374,10 @@ export default function CanopyAssignmentsV2({viewer}){
         const sub=latest(item.weekKey),count=attempts(item.weekKey),d=drafts[item.weekKey]||{};
         const manualCompleted=!!sub&&sub.review_source==='manual'&&sub.assessment_status==='completed';
         const manualRevision=!!sub&&sub.review_source==='manual'&&sub.assessment_status==='revision_required';
-        const mayResubmit=tester||(manualRevision&&count<3&&now<=new Date(item.resubmitUntil));
+        const firstSubmissionOpen=tester||now<=new Date(item.dueAt);
+        const revisionWindowOpen=tester||now<=new Date(item.resubmitUntil);
+        const mayResubmit=tester||(manualRevision&&count<3&&revisionWindowOpen);
+        const canSubmitForm=tester||(!sub?firstSubmissionOpen:mayResubmit);
         const puzzleDone=puzzles.some(p=>p.week_key===item.weekKey&&p.completed);
         const speakerOpen=tester||speakerChallengeOpen(item,now);
         const parts=assignmentPartState(d,speakerOpen);
@@ -401,7 +414,7 @@ export default function CanopyAssignmentsV2({viewer}){
             {manualRevision&&<div className="ca-feedback ca-revision"><span>Revision required</span><strong>WOMATE has requested a revision. Update the work below and submit the next attempt.</strong></div>}
             {sub&&!manualCompleted&&!manualRevision&&<div className="ca-feedback ca-awaiting-review"><span>Submitted</span><strong>Your assignment is closed while WOMATE reviews it. It will reopen only if a revision is requested.</strong></div>}
           </div>}
-          {(!sub||mayResubmit)&&<div className="ca-form">
+          {canSubmitForm&&<div className="ca-form">
 
             <div className="ca-assignment-progress">
               <div className="ca-assignment-progress-head">
@@ -569,7 +582,9 @@ export default function CanopyAssignmentsV2({viewer}){
             }
 
           </div>}
-          {sub&&!mayResubmit&&<p className="ca-locked">{manualCompleted?'Completed and closed.':'Submitted. Resubmission opens only when WOMATE requests a revision.'}</p>}
+          {!sub&&!firstSubmissionOpen&&<p className="ca-locked">Submission closed. The Sunday deadline has passed.</p>}
+          {sub&&manualRevision&&!revisionWindowOpen&&<p className="ca-locked">Revision window closed. The Wednesday deadline has passed.</p>}
+          {sub&&!manualRevision&&!mayResubmit&&<p className="ca-locked">{manualCompleted?'Completed and closed.':'Submitted. Resubmission opens only when WOMATE requests a revision.'}</p>}
           <WeeklyPuzzle viewer={viewer} item={item} completed={puzzleDone} onComplete={load}/>
         </article>
       })}
