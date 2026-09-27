@@ -2625,3 +2625,21 @@ html[data-canopy-theme="dark"] .canopyDriveAuditButton:hover{background:#1d493f}
 [data-canopy-theme="dark"] .cx-spotlight-congrats{background:linear-gradient(135deg,#113f3c,#0a302e)}
 @media(max-width:640px){.cx-spotlight-congrats{padding:15px;border-radius:15px}.cx-spotlight-congrats h4{font-size:18px}.cx-spotlight-photo-actions{display:grid;grid-template-columns:1fr}.cx-spotlight-photo-actions .canopyPrimary{width:100%}}
 
+
+
+/* WOMATE CANOPY · TRUE ADMIN ASSESS SUBMISSIONS · latest-attempt search/filter fix · 2026-09-27 */
+.canopyAdminReviewFind{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap;padding-top:2px}
+.canopyAdminReviewSearch{display:grid;gap:6px;flex:1 1 280px;max-width:420px}
+.canopyAdminReviewSearch>span{font-size:9px;font-weight:900;letter-spacing:.09em;text-transform:uppercase;color:#6f817b}
+.canopyAdminReviewSearch input{width:100%;min-height:40px;border:1px solid #d5e0db;background:#fff;color:var(--canopy-ink);border-radius:999px;padding:9px 14px;font:inherit;font-size:12px;outline:none}
+.canopyAdminReviewSearch input:focus{border-color:var(--canopy);box-shadow:0 0 0 3px rgba(14,77,74,.08)}
+.canopyAdminAttemptFilters{display:flex;align-items:center;justify-content:flex-end;gap:6px;flex-wrap:wrap}
+.canopyAdminAttemptFilters button{border:1px solid var(--canopy-line);background:#fff;color:#587069;border-radius:999px;min-height:38px;padding:7px 10px;display:inline-flex;align-items:center;gap:7px;font:inherit;font-size:11px;font-weight:850;cursor:pointer}
+.canopyAdminAttemptFilters button small{min-width:21px;height:21px;padding:0 5px;border-radius:999px;background:#eef3f0;display:grid;place-items:center;font-size:9px}
+.canopyAdminAttemptFilters button.active{background:#12352f;border-color:#12352f;color:#fff}
+.canopyAdminAttemptFilters button.active small{background:var(--canopy-lime);color:#12352f}
+.canopyAdminReviewShown{justify-self:end;color:var(--canopy-muted);font-size:10px;font-weight:800}
+html[data-canopy-theme="dark"] .canopyAdminReviewSearch input,html[data-canopy-theme="dark"] .canopyAdminAttemptFilters button{background:#173b34;border-color:#2b4a43;color:#e8f4ef}
+html[data-canopy-theme="dark"] .canopyAdminAttemptFilters button.active{background:var(--canopy-lime);border-color:var(--canopy-lime);color:#12352f}
+html[data-canopy-theme="dark"] .canopyAdminAttemptFilters button.active small{background:#12352f;color:var(--canopy-lime)}
+@media(max-width:760px){.canopyAdminReviewFind{align-items:stretch}.canopyAdminReviewSearch{max-width:none;flex-basis:100%}.canopyAdminAttemptFilters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%}.canopyAdminAttemptFilters button{justify-content:space-between;width:100%}.canopyAdminReviewShown{justify-self:start}}
