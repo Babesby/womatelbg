@@ -405,6 +405,8 @@ export async function updateCanopyMissionGroup(session,{name,choice,customBrief}
 export async function submitCanopyMissionReport(session,{summary,proofUrl}){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_submit_mission_report',{token:s.access_token,method:'POST',body:{p_summary:summary,p_proof_url:proofUrl||null}})}
 export async function submitCanopyMissionGroup(session,folderUrl){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_submit_mission_group',{token:s.access_token,method:'POST',body:{p_folder_url:folderUrl}})}
 export async function getCanopyMissionAdmin(session){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_admin_mission_groups',{token:s.access_token,method:'POST',body:{}})}
+
+export async function getCanopyMissionAdminStats(session){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_admin_mission_stats',{token:s.access_token,method:'POST',body:{}})}
 export async function reviewCanopyMissionGroup(session,groupId,decision,remark=''){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_admin_review_mission_group',{token:s.access_token,method:'POST',body:{p_group:groupId,p_decision:decision,p_remark:remark||null}})}
 
 /* WOMATE Canopy Phase 3 opportunity layer */
