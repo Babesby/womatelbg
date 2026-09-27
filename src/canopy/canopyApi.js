@@ -396,3 +396,13 @@ export async function requestOwnCanopyAccountDeletion(session,reason=''){
   if(!s?.access_token)throw new Error('Your Canopy session has expired. Sign in again.');
   return rest('rpc/canopy_request_own_account_deletion',{token:s.access_token,method:'POST',body:{p_reason:String(reason||'').trim()||null}});
 }
+
+// Phase 2 cross-country group missions
+export async function getMyCanopyMissionHub(session){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_get_my_mission_hub',{token:s.access_token,method:'POST',body:{}})}
+export async function respondCanopyMissionInvite(session,accept){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_respond_mission_invite',{token:s.access_token,method:'POST',body:{p_accept:Boolean(accept)}})}
+export async function sendCanopyMissionMessage(session,body){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_send_mission_message',{token:s.access_token,method:'POST',body:{p_body:body}})}
+export async function updateCanopyMissionGroup(session,{name,choice,customBrief}){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_update_mission_group',{token:s.access_token,method:'POST',body:{p_name:name,p_choice:choice,p_custom_brief:customBrief||null}})}
+export async function submitCanopyMissionReport(session,{summary,proofUrl}){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_submit_mission_report',{token:s.access_token,method:'POST',body:{p_summary:summary,p_proof_url:proofUrl||null}})}
+export async function submitCanopyMissionGroup(session,folderUrl){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_submit_mission_group',{token:s.access_token,method:'POST',body:{p_folder_url:folderUrl}})}
+export async function getCanopyMissionAdmin(session){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_admin_mission_groups',{token:s.access_token,method:'POST',body:{}})}
+export async function reviewCanopyMissionGroup(session,groupId,decision,remark=''){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_admin_review_mission_group',{token:s.access_token,method:'POST',body:{p_group:groupId,p_decision:decision,p_remark:remark||null}})}
