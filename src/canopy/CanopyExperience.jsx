@@ -334,7 +334,8 @@ export function CanopySpotlight({session}){
   const[photoConsent,setPhotoConsent]=useState({});
   const[photoBusy,setPhotoBusy]=useState('');
   const[photoMessage,setPhotoMessage]=useState({});
-  useEffect(()=>{let live=true;getFeaturedSpotlights(session,5).then(x=>{if(live){const rows=x||[];setItems(rows);setPhotoDrafts(Object.fromEntries(rows.filter(i=>i.is_me).map(i=>[i.id,i.professional_image_drive_url||''])));setPhotoConsent(Object.fromEntries(rows.filter(i=>i.is_me).map(i=>[i.id,Boolean(i.professional_image_drive_url)])))}}).catch(()=>{});return()=>{live=false}},[session?.access_token]);
+  const[slideIndex,setSlideIndex]=useState({});
+  useEffect(()=>{let live=true;getFeaturedSpotlights(session,12).then(x=>{if(live){const rows=x||[];setItems(rows);setPhotoDrafts(Object.fromEntries(rows.filter(i=>i.is_me).map(i=>[i.id,i.professional_image_drive_url||''])));setPhotoConsent(Object.fromEntries(rows.filter(i=>i.is_me).map(i=>[i.id,Boolean(i.professional_image_drive_url)])))}}).catch(()=>{});return()=>{live=false}},[session?.access_token]);
   useEffect(()=>{if(!expanded)return;const close=e=>{if(e.key==='Escape')setExpanded(null)};window.addEventListener('keydown',close);return()=>window.removeEventListener('keydown',close)},[expanded]);
   async function react(item,reaction){
     if(reacting)return;
@@ -360,9 +361,22 @@ export function CanopySpotlight({session}){
   if(!items.length)return null;
   return <section className="cx-spotlight" id="spotlight">
     <header><div><span>CANOPY SPOTLIGHT</span><h2>Featured this week.</h2></div></header>
-    <div className="cx-spotlight-row">
-      {items.slice(0,5).map(item=>{
-        const moduleNo=String(item.module_id||item.week_key||'').replace('module-','').replace(/[^0-9]/g,'').slice(-2)||'';
+    <div className="cx-spotlight-modules">
+      {Object.entries(items.slice(0,12).reduce((groups,item)=>{
+        const key=String(item.module_id||item.week_key||'').replace('module-','').replace(/[^0-9]/g,'').slice(-2)||'FEATURED';
+        (groups[key] ||= []).push(item);
+        return groups;
+      },{})).sort(([a],[b])=>a.localeCompare(b,undefined,{numeric:true})).map(([moduleNo,moduleItems])=><section className="cx-spotlight-module" key={moduleNo}>
+        <div className="cx-spotlight-module-head"><small>{moduleNo==='FEATURED'?'FEATURED':`MODULE ${moduleNo}`}</small><span>{moduleItems.length} spotlight{moduleItems.length===1?'':'s'}</span></div>
+        <div className="cx-spotlight-row" aria-label={`${moduleNo==='FEATURED'?'Featured':`Module ${moduleNo}`} Spotlights`} onScroll={e=>{
+          const track=e.currentTarget;
+          const cards=Array.from(track.children);
+          if(!cards.length)return;
+          let active=0,best=Infinity;
+          cards.forEach((card,index)=>{const distance=Math.abs(card.offsetLeft-track.scrollLeft);if(distance<best){best=distance;active=index}});
+          setSlideIndex(current=>current[moduleNo]===active?current:{...current,[moduleNo]:active});
+        }}>
+          {moduleItems.map(item=>{
         const practicalLabel=moduleNo==='01'?'Open CanopyCanvas':'Open practical work';
         const response=String(item.paragraph_response||'').trim();
         const long=response.length>180;
@@ -394,7 +408,10 @@ export function CanopySpotlight({session}){
             {reactions.map(([key,icon,label])=><button type="button" key={key} className={item.my_reaction===key?'is-active':''} disabled={Boolean(reacting)} onClick={()=>react(item,key)} aria-pressed={item.my_reaction===key}><img src={icon} alt="" aria-hidden="true"/><b>{label}</b><em>{Number(counts[key])||0}</em></button>)}
           </div>
         </article>;
-      })}
+          })}
+        </div>
+        {moduleItems.length>1&&<div className="cx-spotlight-dots" aria-label={`Slide ${(slideIndex[moduleNo]||0)+1} of ${moduleItems.length}`}>{moduleItems.map((item,index)=><i key={item.id} className={(slideIndex[moduleNo]||0)===index?'active':''}/>)}</div>}
+      </section>)}
     </div>
     {expanded&&<div className="cx-spotlight-modal" role="dialog" aria-modal="true" aria-label={`${expanded.learner_name||'Learner'} response`} onMouseDown={e=>{if(e.target===e.currentTarget)setExpanded(null)}}><section><button type="button" className="cx-spotlight-modal-close" onClick={()=>setExpanded(null)} aria-label="Close full response">×</button><small>LEARNER RESPONSE</small><h3>{expanded.learner_name||'She Leads fellow'}</h3><p>{expanded.paragraph_response}</p></section></div>}
   </section>;

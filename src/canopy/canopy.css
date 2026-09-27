@@ -2769,3 +2769,24 @@ html[data-canopy-theme="dark"] .cx-opportunity-hero{background:linear-gradient(1
 html[data-canopy-theme="dark"] .cx-opportunity-hero{background:linear-gradient(135deg,#12352f,#102f2b);border-color:#294740}html[data-canopy-theme="dark"] .cx-opportunity-hero h1{color:#f4faf7}html[data-canopy-theme="dark"] .cx-opportunity-hero p{color:#b8cbc5}html[data-canopy-theme="dark"] .cx-mission-briefing,html[data-canopy-theme="dark"] .cx-opportunity-list>a,html[data-canopy-theme="dark"] .cx-mission-queue i{background:#12352f;border-color:#294740}html[data-canopy-theme="dark"] .cx-mission-checklist button{background:#173b35;border-color:#294740;color:#eaf5f0}html[data-canopy-theme="dark"] .cx-mission-checklist button.is-done,html[data-canopy-theme="dark"] .cx-mission-proof{background:#193f38}html[data-canopy-theme="dark"] .cx-mission-mode button{color:#eaf5f0;border-color:#35534d}html[data-canopy-theme="dark"] .cx-opportunity-icon,html[data-canopy-theme="dark"] .cx-mission-kicker b,html[data-canopy-theme="dark"] .cx-mission-kicker em{background:#1a453d;color:#c6ff52}html[data-canopy-theme="dark"] .cx-opportunity-list h3,html[data-canopy-theme="dark"] .cx-mission-briefing>h3{color:#eaf5f0}
 @media(max-width:850px){.cx-opportunity-hub{padding:28px 20px 64px}.cx-opportunity-hero{grid-template-columns:1fr}.cx-opportunity-hero-mark{min-height:105px;grid-template-columns:auto auto auto auto;gap:10px}.cx-opportunity-hero-mark svg{margin:0}.cx-mission-layout{grid-template-columns:1fr}.cx-proof-folder{position:static}.cx-opportunity-board>header{grid-template-columns:1fr}}
 @media(max-width:620px){.cx-opportunity-hub{padding:22px 14px 54px;gap:34px}.cx-opportunity-hero{padding:22px;border-radius:20px}.cx-opportunity-hero h1{font-size:38px}.cx-opportunity-hero-mark{min-height:88px}.cx-mission-progress-head{align-items:start}.cx-mission-progress-value strong{font-size:20px}.cx-mission-briefing,.cx-proof-folder{padding:18px;border-radius:18px}.cx-mission-mode{display:grid}.cx-mission-mode>div{width:100%}.cx-mission-mode button{flex:1;justify-content:center}.cx-mission-kicker em{margin-left:0}.cx-opportunity-list>a{grid-template-columns:40px minmax(0,1fr) 18px;padding:15px}.cx-opportunity-icon{width:40px;height:40px}}
+/* WOMATE CANOPY - participant Spotlight module slider - 2026-09-27 */
+.cx-spotlight-modules{display:grid;gap:24px}
+.cx-spotlight-module{display:grid;gap:10px;min-width:0}
+.cx-spotlight-module-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.cx-spotlight-module-head small{font-size:9px;font-weight:950;letter-spacing:.12em;color:var(--canopy)}
+.cx-spotlight-module-head span{font-size:10px;font-weight:750;color:var(--canopy-muted)}
+.cx-spotlight-dots{display:none}
+@media(max-width:760px){
+ .cx-spotlight-modules{gap:24px}
+ .cx-spotlight-module{gap:9px}
+ .cx-spotlight-module-head{padding:0 2px}
+ .cx-spotlight-row{display:grid!important;grid-auto-flow:column!important;grid-template-columns:none!important;grid-auto-columns:minmax(0,calc(100vw - 58px))!important;gap:10px!important;overflow-x:auto!important;overflow-y:visible!important;scroll-snap-type:x mandatory!important;scroll-padding-inline:2px;overscroll-behavior-inline:contain;-webkit-overflow-scrolling:touch;scrollbar-width:none!important;padding:0 2px 2px!important}
+ .cx-spotlight-row::-webkit-scrollbar{display:none!important;width:0!important;height:0!important}
+ .cx-spotlight-row article{scroll-snap-align:start;scroll-snap-stop:always;width:auto!important;min-width:0!important}
+ .cx-spotlight-dots{display:flex;justify-content:center;align-items:center;gap:5px;min-height:12px}
+ .cx-spotlight-dots i{display:block;width:5px;height:5px;border-radius:999px;background:rgba(14,77,74,.2);transition:width .18s ease,background .18s ease}
+ .cx-spotlight-dots i.active{width:18px;background:var(--canopy)}
+ html[data-canopy-theme="dark"] .cx-spotlight-dots i{background:rgba(255,255,255,.22)}
+ html[data-canopy-theme="dark"] .cx-spotlight-dots i.active{background:var(--canopy-lime)}
+}
+@media(max-width:390px){.cx-spotlight-row{grid-auto-columns:minmax(0,calc(100vw - 44px))!important}}
