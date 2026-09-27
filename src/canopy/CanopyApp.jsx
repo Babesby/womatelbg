@@ -4,6 +4,7 @@ import CanopyAssignmentsV2 from './CanopyAssignmentsV2';
 import CanopyCanvas from './CanopyCanvas';
 import CanopyNotifications from './CanopyNotifications';
 import CanopyCertificate from './CanopyCertificate';
+import CanopyOpportunityHub from './CanopyOpportunityHub';
 import CanopySelectionCodes from './CanopySelectionCodes';
 import {activateTeamAccess,getStaffAccess,getStaffDashboard} from './canopyTeamAccessApi';
 import {CanopyAdminRolePreview,CanopyTeamAccessAdmin,CanopyTeamActivation,CanopyStaffDashboard,teamRoleLabel} from './CanopyTeamAccess';
@@ -125,7 +126,7 @@ function ResetPassword(){const[p1,setP1]=useState('');const[p2,setP2]=useState('
 function CourseNav({open,setOpen,viewer}){
 const manager=canManageCanopy(viewer);
  const tester=isCanopyTester(viewer);
- const learnerItems=[['/canopy/classroom','Home',BookOpen],['/canopy/course/she-leads','Course',GraduationCap],['/canopy/assignments','Assignments',FileText],['/canopy/progress','Progress',ClipboardCheck],['/canopy/portfolio','Impact profile',BriefcaseBusiness],['/canopy/resources','Resources',Sparkles],['/canopy/canvas','CanopyCanvas',PenLine],['/canopy/notifications','Notifications',MessageSquare],['/canopy/help','Help',ShieldAlert],['/canopy/certificate','Certificates',Award]];
+ const learnerItems=[['/canopy/classroom','Home',BookOpen],['/canopy/course/she-leads','Course',GraduationCap],['/canopy/assignments','Assignments',FileText],['/canopy/progress','Progress',ClipboardCheck],['/canopy/portfolio','Impact profile',BriefcaseBusiness],['/canopy/opportunities','Opportunities',TrendingUp],['/canopy/resources','Resources',Sparkles],['/canopy/canvas','CanopyCanvas',PenLine],['/canopy/notifications','Notifications',MessageSquare],['/canopy/help','Help',ShieldAlert],['/canopy/certificate','Certificates',Award]];
  const legacyAdmin=['manager','admin'].includes(viewer?.profile?.role);
  const managerItems=[['/canopy/manage','Operations',ClipboardCheck],['/canopy/manage/access','Manage cohort',UsersRound],['/canopy/manage/reviews','Assess submissions',FileText],['/canopy/manage/communications','Warnings & feedback',MessageSquare],['/canopy/manage/reminders','Reminders',Bell],['/canopy/manage/complaints','Complaints',ShieldAlert],['/canopy/manage/certificates','Certificates',Award],['/canopy/manage/reports','Reports',BarChart3],...((viewer?.staffAccess?.role==='programme_manager'||viewer?.profile?.role==='admin')?[[ '/canopy/manage/spotlight','Canopy Spotlight',Sparkles]]:[]),...(legacyAdmin?[[ '/canopy/manage/team-access','Team Access',UserRound]]:[])];
  if(viewer?.profile?.role==='admin')managerItems.push(['/canopy/manage/selection-codes','Selection codes',Award]);
@@ -662,6 +663,7 @@ const manager=canManageCanopy(viewer);const operational=isCanopyOperationsStaff(
  else if(path==='/canopy/assignments')content=<CanopyAssignmentsV2 viewer={viewer}/>;
  else if(path==='/canopy/progress')content=<Progress progress={progress} submissions={submissions}/>;
  else if(path==='/canopy/portfolio')content=<CanopyPortfolioPage viewer={viewer} submissions={submissions}/>;
+ else if(path==='/canopy/opportunities')content=<CanopyOpportunityHub viewer={viewer} submissions={submissions}/>;
  else if(path==='/canopy/resources')content=<Resources/>;
  else if(path==='/canopy/profile')content=<Profile viewer={viewer} onReload={load}/>;
  else{const match=path.match(/^\/canopy\/course\/she-leads\/([^/]+)\/([^/]+)$/);if(match){const[,moduleId,last]=match;content=last==='quiz'?<Quiz moduleId={moduleId} session={viewer.session} reload={load} tester={tester}/>:<Lesson moduleId={moduleId} lessonId={last} progress={progress} session={viewer.session} reload={load} tester={tester}/>}else content=tester?<TesterDashboard viewer={viewer} progress={progress}/>:<Dashboard viewer={viewer} progress={progress} submissions={submissions}/>}
