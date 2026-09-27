@@ -2796,3 +2796,14 @@ html[data-canopy-theme="dark"] .cm-hero{background:linear-gradient(135deg,#12352
 @media(max-width:950px){.cm-layout{grid-template-columns:1fr}.cm-chat{position:static;min-height:520px}.cm-chat-stream{max-height:380px}}
 @media(max-width:620px){.cm-page,.cm-admin{padding:24px 14px 60px}.cm-hero{padding:22px;border-radius:20px;display:grid}.cm-hero h1{font-size:38px}.cm-section{padding:18px;border-radius:18px}.cm-members>div{grid-template-columns:31px 1fr}.cm-members em{grid-column:2}.cm-chat{border-radius:18px}.cm-actions button{flex:1}.cm-choice{display:grid;grid-template-columns:1fr}.cm-admin-list>article{padding:17px}}
 @media print{.cm-page,.cm-admin{display:none!important}}
+/* PHASE 2B VERIFIED MISSION PORTFOLIO SAFE */
+.cx-mission-portfolio-record{margin:28px 0 8px;padding:22px 0;border-top:1px solid var(--canopy-line);border-bottom:1px solid var(--canopy-line);display:grid;grid-template-columns:minmax(150px,.3fr) minmax(0,1fr);gap:24px;align-items:start}
+.cx-mission-portfolio-kicker{font-size:10px;font-weight:900;letter-spacing:.12em;color:var(--canopy);line-height:1.45}
+.cx-mission-portfolio-main h2{margin:0 0 7px;font-size:clamp(20px,2vw,28px)}
+.cx-mission-portfolio-main>p{max-width:820px;margin:0;color:var(--canopy-text)}
+.cx-mission-portfolio-meta{display:flex;flex-wrap:wrap;gap:7px 14px;margin:12px 0 0;color:var(--canopy-muted);font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.05em}
+.cx-mission-portfolio-meta span+span:before{content:"/";margin-right:14px;color:#b7c5c0}
+.cx-mission-portfolio-remark{margin-top:11px!important;font-style:italic;color:var(--canopy-muted)!important}
+html[data-canopy-theme="dark"] .cx-mission-portfolio-record{border-color:#31514a}
+@media(max-width:620px){.cx-mission-portfolio-record{grid-template-columns:1fr;gap:8px;padding:18px 0}.cx-mission-portfolio-meta{display:grid;gap:4px}.cx-mission-portfolio-meta span+span:before{display:none}}
+@media print{.cx-mission-portfolio-record{break-inside:avoid;page-break-inside:avoid}.cx-mission-portfolio-record a{color:#123e36!important;text-decoration:none}.cx-mission-portfolio-meta{color:#536861}}

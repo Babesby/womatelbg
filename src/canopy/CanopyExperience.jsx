@@ -2,7 +2,7 @@ import React,{useEffect,useMemo,useRef,useState} from 'react';
 import {ArrowRight,BadgeCheck,Brain,BriefcaseBusiness,Check,ExternalLink,Play,Printer,RotateCcw,Sparkles,Star,Trophy,Users,Zap} from 'lucide-react';
 import {modules} from './canopyData';
 import {CANOPY_ASSIGNMENT_SCHEDULE,formatCanopyDate,getLiveSessionAt} from './canopySchedule';
-import {getFeaturedSpotlights,reactToCanopySpotlight,submitCanopySpotlightProfessionalImage} from './canopyApi';
+import { getFeaturedSpotlights,reactToCanopySpotlight,submitCanopySpotlightProfessionalImage, getMyCanopyMissionHub } from './canopyApi';
 import {playCanopyCorrectSound,playCanopyErrorSound,primeCanopyFeedbackAudio} from './canopyFeedbackAudio';
 
 export const CANOPY_JOURNEY_STAGES=[
@@ -430,6 +430,18 @@ export function CanopyPortfolioPage({viewer,submissions=[]}){
   const firstName=(name||'Fellow').trim().split(/\s+/)[0]||'Fellow';
   const country=profile.country||viewer?.user?.user_metadata?.country||'';
   const submitted=CANOPY_ASSIGNMENT_SCHEDULE.filter(item=>latest[item.weekKey]);
+  const [missionPortfolio,setMissionPortfolio]=useState(null);
+  useEffect(()=>{
+    let active=true;
+    getMyCanopyMissionHub().then(data=>{
+      if(active&&data?.group?.status==='verified'&&data?.member?.invitation_status==='accepted') setMissionPortfolio(data);
+    }).catch(()=>{});
+    return()=>{active=false};
+  },[]);
+  const missionGroup=missionPortfolio?.group||null;
+  const missionMembers=Array.isArray(missionPortfolio?.members)?missionPortfolio.members:[];
+  const myMissionMember=missionMembers.find(member=>member.user_id===viewer?.user?.id)||missionPortfolio?.member||null;
+  const missionCountries=[...new Set(missionMembers.map(member=>String(member.country||'').trim()).filter(Boolean))];
   const verified=submitted.filter(item=>{const sub=latest[item.weekKey];return sub?.review_source==='manual'&&sub?.assessment_status==='completed'});
   const practicalCount=submitted.filter(item=>Boolean(latest[item.weekKey]?.canvas_link)).length;
   const publicActionCount=submitted.filter(item=>Boolean(latest[item.weekKey]?.linkedin_link)).length;
@@ -466,6 +478,21 @@ export function CanopyPortfolioPage({viewer,submissions=[]}){
       {CANOPY_ASSIGNMENT_SCHEDULE.map(item=>{const sub=latest[item.weekKey];const module=modules.find(m=>m.id===item.moduleId);const practical=module?.assignment||{};const isVerified=sub?.review_source==='manual'&&sub?.assessment_status==='completed';return <article className={sub?'is-ready':'is-pending'} key={item.weekKey}><div className="cx-portfolio-no">{item.moduleId}</div><div><div className="cx-impact-evidence-top"><small>{practical?.portfolioLabel||'PRACTICAL WORK'}</small>{isVerified&&<span className="cx-impact-verified"><BadgeCheck size={13}/> WOMATE verified</span>}</div><h2>{practical?.practicalTitle||module?.title}</h2><p>{sub?portfolioEvidenceCopy[item.moduleId]:(practical?.portfolioSummary||practical?.practicalBrief||module?.summary)}</p><div className="cx-impact-capability"><span>{moduleImpact[item.moduleId]||'Climate action'}</span></div>{sub?<div className="cx-portfolio-links">{sub.canvas_link&&<a href={sub.canvas_link} target="_blank" rel="noreferrer">Open practical work <ExternalLink size={13}/></a>}{sub.linkedin_link&&<a href={sub.linkedin_link} target="_blank" rel="noreferrer">Open speaker challenge <ExternalLink size={13}/></a>}</div>:<span className="cx-portfolio-pending">Builds automatically when this module is submitted</span>}</div></article>})}
     </section>
     {!submitted.length&&<p className="cx-portfolio-empty">Your Impact Profile will build automatically as you submit real work through Canopy.</p>}
+        {missionGroup&&<section className="cx-mission-portfolio-record" aria-label="Verified cross-country mission">
+      <div className="cx-mission-portfolio-kicker">WOMATE VERIFIED GROUP MISSION</div>
+      <div className="cx-mission-portfolio-main">
+        <div>
+          <h2>{missionGroup.name||'Cross-country climate mission'}</h2>
+          <p>{`${(name||'Fellow').trim().split(/\s+/)[0]} collaborated with fellows${missionCountries.length?` across ${missionCountries.join(', ')}`:''} on a five-part cross-country climate mission${myMissionMember?.mission_no?`, leading Mission ${myMissionMember.mission_no}`:''}. WOMATE verified the completed group evidence.`}</p>
+        </div>
+        <div className="cx-mission-portfolio-meta">
+          {missionCountries.length>0&&<span>{missionCountries.length} countries represented</span>}
+          {missionGroup.verified_at&&<span>Verified {new Date(missionGroup.verified_at).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})}</span>}
+        </div>
+        {missionGroup.verification_remark&&<p className="cx-mission-portfolio-remark">{missionGroup.verification_remark}</p>}
+        {missionGroup.evidence_folder_url&&<div className="cx-portfolio-links"><a href={missionGroup.evidence_folder_url} target="_blank" rel="noreferrer">Open verified mission evidence <ExternalLink size={13}/></a></div>}
+      </div>
+    </section>}
     <footer className="cx-portfolio-footer"><span>WOMATE · SHE LEADS CLIMATE MENTORSHIP</span><span>Evidence links point to participant-owned Google Drive, LinkedIn or X/Twitter work.</span></footer>
   </main>;
 }
