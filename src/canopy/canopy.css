@@ -2644,7 +2644,7 @@ html[data-canopy-theme="dark"] .canopyAdminAttemptFilters button.active{backgrou
 html[data-canopy-theme="dark"] .canopyAdminAttemptFilters button.active small{background:#12352f;color:var(--canopy-lime)}
 @media(max-width:760px){.canopyAdminReviewFind{align-items:stretch}.canopyAdminReviewSearch{max-width:none;flex-basis:100%}.canopyAdminAttemptFilters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%}.canopyAdminAttemptFilters button{justify-content:space-between;width:100%}.canopyAdminReviewShown{justify-self:start}}
 
-/* WOMATE CANOPY Â· celebratory final-result reveal Â· 2026-09-27 */
+/* WOMATE CANOPY · celebratory final-result reveal · 2026-09-27 */
 .ca-archive-row{grid-template-columns:minmax(200px,1fr) minmax(110px,.3fr) minmax(240px,.9fr) minmax(150px,.48fr)}
 .ca-result-ready{display:inline-flex;margin-top:8px;padding:5px 9px;border-radius:999px;background:rgba(198,255,82,.2);color:var(--canopy);font-size:9px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}
 .ca-archive-celebration{min-width:0;padding-left:18px;border-left:1px solid var(--canopy-line)}
@@ -2655,7 +2655,7 @@ html[data-canopy-theme="dark"] .ca-archive-celebration{border-color:#28443f}
 @media(max-width:680px){.ca-archive-row{grid-template-columns:minmax(0,1fr) auto}.ca-archive-remark{grid-column:1/-1}.ca-archive-celebration{grid-column:1/-1;grid-row:auto;padding:12px 0 0;border-left:0;border-top:1px solid var(--canopy-line)}.ca-archive-celebration iframe{width:min(100%,320px);max-height:none;aspect-ratio:16/9}.ca-result-ready{margin-top:7px}}
 @media(max-width:520px){.ca-archive-row{grid-template-columns:1fr}.ca-archive-score,.ca-archive-remark,.ca-archive-celebration{grid-column:1;padding:10px 0 0;border-left:0;border-top:1px solid var(--canopy-line)}.ca-archive-celebration iframe{width:100%;aspect-ratio:16/9;border-radius:12px}}
 
-/* WOMATE CANOPY Â· final-result responsive polish Â· 2026-09-27 */
+/* WOMATE CANOPY · final-result responsive polish · 2026-09-27 */
 /* Desktop: keep score visually centred and give the celebration its own space. */
 .ca-archive-row{grid-template-columns:minmax(220px,.9fr) minmax(150px,.34fr) minmax(260px,1.05fr) minmax(220px,.58fr)!important;gap:28px!important;align-items:center!important}
 .ca-archive-title{min-width:0}
@@ -2671,7 +2671,7 @@ html[data-canopy-theme="dark"] .ca-archive-score{border-color:#28443f!important}
 @media(max-width:680px){.ca-archive-row{grid-template-columns:1fr!important;gap:12px!important}.ca-archive-score,.ca-archive-remark,.ca-archive-celebration{grid-column:1!important;grid-row:auto!important;width:100%!important;padding:14px 0 0!important;border-left:0!important;border-right:0!important;border-top:1px solid var(--canopy-line)!important}.ca-archive-score{display:grid!important;justify-items:start!important;text-align:left!important}.ca-archive-score span,.ca-archive-score strong{text-align:left!important}.ca-archive-score strong{font-size:28px!important}.ca-archive-celebration{justify-content:flex-start!important}.ca-archive-celebration iframe{width:100%!important;max-width:420px!important;margin:0!important;aspect-ratio:16/9!important}.ca-result-ready{white-space:normal}}
 @media(max-width:420px){.ca-archive-celebration iframe{max-width:100%!important;border-radius:13px!important}.ca-archive-score strong{font-size:26px!important}}
 
-/* WOMATE CANOPY Â· stable final-result card v3 Â· 2026-09-27 */
+/* WOMATE CANOPY · stable final-result card v3 · 2026-09-27 */
 .ca-result-card{display:grid!important;grid-template-columns:minmax(230px,.95fr) minmax(170px,.42fr) minmax(260px,1fr) minmax(260px,.75fr)!important;gap:28px!important;align-items:stretch!important;padding:24px!important;border:1px solid var(--canopy-line)!important;border-radius:22px!important;background:var(--canopy-surface)!important;box-shadow:none!important;overflow:hidden}
 .ca-result-card>div{min-width:0}
 .ca-result-title{display:flex;flex-direction:column;justify-content:center}
@@ -2686,7 +2686,7 @@ html[data-canopy-theme="dark"] .ca-archive-score{border-color:#28443f!important}
 html[data-canopy-theme="dark"] .ca-result-score{border-color:#35514b!important;background:rgba(198,255,82,.07)}
 @media(max-width:1100px){.ca-result-card{grid-template-columns:minmax(0,1fr) minmax(170px,.34fr)!important;gap:18px 22px!important}.ca-result-title{grid-column:1}.ca-result-score{grid-column:2}.ca-result-remark{grid-column:1;padding:16px 0 0!important;border-top:1px solid var(--canopy-line)!important}.ca-result-gif{grid-column:2;padding-top:16px!important;border-top:1px solid var(--canopy-line)!important}.ca-result-gif iframe{min-height:150px!important;aspect-ratio:16/9!important}}
 @media(max-width:700px){.ca-result-card{grid-template-columns:1fr!important;padding:18px!important;gap:14px!important}.ca-result-title,.ca-result-score,.ca-result-remark,.ca-result-gif{grid-column:1!important;grid-row:auto!important}.ca-result-score{padding:16px!important}.ca-result-score strong{font-size:38px!important}.ca-result-remark,.ca-result-gif{padding-top:14px!important;border-top:1px solid var(--canopy-line)!important}.ca-result-gif iframe{width:100%!important;min-height:0!important;aspect-ratio:16/9!important;border-radius:15px!important}}
-/* Canopy Impact Profile â€” evidence, verified work and leadership progression */
+/* Canopy Impact Profile — evidence, verified work and leadership progression */
 .cx-impact-profile{position:relative}
 .cx-impact-hero{padding-top:4px}
 .cx-impact-record{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.5fr);gap:34px;align-items:stretch;margin:30px 0 16px;padding:26px;border:1px solid #d8e7df;border-radius:24px;background:linear-gradient(135deg,#f7fbf8 0%,#eef7f2 100%)}
