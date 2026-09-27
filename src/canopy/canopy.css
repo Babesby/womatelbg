@@ -2829,3 +2829,25 @@ html[data-canopy-theme="dark"] .cx-mission-portfolio-record{border-color:#31514a
  html[data-canopy-theme="dark"] .cx-spotlight-dots i{background:rgba(255,255,255,.22)!important}
  html[data-canopy-theme="dark"] .cx-spotlight-dots i.active{background:#c6ff52!important}
 }
+/* WOMATE_SAFE_SPOTLIGHT_CHEVRONS: ASCII-only mobile arrows; hides any mojibake glyph text. */
+@media (max-width: 760px){
+  .cx-spotlight-nav{
+    font-size:0!important;
+    color:transparent!important;
+  }
+  .cx-spotlight-nav::before{
+    content:"";
+    display:block;
+    width:10px;
+    height:10px;
+    border-top:2px solid #0e4d4a;
+    border-right:2px solid #0e4d4a;
+    box-sizing:border-box;
+  }
+  .cx-spotlight-prev::before{transform:rotate(-135deg);margin-left:4px}
+  .cx-spotlight-next::before{transform:rotate(45deg);margin-right:4px}
+  html[data-canopy-theme="dark"] .cx-spotlight-nav::before{
+    border-top-color:#c6ff52;
+    border-right-color:#c6ff52;
+  }
+}
