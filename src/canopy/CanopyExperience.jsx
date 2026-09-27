@@ -1,5 +1,5 @@
 import React,{useEffect,useMemo,useRef,useState} from 'react';
-import {ArrowRight,BadgeCheck,Brain,BriefcaseBusiness,Check,ExternalLink,Leaf,Play,Printer,RotateCcw,Sparkles,Star,Trophy,Users,Zap} from 'lucide-react';
+import {ArrowRight,BadgeCheck,Brain,BriefcaseBusiness,Check,ExternalLink,Play,Printer,RotateCcw,Sparkles,Star,Trophy,Users,Zap} from 'lucide-react';
 import {modules} from './canopyData';
 import {CANOPY_ASSIGNMENT_SCHEDULE,formatCanopyDate,getLiveSessionAt} from './canopySchedule';
 import {getFeaturedSpotlights,reactToCanopySpotlight,submitCanopySpotlightProfessionalImage} from './canopyApi';
@@ -416,13 +416,6 @@ export function CanopyPortfolioPage({viewer,submissions=[]}){
   const verified=submitted.filter(item=>{const sub=latest[item.weekKey];return sub?.review_source==='manual'&&sub?.assessment_status==='completed'});
   const practicalCount=submitted.filter(item=>Boolean(latest[item.weekKey]?.canvas_link)).length;
   const publicActionCount=submitted.filter(item=>Boolean(latest[item.weekKey]?.linkedin_link)).length;
-  const impactStages=[
-    ['SEE','Notice what is happening, gather evidence and separate observation from assumption.'],
-    ['UNDERSTAND','Look beneath the visible problem to people, systems, vulnerability and power.'],
-    ['CONNECT','Connect climate knowledge to community, policy, opportunity and other people.'],
-    ['ACT','Turn learning into practical work, public communication and real-world action.'],
-    ['MULTIPLY','Use your leadership to help more people understand, participate and act.']
-  ];
   const portfolioEvidenceCopy={
     '01':`${firstName} created a CanopyCanvas awareness graphic for a defined local audience, communicating a climate issue responsibly and calling for one realistic action.`,
     '02':`${firstName} created an AI voice picture story connecting gender, lived experience and climate justice for a public audience.`,
@@ -449,12 +442,6 @@ export function CanopyPortfolioPage({viewer,submissions=[]}){
         <span><strong>{practicalCount}</strong> practical builds</span>
         <span><strong>{publicActionCount}</strong> public actions</span>
       </div>
-    </section>
-
-    <section className="cx-canopy-way">
-      <div className="cx-canopy-way-mark"><Leaf size={22}/><span>THE CANOPY WAY</span></div>
-      <blockquote>We do not stand outside the Earth trying to save it. We live within it. Its systems are our systems, and women must be present wherever the future of those systems is being decided.</blockquote>
-      <div className="cx-canopy-way-grid">{impactStages.map(([title,copy],index)=><article key={title}><span>{String(index+1).padStart(2,'0')}</span><div><h3>{title}</h3><p>{copy}</p></div></article>)}</div>
     </section>
 
     <section className="cx-portfolio-intro cx-impact-intro"><BriefcaseBusiness/><div><span className="cx-impact-kicker">YOUR EVIDENCE</span><h2>Learning becomes more valuable when it leaves the classroom.</h2><p>Each module below becomes part of your professional climate record. Keep participant-owned links viewable before sharing this profile with an employer, fellowship, internship, funder or climate network.</p></div></section>
