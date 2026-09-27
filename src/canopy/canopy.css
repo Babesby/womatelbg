@@ -2737,3 +2737,5 @@ html[data-canopy-theme="dark"] .cx-impact-summary{color:#9ab0a9}
 html[data-canopy-theme="dark"] .cx-impact-summary strong{color:#dff7ee}
 @media(max-width:700px){.cx-impact-record{align-items:flex-start;flex-direction:column;gap:9px}.cx-impact-summary{justify-content:flex-start;gap:6px 12px}.cx-impact-summary span+span:before{margin-right:6px}}
 @media print{.cx-impact-record{break-inside:avoid}}
+/* Portfolio learner guidance: screen-only, excluded from PDF export */
+@media print{.cx-impact-intro{display:none!important}}
