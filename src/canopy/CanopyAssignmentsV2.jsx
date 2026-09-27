@@ -8,6 +8,17 @@ function scramble(word){
   return word.split('').map((c,i)=>({c,k:(i*17+word.charCodeAt(i))%97})).sort((a,b)=>a.k-b.k).map(x=>x.c).join('');
 }
 
+const RESULT_CELEBRATION_GIFS=[
+  'https://giphy.com/embed/FBzeCJhUUVh3TedptK',
+  'https://giphy.com/embed/7UyhJrObrFS5RrnASI',
+  'https://giphy.com/embed/8OJFaKKr8wKJqIFtvS'
+];
+
+function resultCelebrationGif(moduleId){
+  const numeric=Number(String(moduleId||'').replace(/\\D/g,''))||1;
+  return RESULT_CELEBRATION_GIFS[(numeric-1)%RESULT_CELEBRATION_GIFS.length];
+}
+
 const PUZZLES={
   'module-01':{
     type:'unscramble',
@@ -394,9 +405,12 @@ export default function CanopyAssignmentsV2({viewer}){
         const practicalActionLabel=curriculum?.assignment?.practicalActionLabel||'';
         const practicalLinkLabel=curriculum?.assignment?.practicalLinkLabel||'Practical challenge Google Drive link';
         if(archived)return <article className="ca-card ca-archive-row" key={item.weekKey}>
-          <div className="ca-archive-title"><small>MODULE {item.moduleId}</small><h2>{item.title}</h2></div>
+          <div className="ca-archive-title"><small>MODULE {item.moduleId}</small><h2>{item.title}</h2><span className="ca-result-ready">Results are in âœ¨</span></div>
           <div className="ca-archive-score"><span>FINAL SCORE</span><strong>{score}/100</strong></div>
           <div className="ca-archive-remark"><span>REMARKS</span><p>{remark}</p></div>
+          <div className="ca-archive-celebration" aria-label="Celebration">
+            <iframe loading="lazy" src={resultCelebrationGif(item.moduleId)} title={`Celebrating your Module ${item.moduleId} result`} allow="fullscreen"/>
+          </div>
         </article>;
         return <article className="ca-card" key={item.weekKey}>
           <div className="ca-card-head"><div><small>MODULE {item.moduleId}</small><h2>{item.title}</h2></div><div className="ca-dates"><span>Due {formatCanopyDate(item.dueAt)}</span>{count>0&&<strong>Attempt {count} of 3</strong>}</div></div>

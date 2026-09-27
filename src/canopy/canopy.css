@@ -2643,3 +2643,14 @@ html[data-canopy-theme="dark"] .canopyAdminReviewSearch input,html[data-canopy-t
 html[data-canopy-theme="dark"] .canopyAdminAttemptFilters button.active{background:var(--canopy-lime);border-color:var(--canopy-lime);color:#12352f}
 html[data-canopy-theme="dark"] .canopyAdminAttemptFilters button.active small{background:#12352f;color:var(--canopy-lime)}
 @media(max-width:760px){.canopyAdminReviewFind{align-items:stretch}.canopyAdminReviewSearch{max-width:none;flex-basis:100%}.canopyAdminAttemptFilters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%}.canopyAdminAttemptFilters button{justify-content:space-between;width:100%}.canopyAdminReviewShown{justify-self:start}}
+
+/* WOMATE CANOPY Â· celebratory final-result reveal Â· 2026-09-27 */
+.ca-archive-row{grid-template-columns:minmax(200px,1fr) minmax(110px,.3fr) minmax(240px,.9fr) minmax(150px,.48fr)}
+.ca-result-ready{display:inline-flex;margin-top:8px;padding:5px 9px;border-radius:999px;background:rgba(198,255,82,.2);color:var(--canopy);font-size:9px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}
+.ca-archive-celebration{min-width:0;padding-left:18px;border-left:1px solid var(--canopy-line)}
+.ca-archive-celebration iframe{display:block;width:100%;aspect-ratio:4/3;max-height:118px;border:0;border-radius:14px;background:#09261d;overflow:hidden}
+html[data-canopy-theme="dark"] .ca-result-ready{background:rgba(198,255,82,.12);color:#d9ff77}
+html[data-canopy-theme="dark"] .ca-archive-celebration{border-color:#28443f}
+@media(max-width:980px){.ca-archive-row{grid-template-columns:minmax(0,1fr) auto minmax(140px,.42fr)}.ca-archive-remark{grid-column:1/3;padding:12px 0 0;border-left:0;border-top:1px solid var(--canopy-line)}.ca-archive-celebration{grid-column:3;grid-row:1/3}}
+@media(max-width:680px){.ca-archive-row{grid-template-columns:minmax(0,1fr) auto}.ca-archive-remark{grid-column:1/-1}.ca-archive-celebration{grid-column:1/-1;grid-row:auto;padding:12px 0 0;border-left:0;border-top:1px solid var(--canopy-line)}.ca-archive-celebration iframe{width:min(100%,320px);max-height:none;aspect-ratio:16/9}.ca-result-ready{margin-top:7px}}
+@media(max-width:520px){.ca-archive-row{grid-template-columns:1fr}.ca-archive-score,.ca-archive-remark,.ca-archive-celebration{grid-column:1;padding:10px 0 0;border-left:0;border-top:1px solid var(--canopy-line)}.ca-archive-celebration iframe{width:100%;aspect-ratio:16/9;border-radius:12px}}
