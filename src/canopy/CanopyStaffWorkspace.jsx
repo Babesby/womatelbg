@@ -1,11 +1,12 @@
 import React,{useEffect,useMemo,useState}from'react';
 import{
-  Award,BarChart3,Bell,BookOpen,ChevronRight,ClipboardCheck,FileText,
+  Award,BarChart3,Bell,BookOpen,BriefcaseBusiness,ChevronRight,ClipboardCheck,FileText,
   LayoutDashboard,LogOut,Menu,MessageSquare,ShieldAlert,Sparkles,
   Star,UserRound,UsersRound,X
 }from'lucide-react';
 import'./canopyStaffWorkspace.css';
 import{checkCanopyDriveAccess}from'./canopyApi';
+import{CanopyOpportunityAdmin}from'./CanopyOpportunityBoard';
 
 const ROLE_LABELS={
   programme_manager:'Programme & Monitoring Manager',
@@ -31,6 +32,7 @@ const NAV={
     ['certificates','Certificates',Award],
     ['reports','Reports',BarChart3],
     ['spotlight','Canopy Spotlight',Star],
+    ['opportunities','Opportunities',BriefcaseBusiness],
     ['team','Team operations',UserRound]
   ],
   programme_operations:[
@@ -354,6 +356,7 @@ export default function CanopyStaffWorkspace({viewer,path,onSignOut}){
   else if(view==='certificates')content=<StaffCertificates viewer={viewer} data={data} preview={isPreview} onRefresh={refresh}/>;
   else if(view==='reports'||view==='activity')content=<Reports data={data} moduleId={moduleId}/>;
   else if(view==='spotlight')content=<Spotlight viewer={viewer} data={data} preview={isPreview} role={role} onRefresh={refresh}/>;
+  else if(view==='opportunities')content=<CanopyOpportunityAdmin viewer={viewer}/>;
   else if(view==='team')content=<TeamDirectory data={data}/>;
   else if(view==='support')content=<><ManagedLearners viewer={viewer} data={data} role={role} preview={true}/><RecentSubmissions items={data?.recent_submissions||[]} attentionOnly/></>;
   else content=<CapabilityPage role={role} keyName={view} moduleId={moduleId}/>;
