@@ -21,3 +21,5 @@ coverage/
 Thumbs.db
 WOMATE_*_PATCH*/
 WOMATE_*_2026*/
+
+supabase/.temp/
