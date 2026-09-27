@@ -128,8 +128,9 @@ export async function getManagerSnapshot(session){
   const testerIds=new Set((profiles||[]).filter(p=>p.role==='tester').map(p=>p.user_id));
   let withdrawals=[];
   try{const rows=await rest('rpc/canopy_admin_list_withdrawals',{token:s.access_token,method:'POST',body:{}});withdrawals=Array.isArray(rows)?rows:[]}catch{}
-  let spotlight={nominations:[],weekly:[]};
+  let spotlight={nominations:[],weekly:[],recognition_assets:[]};
   try{const data=await rest('rpc/canopy_admin_spotlight_dashboard',{token:s.access_token,method:'POST',body:{}});if(data&&typeof data==='object')spotlight=data}catch{}
+  try{const assets=await rest('rpc/canopy_admin_spotlight_recognition_assets',{token:s.access_token,method:'POST',body:{p_module_id:null}});spotlight={...spotlight,recognition_assets:Array.isArray(assets)?assets:[]}}catch{}
   return {
     profiles:(profiles||[]).filter(p=>!testerIds.has(p.user_id)),
     enrollments:(enrollments||[]).filter(x=>!testerIds.has(x.user_id)),
@@ -270,6 +271,11 @@ export async function getFeaturedSpotlights(session,limit=5){
 export async function reactToCanopySpotlight(session,spotlightId,reaction=null){
   const s=await refreshSession(session||getStoredSession());if(!s?.access_token)throw new Error('Your Canopy session has expired. Sign in again.');
   return rest('rpc/canopy_react_to_spotlight',{token:s.access_token,method:'POST',body:{p_spotlight_id:spotlightId,p_reaction:reaction||null}});
+}
+
+export async function submitCanopySpotlightProfessionalImage(session,spotlightId,driveUrl,consent=true){
+  const s=await refreshSession(session||getStoredSession());if(!s?.access_token)throw new Error('Your Canopy session has expired. Sign in again.');
+  return rest('rpc/canopy_submit_spotlight_recognition_asset',{token:s.access_token,method:'POST',body:{p_spotlight_id:spotlightId,p_drive_url:String(driveUrl||'').trim(),p_consent:Boolean(consent)}});
 }
 export async function submitWeeklyAssignment(session,weekKey,payload){
   const s=await refreshSession(session||getStoredSession());if(!s?.access_token)throw new Error('Your Canopy session has expired. Sign in again.');

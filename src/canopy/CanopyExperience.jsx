@@ -2,7 +2,7 @@ import React,{useEffect,useMemo,useRef,useState} from 'react';
 import {ArrowRight,Brain,BriefcaseBusiness,Check,ExternalLink,Play,Printer,RotateCcw,Sparkles,Star,Trophy,Users,Zap} from 'lucide-react';
 import {modules} from './canopyData';
 import {CANOPY_ASSIGNMENT_SCHEDULE,formatCanopyDate,getLiveSessionAt} from './canopySchedule';
-import {getFeaturedSpotlights,reactToCanopySpotlight} from './canopyApi';
+import {getFeaturedSpotlights,reactToCanopySpotlight,submitCanopySpotlightProfessionalImage} from './canopyApi';
 import {playCanopyCorrectSound,playCanopyErrorSound,primeCanopyFeedbackAudio} from './canopyFeedbackAudio';
 
 export const CANOPY_JOURNEY_STAGES=[
@@ -330,7 +330,11 @@ export function CanopySpotlight({session}){
   const[items,setItems]=useState([]);
   const[expanded,setExpanded]=useState(null);
   const[reacting,setReacting]=useState('');
-  useEffect(()=>{let live=true;getFeaturedSpotlights(session,5).then(x=>{if(live)setItems(x||[])}).catch(()=>{});return()=>{live=false}},[session?.access_token]);
+  const[photoDrafts,setPhotoDrafts]=useState({});
+  const[photoConsent,setPhotoConsent]=useState({});
+  const[photoBusy,setPhotoBusy]=useState('');
+  const[photoMessage,setPhotoMessage]=useState({});
+  useEffect(()=>{let live=true;getFeaturedSpotlights(session,5).then(x=>{if(live){const rows=x||[];setItems(rows);setPhotoDrafts(Object.fromEntries(rows.filter(i=>i.is_me).map(i=>[i.id,i.professional_image_drive_url||''])));setPhotoConsent(Object.fromEntries(rows.filter(i=>i.is_me).map(i=>[i.id,Boolean(i.professional_image_drive_url)])))}}).catch(()=>{});return()=>{live=false}},[session?.access_token]);
   useEffect(()=>{if(!expanded)return;const close=e=>{if(e.key==='Escape')setExpanded(null)};window.addEventListener('keydown',close);return()=>window.removeEventListener('keydown',close)},[expanded]);
   async function react(item,reaction){
     if(reacting)return;
@@ -341,8 +345,20 @@ export function CanopySpotlight({session}){
       setItems(rows=>rows.map(row=>row.id===item.id?{...row,my_reaction:result?.my_reaction||null,reaction_counts:result?.reaction_counts||row.reaction_counts}:row));
     }catch{}finally{setReacting('')}
   }
+  async function submitProfessionalImage(item){
+    const url=String(photoDrafts[item.id]||'').trim();
+    if(!/^https:\/\/drive\.google\.com\//i.test(url)){setPhotoMessage(x=>({...x,[item.id]:'Paste a Google Drive share link for your professional image.'}));return}
+    if(!photoConsent[item.id]){setPhotoMessage(x=>({...x,[item.id]:'Please confirm WOMATE may use this image for your Spotlight celebration.'}));return}
+    setPhotoBusy(item.id);setPhotoMessage(x=>({...x,[item.id]:''}));
+    try{
+      const result=await submitCanopySpotlightProfessionalImage(session,item.id,url,true);
+      setItems(rows=>rows.map(row=>row.id===item.id?{...row,professional_image_drive_url:result?.professional_image_drive_url||url,professional_image_submitted_at:result?.submitted_at||new Date().toISOString()}:row));
+      setPhotoMessage(x=>({...x,[item.id]:'Professional image received. Thank you.'}));
+    }catch(e){setPhotoMessage(x=>({...x,[item.id]:e?.message||'Could not save the image link. Try again.'}))}
+    finally{setPhotoBusy('')}
+  }
   if(!items.length)return null;
-  return <section className="cx-spotlight">
+  return <section className="cx-spotlight" id="spotlight">
     <header><div><span>CANOPY SPOTLIGHT</span><h2>Featured this week.</h2></div></header>
     <div className="cx-spotlight-row">
       {items.slice(0,5).map(item=>{
@@ -353,9 +369,22 @@ export function CanopySpotlight({session}){
         const preview=long?`${response.slice(0,180).trimEnd()}`:response;
         const counts=item.reaction_counts||{};
         const reactions=[['love','/assets/canopy/reactions/heart.webp','Love'],['clap','/assets/canopy/reactions/clap.webp','Clap'],['insightful','/assets/canopy/reactions/insightful.webp','Insightful']];
-        return <article key={item.id}>
+        const submittedPhoto=String(item.professional_image_drive_url||'').trim();
+        return <article key={item.id} className={item.is_me?'is-own-spotlight':''}>
           <div className="cx-spotlight-topline"><div className="cx-spotlight-star"><Star size={16}/></div><small>{moduleNo?`MODULE ${moduleNo}`:'FEATURED'}</small></div>
           <h3>{item.learner_name||'She Leads fellow'}</h3>
+          {item.is_me&&<div className="cx-spotlight-congrats">
+            <small>TOP 5 OUTSTANDING LEARNER</small>
+            <h4>Congratulations{item.learner_name?`, ${String(item.learner_name).trim().split(/\s+/)[0]}`:''}.</h4>
+            <p>You’re one of WOMATE’s Top 5 Outstanding Learners for Module {moduleNo||''}. We’d love to celebrate you on WOMATE’s official channels.</p>
+            <label>Professional image · Google Drive
+              <input inputMode="url" value={photoDrafts[item.id]??submittedPhoto} onChange={e=>setPhotoDrafts(x=>({...x,[item.id]:e.target.value}))} placeholder="https://drive.google.com/…"/>
+              <span>Set sharing to <b>Anyone with the link → Viewer</b>.</span>
+            </label>
+            <label className="cx-spotlight-consent"><input type="checkbox" checked={Boolean(photoConsent[item.id])} onChange={e=>setPhotoConsent(x=>({...x,[item.id]:e.target.checked}))}/><span>I’m happy for WOMATE to use this image to celebrate my Spotlight recognition on its official channels.</span></label>
+            <div className="cx-spotlight-photo-actions"><button type="button" className="canopyPrimary" disabled={photoBusy===item.id} onClick={()=>submitProfessionalImage(item)}>{photoBusy===item.id?'Saving…':submittedPhoto?'Update image link':'Share professional image'}</button>{submittedPhoto&&<a href={submittedPhoto} target="_blank" rel="noreferrer">View submitted image <ExternalLink size={12}/></a>}</div>
+            {photoMessage[item.id]&&<p className="cx-spotlight-photo-message">{photoMessage[item.id]}</p>}
+          </div>}
           {response&&<div className="cx-spotlight-response"><span>LEARNER RESPONSE</span><p>{preview}{long&&<button type="button" className="cx-spotlight-more" onClick={()=>setExpanded(item)} aria-label={`Read ${item.learner_name||'learner'} full response`}>…</button>}</p></div>}
           <div className="cx-spotlight-actions">
             {item.canvas_link&&<a href={item.canvas_link} target="_blank" rel="noreferrer">{practicalLabel} <ExternalLink size={13}/></a>}

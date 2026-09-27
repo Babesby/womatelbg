@@ -2603,3 +2603,25 @@ html[data-canopy-theme="dark"] .ca-archive-remark p{color:#b8cbc5!important}
 html[data-canopy-theme="dark"] .canopyDriveAuditButton{background:#173b34;border-color:rgba(255,255,255,.1);color:#dff7eb}
 html[data-canopy-theme="dark"] .canopyDriveAuditButton:hover{background:#1d493f}
 @media(max-width:760px){.canopyReviewToolbarLead{width:100%;justify-content:space-between}.canopyDriveAuditButton{width:auto;max-width:100%}.cx-spotlight-reactions{gap:6px}.cx-spotlight-reactions button{flex:1 1 96px;justify-content:center;min-width:0}.cx-spotlight-reactions button img{width:24px;height:24px;flex-basis:24px}}
+
+/* WOMATE CANOPY · Spotlight Top 5 recognition · 2026-09-27 */
+.cx-spotlight-row>article.is-own-spotlight{border-color:rgba(198,255,82,.55);box-shadow:0 18px 48px rgba(14,77,74,.11)}
+.cx-spotlight-congrats{margin:16px 0 18px;padding:18px;border-radius:18px;background:linear-gradient(135deg,var(--canopy) 0%,#0a3e3b 100%);color:#fff}
+.cx-spotlight-congrats>small{display:block;color:var(--canopy-lime);font-size:10px;font-weight:900;letter-spacing:.13em;margin-bottom:6px}
+.cx-spotlight-congrats h4{margin:0 0 6px;font-size:20px;line-height:1.2;color:#fff}
+.cx-spotlight-congrats>p{margin:0 0 15px;color:rgba(255,255,255,.82);font-size:13px;line-height:1.55}
+.cx-spotlight-congrats label{display:grid;gap:7px;font-size:12px;font-weight:800;color:#fff}
+.cx-spotlight-congrats label input[type="url"]{width:100%;min-height:42px;border:1px solid rgba(255,255,255,.22);border-radius:11px;background:#fff;color:var(--canopy-ink);padding:0 12px;outline:none}
+.cx-spotlight-congrats label>span{font-size:11px;font-weight:600;color:rgba(255,255,255,.72)}
+.cx-spotlight-consent{grid-template-columns:18px minmax(0,1fr)!important;align-items:start!important;margin:12px 0!important}
+.cx-spotlight-consent input{margin-top:2px;accent-color:var(--canopy-lime)}
+.cx-spotlight-consent span{color:rgba(255,255,255,.83)!important;line-height:1.45}
+.cx-spotlight-photo-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.cx-spotlight-photo-actions .canopyPrimary{min-height:40px;padding:0 14px}
+.cx-spotlight-photo-actions a{display:inline-flex;align-items:center;gap:5px;color:#fff;font-size:12px;font-weight:800;text-decoration:none}
+.cx-spotlight-photo-message{margin:10px 0 0!important;color:var(--canopy-lime)!important;font-size:12px!important;font-weight:800}
+.canopySpotlightPhotoLink{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:800;color:var(--canopy);text-decoration:none}
+.canopySpotlightPhotoPending{font-size:11px;color:var(--canopy-muted);font-weight:700}
+[data-canopy-theme="dark"] .cx-spotlight-congrats{background:linear-gradient(135deg,#113f3c,#0a302e)}
+@media(max-width:640px){.cx-spotlight-congrats{padding:15px;border-radius:15px}.cx-spotlight-congrats h4{font-size:18px}.cx-spotlight-photo-actions{display:grid;grid-template-columns:1fr}.cx-spotlight-photo-actions .canopyPrimary{width:100%}}
+
