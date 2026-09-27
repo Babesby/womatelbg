@@ -222,7 +222,23 @@ function Spotlight({viewer,data,preview,role,onRefresh}){
 function ActionNotice({text}){return text?<p className="cstaffMsg">{text}</p>:null}
 function StaffForm({children}){return <div className="cstaffFunctionalForm">{children}</div>}
 function ReviewAssignments({viewer,data,preview,onRefresh}){
- const rows=data?.recent_submissions||[];
+ const allRows=data?.recent_submissions||[];
+ // Treat each learner + module as one current review item. Older attempts stay in
+ // the database for audit/history, but once a learner submits a newer revision
+ // the superseded attempt must not remain in Revision required or duplicate
+ // feedback in the active review queue.
+ const rows=useMemo(()=>{
+   const latest=new Map();
+   for(const row of allRows){
+     const key=`${row.user_id||row.learner_id||row.learner_email||row.learner_name||row.id}|${row.week_key||row.module_id||row.module_label||''}`;
+     const prev=latest.get(key);
+     if(!prev){latest.set(key,row);continue}
+     const rowAttempt=Number(row.attempt_no||0),prevAttempt=Number(prev.attempt_no||0);
+     const rowTime=new Date(row.submitted_at||0).getTime()||0,prevTime=new Date(prev.submitted_at||0).getTime()||0;
+     if(rowAttempt>prevAttempt||(rowAttempt===prevAttempt&&rowTime>prevTime))latest.set(key,row);
+   }
+   return [...latest.values()].sort((a,b)=>(new Date(b.submitted_at||0).getTime()||0)-(new Date(a.submitted_at||0).getTime()||0));
+ },[allRows]);
  const[filter,setFilter]=useState('needs_action');
  const[query,setQuery]=useState('');
  const[open,setOpen]=useState('');const[score,setScore]=useState('');const[feedback,setFeedback]=useState('');const[decision,setDecision]=useState('completed');const[busy,setBusy]=useState(false);const[msg,setMsg]=useState('');
