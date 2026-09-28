@@ -29,7 +29,7 @@ export const CANOPY_ASSIGNMENT_SCHEDULE = [
     resubmitUntil:'2026-10-07T23:59:59Z',
     puzzleTerms:['JUSTICE','EQUITY','GENDER','INCLUSION'],
     speakerPrompt:'Complete the challenge announced by the expert during the Thursday live session and publish the required reflection or action post on LinkedIn or X/Twitter.',
-    liveUrl:'https://www.youtube.com/live/2prJ6c4gkAQ?si=GZhxK73WaG-K5wNL',
+    liveUrl:'https://youtube.com/live/bJaPRNmNMv8',
     livePoster:'/assets/canopy/live/module-02-live.webp',
     liveHost:'Sharon Nyarko',
     liveSpeaker:'Patricia Bekoe',
