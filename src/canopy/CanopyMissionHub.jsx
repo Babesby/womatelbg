@@ -20,7 +20,7 @@ export default function CanopyMissionHub({viewer}){
   const[edit,setEdit]=useState({name:'',choice:'standard',customBrief:''});
   const timer=useRef(null);
   const load=async(silent=false)=>{try{const d=await getMyCanopyMissionHub(viewer.session);setData(d);if(d?.group){setEdit({name:d.group.name||'',choice:d.group.mission_choice||'standard',customBrief:d.group.custom_brief||''});setFolder(d.group.evidence_folder_url||'')}if(!silent)setMsg('')}catch(e){if(!silent)setMsg(e.message)}};
-  useEffect(()=>{load();timer.current=setInterval(()=>load(true),15000);return()=>clearInterval(timer.current)},[]);
+  useEffect(()=>{let live=true;const refresh=()=>{if(live&&document.visibilityState==='visible')load(true)};load();timer.current=window.setInterval(refresh,30000);const onVisibility=()=>{if(document.visibilityState==='visible')refresh()};document.addEventListener('visibilitychange',onVisibility);return()=>{live=false;window.clearInterval(timer.current);document.removeEventListener('visibilitychange',onVisibility)}},[viewer?.session?.access_token]);
   const act=async(key,fn)=>{setBusy(key);setMsg('');try{const d=await fn();setData(d);setMsg('Saved.')}catch(e){setMsg(e.message)}finally{setBusy('')}};
   const myId=viewer?.user?.id; const member=data?.member; const group=data?.group; const members=data?.members||[]; const messages=[...(data?.messages||[])].sort((a,b)=>new Date(a.created_at)-new Date(b.created_at)); const reports=data?.reports||[];
   const myMission=STANDARD.find(x=>x.n===member?.mission_no); const myReport=reports.find(r=>r.user_id===myId); const allAccepted=members.filter(m=>m.status==='accepted').length===5; const allReports=new Set(reports.map(r=>r.mission_no)).size===5;

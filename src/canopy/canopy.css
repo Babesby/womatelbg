@@ -2920,8 +2920,7 @@ html[data-canopy-theme="dark"] .cx-mission-portfolio-record{border-color:#31514a
   }
 }
 
-[data-theme='dark'] .cm-admin-summary > span,
-.dark .cm-admin-summary > span {
+html[data-canopy-theme="dark"] .cm-admin-summary > span {
   background: rgba(255, 255, 255, 0.045);
   border-color: rgba(255, 255, 255, 0.09);
   box-shadow: none;
@@ -2945,17 +2944,6 @@ html[data-canopy-theme="dark"] .cx-mission-portfolio-record{border-color:#31514a
     overscroll-behavior-x:contain!important;
     -webkit-overflow-scrolling:touch!important;
   }
-}
-/* WOMATE CANOPY - mobile Spotlight full response sheet - 2026-09-27 */
-@media(max-width:760px){
- body:has(.cx-spotlight-modal){overflow:hidden!important;touch-action:none}
- .cx-spotlight-modal{position:fixed!important;inset:0!important;z-index:9999!important;display:flex!important;align-items:flex-end!important;justify-content:stretch!important;padding:10px 0 0!important;background:rgba(4,20,16,.7)!important;overflow:hidden!important;overscroll-behavior:contain!important}
- .cx-spotlight-modal>section{position:relative!important;width:100%!important;height:calc(100dvh - 10px)!important;max-height:calc(100dvh - 10px)!important;margin:0!important;border-radius:22px 22px 0 0!important;padding:16px 20px calc(34px + env(safe-area-inset-bottom))!important;overflow-y:auto!important;overflow-x:hidden!important;overscroll-behavior:contain!important;-webkit-overflow-scrolling:touch!important;scrollbar-width:none!important;box-sizing:border-box!important}
- .cx-spotlight-modal>section::-webkit-scrollbar{display:none!important;width:0!important}
- .cx-spotlight-modal-close{position:sticky!important;top:8px!important;right:auto!important;z-index:5!important;margin-left:auto!important;margin-bottom:-34px!important;width:40px!important;height:40px!important;min-width:40px!important;display:grid!important;place-items:center!important;border-radius:999px!important;box-shadow:0 7px 22px rgba(9,38,29,.14)!important}
- .cx-spotlight-modal>section>small{display:block!important;padding-top:8px!important;padding-right:54px!important}
- .cx-spotlight-modal h3{margin:8px 54px 18px 0!important;font-size:21px!important;line-height:1.18!important}
- .cx-spotlight-modal p{font-size:15px!important;line-height:1.68!important;padding-bottom:24px!important;overflow-wrap:anywhere!important}
 }
 /* WOMATE CANOPY - Spotlight mobile fixed-header response sheet - 2026-09-27 */
 @media(max-width:760px){

@@ -5,9 +5,9 @@ export default function CanopyNotifications({viewer}){
   const[items,setItems]=useState([]);
   const[busy,setBusy]=useState(false);
   const[msg,setMsg]=useState('');
-  async function load(){try{await refreshLearningAutomation(viewer.session)}catch{};setItems(await getCanopyNotifications(viewer.session)||[])}
+  async function load(){try{await refreshLearningAutomation(viewer.session)}catch{};try{setItems(await getCanopyNotifications(viewer.session)||[]);setMsg('')}catch(e){setMsg(e?.message||'Unable to load notifications.')}}
   useEffect(()=>{load()},[viewer?.session?.access_token]);
-  async function open(n){try{if(!n.read_at)await markNotificationRead(viewer.session,n.id);if(n.link)window.location.assign(n.link);else await load()}catch(e){setMsg(e?.message||'Unable to update this notification.')}}
+  async function open(n){try{if(!n.read_at)await markNotificationRead(viewer.session,n.id);if(n.link&&String(n.link).startsWith('/canopy/')){window.history.pushState({},'',n.link);window.dispatchEvent(new PopStateEvent('popstate'));window.scrollTo({top:0,behavior:'smooth'})}else if(n.link)window.location.assign(n.link);else await load()}catch(e){setMsg(e?.message||'Unable to update this notification.')}}
   async function markAll(){setBusy(true);setMsg('');try{await markAllNotificationsRead(viewer.session);await load();setMsg('All notifications marked as read.')}catch(e){setMsg(e?.message||'Unable to mark notifications as read.')}finally{setBusy(false)}}
   const unread=items.filter(n=>!n.read_at).length;
   return <section className="cn-page">
