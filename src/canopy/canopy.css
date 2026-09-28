@@ -3012,3 +3012,12 @@ html[data-canopy-theme="dark"] .cm-admin-summary > span {
   }
   .cx-spotlight-modal p::-webkit-scrollbar{display:none!important;width:0!important}
 }
+/* WOMATE Canopy - missed first-submission result */
+.ca-missed-result-card{grid-template-columns:minmax(230px,.9fr) minmax(170px,.38fr) minmax(300px,1.15fr)!important;align-items:center!important}
+.ca-missed-result-note{min-width:0;padding:4px 0}
+.ca-missed-result-note strong{display:block;color:var(--canopy-ink);font-size:13px;line-height:1.35}
+.ca-missed-result-note p{margin:7px 0 0;color:var(--canopy-muted);font-size:13px;line-height:1.6}
+html[data-canopy-theme="dark"] .ca-missed-result-note strong{color:#f4fbf8}
+html[data-canopy-theme="dark"] .ca-missed-result-note p{color:#afc5be}
+@media(max-width:900px){.ca-missed-result-card{grid-template-columns:minmax(0,1fr) minmax(150px,.34fr)!important}.ca-missed-result-card .ca-missed-result-note{grid-column:1/-1;padding-top:14px;border-top:1px solid var(--canopy-line)}}
+@media(max-width:700px){.ca-missed-result-card{grid-template-columns:1fr!important}.ca-missed-result-card .ca-result-title,.ca-missed-result-card .ca-result-score,.ca-missed-result-card .ca-missed-result-note{grid-column:1!important}.ca-missed-result-card .ca-missed-result-note{padding-top:14px;border-top:1px solid var(--canopy-line)}}

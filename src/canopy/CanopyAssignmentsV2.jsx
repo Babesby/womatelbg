@@ -406,7 +406,12 @@ export default function CanopyAssignmentsV2({viewer}){
         const practicalHref=curriculum?.assignment?.practicalHref||'';
         const practicalActionLabel=curriculum?.assignment?.practicalActionLabel||'';
         const practicalLinkLabel=curriculum?.assignment?.practicalLinkLabel||'Practical challenge Google Drive link';
-        if(archived)return <article className="ca-card ca-archive-row ca-result-card" key={item.weekKey}>
+        const missedFirstSubmission=!sub&&!firstSubmissionOpen;
+        if(missedFirstSubmission)return <article className="ca-card ca-result-card ca-missed-result-card" key={item.weekKey}>
+          <div className="ca-result-title"><small>MODULE {item.moduleId}</small><h2>{item.title}</h2><span className="ca-result-ready">Submission window closed</span></div>
+          <div className="ca-result-score"><span>FINAL SCORE</span><strong>0/100</strong></div>
+          <div className="ca-missed-result-note"><strong>No submission received</strong><p>The first-submission deadline for this module has passed. Keep going - submit your next module assignment on time so WOMATE can review and count your work.</p></div>
+        </article>;        if(archived)return <article className="ca-card ca-archive-row ca-result-card" key={item.weekKey}>
           <div className="ca-archive-title ca-result-title"><small>MODULE {item.moduleId}</small><h2>{item.title}</h2><span className="ca-result-ready">Your result is ready</span></div>
           <div className="ca-archive-score ca-result-score"><span>FINAL SCORE</span><strong>{score}/100</strong></div>
           <div className="ca-archive-remark ca-result-remark"><span>REMARKS</span><p>{remark}</p></div>
