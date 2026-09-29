@@ -128,9 +128,10 @@ export async function getManagerSnapshot(session){
   const testerIds=new Set((profiles||[]).filter(p=>p.role==='tester').map(p=>p.user_id));
   let withdrawals=[];
   try{const rows=await rest('rpc/canopy_admin_list_withdrawals',{token:s.access_token,method:'POST',body:{}});withdrawals=Array.isArray(rows)?rows:[]}catch{}
-  let spotlight={nominations:[],weekly:[],recognition_assets:[]};
+  let spotlight={nominations:[],weekly:[],recognition_assets:[],media_queue:[]};
   try{const data=await rest('rpc/canopy_admin_spotlight_dashboard',{token:s.access_token,method:'POST',body:{}});if(data&&typeof data==='object')spotlight=data}catch{}
   try{const assets=await rest('rpc/canopy_admin_spotlight_recognition_assets',{token:s.access_token,method:'POST',body:{p_module_id:null}});spotlight={...spotlight,recognition_assets:Array.isArray(assets)?assets:[]}}catch{}
+  try{const media=await rest('rpc/canopy_admin_spotlight_media_queue',{token:s.access_token,method:'POST',body:{p_module_id:null}});spotlight={...spotlight,media_queue:Array.isArray(media)?media:[]}}catch{}
   return {
     profiles:(profiles||[]).filter(p=>!testerIds.has(p.user_id)),
     enrollments:(enrollments||[]).filter(x=>!testerIds.has(x.user_id)),
@@ -276,6 +277,10 @@ export async function reactToCanopySpotlight(session,spotlightId,reaction=null){
 export async function submitCanopySpotlightProfessionalImage(session,spotlightId,driveUrl,consent=true){
   const s=await refreshSession(session||getStoredSession());if(!s?.access_token)throw new Error('Your Canopy session has expired. Sign in again.');
   return rest('rpc/canopy_submit_spotlight_recognition_asset',{token:s.access_token,method:'POST',body:{p_spotlight_id:spotlightId,p_drive_url:String(driveUrl||'').trim(),p_consent:Boolean(consent)}});
+}
+export async function updateCanopySpotlightMediaReview(session,{spotlightId,status,note=''}) {
+  const s=await refreshSession(session||getStoredSession());if(!s?.access_token)throw new Error('Your Canopy session has expired. Sign in again.');
+  return rest('rpc/canopy_admin_review_spotlight_media',{token:s.access_token,method:'POST',body:{p_spotlight_id:spotlightId,p_status:status,p_note:String(note||'').trim()||null}});
 }
 export async function submitWeeklyAssignment(session,weekKey,payload){
   const s=await refreshSession(session||getStoredSession());if(!s?.access_token)throw new Error('Your Canopy session has expired. Sign in again.');
