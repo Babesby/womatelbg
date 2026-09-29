@@ -10,7 +10,7 @@ import{CanopyOpportunityAdmin}from'./CanopyOpportunityBoard';
 
 const ROLE_LABELS={
   programme_manager:'Programme & Monitoring Manager',
-  programme_operations:'Programme Operations Deputy',
+  programme_operations:'Deputy Programme Manager',
   module_coordinator:'Learning Experience Coordinator',
   learning_fellow:'Learning Experience Fellow'
 };
@@ -37,13 +37,8 @@ const NAV={
   ],
   programme_operations:[
     ['overview','Overview',LayoutDashboard],
-    ['learners','Learner operations',UsersRound],
-    ['submissions','Submissions',FileText],
-    ['attention','Attention queue',Bell],
-    ['communications','Communications',MessageSquare],
-    ['complaints','Complaints',ShieldAlert],
-    ['spotlight','Spotlight shortlist',Star],
-    ['reports','Reports',BarChart3]
+    ['reviews','Assess submissions',ClipboardCheck],
+    ['complaints','Complaints',ShieldAlert]
   ],
   module_coordinator:[
     ['overview','Module home',LayoutDashboard],
@@ -119,7 +114,9 @@ function useWorkspace({viewer,previewRole,previewModule,refreshKey=0}){
       try{
         const result=previewRole
           ?await rpc(viewer?.session,'canopy_admin_preview_staff_workspace',{p_role:previewRole,p_module_id:previewModule||null})
-          :await rpc(viewer?.session,'canopy_staff_workspace_data',{});
+          :viewer?.staffAccess?.role==='programme_operations'
+            ?await rpc(viewer?.session,'canopy_deputy_review_complaint_data',{})
+            :await rpc(viewer?.session,'canopy_staff_workspace_data',{});
         if(live)setData(result||{});
       }catch(e){if(live)setError('This workspace could not be loaded. Refresh the page or contact WOMATE if the problem continues.')}
       finally{if(live)setLoading(false)}
@@ -145,7 +142,7 @@ function PreviewChooser(){
     </label>
     <section className="cstaffRoleCards">
       {Object.entries(ROLE_LABELS).map(([role,label])=><button key={role} onClick={()=>open(role)}>
-        <small>{role.replaceAll('_',' ')}</small><h2>{label}</h2><p>{role==='programme_manager'?'Full programme oversight and final decisions.':role==='programme_operations'?'Programme-wide delivery, follow-up and coordination.':role==='module_coordinator'?'Module-bound learning experience coordination.':'Module-bound learner support and follow-up.'}</p><span>Open workspace <ChevronRight/></span>
+        <small>{role.replaceAll('_',' ')}</small><h2>{label}</h2><p>{role==='programme_manager'?'Full programme oversight and final decisions.':role==='programme_operations'?'Assess learner submissions and respond to participant complaints.':role==='module_coordinator'?'Module-bound learning experience coordination.':'Module-bound learner support and follow-up.'}</p><span>Open workspace <ChevronRight/></span>
       </button>)}
     </section>
   </main>
@@ -159,7 +156,7 @@ function Overview({role,moduleId,data}){
       <Stat value={c.submissions} label="submissions"/><Stat value={c.needs_attention} label="needs attention"/>
       <Stat value={c.revision_required} label="revision required"/><Stat value={c.completed} label="completed"/>
     </section>
-    <section className="cstaffPanel cstaffMission"><Sparkles/><div><small>DELIVERY MANDATE</small><h2>{role==='programme_manager'?'Keep the full She Leads learning operation moving with quality and accountability.':role==='programme_operations'?'Keep programme delivery organised, responsive and visible across the cohort.':role==='module_coordinator'?'Make the assigned module feel guided, active and human for every learner.':'Make sure learners do not disappear into an online course.'}</h2><p>{moduleId?`${moduleLabel(moduleId)} scope. `:''}Your navigation reflects only the functions authorised for this role.</p></div></section>
+    <section className="cstaffPanel cstaffMission"><Sparkles/><div><small>DELIVERY MANDATE</small><h2>{role==='programme_manager'?'Keep the full She Leads learning operation moving with quality and accountability.':role==='programme_operations'?'Support assessment quality and learner care through submission reviews and complaint responses.':role==='module_coordinator'?'Make the assigned module feel guided, active and human for every learner.':'Make sure learners do not disappear into an online course.'}</h2><p>{moduleId?`${moduleLabel(moduleId)} scope. `:''}Your navigation reflects only the functions authorised for this role.</p></div></section>
     <RecentSubmissions items={data?.recent_submissions||data?.submissions||[]} compact/>
   </div>
 }
