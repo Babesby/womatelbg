@@ -3034,3 +3034,15 @@ html[data-canopy-theme='dark'] .canopySpotlightMediaDesk{background:#0d2622;bord
 /* WOMATE mission acceptance filters - 2026-09-29 */
 .cm-admin-filters{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 22px}.cm-admin-filters button{appearance:none;border:1px solid var(--canopy-line);background:#fff;color:var(--canopy-ink);border-radius:999px;padding:9px 12px;display:inline-flex;align-items:center;gap:8px;font:800 11px/1 inherit;cursor:pointer}.cm-admin-filters button b{min-width:22px;height:22px;border-radius:999px;display:grid;place-items:center;background:#eef4f1;color:var(--canopy);font-size:10px}.cm-admin-filters button.active{background:var(--canopy);border-color:var(--canopy);color:#fff}.cm-admin-filters button.active b{background:var(--canopy-lime);color:#17332d}.cm-admin-empty{margin:0;padding:28px;border:1px dashed var(--canopy-line);border-radius:18px;text-align:center;color:var(--canopy-muted);font-size:12px}html[data-canopy-theme="dark"] .cm-admin-filters button{background:#12352f;border-color:#294740;color:#eef7f3}html[data-canopy-theme="dark"] .cm-admin-filters button.active{background:var(--canopy-lime);border-color:var(--canopy-lime);color:#17332d}html[data-canopy-theme="dark"] .cm-admin-filters button.active b{background:#17332d;color:#c6ff52}@media(max-width:620px){.cm-admin-filters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.cm-admin-filters button{justify-content:space-between;width:100%;border-radius:14px;padding:10px 11px}}
 /* END WOMATE mission acceptance filters */
+
+/* Admin complaints status filters */
+.canopyComplaintFilters{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 4px}
+.canopyComplaintFilters button{appearance:none;border:1px solid var(--canopy-line);background:#fff;color:#405652;border-radius:999px;padding:9px 12px;display:inline-flex;align-items:center;gap:8px;font:inherit;font-size:12px;font-weight:800;cursor:pointer}
+.canopyComplaintFilters button b{min-width:22px;height:22px;padding:0 6px;border-radius:999px;background:#eff6f1;color:var(--canopy);display:inline-flex;align-items:center;justify-content:center;font-size:11px}
+.canopyComplaintFilters button.active{border-color:var(--canopy);background:var(--canopy);color:#fff}
+.canopyComplaintFilters button.active b{background:#fff;color:var(--canopy)}
+html[data-canopy-theme="dark"] .canopyComplaintFilters button{background:#13231f;color:#dce9e5;border-color:#35534b}
+html[data-canopy-theme="dark"] .canopyComplaintFilters button b{background:#223c35;color:#dce9e5}
+html[data-canopy-theme="dark"] .canopyComplaintFilters button.active{background:#dce9e5;color:#13231f;border-color:#dce9e5}
+html[data-canopy-theme="dark"] .canopyComplaintFilters button.active b{background:#13231f;color:#dce9e5}
+
