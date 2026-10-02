@@ -11,3 +11,10 @@
 .wpubReaderFallback{min-height:240px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:15px;padding:25px;text-align:center;color:#557267}
 .wpubReaderFallback p{max-width:48ch;line-height:1.65;font-size:13px}
 @media(max-width:570px){.wpubReaderDialog{padding:23px 13px}.wpubReader iframe{min-height:420px;height:67vh}.wpubReaderHead{padding:12px 10px}.wpubReaderDialog h2,.wpubReaderDialog .wpubAbstract,.wpubReaderDialog .wpubAuthor,.wpubReaderDialog .wpubKicker{margin-left:8px;margin-right:8px}}
+
+
+/* Publications consent: isolated from shared form input styling. */
+.wpub .wpubForm .wpubConsent{display:grid!important;grid-template-columns:20px minmax(0,1fr)!important;column-gap:12px!important;row-gap:0!important;align-items:start!important;width:100%!important;min-width:0!important;padding:15px 16px!important;margin:0!important;box-sizing:border-box!important;background:#f1f6f0!important;border:1px solid #cfded1!important;border-radius:12px!important;font-weight:500!important;text-align:left!important;line-height:1.6!important;}
+.wpub .wpubForm .wpubConsent input[type=checkbox]{appearance:auto!important;-webkit-appearance:checkbox!important;display:block!important;position:static!important;width:18px!important;min-width:18px!important;max-width:18px!important;height:18px!important;min-height:18px!important;margin:3px 0 0!important;padding:0!important;border:0!important;border-radius:0!important;flex:none!important;box-shadow:none!important;accent-color:#0e4d4a!important;cursor:pointer!important;}
+.wpub .wpubForm .wpubConsent span{display:block!important;min-width:0!important;max-width:100%!important;overflow-wrap:anywhere!important;white-space:normal!important;font-size:13px!important;line-height:1.65!important;color:#244c41!important;}
+@media(max-width:570px){.wpub .wpubForm .wpubConsent{padding:13px 12px!important;column-gap:10px!important;grid-template-columns:19px minmax(0,1fr)!important}.wpub .wpubForm .wpubConsent span{font-size:12px!important;line-height:1.65!important;}}
