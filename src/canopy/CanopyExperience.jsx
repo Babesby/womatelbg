@@ -335,7 +335,7 @@ export function CanopySpotlight({session}){
   const[photoBusy,setPhotoBusy]=useState('');
   const[photoMessage,setPhotoMessage]=useState({});
   const[slideIndex,setSlideIndex]=useState({});
-  useEffect(()=>{let live=true;getFeaturedSpotlights(session,12).then(x=>{if(live){const rows=x||[];setItems(rows);setPhotoDrafts(Object.fromEntries(rows.filter(i=>i.is_me).map(i=>[i.id,i.professional_image_drive_url||''])));setPhotoConsent(Object.fromEntries(rows.filter(i=>i.is_me).map(i=>[i.id,Boolean(i.professional_image_drive_url)])))}}).catch(()=>{});return()=>{live=false}},[session?.access_token]);
+  useEffect(()=>{let live=true;getFeaturedSpotlights(session,5).then(x=>{if(live){const rows=x||[];setItems(rows);setPhotoDrafts(Object.fromEntries(rows.filter(i=>i.is_me).map(i=>[i.id,i.professional_image_drive_url||''])));setPhotoConsent(Object.fromEntries(rows.filter(i=>i.is_me).map(i=>[i.id,Boolean(i.professional_image_drive_url)])))}}).catch(()=>{});return()=>{live=false}},[session?.access_token]);
   useEffect(()=>{if(!expanded)return;const close=e=>{if(e.key==='Escape')setExpanded(null)};window.addEventListener('keydown',close);return()=>window.removeEventListener('keydown',close)},[expanded]);
   async function react(item,reaction){
     if(reacting)return;
@@ -362,7 +362,7 @@ export function CanopySpotlight({session}){
   return <section className="cx-spotlight" id="spotlight">
     <header><div><span>CANOPY SPOTLIGHT</span><h2>Featured this week.</h2></div></header>
     <div className="cx-spotlight-modules">
-      {Object.entries(items.slice(0,12).reduce((groups,item)=>{
+      {Object.entries(items.reduce((groups,item)=>{
         const key=String(item.module_id||item.week_key||'').replace('module-','').replace(/[^0-9]/g,'').slice(-2)||'FEATURED';
         (groups[key] ||= []).push(item);
         return groups;

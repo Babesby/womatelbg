@@ -267,7 +267,7 @@ export async function getWeeklyAssignmentSubmissions(session){
 }
 export async function getFeaturedSpotlights(session,limit=5){
   const s=await refreshSession(session||getStoredSession());if(!s?.access_token)return[];
-  return rest('rpc/canopy_get_featured_spotlights',{token:s.access_token,method:'POST',body:{p_limit:Math.max(1,Math.min(Number(limit)||5,12))}});
+  return rest('rpc/canopy_get_featured_spotlights',{token:s.access_token,method:'POST',body:{p_limit:Math.max(1,Math.min(Number(limit)||5,5))}});
 }
 export async function reactToCanopySpotlight(session,spotlightId,reaction=null){
   const s=await refreshSession(session||getStoredSession());if(!s?.access_token)throw new Error('Your Canopy session has expired. Sign in again.');
