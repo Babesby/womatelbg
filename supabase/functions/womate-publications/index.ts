@@ -6,14 +6,14 @@ const ADMIN_CODE=Deno.env.get('PUBLICATIONS_ADMIN_CODE')||'';
 const SIGNING=Deno.env.get('PUBLICATIONS_SIGNING_SECRET')||'';
 const ALLOWED=[...new Set([...(Deno.env.get('PUBLICATIONS_ALLOWED_ORIGIN')||'').split(',').map(x=>x.trim()).filter(Boolean),'https://www.womate.org','https://womate.org'])];
 const REVIEWERS=['Ruby Damenshie Brown','Asaa','Phillipa Aidoo','Hamza Abubakar'];
-const TYPES=['Research paper','Article','Policy brief','Case study','Perspective','Other'];
+const TYPES=['Research paper','Article','Policy brief','Case study','Position paper','Editorial','Annual report','Blog','Perspective','Other'];
 const enc=new TextEncoder();
 function cors(origin:string){return {'Access-Control-Allow-Origin':ALLOWED.includes(origin)?origin:ALLOWED[0],'Vary':'Origin','Access-Control-Allow-Headers':'authorization, apikey, content-type','Access-Control-Allow-Methods':'POST, OPTIONS'};}
 function out(body:unknown,status=200,origin=''){return new Response(JSON.stringify(body),{status,headers:{...cors(origin),'Content-Type':'application/json','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});}
 function s(v:unknown,max:number){return typeof v==='string'?v.trim().slice(0,max+1):'';}
 function b64(bytes:Uint8Array){return btoa(String.fromCharCode(...bytes)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');}
 async function sha(v:string){return [...new Uint8Array(await crypto.subtle.digest('SHA-256',enc.encode(v)))].map(x=>x.toString(16).padStart(2,'0')).join('');}
-async function mac(signed:string){const key=await crypto.subtle.importKey('raw',enc.encode(SIGNING),'HMAC',{hash:'SHA-256'},false,['sign']);return b64(new Uint8Array(await crypto.subtle.sign('HMAC',key,enc.encode(signed))));}
+async function mac(signed:string){const key=await crypto.subtle.importKey('raw',enc.encode(SIGNING),{name:'HMAC',hash:'SHA-256'},false,['sign']);return b64(new Uint8Array(await crypto.subtle.sign('HMAC',key,enc.encode(signed))));}
 function equal(a:string,b:string){const x=enc.encode(a),y=enc.encode(b);let diff=x.length^y.length;for(let i=0;i<Math.max(x.length,y.length);i++)diff|=(x[i]||0)^(y[i]||0);return diff===0;}
 async function authorized(req:Request){const token=(req.headers.get('Authorization')||'').replace(/^Bearer\s+/i,'');const [payload,sig,extra]=token.split('.');if(!payload||!sig||extra||!equal(sig,await mac(payload)))return '';try{const data=JSON.parse(atob(payload.replace(/-/g,'+').replace(/_/g,'/')));if(data.exp<Date.now()||!REVIEWERS.includes(data.name))return '';return data.name;}catch{return '';}}
 async function db(path:string,method='GET',body?:unknown){const response=await fetch(`${URL}/rest/v1/${path}`,{method,headers:{apikey:SERVICE,Authorization:`Bearer ${SERVICE}`,'Content-Type':'application/json',Prefer:'return=representation'},...(body===undefined?{}:{body:JSON.stringify(body)})});const json=await response.json().catch(()=>null);if(!response.ok){console.error('Publication database error',response.status,JSON.stringify(json).slice(0,400));throw new Error('Publication database request failed (HTTP '+response.status+', code '+String(json?.code||'unknown')+').');}return json;}

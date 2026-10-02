@@ -19,7 +19,7 @@ function resultCelebrationGif(moduleId){
   return RESULT_CELEBRATION_GIFS[(numeric-1)%RESULT_CELEBRATION_GIFS.length];
 }
 
-function revisionPart(s){const feedback=String(s?.manual_feedback||s?.final_feedback||'');return feedback.match(/\[CANOPY_REVISION:(paragraph|practical|speaker|all)\]/i)?.[1]?.toLowerCase()||'all';}
+function revisionPart(s){const feedback=String(s?.manual_feedback||s?.final_feedback||'');return feedback.match(/\[CANOPY_REVISION:([a-z]+(?:,[a-z]+)*)\]/i)?.[1]?.toLowerCase()||'all';}
 
 function isSpeakerSocialUrl(value,moduleId='01'){
   try{
@@ -240,7 +240,7 @@ export default function CanopyAssignmentsV2({viewer}){
   const attempts=weekKey=>subs.filter(x=>x.week_key===weekKey).length;
   const scoreVisible=s=>s&&(s.final_score!=null||s.auto_score!=null)&&(tester||now>=new Date(s.release_at));
   const finalScore=s=>s?.final_score??s?.auto_score;
-  const finalFeedback=s=>String(s?.final_feedback||s?.feedback_hint||'').replace(/^\[CANOPY_REVISION:(paragraph|practical|speaker|all)\]\s*/i,'');
+  const finalFeedback=s=>String(s?.final_feedback||s?.feedback_hint||'').replace(/^\[CANOPY_REVISION:([a-z]+(?:,[a-z]+)*)\]\s*/i,'');
   const reviewLabel=s=>s?.review_source==='manual'?'WOMATE review':'Automated formative baseline';
 
   function assignmentPartState(d,speakerOpen,moduleId){
@@ -335,6 +335,7 @@ export default function CanopyAssignmentsV2({viewer}){
     const currentSubmission=latest(item.weekKey);
     const currentManualRevision=!!currentSubmission&&currentSubmission.review_source==='manual'&&currentSubmission.assessment_status==='revision_required';
     const requiredPart=currentManualRevision?revisionPart(currentSubmission):'all';
+    const requiredParts=requiredPart==='all'?['paragraph','practical','speaker']:requiredPart.split(',');
     if(!tester&&!currentSubmission&&now>new Date(item.dueAt)){
       setMessage('Submission closed. The Sunday deadline has passed.');
       return;
@@ -349,9 +350,9 @@ export default function CanopyAssignmentsV2({viewer}){
     const paragraph=(d.paragraph_response||'').trim();
     const canvas=(d.canvas_link||'').trim();
     const linkedin=(d.linkedin_link||'').trim();
-    if((requiredPart==='all'||requiredPart==='paragraph')&&paragraph.split(/\s+/).filter(Boolean).length<80){setMessage('Your paragraph needs at least 80 words. Add enough detail to show what you learned and how you would apply it.');return}
-    if((requiredPart==='all'||requiredPart==='speaker')&&!isSpeakerSocialUrl(linkedin,item.moduleId)){setMessage('Paste a valid speaker-post link from an allowed social platform.');return}
-    if((requiredPart==='all'||requiredPart==='practical')&&!/^https:\/\/(drive|docs)\.google\.com\//i.test(canvas)){setMessage('Paste your viewable Google Drive practical-evidence link.');return}
+    if((requiredParts.includes('paragraph'))&&paragraph.split(/\s+/).filter(Boolean).length<80){setMessage('Your paragraph needs at least 80 words. Add enough detail to show what you learned and how you would apply it.');return}
+    if((requiredParts.includes('speaker'))&&!isSpeakerSocialUrl(linkedin,item.moduleId)){setMessage('Paste a valid speaker-post link from an allowed social platform.');return}
+    if((requiredParts.includes('practical'))&&!/^https:\/\/(drive|docs)\.google\.com\//i.test(canvas)){setMessage('Paste your viewable Google Drive practical-evidence link.');return}
     setBusy(item.weekKey);setMessage('');
     try{
       await (tester?submitTesterWeeklyAssignment:submitWeeklyAssignment)(
@@ -397,6 +398,7 @@ export default function CanopyAssignmentsV2({viewer}){
         const manualCompleted=!!sub&&sub.review_source==='manual'&&sub.assessment_status==='completed';
         const manualRevision=!!sub&&sub.review_source==='manual'&&sub.assessment_status==='revision_required';
         const requestedPart=manualRevision?revisionPart(sub):'all';
+        const requestedParts=requestedPart==='all'?['paragraph','practical','speaker']:requestedPart.split(',');
         const onlyRevision=manualRevision&&requestedPart!=='all';
         const firstSubmissionOpen=tester||now<=new Date(item.dueAt);
         const revisionWindowOpen=tester||now<=new Date(item.resubmitUntil);
@@ -405,7 +407,7 @@ export default function CanopyAssignmentsV2({viewer}){
         const puzzleDone=puzzles.some(p=>p.week_key===item.weekKey&&p.completed);
         const speakerOpen=tester||speakerChallengeOpen(item,now);
         const parts=assignmentPartState(d,speakerOpen,item.moduleId);
-        const requiredReady=requestedPart==='paragraph'?parts.paragraphReady:requestedPart==='practical'?parts.canvasReady:requestedPart==='speaker'?parts.linkedinReady:parts.allReady;
+        const requiredReady=requestedParts.every(part=>part==='paragraph'?parts.paragraphReady:part==='practical'?parts.canvasReady:parts.linkedinReady);
         const visible=scoreVisible(sub),score=finalScore(sub),status=(sub?.assessment_status||sub?.status||'submitted').replaceAll('_',' ');
         const scoreReleased=!!sub&&!!sub.release_at&&now>=new Date(sub.release_at)&&score!=null;
         const archived=scoreReleased&&!manualRevision;
@@ -444,12 +446,12 @@ export default function CanopyAssignmentsV2({viewer}){
             <div><span>Final score</span><strong>{visible?`${score}/100 · ${sub.score_band||''}`:'Releases after the week closes'}</strong>{visible&&<small>{reviewLabel(sub)}</small>}</div>
             {visible&&finalFeedback(sub)&&<div className="ca-feedback"><span>Feedback</span><strong>{finalFeedback(sub)}</strong></div>}
             {manualCompleted&&<div className="ca-feedback ca-complete-locked"><span>Completed</span><strong>WOMATE has completed the manual review. This assignment is closed and no further resubmission is required.</strong></div>}
-            {manualRevision&&<div className="ca-feedback ca-revision"><span>Revision required</span><strong>WOMATE requests a {requestedPart==='all'?'revision':requestedPart==='paragraph'?'paragraph-only revision':requestedPart==='practical'?'practical-link-only revision':'speaker-link-only revision'}. Only the requested part needs to be updated.</strong></div>}
+            {manualRevision&&<div className="ca-feedback ca-revision"><span>Revision required</span><strong>WOMATE requests a {requestedPart==='all'?'revision of all three parts':requestedParts.map(p=>p==='paragraph'?'paragraph':p==='practical'?'practical link':'speaker link').join(' + ')+' revision'}. Only the requested part needs to be updated.</strong></div>}
             {sub&&!manualCompleted&&!manualRevision&&<div className="ca-feedback ca-awaiting-review"><span>Submitted</span><strong>Your assignment is closed while WOMATE reviews it. It will reopen only if a revision is requested.</strong></div>}
           </div>}
           {canSubmitForm&&<div className="ca-form">
 
-            {onlyRevision?<p className="ca-revision-focus">Revise only your {requestedPart==='paragraph'?'paragraph response':requestedPart==='practical'?'practical evidence link':'speaker post link'}. Your other two parts are carried forward unchanged.</p>:<div className="ca-assignment-progress">
+            {onlyRevision?<p className="ca-revision-focus">Revise only: {requestedParts.map(p=>p==='paragraph'?'paragraph response':p==='practical'?'practical evidence link':'speaker post link').join(' and ')}. All unselected parts are carried forward unchanged.</p>:<div className="ca-assignment-progress">
               <div className="ca-assignment-progress-head">
                 <strong>{parts.completed} of 3 required parts ready</strong>
                 <span>{parts.remaining} remaining</span>
@@ -494,7 +496,7 @@ export default function CanopyAssignmentsV2({viewer}){
               }
             </div>}
 
-            {(requestedPart==='all'||requestedPart==='paragraph')&&<label>
+            {(requestedParts.includes('paragraph'))&&<label>
               Paragraph answer
 
               <textarea
@@ -522,7 +524,7 @@ export default function CanopyAssignmentsV2({viewer}){
               </small>
             </label>}
 
-            {(requestedPart==='all'||requestedPart==='practical')&&<label>
+            {(requestedParts.includes('practical'))&&<label>
               {practicalLinkLabel}
 
               <input
@@ -539,7 +541,7 @@ export default function CanopyAssignmentsV2({viewer}){
               />
             </label>}
 
-            {speakerOpen&&(requestedPart==='all'||requestedPart==='speaker')&&
+            {speakerOpen&&(requestedParts.includes('speaker'))&&
               <label>
                 Speaker-task post link ({item.moduleId==='01'?'LinkedIn or X/Twitter':'LinkedIn, X, Facebook, TikTok or Instagram'})
 

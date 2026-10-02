@@ -764,6 +764,14 @@
 .canopyManualReviewHead h4{font-size:18px;margin:3px 0 0}
 .canopyManualReviewHead small{color:var(--canopy-muted);font-size:11px}
 .canopyManualReviewGrid{display:grid;grid-template-columns:180px minmax(220px,1fr);gap:12px;margin-top:14px}
+/* Select one or more targeted revision components. */
+.canopyRevisionParts,.cstaffRevisionParts{min-width:0;grid-column:1/-1;border:1px solid #d7e5df;border-radius:13px;padding:12px 14px;margin:0;background:rgba(245,250,247,.75)}
+.canopyRevisionParts legend,.cstaffRevisionParts legend{font-size:12px;font-weight:800;color:#0e4d4a;padding:0 5px}
+.canopyRevisionChecks,.cstaffRevisionChecks{display:flex;align-items:center;gap:12px 20px;flex-wrap:wrap}
+.canopyRevisionChecks label,.cstaffRevisionChecks label{display:inline-flex!important;flex-direction:row!important;align-items:center;gap:8px;cursor:pointer;font-size:13px;font-weight:600;color:inherit}
+.canopyManualReviewGrid .canopyRevisionChecks input[type=checkbox],.cstaffRevisionChecks input[type=checkbox]{width:17px!important;height:17px!important;min-width:17px;margin:0;accent-color:#0e4d4a;padding:0!important;box-shadow:none!important}
+@media(max-width:600px){.canopyRevisionChecks,.cstaffRevisionChecks{display:grid;grid-template-columns:1fr;gap:12px}}
+
 .canopyManualReviewGrid label{display:grid;gap:7px;font-size:11px;font-weight:900;color:#405652}
 .canopyManualReviewGrid label.wide{grid-column:1/-1}
 .canopyManualReviewGrid input,.canopyManualReviewGrid select,.canopyManualReviewGrid textarea{width:100%;border:1px solid #cbd9d5;border-radius:12px;padding:12px 13px;background:#fff;color:var(--canopy-ink);font:inherit;outline:none}
