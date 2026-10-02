@@ -42,6 +42,7 @@ export const CANOPY_ASSIGNMENT_SCHEDULE = [
     dueAt:'2026-10-11T23:59:59Z',
     resubmitUntil:'2026-10-14T23:59:59Z',
     puzzleTerms:['POLICY','NDC','UNFCCC','GOVERNANCE'],
+    liveUrl:'https://youtube.com/live/t3AugKIs5C0?feature=share',
     speakerPrompt:'Complete the challenge announced by the expert during the Thursday live session and publish the required reflection or action post on LinkedIn or X/Twitter.'
   },
   {
