@@ -4,7 +4,7 @@ const URL=Deno.env.get('SUPABASE_URL')||'';
 const SERVICE=Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')||'';
 const ADMIN_CODE=Deno.env.get('PUBLICATIONS_ADMIN_CODE')||'';
 const SIGNING=Deno.env.get('PUBLICATIONS_SIGNING_SECRET')||'';
-const ALLOWED=(Deno.env.get('PUBLICATIONS_ALLOWED_ORIGIN')||'https://www.womate.org').split(',').map(x=>x.trim());
+const ALLOWED=[...new Set([...(Deno.env.get('PUBLICATIONS_ALLOWED_ORIGIN')||'').split(',').map(x=>x.trim()).filter(Boolean),'https://www.womate.org','https://womate.org'])];
 const REVIEWERS=['Ruby Damenshie Brown','Asaa','Phillipa Aidoo','Hamza Abubakar'];
 const TYPES=['Research paper','Article','Policy brief','Case study','Perspective','Other'];
 const enc=new TextEncoder();
@@ -16,7 +16,7 @@ async function sha(v:string){return [...new Uint8Array(await crypto.subtle.diges
 async function mac(signed:string){const key=await crypto.subtle.importKey('raw',enc.encode(SIGNING),'HMAC',{hash:'SHA-256'},false,['sign']);return b64(new Uint8Array(await crypto.subtle.sign('HMAC',key,enc.encode(signed))));}
 function equal(a:string,b:string){const x=enc.encode(a),y=enc.encode(b);let diff=x.length^y.length;for(let i=0;i<Math.max(x.length,y.length);i++)diff|=(x[i]||0)^(y[i]||0);return diff===0;}
 async function authorized(req:Request){const token=(req.headers.get('Authorization')||'').replace(/^Bearer\s+/i,'');const [payload,sig,extra]=token.split('.');if(!payload||!sig||extra||!equal(sig,await mac(payload)))return '';try{const data=JSON.parse(atob(payload.replace(/-/g,'+').replace(/_/g,'/')));if(data.exp<Date.now()||!REVIEWERS.includes(data.name))return '';return data.name;}catch{return '';}}
-async function db(path:string,method='GET',body?:unknown){const response=await fetch(`${URL}/rest/v1/${path}`,{method,headers:{apikey:SERVICE,Authorization:`Bearer ${SERVICE}`,'Content-Type':'application/json',Prefer:'return=representation'},...(body===undefined?{}:{body:JSON.stringify(body)})});const json=await response.json().catch(()=>null);if(!response.ok){console.error('Publication database error',response.status,JSON.stringify(json).slice(0,400));throw new Error('Unable to complete this request. Please try again.');}return json;}
+async function db(path:string,method='GET',body?:unknown){const response=await fetch(`${URL}/rest/v1/${path}`,{method,headers:{apikey:SERVICE,Authorization:`Bearer ${SERVICE}`,'Content-Type':'application/json',Prefer:'return=representation'},...(body===undefined?{}:{body:JSON.stringify(body)})});const json=await response.json().catch(()=>null);if(!response.ok){console.error('Publication database error',response.status,JSON.stringify(json).slice(0,400));throw new Error('Publication database request failed (HTTP '+response.status+', code '+String(json?.code||'unknown')+').');}return json;}
 async function allowed(req:Request,action:'submit'|'login',max:number,mins:number){const ip=(req.headers.get('x-forwarded-for')||'').split(',')[0].trim()||req.headers.get('cf-connecting-ip')||'unknown';const key=await sha(ip+SIGNING);const data=await db('rpc/womate_publication_allow','POST',{p_key:key,p_action:action,p_max:max,p_window_minutes:mins});return data===true;}
 function validUrl(raw:string){try{const u=new URL(raw);return u.protocol==='https:'&&!u.username&&!u.password&&u.hostname.includes('.')&&!['localhost','127.0.0.1','0.0.0.0'].includes(u.hostname)&&u.href.length<=1500;}catch{return false;}}
 Deno.serve(async(req)=>{
@@ -68,5 +68,5 @@ Deno.serve(async(req)=>{
  }
  default:return out({error:'Unknown action.'},400,origin);
  }
- }catch(error){console.error('Publication request failed',error);return out({error:'The publication service could not complete the request. Please try again.'},500,origin);}
+ }catch(error){console.error('Publication request failed',error);return out({error:error instanceof Error?error.message:'Publication service temporarily unavailable.'},500,origin);}
 });
