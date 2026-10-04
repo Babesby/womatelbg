@@ -50,17 +50,6 @@ const PUZZLES={
     ]
   },
   'module-03':{
-    type:'crossword',
-    title:'Mini crossword',
-    intro:'Use the clues to complete this Climate Governance & Policy mini crossword. This is optional and not graded.',
-    clues:[
-      ['POLICY','A formal course of action adopted by a government or institution.'],
-      ['NDC','A country climate commitment submitted under the Paris Agreement.'],
-      ['UNFCCC','The UN framework convention that anchors global climate negotiations.'],
-      ['GOVERNANCE','The systems, institutions and rules through which decisions are made and implemented.']
-    ]
-  },
-  'module-04':{
     type:'anagram',
     title:'Anagram challenge',
     intro:'Solve each advocacy anagram using the clue. This is optional and not graded.',
@@ -69,6 +58,17 @@ const PUZZLES={
       ['EVIDENCE','Reliable information used to support a claim or recommendation.'],
       ['DIGITAL','Using online tools, platforms or technology.'],
       ['MOBILISE','Bring people together around a shared action or cause.']
+    ]
+  },
+  'module-04':{
+    type:'crossword',
+    title:'Mini crossword',
+    intro:'Use the clues to complete this Climate Governance & Policy mini crossword. This is optional and not graded.',
+    clues:[
+      ['POLICY','A formal course of action adopted by a government or institution.'],
+      ['NDC','A country climate commitment submitted under the Paris Agreement.'],
+      ['UNFCCC','The UN framework convention that anchors global climate negotiations.'],
+      ['GOVERNANCE','The systems, institutions and rules through which decisions are made and implemented.']
     ]
   },
   'module-05':{

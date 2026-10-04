@@ -201,9 +201,89 @@ export const canopyModules2026 = [
 
   {
     id:'03',
-    slug:'climate-governance-policy',
+    slug:'climate-advocacy-digital-innovation',
     weekLabel:'Week 4',
     liveDate:'8 October 2026',
+    title:'Climate Advocacy & Digital Innovation',
+    framingQuestion:'How can storytelling and technology make climate issues credible and capable of mobilising action?',
+    overview:'Teach participants to move from awareness content to responsible advocacy: evidence, audience, message, action, channel, ethics and measurement — with a short real-world advocacy video as the practical creation exercise.',
+    outcomes:[
+      'Distinguish awareness from advocacy.',
+      'Build an evidence-to-message chain.',
+      'Choose an audience and a realistic desired action.',
+      'Avoid misleading or exploitative climate communication.',
+      'Design and evaluate a small digital climate campaign.'
+    ],
+    lessons:[
+      {
+        id:'03.1',title:'Awareness is not the same as advocacy',minutes:13,
+        body:[
+          'Awareness helps people know or understand an issue. Advocacy aims to influence attitudes, behaviour, institutional practice or public decisions. A campaign can raise awareness without creating a clear path to action.',
+          'Effective advocacy defines a problem, a priority audience, a desired action, credible evidence and a channel suited to that audience. It also considers who is speaking and whether affected communities are represented fairly.',
+          'WOMATE’s earlier teaching emphasised grounding advocacy in evidence, building coalitions, engaging decision-makers, amplifying women’s voices and tracking accountability. Canopy turns those principles into a repeatable campaign workflow.'
+        ],
+        keyIdea:'A strong advocacy message does not end with “be aware”; it gives the right audience a credible reason and pathway to act.',
+        check:{question:'Which element most clearly turns awareness into advocacy?',options:['A beautiful graphic.','A specific desired action from a defined audience.','More hashtags.'],answer:1,explanation:'Advocacy needs an audience and an intended action or decision.'},
+        sources:['sdg13']
+      },
+      {
+        id:'03.2',title:'Evidence → insight → message → action',minutes:15,
+        body:[
+          'Responsible climate communication starts with evidence, not a slogan. The communicator identifies what is known, what remains uncertain and what conclusion the evidence reasonably supports.',
+          'The next step is insight: why does this matter to this audience? The message then communicates that insight in clear language, and the call to action identifies what the audience can realistically do.',
+          'Stories can make evidence human and memorable, but a personal story should not be presented as proof of a broad scientific claim. Evidence and lived experience strengthen each other when their roles are clear.'
+        ],
+        keyIdea:'Do not force evidence to fit a message. Build the message from the evidence.',
+        check:{question:'A single person describes a flood experience. How should it be used?',options:['As proof that every flood is caused by climate change.','As lived experience that can accompany, but not replace, broader evidence.','It should never be used.'],answer:1,explanation:'Personal experience is valuable but should not be misrepresented as comprehensive scientific evidence.'},
+        sources:['ipccConcepts']
+      },
+      {
+        id:'03.3',title:'Audience, tone and responsible storytelling',minutes:15,
+        body:[
+          'The same message will not work equally well for a minister, a community association, students, business owners and a general social-media audience. Audience design considers what people already know, what they value, what authority they have and what action is feasible.',
+          'Tone should fit the purpose. Urgency can be appropriate without exaggeration. Hope can motivate without denying risk. Community-centred communication should preserve dignity and avoid using people’s hardship merely as visual material.',
+          'Responsible storytelling obtains appropriate consent, avoids stereotypes, distinguishes fact from opinion and does not invent statistics, quotations or institutional endorsements.'
+        ],
+        keyIdea:'Climate communication should be accurate enough to trust and human enough to act on.',
+        check:{question:'Which practice is responsible?',options:['Use a dramatic statistic even if you cannot verify it.','Adapt the message to the audience while keeping the underlying evidence accurate.','Portray affected communities as helpless because it increases engagement.'],answer:1,explanation:'Audience adaptation should never require distortion.'},
+        sources:['ipccConcepts']
+      },
+      {
+        id:'03.4',title:'Real-world advocacy video and campaign measurement',minutes:16,
+        body:[
+          'A strong digital advocacy video does not need expensive production. A phone, a clear point of view and honest footage of yourself or your surroundings can make a climate issue visible, specific and human.',
+          'Participants should connect the footage to evidence, identify who is affected, avoid exploiting people or communities for impact, and end with one realistic action or call to action. The finished video is uploaded to Google Drive and submitted by shareable link.',
+          'Campaign evaluation should match the objective. Reach and impressions describe exposure; comments and shares can indicate engagement; link clicks or registrations can indicate response; a policy commitment or completed community action can indicate deeper influence. Vanity metrics alone do not prove impact.'
+        ],
+        keyIdea:'Measure the behaviour or decision you wanted — not only how many people saw the post.',
+        check:{question:'If your goal is to get 50 people to register for a community clean-up, which metric matters most?',options:['Font size','Registrations','Total impressions only'],answer:1,explanation:'Registrations directly measure the intended action.'},
+        sources:['sdg13']
+      }
+    ],
+    caseStudy:{
+      title:'From local footage to an action campaign',
+      text:'Participants turn a climate concern they can see, experience or care deeply about into a short advocacy video. The challenge is to connect a real issue to a defined audience, credible evidence and one action someone can actually take.'
+    },
+    assignment:{
+      paragraphPrompt:'Choose one climate issue you want to advocate on. Define the audience, the evidence you rely on, the insight that matters to that audience, the exact action you want, one ethical risk in communicating the issue, and how you would measure whether the campaign worked.',
+      practicalTitle:'Real-world climate advocacy video',
+      practicalBrief:'Create a 30–90 second advocacy video about waste or another climate issue you genuinely care about. Use footage of yourself, your surroundings, or both so the issue feels real and locally grounded.',
+      practicalInstructions:'Show the issue, explain why it matters and who is affected, then end with one realistic action or call to action. Export the video as MP4, upload it to Google Drive, set access so anyone with the link can view it, and paste the Drive link into Part 02.',
+      practicalLinkLabel:'Climate advocacy video Google Drive link',
+      portfolioLabel:'REAL-WORLD CLIMATE ADVOCACY',
+      portfolioSummary:'A short locally grounded advocacy video that moves an audience from issue to action.',
+      canvasBrief:'Create a 30–90 second advocacy video about waste or another climate issue you genuinely care about. Use footage of yourself, your surroundings, or both so the issue feels real and locally grounded.',
+      puzzle:['ADVOCACY','EVIDENCE','AUDIENCE','ACTION'],
+      rubric:{strategy:25,evidenceIntegrity:20,audienceFit:20,ethicalCommunication:20,measurement:15}
+    },
+    sources:['ipccConcepts','sdg13']
+  },
+
+  {
+    id:'04',
+    slug:'climate-governance-policy',
+    weekLabel:'Week 5 & 6',
+    liveDate:'15 October 2026',
     title:'Climate Governance & Policy',
     framingQuestion:'Who makes climate decisions, and how can young women participate meaningfully?',
     overview:'Demystify the institutions, agreements and policy processes that turn climate evidence into collective decisions — from the Paris Agreement and NDCs to national and local implementation.',
@@ -216,7 +296,7 @@ export const canopyModules2026 = [
     ],
     lessons:[
       {
-        id:'03.1',title:'Governance: more than government',minutes:14,
+        id:'04.1',title:'Governance: more than government',minutes:14,
         body:[
           'Climate governance is the system of institutions, rules, relationships and decision-making processes through which societies respond to climate change. Governments are central, but businesses, civil society, researchers, communities, traditional authorities, media, funders and international organisations also shape outcomes.',
           'Climate policy is one instrument within governance. Policies can use regulation, incentives, public investment, information, planning and participatory processes to accelerate mitigation and adaptation.',
@@ -227,7 +307,7 @@ export const canopyModules2026 = [
         sources:['ipccGlossary']
       },
       {
-        id:'03.2',title:'UNFCCC, Paris Agreement and NDCs',minutes:16,
+        id:'04.2',title:'UNFCCC, Paris Agreement and NDCs',minutes:16,
         body:[
           'The UN Framework Convention on Climate Change provides the international framework for climate cooperation. The Paris Agreement establishes a global framework for countries to strengthen climate action over time.',
           'Nationally Determined Contributions — NDCs — are at the heart of the Paris Agreement. Each Party prepares and communicates successive NDCs describing efforts it intends to pursue. NDCs include efforts to reduce national emissions and can also communicate adaptation priorities.',
@@ -238,7 +318,7 @@ export const canopyModules2026 = [
         sources:['unfcccNdc']
       },
       {
-        id:'03.3',title:'From policy text to implementation',minutes:15,
+        id:'04.3',title:'From policy text to implementation',minutes:15,
         body:[
           'A policy can be ambitious on paper and weak in implementation. Delivery depends on budgets, institutional mandates, data, capacity, coordination, timelines, enforcement and public accountability.',
           'Participants should learn to read a climate policy with practical questions: What problem is defined? Who is responsible? What action is promised? What resources are committed? Who benefits? How will progress be measured? What happens if implementation stalls?',
@@ -249,7 +329,7 @@ export const canopyModules2026 = [
         sources:['ipccGlossary','unWomen']
       },
       {
-        id:'03.4',title:'Finding your entry point',minutes:14,
+        id:'04.4',title:'Finding your entry point',minutes:14,
         body:[
           'Young women do not need to wait for a formal title before participating in climate governance. Entry points can include public consultations, local assemblies, youth or women’s organisations, research, professional associations, community groups, journalism, entrepreneurship and evidence-based digital advocacy.',
           'Effective participation starts with a specific ask. “Do more about climate change” is difficult to act on. A stronger ask identifies the decision-maker, requested action, evidence, affected group and desired result.',
@@ -279,86 +359,6 @@ export const canopyModules2026 = [
       rubric:{governanceUnderstanding:25,actorMapping:20,evidenceUse:20,policyAsk:20,communication:15}
     },
     sources:['unfcccNdc','ipccGlossary','sdg13']
-  },
-
-  {
-    id:'04',
-    slug:'climate-advocacy-digital-innovation',
-    weekLabel:'Week 5 & 6',
-    liveDate:'15 October 2026',
-    title:'Climate Advocacy & Digital Innovation',
-    framingQuestion:'How can storytelling and technology make climate issues credible and capable of mobilising action?',
-    overview:'Teach participants to move from awareness content to responsible advocacy: evidence, audience, message, action, channel, ethics and measurement — with a short real-world advocacy video as the practical creation exercise.',
-    outcomes:[
-      'Distinguish awareness from advocacy.',
-      'Build an evidence-to-message chain.',
-      'Choose an audience and a realistic desired action.',
-      'Avoid misleading or exploitative climate communication.',
-      'Design and evaluate a small digital climate campaign.'
-    ],
-    lessons:[
-      {
-        id:'04.1',title:'Awareness is not the same as advocacy',minutes:13,
-        body:[
-          'Awareness helps people know or understand an issue. Advocacy aims to influence attitudes, behaviour, institutional practice or public decisions. A campaign can raise awareness without creating a clear path to action.',
-          'Effective advocacy defines a problem, a priority audience, a desired action, credible evidence and a channel suited to that audience. It also considers who is speaking and whether affected communities are represented fairly.',
-          'WOMATE’s earlier teaching emphasised grounding advocacy in evidence, building coalitions, engaging decision-makers, amplifying women’s voices and tracking accountability. Canopy turns those principles into a repeatable campaign workflow.'
-        ],
-        keyIdea:'A strong advocacy message does not end with “be aware”; it gives the right audience a credible reason and pathway to act.',
-        check:{question:'Which element most clearly turns awareness into advocacy?',options:['A beautiful graphic.','A specific desired action from a defined audience.','More hashtags.'],answer:1,explanation:'Advocacy needs an audience and an intended action or decision.'},
-        sources:['sdg13']
-      },
-      {
-        id:'04.2',title:'Evidence → insight → message → action',minutes:15,
-        body:[
-          'Responsible climate communication starts with evidence, not a slogan. The communicator identifies what is known, what remains uncertain and what conclusion the evidence reasonably supports.',
-          'The next step is insight: why does this matter to this audience? The message then communicates that insight in clear language, and the call to action identifies what the audience can realistically do.',
-          'Stories can make evidence human and memorable, but a personal story should not be presented as proof of a broad scientific claim. Evidence and lived experience strengthen each other when their roles are clear.'
-        ],
-        keyIdea:'Do not force evidence to fit a message. Build the message from the evidence.',
-        check:{question:'A single person describes a flood experience. How should it be used?',options:['As proof that every flood is caused by climate change.','As lived experience that can accompany, but not replace, broader evidence.','It should never be used.'],answer:1,explanation:'Personal experience is valuable but should not be misrepresented as comprehensive scientific evidence.'},
-        sources:['ipccConcepts']
-      },
-      {
-        id:'04.3',title:'Audience, tone and responsible storytelling',minutes:15,
-        body:[
-          'The same message will not work equally well for a minister, a community association, students, business owners and a general social-media audience. Audience design considers what people already know, what they value, what authority they have and what action is feasible.',
-          'Tone should fit the purpose. Urgency can be appropriate without exaggeration. Hope can motivate without denying risk. Community-centred communication should preserve dignity and avoid using people’s hardship merely as visual material.',
-          'Responsible storytelling obtains appropriate consent, avoids stereotypes, distinguishes fact from opinion and does not invent statistics, quotations or institutional endorsements.'
-        ],
-        keyIdea:'Climate communication should be accurate enough to trust and human enough to act on.',
-        check:{question:'Which practice is responsible?',options:['Use a dramatic statistic even if you cannot verify it.','Adapt the message to the audience while keeping the underlying evidence accurate.','Portray affected communities as helpless because it increases engagement.'],answer:1,explanation:'Audience adaptation should never require distortion.'},
-        sources:['ipccConcepts']
-      },
-      {
-        id:'04.4',title:'Real-world advocacy video and campaign measurement',minutes:16,
-        body:[
-          'A strong digital advocacy video does not need expensive production. A phone, a clear point of view and honest footage of yourself or your surroundings can make a climate issue visible, specific and human.',
-          'Participants should connect the footage to evidence, identify who is affected, avoid exploiting people or communities for impact, and end with one realistic action or call to action. The finished video is uploaded to Google Drive and submitted by shareable link.',
-          'Campaign evaluation should match the objective. Reach and impressions describe exposure; comments and shares can indicate engagement; link clicks or registrations can indicate response; a policy commitment or completed community action can indicate deeper influence. Vanity metrics alone do not prove impact.'
-        ],
-        keyIdea:'Measure the behaviour or decision you wanted — not only how many people saw the post.',
-        check:{question:'If your goal is to get 50 people to register for a community clean-up, which metric matters most?',options:['Font size','Registrations','Total impressions only'],answer:1,explanation:'Registrations directly measure the intended action.'},
-        sources:['sdg13']
-      }
-    ],
-    caseStudy:{
-      title:'From local footage to an action campaign',
-      text:'Participants turn a climate concern they can see, experience or care deeply about into a short advocacy video. The challenge is to connect a real issue to a defined audience, credible evidence and one action someone can actually take.'
-    },
-    assignment:{
-      paragraphPrompt:'Choose one climate issue you want to advocate on. Define the audience, the evidence you rely on, the insight that matters to that audience, the exact action you want, one ethical risk in communicating the issue, and how you would measure whether the campaign worked.',
-      practicalTitle:'Real-world climate advocacy video',
-      practicalBrief:'Create a 30–90 second advocacy video about waste or another climate issue you genuinely care about. Use footage of yourself, your surroundings, or both so the issue feels real and locally grounded.',
-      practicalInstructions:'Show the issue, explain why it matters and who is affected, then end with one realistic action or call to action. Export the video as MP4, upload it to Google Drive, set access so anyone with the link can view it, and paste the Drive link into Part 02.',
-      practicalLinkLabel:'Climate advocacy video Google Drive link',
-      portfolioLabel:'REAL-WORLD CLIMATE ADVOCACY',
-      portfolioSummary:'A short locally grounded advocacy video that moves an audience from issue to action.',
-      canvasBrief:'Create a 30–90 second advocacy video about waste or another climate issue you genuinely care about. Use footage of yourself, your surroundings, or both so the issue feels real and locally grounded.',
-      puzzle:['ADVOCACY','EVIDENCE','AUDIENCE','ACTION'],
-      rubric:{strategy:25,evidenceIntegrity:20,audienceFit:20,ethicalCommunication:20,measurement:15}
-    },
-    sources:['ipccConcepts','sdg13']
   },
 
   {

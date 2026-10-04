@@ -11,8 +11,8 @@ export const TEAM_ROLES={
 export const MODULES=[
  ['module-01','01 · Understanding Climate Change'],
  ['module-02','02 · Gender & Climate Justice'],
- ['module-03','03 · Climate Governance & Policy'],
- ['module-04','04 · Climate Advocacy & Digital Innovation'],
+ ['module-03','03 Â· Climate Advocacy & Digital Innovation'],
+ ['module-04','04 Â· Climate Governance & Policy'],
  ['module-05','05 · Leadership & Professional Pathways']
 ];
 export const teamRoleLabel=role=>TEAM_ROLES[role]||String(role||'').replaceAll('_',' ');

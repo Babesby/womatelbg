@@ -36,22 +36,22 @@ export const CANOPY_ASSIGNMENT_SCHEDULE = [
     liveSpeakerRole:'Founder & Executive Director, Odeibea Foundation'
   },
   {
-    weekKey:'module-03', moduleId:'03', title:'Climate Governance & Policy',
+    weekKey:'module-03', moduleId:'03', title:'Climate Advocacy & Digital Innovation',
     weekStartsAt:'2026-10-05T00:00:00Z',
     speakerOpensAt:'2026-10-08T18:00:00Z',
     dueAt:'2026-10-11T23:59:59Z',
     resubmitUntil:'2026-10-14T23:59:59Z',
-    puzzleTerms:['POLICY','NDC','UNFCCC','GOVERNANCE'],
-    liveUrl:'https://youtube.com/live/t3AugKIs5C0?feature=share',
+    puzzleTerms:['ADVOCACY','EVIDENCE','DIGITAL','MOBILISE'],
+    liveUrl:'https://youtube.com/live/t3AugKIs5C0',
     speakerPrompt:'Complete the challenge announced by the expert during the Thursday live session and publish the required reflection or action post on LinkedIn or X/Twitter.'
   },
   {
-    weekKey:'module-04', moduleId:'04', title:'Climate Advocacy & Digital Innovation',
+    weekKey:'module-04', moduleId:'04', title:'Climate Governance & Policy',
     weekStartsAt:'2026-10-12T00:00:00Z',
     speakerOpensAt:'2026-10-15T18:00:00Z',
     dueAt:'2026-10-18T23:59:59Z',
     resubmitUntil:'2026-10-21T23:59:59Z',
-    puzzleTerms:['ADVOCACY','EVIDENCE','DIGITAL','MOBILISE'],
+    puzzleTerms:['POLICY','NDC','UNFCCC','GOVERNANCE'],
     speakerPrompt:'Complete the challenge announced by the expert during the Thursday live session and publish the required reflection or action post on LinkedIn or X/Twitter.'
   },
   {
