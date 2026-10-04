@@ -180,6 +180,8 @@ export default function CanopyAssignmentsV2({viewer}){
   const[message,setMessage]=useState('');
   const[now,setNow]=useState(()=>new Date());
   const tester=String(viewer?.user?.email||'').trim().toLowerCase()==='p.viewmultimedia@gmail.com';
+  const lusandaModule02=String(viewer?.profile?.full_name||'').trim().toLowerCase()==='lusanda majikijela';
+  const individualDue=(item)=>item.weekKey==='module-02'&&lusandaModule02?new Date('2026-10-05T23:59:59Z'):new Date(item.dueAt);
   const available=tester?CANOPY_ASSIGNMENT_SCHEDULE:openAssignments(now);
   const moduleContent=moduleId=>canopyModules2026.find(module=>module.id===moduleId);
 
@@ -336,7 +338,7 @@ export default function CanopyAssignmentsV2({viewer}){
     const currentManualRevision=!!currentSubmission&&currentSubmission.review_source==='manual'&&currentSubmission.assessment_status==='revision_required';
     const requiredPart=currentManualRevision?revisionPart(currentSubmission):'all';
     const requiredParts=requiredPart==='all'?['paragraph','practical','speaker']:requiredPart.split(',');
-    if(!tester&&!currentSubmission&&now>new Date(item.dueAt)){
+    if(!tester&&!currentSubmission&&now>individualDue(item)){
       setMessage('Submission closed. The Sunday deadline has passed.');
       return;
     }
@@ -400,7 +402,7 @@ export default function CanopyAssignmentsV2({viewer}){
         const requestedPart=manualRevision?revisionPart(sub):'all';
         const requestedParts=requestedPart==='all'?['paragraph','practical','speaker']:requestedPart.split(',');
         const onlyRevision=manualRevision&&requestedPart!=='all';
-        const firstSubmissionOpen=tester||now<=new Date(item.dueAt);
+        const firstSubmissionOpen=tester||now<=individualDue(item);
         const revisionWindowOpen=tester||now<=new Date(item.resubmitUntil);
         const mayResubmit=tester||(manualRevision&&count<3&&revisionWindowOpen);
         const canSubmitForm=tester||(!sub?firstSubmissionOpen:mayResubmit);
@@ -434,7 +436,7 @@ export default function CanopyAssignmentsV2({viewer}){
           </div>
         </article>;
         return <article className="ca-card" key={item.weekKey}>
-          <div className="ca-card-head"><div><small>MODULE {item.moduleId}</small><h2>{item.title}</h2></div><div className="ca-dates"><span>Due {formatCanopyDate(item.dueAt)}</span>{count>0&&<strong>Attempt {count} of 3</strong>}</div></div>
+          <div className="ca-card-head"><div><small>MODULE {item.moduleId}</small><h2>{item.title}</h2></div><div className="ca-dates"><span>Due {formatCanopyDate(individualDue(item))}</span>{count>0&&<strong>Attempt {count} of 3</strong>}</div></div>
           {!onlyRevision&&<div className="ca-threefold">
             <div><b>01</b><h3>Paragraph response</h3><p>{paragraphPrompt}</p></div>
             <div className="ca-practical-brief"><b>02</b><small className="ca-challenge-tag">PRACTICAL</small><h3>{practicalTitle}</h3><p>{practicalBrief}</p>{item.moduleId==='01'&&<ModuleOneCanvasGuide/>}{practicalInstructions&&<details className="ca-instructions"><summary>How to submit</summary><p>{practicalInstructions}</p></details>}{practicalHref&&<a href={practicalHref}>{practicalActionLabel||'Open tool →'}</a>}<PracticalExample assignment={curriculum?.assignment}/></div>
