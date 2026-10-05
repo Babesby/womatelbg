@@ -240,8 +240,8 @@ export default function CanopyAssignmentsV2({viewer}){
 
   const latest=weekKey=>subs.filter(x=>x.week_key===weekKey).sort((a,b)=>b.attempt_no-a.attempt_no)[0];
   const attempts=weekKey=>subs.filter(x=>x.week_key===weekKey).length;
-  const scoreVisible=s=>s&&(s.final_score!=null||s.auto_score!=null)&&(tester||now>=new Date(s.release_at));
-  const finalScore=s=>s?.final_score??s?.auto_score;
+  const scoreVisible=s=>s&&((tester&&(s.final_score!=null||s.auto_score!=null))||(s.review_source==='manual'&&s.assessment_status==='completed'&&s.final_score!=null&&now>=new Date(s.release_at)));
+  const finalScore=s=>tester?(s?.final_score??s?.auto_score):s?.final_score;
   const finalFeedback=s=>String(s?.final_feedback||s?.feedback_hint||'').replace(/^\[CANOPY_REVISION:([a-z]+(?:,[a-z]+)*)\]\s*/i,'');
   const reviewLabel=s=>s?.review_source==='manual'?'WOMATE review':'Automated formative baseline';
 
@@ -411,8 +411,8 @@ export default function CanopyAssignmentsV2({viewer}){
         const parts=assignmentPartState(d,speakerOpen,item.moduleId);
         const requiredReady=requestedParts.every(part=>part==='paragraph'?parts.paragraphReady:part==='practical'?parts.canvasReady:parts.linkedinReady);
         const visible=scoreVisible(sub),score=finalScore(sub),status=(sub?.assessment_status||sub?.status||'submitted').replaceAll('_',' ');
-        const scoreReleased=!!sub&&!!sub.release_at&&now>=new Date(sub.release_at)&&score!=null;
-        const archived=scoreReleased&&!manualRevision;
+        const scoreReleased=!!sub&&manualCompleted&&!!sub.release_at&&now>=new Date(sub.release_at)&&score!=null;
+        const archived=scoreReleased;
         const remark=finalFeedback(sub)||sub?.score_band||status;
         const curriculum=moduleContent(item.moduleId);
         const paragraphPrompt=curriculum?.assignment?.paragraphPrompt||'Respond to the weekly learning task with reflection, analysis and a concrete application to climate action.';
@@ -445,7 +445,7 @@ export default function CanopyAssignmentsV2({viewer}){
           {sub&&<div className="ca-status">
             <div><span>Latest submission</span><strong>{new Date(sub.submitted_at).toLocaleString()}</strong></div>
             <div><span>Status</span><strong>{status}</strong></div>
-            <div><span>Final score</span><strong>{visible?`${score}/100 · ${sub.score_band||''}`:'Releases after the week closes'}</strong>{visible&&<small>{reviewLabel(sub)}</small>}</div>
+            <div><span>Final score</span><strong>{visible?`${score}/100 · ${sub.score_band||''}`:(sub&&sub.release_at&&now>=new Date(sub.release_at)?'Awaiting WOMATE review':'Releases after the week closes')}</strong>{visible&&<small>{reviewLabel(sub)}</small>}</div>
             {visible&&finalFeedback(sub)&&<div className="ca-feedback"><span>Feedback</span><strong>{finalFeedback(sub)}</strong></div>}
             {manualCompleted&&<div className="ca-feedback ca-complete-locked"><span>Completed</span><strong>WOMATE has completed the manual review. This assignment is closed and no further resubmission is required.</strong></div>}
             {manualRevision&&<div className="ca-feedback ca-revision"><span>Revision required</span><strong>WOMATE requests a {requestedPart==='all'?'revision of all three parts':requestedParts.map(p=>p==='paragraph'?'paragraph':p==='practical'?'practical link':'speaker link').join(' + ')+' revision'}. Only the requested part needs to be updated.</strong></div>}

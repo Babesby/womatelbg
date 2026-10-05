@@ -332,6 +332,19 @@ export async function getCertificates(session){
   const s=await refreshSession(session||getStoredSession());if(!s?.access_token)return[];
   return rest(`canopy_certificates?select=*&user_id=eq.${s.user.id}&order=issued_at.desc`,{token:s.access_token});
 }
+export async function getCanopyAttendanceDashboard(session){
+  const s=await refreshSession(session||getStoredSession());if(!s?.access_token)throw new Error('Your Canopy session has expired. Sign in again.');
+  return rest('rpc/canopy_attendance_dashboard',{token:s.access_token,method:'POST',body:{}});
+}
+export async function setCanopyLiveAttendance(session,{userId,moduleId,attended}){
+  const s=await refreshSession(session||getStoredSession());if(!s?.access_token)throw new Error('Your Canopy session has expired. Sign in again.');
+  return rest('rpc/canopy_set_live_attendance',{token:s.access_token,method:'POST',body:{p_user_id:userId,p_module_id:moduleId,p_attended:Boolean(attended)}});
+}
+export async function getCanopyCertificateEligibility(session,userId=null){
+  const s=await refreshSession(session||getStoredSession());if(!s?.access_token)return null;
+  return rest('rpc/canopy_certificate_eligibility',{token:s.access_token,method:'POST',body:{p_user_id:userId||null}});
+}
+
 
 
 

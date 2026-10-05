@@ -7,6 +7,8 @@ import{
 import'./canopyStaffWorkspace.css';
 import{checkCanopyDriveAccess}from'./canopyApi';
 import{CanopyOpportunityAdmin}from'./CanopyOpportunityBoard';
+import CanopyAttendance from './CanopyAttendance';
+import CanopyEligibilitySummary from './CanopyEligibilitySummary';
 
 const ROLE_LABELS={
   programme_manager:'Programme & Monitoring Manager',
@@ -29,6 +31,7 @@ const NAV={
     ['reviews','Assignment reviews',ClipboardCheck],
     ['communications','Communications',MessageSquare],
     ['complaints','Complaints',ShieldAlert],
+    ['attendance','Attendance',UsersRound],
     ['certificates','Certificates',Award],
     ['reports','Reports',BarChart3],
     ['spotlight','Canopy Spotlight',Star],
@@ -38,6 +41,7 @@ const NAV={
   programme_operations:[
     ['overview','Overview',LayoutDashboard],
     ['reviews','Assess submissions',ClipboardCheck],
+    ['attendance','Attendance',UsersRound],
     ['complaints','Complaints',ShieldAlert]
   ],
   module_coordinator:[
@@ -293,7 +297,7 @@ function StaffComplaints({viewer,data,preview,onRefresh}){
 }
 function StaffCertificates({viewer,data,preview,onRefresh}){
  const learners=data?.learners||[],rows=data?.certificates||[];const[learner,setLearner]=useState(''),[url,setUrl]=useState(''),[busy,setBusy]=useState(false),[msg,setMsg]=useState('');async function issue(e){e.preventDefault();if(preview)return;setBusy(true);setMsg('');try{await rpc(viewer.session,'canopy_manager_issue_certificate',{p_user_id:learner,p_drive_url:url});setLearner('');setUrl('');setMsg('Certificate issued and learner notified.');onRefresh?.()}catch(e){setMsg(e.message)}finally{setBusy(false)}}
- return <><section className="cstaffPanel"><header><div><small>COMPLETION</small><h2>Issue certificate</h2></div></header><ActionNotice text={msg}/><form onSubmit={issue}><StaffForm><label>Learner<select disabled={preview} required value={learner} onChange={e=>setLearner(e.target.value)}><option value="">Select learner</option>{learners.map(l=><option key={l.user_id} value={l.user_id}>{l.full_name||'Learner'}</option>)}</select></label><label className="wide">Viewable Google Drive link<input disabled={preview} required type="url" value={url} onChange={e=>setUrl(e.target.value)}/></label><button className="cstaffAction" disabled={preview||busy}>{busy?'Issuing…':preview?'Preview only':'Issue certificate'}</button></StaffForm></form></section><section className="cstaffPanel"><header><div><small>ISSUED</small><h2>Certificate records</h2></div><span>{rows.length}</span></header>{rows.length?<div className="cstaffCards">{rows.map(c=><article key={c.id}><div><small>{c.learner_name||'Learner'}</small><h3>{c.title||'She Leads certificate'}</h3><p>{c.issued_at?new Date(c.issued_at).toLocaleDateString():''}</p></div>{c.drive_url&&<a className="cstaffAction subtle" href={c.drive_url} target="_blank" rel="noreferrer">Open</a>}</article>)}</div>:<Empty/>}</section></>
+ return <><section className="cstaffPanel"><header><div><small>COMPLETION</small><h2>Issue certificate</h2></div></header><ActionNotice text={msg}/><form onSubmit={issue}><StaffForm><label>Learner<select disabled={preview} required value={learner} onChange={e=>setLearner(e.target.value)}><option value="">Select learner</option>{learners.map(l=><option key={l.user_id} value={l.user_id}>{l.full_name||'Learner'}</option>)}</select></label><label className="wide">Viewable Google Drive link<input disabled={preview} required type="url" value={url} onChange={e=>setUrl(e.target.value)}/></label><button className="cstaffAction" disabled={preview||busy}>{busy?'Issuing…':preview?'Preview only':'Issue certificate'}</button></StaffForm></form>{learner&&<CanopyEligibilitySummary viewer={viewer} userId={learner} compact/>}</section><section className="cstaffPanel"><header><div><small>ISSUED</small><h2>Certificate records</h2></div><span>{rows.length}</span></header>{rows.length?<div className="cstaffCards">{rows.map(c=><article key={c.id}><div><small>{c.learner_name||'Learner'}</small><h3>{c.title||'She Leads certificate'}</h3><p>{c.issued_at?new Date(c.issued_at).toLocaleDateString():''}</p></div>{c.drive_url&&<a className="cstaffAction subtle" href={c.drive_url} target="_blank" rel="noreferrer">Open</a>}</article>)}</div>:<Empty/>}</section></>
 }
 function TeamDirectory({data}){const rows=data?.team_members||[];return <section className="cstaffPanel"><header><div><small>DELIVERY TEAM</small><h2>Team operations</h2></div><span>{rows.length}</span></header>{rows.length?<div className="cstaffTable team"><div className="head"><b>Team member</b><b>Role</b><b>Module</b><b>Status</b></div>{rows.map(m=><div key={m.user_id}><span><b>{m.full_name||'Team member'}</b></span><span>{ROLE_LABELS[m.role]||m.role}</span><span>{m.module_id?moduleLabel(m.module_id):'Programme-wide'}</span><Status>{m.status}</Status></div>)}</div>:<Empty/>}</section>}
 function ManagedLearners({viewer,data,role,preview,onRefresh}){const learners=data?.learners||[];const[busy,setBusy]=useState(''),[msg,setMsg]=useState('');async function change(l){setBusy(l.user_id);setMsg('');try{await rpc(viewer.session,'canopy_programme_manager_set_learner_access',{p_user_id:l.user_id,p_status:l.enrollment_status==='active'?'paused':'active'});setMsg('Learner access updated.');onRefresh?.()}catch(e){setMsg(e.message)}finally{setBusy('')}}return <section className="cstaffPanel"><header><div><small>PROGRAMME</small><h2>{role==='programme_manager'?'Learners':'Learner operations'}</h2></div><span>{learners.length}</span></header><ActionNotice text={msg}/>{learners.length?<div className="cstaffTable"><div className="head"><b>Learner</b><b>Country</b><b>Access</b><b>Submissions</b></div>{learners.map(l=><div key={l.user_id}><span><b>{l.full_name||'Learner'}</b></span><span>{l.country||'—'}</span><span><Status>{l.enrollment_status||'waiting'}</Status>{role==='programme_manager'&&!preview&&<button className="cstaffTiny" disabled={busy===l.user_id} onClick={()=>change(l)}>{l.enrollment_status==='active'?'Pause':'Activate'}</button>}</span><span>{l.submission_count??0}</span></div>)}</div>:<Empty/>}</section>}
@@ -361,6 +365,7 @@ export default function CanopyStaffWorkspace({viewer,path,onSignOut}){
   else if(['attention','followups'].includes(view))content=<RecentSubmissions items={data?.recent_submissions||[]} attentionOnly/>;
   else if(view==='communications')content=<StaffCommunications viewer={viewer} data={data} role={role} preview={isPreview} onRefresh={refresh}/>;
   else if(view==='complaints')content=<StaffComplaints viewer={viewer} data={data} preview={isPreview} onRefresh={refresh}/>;
+  else if(view==='attendance')content=<CanopyAttendance viewer={viewer} preview={isPreview}/>;
   else if(view==='certificates')content=<StaffCertificates viewer={viewer} data={data} preview={isPreview} onRefresh={refresh}/>;
   else if(view==='reports'||view==='activity')content=<Reports data={data} moduleId={moduleId}/>;
   else if(view==='spotlight')content=<Spotlight viewer={viewer} data={data} preview={isPreview} role={role} onRefresh={refresh}/>;
