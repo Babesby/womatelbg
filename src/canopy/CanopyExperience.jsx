@@ -157,6 +157,9 @@ function currentAssignment(now=new Date()){
 export function CanopyThisWeek({progress=[],submissions=[],next}){
   const item=currentAssignment();
   if(!item)return null;
+  const completed=new Set((progress||[]).filter(x=>x.completed).map(x=>x.lesson_id));
+  const currentModule=modules.find(m=>String(m.id)===String(item.moduleId));
+  const currentLesson=currentModule?.lessons?.find(l=>!completed.has(l.id))||currentModule?.lessons?.[0]||null;
   const submission=(submissions||[]).filter(s=>s.week_key===item.weekKey).sort((a,b)=>new Date(b.submitted_at)-new Date(a.submitted_at))[0];
   const now=new Date();
   const speakerOpen=now>=new Date(item.speakerOpensAt);
@@ -165,9 +168,9 @@ export function CanopyThisWeek({progress=[],submissions=[],next}){
   return <section className="cx-week">
     <header><span>THIS WEEK</span><strong>Module {item.moduleId}</strong></header>
     <div className="cx-week-list">
-      <div className="cx-week-row"><small>LEARN</small><strong>{next?next.l.title:'Caught up'}</strong><button className="cx-text-action" onClick={()=>goTo(next?`/canopy/course/she-leads/${next.m.id}/${next.l.id}`:'/canopy/course/she-leads')}>{next?'Continue':'Open course'} <ArrowRight size={14}/></button></div>
+      <div className="cx-week-row"><small>LEARN</small><strong>{currentLesson?currentLesson.title:'Module complete'}</strong><button className="cx-text-action" onClick={()=>goTo(currentLesson?`/canopy/course/she-leads/${item.moduleId}/${currentLesson.id}`:'/canopy/course/she-leads')}>{currentLesson?'Continue':'Open course'} <ArrowRight size={14}/></button></div>
       <div className="cx-week-row"><small>ASSIGNMENT</small><strong>{submission?'Submitted':duePassed?'Closed':`Due ${formatCanopyDate(item.dueAt)}`}</strong><button className="cx-text-action" onClick={()=>goTo('/canopy/assignments')}>Open <ArrowRight size={14}/></button></div>
-      <div className="cx-week-row"><small>SPEAKER</small><strong>{speakerOpen?'Challenge open':'Opens Thu · 6 PM GMT'}</strong><button className="cx-text-action" onClick={()=>goTo('/canopy/assignments')}>View <ArrowRight size={14}/></button></div>
+      <div className="cx-week-row"><small>SPEAKER</small><strong>{speakerOpen?'Challenge open':'Opens Thu - 6 PM GMT'}</strong><button className="cx-text-action" onClick={()=>goTo('/canopy/assignments')}>View <ArrowRight size={14}/></button></div>
     </div>
     <CanopyLiveCountdown item={item}/>
   </section>;
