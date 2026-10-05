@@ -13,10 +13,10 @@ import {activateTeamAccess,getStaffAccess,getStaffDashboard} from './canopyTeamA
 import {CanopyAdminRolePreview,CanopyTeamAccessAdmin,CanopyTeamActivation,CanopyStaffDashboard,teamRoleLabel} from './CanopyTeamAccess';
 import {CANOPY_ASSIGNMENT_SCHEDULE,CANOPY_ACCESS_DATE} from './canopySchedule';
 import CanopyStaffWorkspace from './CanopyStaffWorkspace';
-import{ArrowLeft,ArrowRight,BookOpen,Check,ChevronRight,ClipboardCheck,Clock,FileText,GraduationCap,Leaf,Lock,LogOut,Menu,PlayCircle,Sparkles,UserRound,X,BookMarked,UsersRound,PenLine,TrendingUp,Eye,EyeOff,MessageSquare,ShieldAlert,Award,BarChart3,Bell,Moon,Sun,Globe2,Mail,ShieldCheck,BriefcaseBusiness,Heart,Volume2,Square} from 'lucide-react';
+import{ArrowLeft,ArrowRight,BookOpen,Check,ChevronRight,ClipboardCheck,Clock,FileText,GraduationCap,Leaf,Lock,LogOut,Menu,PlayCircle,Sparkles,UserRound,X,BookMarked,UsersRound,PenLine,TrendingUp,Eye,EyeOff,MessageSquare,ShieldAlert,Award,BarChart3,Bell,Moon,Sun,Globe2,Mail,ShieldCheck,BriefcaseBusiness,Heart,Volume2,Square,Camera,Trash2} from 'lucide-react';
 import'./canopy.css';
 import{CANOPY_BRAND,modules,resources}from'./canopyData';
-import{canopyConfigured,consumeAuthCallback,getStoredSession,getViewer,getProgress,getManagerSnapshot,markLesson,requestPasswordReset,resendConfirmation,saveQuiz,signIn,signOut,signUp,updatePassword,setLearnerEnrollmentStatus,createManagerAction,createBulkManagerAction,updateManagerAction,reviewWeeklyAssignment,checkCanopyDriveAccess,getUnreadNotificationCount,getWeeklyAssignmentSubmissions,issueCanopyCertificate,signInWithGoogle,updateOwnCanopyProfile,getOwnCanopyDeletionRequest,requestOwnCanopyAccountDeletion,withdrawCanopyLearner,restoreCanopyLearnerEligibility,adminFeatureCanopySpotlight,updateCanopySpotlightDecision,toggleCanopySpotlightLove,updateCanopySpotlightMediaReview} from './canopyApi';
+import{canopyConfigured,consumeAuthCallback,getStoredSession,getViewer,getProgress,getManagerSnapshot,markLesson,requestPasswordReset,resendConfirmation,saveQuiz,signIn,signOut,signUp,updatePassword,setLearnerEnrollmentStatus,createManagerAction,createBulkManagerAction,updateManagerAction,reviewWeeklyAssignment,checkCanopyDriveAccess,getUnreadNotificationCount,getWeeklyAssignmentSubmissions,issueCanopyCertificate,signInWithGoogle,updateOwnCanopyProfile,getOwnCanopyDeletionRequest,requestOwnCanopyAccountDeletion,withdrawCanopyLearner,restoreCanopyLearnerEligibility,adminFeatureCanopySpotlight,updateCanopySpotlightDecision,toggleCanopySpotlightLove,updateCanopySpotlightMediaReview,uploadOwnCanopyProfilePhoto,removeOwnCanopyProfilePhoto,canopyProfilePhotoUrl,getCanopyTalentNetwork} from './canopyApi';
 import{applyCanopyTheme,getCanopyTheme}from'./canopyTheme';
 import{CanopyJourneyMap,CanopyThisWeek,CanopyLessonActivity,CanopyReflectionTimeline,CanopyModuleComplete,CanopySpotlight,CanopyPortfolioPage}from'./CanopyExperience';
 import{playCanopyCorrectSound,playCanopyErrorSound,primeCanopyFeedbackAudio}from'./canopyFeedbackAudio';
@@ -263,13 +263,19 @@ function Profile({viewer,onReload}){
  const[msg,setMsg]=useState('');
  const[deletion,setDeletion]=useState(null);
  const[confirmDelete,setConfirmDelete]=useState('');
+ const[avatarPath,setAvatarPath]=useState('');
+ const[avatarPreview,setAvatarPreview]=useState('');
 
  useEffect(()=>{
    let live=true;
    getOwnCanopyDeletionRequest(viewer.session).then(x=>{if(live)setDeletion(x)}).catch(()=>{});
+   getCanopyTalentNetwork(viewer.session).then(x=>{if(live){const p=x?.me?.avatar_path||'';setAvatarPath(p);setAvatarPreview(p?canopyProfilePhotoUrl(p):'')}}).catch(()=>{});
    return()=>{live=false};
  },[viewer?.session?.access_token]);
 
+ async function compressProfilePhoto(file){if(!file?.type?.startsWith('image/'))throw new Error('Choose a JPG, PNG or WebP image.');if(file.size>8*1024*1024)throw new Error('Choose an image smaller than 8 MB.');const bitmap=await createImageBitmap(file),side=Math.min(bitmap.width,bitmap.height),sx=(bitmap.width-side)/2,sy=(bitmap.height-side)/2,canvas=document.createElement('canvas');canvas.width=400;canvas.height=400;canvas.getContext('2d',{alpha:false}).drawImage(bitmap,sx,sy,side,side,0,0,400,400);bitmap.close?.();let quality=.82,blob=null;do{blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/webp',quality));quality-=.1}while(blob&&blob.size>390000&&quality>=.42);if(!blob||blob.size>409600)throw new Error('Could not compress this photo enough. Try another image.');return blob}
+ async function changeProfilePhoto(e){const file=e.target.files?.[0];e.target.value='';if(!file)return;setBusy('photo');setMsg('');try{const blob=await compressProfilePhoto(file),result=await uploadOwnCanopyProfilePhoto(viewer.session,blob);setAvatarPath(result.avatar_path);setAvatarPreview(result.url);setMsg('Profile photo updated. It will appear in the Talent Network when your profile is discoverable.')}catch(err){setMsg(err?.message||'Could not update your profile photo.')}finally{setBusy('')}}
+ async function removeProfilePhoto(){setBusy('photo');setMsg('');try{await removeOwnCanopyProfilePhoto(viewer.session);setAvatarPath('');setAvatarPreview('');setMsg('Profile photo removed. Your initials will be shown instead.')}catch(err){setMsg(err?.message||'Could not remove your profile photo.')}finally{setBusy('')}}
  async function saveProfile(e){
    e.preventDefault();
    setBusy('profile');setMsg('');
@@ -324,12 +330,13 @@ function Profile({viewer,onReload}){
   <div className="canopyProfileShell">
    <aside className="canopyProfileRail">
     <div className="canopyProfileIdentityModern">
-     <div className="canopyProfileAvatar" aria-hidden="true">{initials}</div>
+     <div className="canopyProfileAvatar canopyProfileAvatarPhoto" aria-hidden="true">{avatarPreview?<img src={avatarPreview} alt=""/>:initials}</div>
      <div className="canopyProfileIdentityText">
       <h2>{name||'Your profile'}</h2>
       <p>{viewer.user?.email}</p>
      </div>
     </div>
+    {participantEditable&&<div className="canopyProfilePhotoActions"><label className="canopyPhotoButton"><Camera size={15}/><span>{busy==='photo'?'Processing...':avatarPath?'Change photo':'Add profile photo'}</span><input type="file" accept="image/jpeg,image/png,image/webp" disabled={busy==='photo'} onChange={changeProfilePhoto}/></label>{avatarPath&&<button type="button" className="canopyPhotoRemove" disabled={busy==='photo'} onClick={removeProfilePhoto}><Trash2 size={14}/> Remove</button>}<small>Optional. Canopy crops and compresses your photo to 400 x 400. Your initials remain the fallback. Your photo appears in the participant directory only when your Talent Network profile is discoverable.</small></div>}
     <div className="canopyProfileRailMeta">
      <div><small>ACCOUNT</small><strong><ShieldCheck size={15}/>{role==='tester'?'Tester':'Participant'}</strong></div>
      <div><small>COUNTRY</small><strong><Globe2 size={15}/>{country||'Not set'}</strong></div>

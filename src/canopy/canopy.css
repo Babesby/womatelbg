@@ -3055,3 +3055,6 @@ html[data-canopy-theme="dark"] .canopyComplaintFilters button b{background:#223c
 html[data-canopy-theme="dark"] .canopyComplaintFilters button.active{background:#dce9e5;color:#13231f;border-color:#dce9e5}
 html[data-canopy-theme="dark"] .canopyComplaintFilters button.active b{background:#13231f;color:#dce9e5}
 
+
+/* Canopy participant profile photo */
+.canopyProfileAvatarPhoto{overflow:hidden}.canopyProfileAvatarPhoto img{width:100%;height:100%;display:block;object-fit:cover}.canopyProfilePhotoActions{display:grid;gap:8px;margin:12px 0 18px}.canopyProfilePhotoActions small{font-size:11px;line-height:1.45;color:var(--canopy-muted)}.canopyPhotoButton,.canopyPhotoRemove{display:flex;align-items:center;justify-content:center;gap:7px;min-height:38px;border-radius:10px;font:inherit;font-size:12px;font-weight:750;cursor:pointer}.canopyPhotoButton{position:relative;background:var(--canopy);color:#fff}.canopyPhotoButton input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}.canopyPhotoRemove{border:1px solid var(--canopy-line);background:transparent;color:inherit}.canopyPhotoRemove:disabled{opacity:.55;cursor:not-allowed}

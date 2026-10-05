@@ -402,6 +402,11 @@ export async function requestOwnCanopyAccountDeletion(session,reason=''){
   return rest('rpc/canopy_request_own_account_deletion',{token:s.access_token,method:'POST',body:{p_reason:String(reason||'').trim()||null}});
 }
 
+/* WOMATE Canopy profile photo storage */
+export function canopyProfilePhotoUrl(path){const clean=String(path||'').replace(/^\/+/,'');return clean&&URL?`${URL}/storage/v1/object/public/canopy-profile-images/${clean}`:''}
+export async function uploadOwnCanopyProfilePhoto(session,blob){const s=await refreshSession(session||getStoredSession());if(!s?.access_token||!s?.user?.id)throw new Error('Your Canopy session has expired. Sign in again.');if(!blob||blob.size>409600)throw new Error('Profile photo must be 400 KB or smaller after compression.');const path=`${s.user.id}/avatar.webp`;const r=await fetch(`${URL}/storage/v1/object/canopy-profile-images/${path}`,{method:'POST',headers:{apikey:KEY,Authorization:`Bearer ${s.access_token}`,'Content-Type':'image/webp','x-upsert':'true'},body:blob});await parse(r);await rest('rpc/canopy_set_own_profile_photo',{token:s.access_token,method:'POST',body:{p_avatar_path:path}});return{avatar_path:path,url:`${canopyProfilePhotoUrl(path)}?v=${Date.now()}`}}
+export async function removeOwnCanopyProfilePhoto(session){const s=await refreshSession(session||getStoredSession());if(!s?.access_token||!s?.user?.id)throw new Error('Your Canopy session has expired. Sign in again.');const path=`${s.user.id}/avatar.webp`;const r=await fetch(`${URL}/storage/v1/object/canopy-profile-images/${path}`,{method:'DELETE',headers:{apikey:KEY,Authorization:`Bearer ${s.access_token}`}});if(!r.ok&&r.status!==404)await parse(r);await rest('rpc/canopy_set_own_profile_photo',{token:s.access_token,method:'POST',body:{p_avatar_path:null}});return{ok:true}}
+
 // Phase 2 cross-country group missions
 export async function getMyCanopyMissionHub(session){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_get_my_mission_hub',{token:s.access_token,method:'POST',body:{}})}
 export async function respondCanopyMissionInvite(session,accept){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_respond_mission_invite',{token:s.access_token,method:'POST',body:{p_accept:Boolean(accept)}})}
