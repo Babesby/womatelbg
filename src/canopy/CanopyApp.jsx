@@ -16,7 +16,7 @@ import CanopyStaffWorkspace from './CanopyStaffWorkspace';
 import{ArrowLeft,ArrowRight,BookOpen,Check,ChevronRight,ClipboardCheck,Clock,FileText,GraduationCap,Leaf,Lock,LogOut,Menu,PlayCircle,Sparkles,UserRound,X,BookMarked,UsersRound,PenLine,TrendingUp,Eye,EyeOff,MessageSquare,ShieldAlert,Award,BarChart3,Bell,Moon,Sun,Globe2,Mail,ShieldCheck,BriefcaseBusiness,Heart,Volume2,Square,Camera,Trash2} from 'lucide-react';
 import'./canopy.css';
 import{CANOPY_BRAND,modules,resources}from'./canopyData';
-import{canopyConfigured,consumeAuthCallback,getStoredSession,getViewer,getProgress,getManagerSnapshot,markLesson,requestPasswordReset,resendConfirmation,saveQuiz,signIn,signOut,signUp,updatePassword,setLearnerEnrollmentStatus,createManagerAction,createBulkManagerAction,updateManagerAction,reviewWeeklyAssignment,checkCanopyDriveAccess,getUnreadNotificationCount,getWeeklyAssignmentSubmissions,issueCanopyCertificate,signInWithGoogle,updateOwnCanopyProfile,getOwnCanopyDeletionRequest,requestOwnCanopyAccountDeletion,withdrawCanopyLearner,restoreCanopyLearnerEligibility,adminFeatureCanopySpotlight,updateCanopySpotlightDecision,toggleCanopySpotlightLove,updateCanopySpotlightMediaReview,uploadOwnCanopyProfilePhoto,removeOwnCanopyProfilePhoto,canopyProfilePhotoUrl,getCanopyTalentNetwork} from './canopyApi';
+import{canopyConfigured,consumeAuthCallback,getStoredSession,getViewer,getProgress,getManagerSnapshot,markLesson,requestPasswordReset,resendConfirmation,saveQuiz,signIn,signOut,signUp,updatePassword,setLearnerEnrollmentStatus,createManagerAction,createBulkManagerAction,updateManagerAction,reviewWeeklyAssignment,checkCanopyDriveAccess,getUnreadNotificationCount,getWeeklyAssignmentSubmissions,issueCanopyCertificate,signInWithGoogle,updateOwnCanopyProfile,getOwnCanopyDeletionRequest,requestOwnCanopyAccountDeletion,withdrawCanopyLearner,restoreCanopyLearnerEligibility,adminFeatureCanopySpotlight,updateCanopySpotlightDecision,toggleCanopySpotlightLove,updateCanopySpotlightMediaReview,uploadOwnCanopyProfilePhoto,removeOwnCanopyProfilePhoto,canopyProfilePhotoUrl,getCanopyTalentNetwork,saveCanopyTalentSettings} from './canopyApi';
 import{applyCanopyTheme,getCanopyTheme}from'./canopyTheme';
 import{CanopyJourneyMap,CanopyThisWeek,CanopyLessonActivity,CanopyReflectionTimeline,CanopyModuleComplete,CanopySpotlight,CanopyPortfolioPage}from'./CanopyExperience';
 import{playCanopyCorrectSound,playCanopyErrorSound,primeCanopyFeedbackAudio}from'./canopyFeedbackAudio';
@@ -265,17 +265,30 @@ function Profile({viewer,onReload}){
  const[confirmDelete,setConfirmDelete]=useState('');
  const[avatarPath,setAvatarPath]=useState('');
  const[avatarPreview,setAvatarPreview]=useState('');
+ const[talent,setTalent]=useState({discoverable:false,collaboration_open:false,mentor_available:false,headline:'',climate_interests:[],completed_modules:0,alumni:false});
+ const[talentLoaded,setTalentLoaded]=useState(false);
 
  useEffect(()=>{
    let live=true;
    getOwnCanopyDeletionRequest(viewer.session).then(x=>{if(live)setDeletion(x)}).catch(()=>{});
-   getCanopyTalentNetwork(viewer.session).then(x=>{if(live){const p=x?.me?.avatar_path||'';setAvatarPath(p);setAvatarPreview(p?canopyProfilePhotoUrl(p):'')}}).catch(()=>{});
+   getCanopyTalentNetwork(viewer.session).then(x=>{if(live){const me=x?.me||{};const p=me.avatar_path||'';setAvatarPath(p);setAvatarPreview(p?canopyProfilePhotoUrl(p):'');setTalent({discoverable:!!me.discoverable,collaboration_open:!!me.collaboration_open,mentor_available:!!me.mentor_available,headline:me.headline||'',climate_interests:Array.isArray(me.climate_interests)?me.climate_interests:[],completed_modules:Number(me.completed_modules||0),alumni:!!me.alumni});setTalentLoaded(true)}}).catch(()=>{if(live)setTalentLoaded(true)});
    return()=>{live=false};
  },[viewer?.session?.access_token]);
 
  async function compressProfilePhoto(file){if(!file?.type?.startsWith('image/'))throw new Error('Choose a JPG, PNG or WebP image.');if(file.size>8*1024*1024)throw new Error('Choose an image smaller than 8 MB.');const bitmap=await createImageBitmap(file),side=Math.min(bitmap.width,bitmap.height),sx=(bitmap.width-side)/2,sy=(bitmap.height-side)/2,canvas=document.createElement('canvas');canvas.width=400;canvas.height=400;canvas.getContext('2d',{alpha:false}).drawImage(bitmap,sx,sy,side,side,0,0,400,400);bitmap.close?.();let quality=.82,blob=null;do{blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/webp',quality));quality-=.1}while(blob&&blob.size>390000&&quality>=.42);if(!blob||blob.size>409600)throw new Error('Could not compress this photo enough. Try another image.');return blob}
  async function changeProfilePhoto(e){const file=e.target.files?.[0];e.target.value='';if(!file)return;setBusy('photo');setMsg('');try{const blob=await compressProfilePhoto(file),result=await uploadOwnCanopyProfilePhoto(viewer.session,blob);setAvatarPath(result.avatar_path);setAvatarPreview(result.url);setMsg('Profile photo updated. It will appear in the Talent Network when your profile is discoverable.')}catch(err){setMsg(err?.message||'Could not update your profile photo.')}finally{setBusy('')}}
  async function removeProfilePhoto(){setBusy('photo');setMsg('');try{await removeOwnCanopyProfilePhoto(viewer.session);setAvatarPath('');setAvatarPreview('');setMsg('Profile photo removed. Your initials will be shown instead.')}catch(err){setMsg(err?.message||'Could not remove your profile photo.')}finally{setBusy('')}}
+ async function savePublicProfile(e){
+   e.preventDefault();
+   setBusy('talent');setMsg('');
+   try{
+     const interests=String((talent.climate_interests||[]).join(',')).split(',').map(v=>v.trim()).filter(Boolean).slice(0,8);
+     await saveCanopyTalentSettings(viewer.session,{discoverable:!!talent.discoverable,mentorAvailable:!!talent.mentor_available,collaborationOpen:!!talent.collaboration_open,headline:String(talent.headline||'').trim(),interests});
+     setTalent(t=>({...t,headline:String(t.headline||'').trim(),climate_interests:interests}));
+     setMsg('Public profile updated.');
+   }catch(err){setMsg(err?.message||'Could not update your public profile.')}
+   finally{setBusy('')}
+ }
  async function saveProfile(e){
    e.preventDefault();
    setBusy('profile');setMsg('');
@@ -336,7 +349,6 @@ function Profile({viewer,onReload}){
       <p>{viewer.user?.email}</p>
      </div>
     </div>
-    {participantEditable&&<div className="canopyProfilePhotoActions"><label className="canopyPhotoButton"><Camera size={15}/><span>{busy==='photo'?'Processing...':avatarPath?'Change photo':'Add profile photo'}</span><input type="file" accept="image/jpeg,image/png,image/webp" disabled={busy==='photo'} onChange={changeProfilePhoto}/></label>{avatarPath&&<button type="button" className="canopyPhotoRemove" disabled={busy==='photo'} onClick={removeProfilePhoto}><Trash2 size={14}/> Remove</button>}<small>Optional. Canopy crops and compresses your photo to 400 x 400. Your initials remain the fallback. Your photo appears in the participant directory only when your Talent Network profile is discoverable.</small></div>}
     <div className="canopyProfileRailMeta">
      <div><small>ACCOUNT</small><strong><ShieldCheck size={15}/>{role==='tester'?'Tester':'Participant'}</strong></div>
      <div><small>COUNTRY</small><strong><Globe2 size={15}/>{country||'Not set'}</strong></div>
@@ -367,6 +379,32 @@ function Profile({viewer,onReload}){
      </div>
      {participantEditable?<div className="canopySettingsActions"><button className="canopyPrimary" disabled={busy==='profile'||!name.trim()||!country.trim()}>{busy==='profile'?'Saving changes…':'Save changes'}</button></div>:<p className="canopySettingsNote">Profile detail editing is reserved for participant accounts. Contact WOMATE Support if this operational account needs a correction.</p>}
     </form>
+
+    {participantEditable&&<form className="canopyProfileSection canopyPublicProfileSection" onSubmit={savePublicProfile}>
+     <div className="canopyProfileSectionHead">
+      <div><h2>Public Profile & Talent Network</h2><p>Control how you appear to other verified She Leads participants. Your email and private contact details are never shown here.</p></div>
+     </div>
+     <div className="canopyPublicProfilePhotoRow">
+      <div className="canopyProfileAvatar canopyProfileAvatarPhoto" aria-hidden="true">{avatarPreview?<img src={avatarPreview} alt=""/>:initials}</div>
+      <div className="canopyPublicProfilePhotoCopy"><b>Profile photo</b><span>Optional. Canopy crops and compresses your image to 400 x 400. If you do not add one, your initials are shown.</span><div className="canopyPublicProfilePhotoButtons"><label className="canopyPhotoButton"><Camera size={15}/><span>{busy==='photo'?'Processing...':avatarPath?'Change photo':'Add profile photo'}</span><input type="file" accept="image/jpeg,image/png,image/webp" disabled={busy==='photo'} onChange={changeProfilePhoto}/></label>{avatarPath&&<button type="button" className="canopyPhotoRemove" disabled={busy==='photo'} onClick={removeProfilePhoto}><Trash2 size={14}/> Remove photo</button>}</div></div>
+     </div>
+     <div className="canopyPublicProfileToggles">
+      <label><input type="checkbox" checked={!!talent.discoverable} disabled={!talentLoaded||busy==='talent'} onChange={e=>setTalent(t=>({...t,discoverable:e.target.checked}))}/><span><b>Show me in the participant directory</b><small>Other verified WOMATE Canopy participants can discover your public profile.</small></span></label>
+      <label><input type="checkbox" checked={!!talent.collaboration_open} disabled={!talentLoaded||busy==='talent'} onChange={e=>setTalent(t=>({...t,collaboration_open:e.target.checked}))}/><span><b>Open to collaboration</b><small>Lets other participants send you a collaboration request through Canopy.</small></span></label>
+     </div>
+     <div className="canopyProfileFields">
+      <label>Professional headline
+       <input maxLength="120" value={talent.headline||''} disabled={!talentLoaded||busy==='talent'} onChange={e=>setTalent(t=>({...t,headline:e.target.value}))} placeholder="Climate advocate, researcher, circular economy builder..."/>
+       <small>This is the short description shown below your name in the participant directory.</small>
+      </label>
+      <label>Climate interests
+       <input value={(talent.climate_interests||[]).join(', ')} disabled={!talentLoaded||busy==='talent'} onChange={e=>setTalent(t=>({...t,climate_interests:e.target.value.split(',').map(v=>v.trim())}))} placeholder="Adaptation, climate justice, waste, policy"/>
+       <small>Separate interests with commas. Up to 8 interests are saved as directory tags.</small>
+      </label>
+     </div>
+     <div className="canopyPublicProfilePreview"><small>DIRECTORY PREVIEW</small><div><div className="canopyProfileAvatar canopyProfileAvatarPhoto">{avatarPreview?<img src={avatarPreview} alt=""/>:initials}</div><div><b>{name||'Your name'}</b><span>{country||'Country not set'}</span><p>{talent.headline||'Verified WOMATE Canopy participant'}</p></div></div>{(talent.climate_interests||[]).filter(Boolean).length>0&&<div className="canopyPublicProfileTags">{(talent.climate_interests||[]).filter(Boolean).slice(0,5).map((x,i)=><span key={`${x}-${i}`}>{x}</span>)}</div>}</div>
+     <div className="canopySettingsActions"><button className="canopyPrimary" disabled={!talentLoaded||busy==='talent'}>{busy==='talent'?'Saving public profile...':'Save public profile'}</button><button type="button" className="canopySecondary" onClick={()=>go('/canopy/talent')}>View Talent Network</button></div>
+    </form>}
 
     <section className="canopyProfileSection canopyProfileSectionRow">
      <div className="canopyProfileSectionHead">
