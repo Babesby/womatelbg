@@ -266,15 +266,15 @@ export const canopyModules2026 = [
     },
     assignment:{
       paragraphPrompt:'Choose one climate issue you want to advocate on. Define the audience, the evidence you rely on, the insight that matters to that audience, the exact action you want, one ethical risk in communicating the issue, and how you would measure whether the campaign worked.',
-      practicalTitle:'Real-world climate advocacy video',
-      practicalBrief:'Create a 30–90 second advocacy video about waste or another climate issue you genuinely care about. Use footage of yourself, your surroundings, or both so the issue feels real and locally grounded.',
-      practicalInstructions:'Show the issue, explain why it matters and who is affected, then end with one realistic action or call to action. Export the video as MP4, upload it to Google Drive, set access so anyone with the link can view it, and paste the Drive link into Part 02.',
-      practicalLinkLabel:'Climate advocacy video Google Drive link',
-      portfolioLabel:'REAL-WORLD CLIMATE ADVOCACY',
-      portfolioSummary:'A short locally grounded advocacy video that moves an audience from issue to action.',
-      canvasBrief:'Create a 30–90 second advocacy video about waste or another climate issue you genuinely care about. Use footage of yourself, your surroundings, or both so the issue feels real and locally grounded.',
+      practicalTitle:'Climate Voice-Off ðŸŽ™ï¸',
+      practicalBrief:'Team up with one other She Leads participant and record a short 2â€“3 minute audio debate about one climate issue you both care about. One person argues FOR, the other argues AGAINST. Respond briefly to each other, then finish with one practical point of common ground.',
+      practicalInstructions:'HOW TO DO IT: 1) Find one She Leads partner and choose one simple climate question together. 2) Decide who is FOR and who is AGAINST. 3) Record Person A for about 45 seconds making the FOR case. 4) Record Person B for about 45 seconds making the AGAINST case. 5) Each person records a 20â€“30 second rebuttal responding to one point made by the other person. 6) Finish with a 20â€“30 second COMMON GROUND section stating one solution or action you both agree on. HOW TO RECORD: If you are together, use one phone Voice Recorder and record the full debate in one take. If you are in different locations, record the sections as WhatsApp voice notes or phone recordings and send all clips to one partner. That partner should save/download the clips, open CapCut, Canva or any simple audio editor, import the clips in this order â€” FOR â†’ AGAINST â†’ rebuttal FOR â†’ rebuttal AGAINST â†’ COMMON GROUND â€” trim long silences if needed, and export/save the finished recording as one audio file (MP3 or M4A; an MP4 containing the audio is also acceptable if your app does not export audio-only). No professional editing, music or special equipment is required. Upload the final file to Google Drive, set access to Anyone with the link can view, and paste the Drive link into Part 02. Both partners may submit the same final Drive link, but each learner must submit it from their own Canopy account. Include your partnerâ€™s full name in the file name or at the beginning of the recording.',
+      practicalLinkLabel:'Climate Voice-Off audio Â· Google Drive link',
+      portfolioLabel:'CLIMATE VOICE-OFF',
+      portfolioSummary:'A collaborative two-sided climate audio debate that demonstrates argument, listening, rebuttal and common ground.',
+      canvasBrief:'Partner with one She Leads participant to record a 2â€“3 minute Climate Voice-Off: FOR, AGAINST, quick rebuttals and one shared point of common ground.',
       puzzle:['ADVOCACY','EVIDENCE','AUDIENCE','ACTION'],
-      rubric:{strategy:25,evidenceIntegrity:20,audienceFit:20,ethicalCommunication:20,measurement:15}
+      rubric:{argumentQuality:25,evidenceUse:20,listeningAndRebuttal:20,collaboration:20,commonGround:15}
     },
     sources:['ipccConcepts','sdg13']
   },

@@ -42,8 +42,12 @@ export const CANOPY_ASSIGNMENT_SCHEDULE = [
     dueAt:'2026-10-11T23:59:59Z',
     resubmitUntil:'2026-10-14T23:59:59Z',
     puzzleTerms:['ADVOCACY','EVIDENCE','DIGITAL','MOBILISE'],
-    liveUrl:'https://youtube.com/live/t3AugKIs5C0',
-    speakerPrompt:'Complete the challenge announced by the expert during the Thursday live session and publish the required reflection or action post on LinkedIn or X/Twitter.'
+    liveUrl:'https://www.youtube.com/live/t3AugKIs5C0?si=8BWqNXsb11u_wjUW',
+    livePoster:'/assets/canopy/live/module-03-live.png',
+    liveHost:'Modester Nanyunga',
+    liveSpeaker:'Ododoola Oyewo',
+    liveSpeakerRole:'Founder & Climate Communications Lead, Global Voiz',
+    speakerPrompt:'Complete the challenge announced by the expert during the Thursday live session and publish the required reflection or action post on the social platform specified for the challenge.'
   },
   {
     weekKey:'module-04', moduleId:'04', title:'Climate Governance & Policy',
