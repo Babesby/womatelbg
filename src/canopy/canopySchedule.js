@@ -70,7 +70,13 @@ export const CANOPY_ASSIGNMENT_SCHEDULE = [
 ];
 
 export function openAssignments(now=new Date()){
-  return CANOPY_ASSIGNMENT_SCHEDULE.filter(item => now >= new Date(item.weekStartsAt));
+  const t=now instanceof Date?now:new Date(now);
+  return CANOPY_ASSIGNMENT_SCHEDULE.filter(item=>{
+    const starts=new Date(item.weekStartsAt);
+    if(item.moduleId==='04'&&t<new Date('2026-10-12T00:00:00Z'))return false;
+    if(item.moduleId==='05'&&t<new Date('2026-10-19T00:00:00Z'))return false;
+    return t>=starts;
+  });
 }
 
 export function speakerChallengeOpen(item,now=new Date()){

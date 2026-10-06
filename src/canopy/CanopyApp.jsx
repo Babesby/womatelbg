@@ -197,7 +197,14 @@ function TesterDashboard({viewer,progress}){
 
 
 function canopyModuleSchedule(m){return CANOPY_ASSIGNMENT_SCHEDULE.find(x=>x.moduleId===m.id)||null}
-function canopyModuleIsOpen(m,now=new Date()){const item=canopyModuleSchedule(m);return !!item&&now>=new Date(item.weekStartsAt)}
+function canopyModuleIsOpen(m,now=new Date()){
+  const item=canopyModuleSchedule(m);
+  if(!item)return false;
+  const t=now instanceof Date?now:new Date(now);
+  if(String(m?.id)==='04'&&t<new Date('2026-10-12T00:00:00Z'))return false;
+  if(String(m?.id)==='05'&&t<new Date('2026-10-19T00:00:00Z'))return false;
+  return t>=new Date(item.weekStartsAt);
+}
 function canopyModuleOpenLabel(m){const item=canopyModuleSchedule(m);if(!item)return 'Scheduled';return new Intl.DateTimeFormat('en-GB',{weekday:'short',day:'numeric',month:'short',timeZone:'UTC'}).format(new Date(item.weekStartsAt))}
 
 function CourseOverview({progress,tester=false}){

@@ -203,6 +203,12 @@ export default function CanopyAssignmentsV2({viewer}){
   const lusandaModule02=String(viewer?.profile?.full_name||'').trim().toLowerCase()==='lusanda majikijela';
   const individualDue=(item)=>item.weekKey==='module-02'&&lusandaModule02?new Date('2026-10-05T23:59:59Z'):new Date(item.dueAt);
   const available=tester?CANOPY_ASSIGNMENT_SCHEDULE:openAssignments(now);
+  const safelyAvailable=available.filter(item=>{
+    if(tester)return true;
+    if(item.moduleId==='04'&&now<new Date('2026-10-12T00:00:00Z'))return false;
+    if(item.moduleId==='05'&&now<new Date('2026-10-19T00:00:00Z'))return false;
+    return true;
+  });
   const moduleContent=moduleId=>canopyModules2026.find(module=>module.id===moduleId);
 
   async function load(){
@@ -412,9 +418,9 @@ export default function CanopyAssignmentsV2({viewer}){
 
   return <section className="ca-page">
     <div className="ca-head"><span className="ca-kicker">ASSIGNMENTS</span><h1>Weekly work.</h1><p>Save Parts 01–02 as you work. Part 03 opens after Thursday’s live session.</p></div>
-    {!available.length&&<div className="ca-empty"><h2>Your first assignment is not open yet.</h2><p>Module 01 opens Monday, 21 September 2026.</p></div>}
+    {!safelyAvailable.length&&<div className="ca-empty"><h2>Your first assignment is not open yet.</h2><p>Module 01 opens Monday, 21 September 2026.</p></div>}
     <div className="ca-stack">
-      {available.map(item=>{
+      {safelyAvailable.map(item=>{
         const sub=latest(item.weekKey),count=attempts(item.weekKey),raw=drafts[item.weekKey]||{};
         const d=sub?.assessment_status==='revision_required'&&sub?.review_source==='manual'?{paragraph_response:sub.paragraph_response||'',canvas_link:sub.canvas_link||'',linkedin_link:sub.linkedin_link||'',...raw}:raw;
         const manualCompleted=!!sub&&sub.review_source==='manual'&&sub.assessment_status==='completed';
