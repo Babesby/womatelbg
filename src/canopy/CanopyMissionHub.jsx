@@ -1,6 +1,6 @@
 import React,{useEffect,useMemo,useRef,useState} from 'react';
 import {Check,ExternalLink,FolderOpen,Globe2,MessageCircle,Send,ShieldCheck,UsersRound} from 'lucide-react';
-import {getCanopyMissionAdmin,getCanopyMissionAdminStats,getMyCanopyMissionHub,respondCanopyMissionInvite,reviewCanopyMissionGroup,sendCanopyMissionMessage,submitCanopyMissionGroup,submitCanopyMissionReport,updateCanopyMissionGroup} from './canopyApi';
+import {getCanopyMissionAdmin,getCanopyMissionAdminStats,getMyCanopyMissionHub,respondCanopyMissionInvite,reviewCanopyMissionGroup,sendCanopyMissionMessage,submitCanopyMissionGroup,submitCanopyMissionReport,updateCanopyMissionGroup,submitLearnerComplaint} from './canopyApi';
 
 const STANDARD=[
   {n:1,title:'Observe locally',brief:'Document one climate issue in your country using direct evidence.'},
@@ -17,11 +17,32 @@ function statusText(v){return String(v||'').replaceAll('_',' ')}
 export default function CanopyMissionHub({viewer}){
   const[data,setData]=useState(null),[busy,setBusy]=useState(''),[msg,setMsg]=useState('');
   const[chat,setChat]=useState(''),[folder,setFolder]=useState(''),[report,setReport]=useState({summary:'',proofUrl:''});
+  const[missionConcern,setMissionConcern]=useState(''),[concernBusy,setConcernBusy]=useState(false),[concernMsg,setConcernMsg]=useState('');
   const[edit,setEdit]=useState({name:'',choice:'standard',customBrief:''});
   const timer=useRef(null);
   const load=async(silent=false)=>{try{const d=await getMyCanopyMissionHub(viewer.session);setData(d);if(d?.group){setEdit({name:d.group.name||'',choice:d.group.mission_choice||'standard',customBrief:d.group.custom_brief||''});setFolder(d.group.evidence_folder_url||'')}if(!silent)setMsg('')}catch(e){if(!silent)setMsg(e.message)}};
   useEffect(()=>{let live=true;const refresh=()=>{if(live&&document.visibilityState==='visible')load(true)};load();timer.current=window.setInterval(refresh,30000);const onVisibility=()=>{if(document.visibilityState==='visible')refresh()};document.addEventListener('visibilitychange',onVisibility);return()=>{live=false;window.clearInterval(timer.current);document.removeEventListener('visibilitychange',onVisibility)}},[viewer?.session?.access_token]);
   const act=async(key,fn)=>{setBusy(key);setMsg('');try{const d=await fn();setData(d);setMsg('Saved.')}catch(e){setMsg(e.message)}finally{setBusy('')}};
+  async function submitMissionConcern(){
+    const text=missionConcern.trim();
+    if(text.length<10){
+      setConcernMsg('Please add a little more detail so WOMATE can understand the challenge.');
+      return;
+    }
+    setConcernBusy(true);setConcernMsg('');
+    try{
+      await submitLearnerComplaint(viewer.session,{
+        subject:'Mission progress check-in / challenge',
+        message:text
+      });
+      setMissionConcern('');
+      setConcernMsg('Sent to WOMATE. The team can now see this in Admin > Complaints and follow up.');
+    }catch(e){
+      setConcernMsg(e?.message||'Could not send your Mission check-in. Please try again.');
+    }finally{
+      setConcernBusy(false);
+    }
+  }
   const myId=viewer?.user?.id; const member=data?.member; const group=data?.group; const members=data?.members||[]; const messages=[...(data?.messages||[])].sort((a,b)=>new Date(a.created_at)-new Date(b.created_at)); const reports=data?.reports||[];
   const myMission=STANDARD.find(x=>x.n===member?.mission_no); const myReport=reports.find(r=>r.user_id===myId); const allAccepted=members.filter(m=>m.status==='accepted').length===5; const allReports=new Set(reports.map(r=>r.mission_no)).size===5;
   useEffect(()=>{if(myReport)setReport({summary:myReport.summary||'',proofUrl:myReport.proof_url||''})},[myReport?.submitted_at]);
@@ -33,6 +54,24 @@ export default function CanopyMissionHub({viewer}){
   return <main className="cm-page">
     <header className="cm-hero"><div><span>PRIVATE CROSS-COUNTRY MISSION</span><h1>{group?.name||'Cross-country climate mission'}</h1><p>Five women. Five countries. Five mission leads. One shared evidence folder.</p></div><div className={`cm-status ${group?.status}`}>{statusText(group?.status)}</div></header>
     <section className="cm-commit"><ShieldCheck/><div><b>Optional to join. A commitment once accepted.</b><p>Your team completes and submits the shared mission by {deadline}. WOMATE verifies the final folder before the mission is added to each member's Impact Profile.</p></div></section>
+
+    <section className="cm-section cm-mission-checkin">
+      <header>
+        <span>MISSION CHECK-IN</span>
+        <h2>Is anything blocking your team?</h2>
+        <p>Tell WOMATE about a complaint, challenge or support need. This goes directly to the Admin complaints workstream so the team can review and resolve it.</p>
+      </header>
+      <div className="cm-form">
+        <label>Complaint or challenge
+          <textarea rows="5" value={missionConcern} onChange={e=>setMissionConcern(e.target.value)} placeholder="Briefly explain what is happening, what your team has tried, and what support you need from WOMATE."/>
+        </label>
+        <button type="button" disabled={concernBusy||!missionConcern.trim()} onClick={submitMissionConcern}>
+          {concernBusy?'Sending...':'Send to WOMATE'}
+        </button>
+        {concernMsg&&<p className="cm-msg" role="status">{concernMsg}</p>}
+        <small>Keep communicating with your team. Progress does not have to be perfect to be meaningful - consistent small steps still move the mission forward.</small>
+      </div>
+    </section>
 
     <section className="cm-layout">
       <div className="cm-main">

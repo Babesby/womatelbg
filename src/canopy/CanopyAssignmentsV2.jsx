@@ -2,6 +2,26 @@ import React,{useEffect,useState} from 'react';
 import {CANOPY_ASSIGNMENT_SCHEDULE,formatCanopyDate,openAssignments,speakerChallengeOpen} from './canopySchedule';
 import {getWeeklyAssignmentSubmissions,submitWeeklyAssignment,submitTesterWeeklyAssignment,getPuzzleProgress,savePuzzleCompletion,refreshLearningAutomation,getWeeklyAssignmentDrafts,saveWeeklyAssignmentDraft} from './canopyApi';
 import {canopyModules2026} from './canopyCurriculum2026';
+
+function isPracticalFileUrl(value){
+  try{
+    const u=new URL(String(value||'').trim());
+    if(u.protocol!=='https:')return false;
+    const h=u.hostname.toLowerCase();
+    return h==='drive.google.com'
+      ||h==='docs.google.com'
+      ||h==='onedrive.live.com'
+      ||h==='1drv.ms'
+      ||h.endsWith('.sharepoint.com');
+  }catch{return false}
+}
+
+function isModule12GraceWindow(item,now){
+  if(!item||!['01','02'].includes(String(item.moduleId)))return false;
+  const t=now instanceof Date?now:new Date(now);
+  return t>=new Date('2026-10-12T00:00:00Z')
+    &&t<=new Date('2026-10-13T23:59:59Z');
+}
 import {playCanopyCorrectSound,playCanopyErrorSound} from './canopyFeedbackAudio';
 
 function scramble(word){
@@ -342,16 +362,16 @@ export default function CanopyAssignmentsV2({viewer}){
       setMessage('Submission closed. The Sunday deadline has passed.');
       return;
     }
-    if(!tester&&currentManualRevision&&now>new Date(item.resubmitUntil)){
+    if(!tester&&currentManualRevision&&now>new Date(item.resubmitUntil)&&!isModule12GraceWindow(item,now)){
       setMessage('Revision window closed. The Wednesday deadline has passed.');
       return;
     }
     const raw=drafts[item.weekKey]||{};
     const saved=currentManualRevision?{paragraph_response:currentSubmission.paragraph_response||'',canvas_link:currentSubmission.canvas_link||'',linkedin_link:currentSubmission.linkedin_link||''}:{};
     const d={...saved,...raw};
-    const paragraph=(d.paragraph_response||'').trim();
-    const canvas=(d.canvas_link||'').trim();
-    const linkedin=(d.linkedin_link||'').trim();
+    const paragraph=(d.paragraph_response||currentSubmission?.paragraph_response||'').trim();
+    const canvas=(d.canvas_link||currentSubmission?.canvas_link||'').trim();
+    const linkedin=(d.linkedin_link||currentSubmission?.linkedin_link||'').trim();
     if((requiredParts.includes('paragraph'))&&paragraph.split(/\s+/).filter(Boolean).length<80){setMessage('Your paragraph needs at least 80 words. Add enough detail to show what you learned and how you would apply it.');return}
     if((requiredParts.includes('speaker'))&&!isSpeakerSocialUrl(linkedin,item.moduleId)){setMessage('Paste a valid speaker-post link from an allowed social platform.');return}
     if((requiredParts.includes('practical'))&&!/^https:\/\/(drive|docs)\.google\.com\//i.test(canvas)){setMessage('Paste your viewable Google Drive practical-evidence link.');return}
@@ -403,7 +423,7 @@ export default function CanopyAssignmentsV2({viewer}){
         const requestedParts=requestedPart==='all'?['paragraph','practical','speaker']:requestedPart.split(',');
         const onlyRevision=manualRevision&&requestedPart!=='all';
         const firstSubmissionOpen=tester||now<=individualDue(item);
-        const revisionWindowOpen=tester||now<=new Date(item.resubmitUntil);
+        const revisionWindowOpen=tester||now<=new Date(item.resubmitUntil)||graceWindowOpen;
         const mayResubmit=tester||(manualRevision&&count<3&&revisionWindowOpen);
         const canSubmitForm=tester||(!sub?firstSubmissionOpen:mayResubmit);
         const puzzleDone=puzzles.some(p=>p.week_key===item.weekKey&&p.completed);
@@ -417,11 +437,11 @@ export default function CanopyAssignmentsV2({viewer}){
         const curriculum=moduleContent(item.moduleId);
         const paragraphPrompt=curriculum?.assignment?.paragraphPrompt||'Respond to the weekly learning task with reflection, analysis and a concrete application to climate action.';
         const practicalTitle=curriculum?.assignment?.practicalTitle||'Practical challenge';
-        const practicalBrief=curriculum?.assignment?.practicalBrief||curriculum?.assignment?.canvasBrief||'Create the practical work for this module and submit a viewable Google Drive link.';
-        const practicalInstructions=curriculum?.assignment?.practicalInstructions||'Upload the completed work to your own Google Drive, make the file viewable by link, and attach that link below.';
+        const practicalBrief=curriculum?.assignment?.practicalBrief||curriculum?.assignment?.canvasBrief||'Create the practical work for this module and submit a viewable Google Drive or OneDrive link.';
+        const practicalInstructions=curriculum?.assignment?.practicalInstructions||'Upload the completed work to Google Drive, OneDrive or SharePoint, make it viewable by link, and attach that link below.';
         const practicalHref=curriculum?.assignment?.practicalHref||'';
         const practicalActionLabel=curriculum?.assignment?.practicalActionLabel||'';
-        const practicalLinkLabel=curriculum?.assignment?.practicalLinkLabel||'Practical challenge Google Drive link';
+        const practicalLinkLabel=curriculum?.assignment?.practicalLinkLabel||'Practical task Google Drive / OneDrive link';
         const missedFirstSubmission=!sub&&!firstSubmissionOpen;
         if(missedFirstSubmission)return <article className="ca-card ca-result-card ca-missed-result-card" key={item.weekKey}>
           <div className="ca-result-title"><small>MODULE {item.moduleId}</small><h2>{item.title}</h2><span className="ca-result-ready">Submission window closed</span></div>
@@ -539,7 +559,7 @@ export default function CanopyAssignmentsV2({viewer}){
                     canvas_link:e.target.value
                   }
                 }))}
-                placeholder="https://drive.google.com/…"
+                placeholder="Google Drive, OneDrive or SharePoint link"
               />
             </label>}
 

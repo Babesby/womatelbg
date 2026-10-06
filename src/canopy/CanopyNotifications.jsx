@@ -14,6 +14,26 @@ export default function CanopyNotifications({viewer}){
     <div className="cn-head"><div><span className="cn-kicker">NOTIFICATIONS</span><h1>What needs your attention.</h1></div>{unread>0&&<button className="canopySecondary" disabled={busy} onClick={markAll}>{busy?'Updating…':'Mark all as read'}</button>}</div>
     {msg&&<p className="canopyFormMsg" role="status">{msg}</p>}
     {!items.length&&<div className="cn-empty">You have no notifications yet.</div>}
-    <div className="cn-list">{items.map(n=><button key={n.id} className={`cn-item ${n.read_at?'':'unread'}`} onClick={()=>open(n)}><div><small>{n.type?.replaceAll('_',' ')}</small><h3>{n.title}</h3><p>{n.body}</p></div><time>{new Date(n.created_at).toLocaleString()}</time></button>)}</div>
+    <div className="cn-list">{items.map(n=>n.type==='completed_appreciation_music'
+      ?<article key={n.id} className={`cn-item ${n.read_at?'':'unread'}`} style={{display:'grid',gap:'12px',width:'100%'}}>
+        <button type="button" onClick={()=>open({...n,link:null})} style={{all:'unset',cursor:'pointer',display:'block'}}>
+          <div><small>{n.type?.replaceAll('_',' ')}</small><h3>{n.title}</h3><p>{n.body}</p></div>
+          <time>{new Date(n.created_at).toLocaleString()}</time>
+        </button>
+        <div style={{position:'relative',paddingTop:'56.25%',overflow:'hidden',borderRadius:'16px'}}>
+          <iframe
+            title="African Woman by Becca"
+            src="https://www.youtube.com/embed/XnDdJkoEyAk"
+            loading="lazy"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowFullScreen
+            style={{position:'absolute',inset:0,width:'100%',height:'100%',border:0}}
+          />
+        </div>
+      </article>
+      :<button key={n.id} className={`cn-item ${n.read_at?'':'unread'}`} onClick={()=>open(n)}>
+        <div><small>{n.type?.replaceAll('_',' ')}</small><h3>{n.title}</h3><p>{n.body}</p></div>
+        <time>{new Date(n.created_at).toLocaleString()}</time>
+      </button>)}</div>
   </section>
 }
