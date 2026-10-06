@@ -2,26 +2,6 @@ import React,{useEffect,useState} from 'react';
 import {CANOPY_ASSIGNMENT_SCHEDULE,formatCanopyDate,openAssignments,speakerChallengeOpen} from './canopySchedule';
 import {getWeeklyAssignmentSubmissions,submitWeeklyAssignment,submitTesterWeeklyAssignment,getPuzzleProgress,savePuzzleCompletion,refreshLearningAutomation,getWeeklyAssignmentDrafts,saveWeeklyAssignmentDraft} from './canopyApi';
 import {canopyModules2026} from './canopyCurriculum2026';
-
-function isPracticalFileUrl(value){
-  try{
-    const u=new URL(String(value||'').trim());
-    if(u.protocol!=='https:')return false;
-    const h=u.hostname.toLowerCase();
-    return h==='drive.google.com'
-      ||h==='docs.google.com'
-      ||h==='onedrive.live.com'
-      ||h==='1drv.ms'
-      ||h.endsWith('.sharepoint.com');
-  }catch{return false}
-}
-
-function isModule12GraceWindow(item,now){
-  if(!item||!['01','02'].includes(String(item.moduleId)))return false;
-  const t=now instanceof Date?now:new Date(now);
-  return t>=new Date('2026-10-12T00:00:00Z')
-    &&t<=new Date('2026-10-13T23:59:59Z');
-}
 import {playCanopyCorrectSound,playCanopyErrorSound} from './canopyFeedbackAudio';
 
 function scramble(word){
@@ -39,17 +19,44 @@ function resultCelebrationGif(moduleId){
   return RESULT_CELEBRATION_GIFS[(numeric-1)%RESULT_CELEBRATION_GIFS.length];
 }
 
-function revisionPart(s){const feedback=String(s?.manual_feedback||s?.final_feedback||'');return feedback.match(/\[CANOPY_REVISION:([a-z]+(?:,[a-z]+)*)\]/i)?.[1]?.toLowerCase()||'all';}
-
-function isSpeakerSocialUrl(value,moduleId='01'){
+function isSpeakerSocialUrl(value){
   try{
     const url=new URL(String(value||'').trim());
     if(!['http:','https:'].includes(url.protocol))return false;
     const host=url.hostname.toLowerCase().replace(/^www\./,'');
-    const core=host==='lnkd.in'||host==='t.co'||host==='linkedin.com'||host.endsWith('.linkedin.com')||host==='twitter.com'||host.endsWith('.twitter.com')||host==='x.com'||host.endsWith('.x.com');
-    if(String(moduleId).padStart(2,'0')==='01')return core;
-    return core||host==='facebook.com'||host.endsWith('.facebook.com')||host==='fb.watch'||host==='instagram.com'||host.endsWith('.instagram.com')||host==='tiktok.com'||host.endsWith('.tiktok.com')||host==='vm.tiktok.com'||host==='vt.tiktok.com';
+    return host==='lnkd.in'||host==='t.co'||host==='linkedin.com'||host.endsWith('.linkedin.com')||host==='twitter.com'||host.endsWith('.twitter.com')||host==='x.com'||host.endsWith('.x.com');
   }catch{return false}
+}
+
+function isPracticalFileUrl(value){
+  try{
+    const url=new URL(String(value||'').trim());
+    if(url.protocol!=='https:')return false;
+    const host=url.hostname.toLowerCase().replace(/^www\./,'');
+    return host==='drive.google.com'
+      ||host==='docs.google.com'
+      ||host==='onedrive.live.com'
+      ||host==='1drv.ms'
+      ||host.endsWith('.sharepoint.com');
+  }catch{return false}
+}
+
+function revisionParts(submission){
+  const feedback=String(submission?.manual_feedback||submission?.final_feedback||'');
+  const selected=feedback.match(/\[CANOPY_REVISION:([a-z,]+)\]/i)?.[1]?.toLowerCase()||'all';
+  if(selected==='all')return ['paragraph','practical','speaker'];
+  const parts=selected.split(',').map(x=>x.trim()).filter(x=>['paragraph','practical','speaker'].includes(x));
+  return parts.length?parts:['paragraph','practical','speaker'];
+}
+
+function cleanReviewFeedback(value){
+  return String(value||'').replace(/^\[CANOPY_REVISION:([a-z,]+)\]\s*/i,'').trim();
+}
+
+function isModule12GraceWindow(item,now){
+  if(!item||!['01','02'].includes(String(item.moduleId)))return false;
+  const t=now instanceof Date?now:new Date(now);
+  return t>=new Date('2026-10-12T00:00:00Z')&&t<=new Date('2026-10-13T23:59:59Z');
 }
 
 const PUZZLES={
@@ -72,7 +79,7 @@ const PUZZLES={
   'module-03':{
     type:'anagram',
     title:'Anagram challenge',
-    intro:'Solve each advocacy anagram using the clue. This is optional and not graded.',
+    intro:'Solve each Climate Advocacy & Digital Innovation anagram using the clue. This is optional and not graded.',
     clues:[
       ['ADVOCACY','Public action intended to influence decisions or behaviour.'],
       ['EVIDENCE','Reliable information used to support a claim or recommendation.'],
@@ -200,10 +207,7 @@ export default function CanopyAssignmentsV2({viewer}){
   const[message,setMessage]=useState('');
   const[now,setNow]=useState(()=>new Date());
   const tester=String(viewer?.user?.email||'').trim().toLowerCase()==='p.viewmultimedia@gmail.com';
-  const lusandaModule02=String(viewer?.profile?.full_name||'').trim().toLowerCase()==='lusanda majikijela';
-  const individualDue=(item)=>item.weekKey==='module-02'&&lusandaModule02?new Date('2026-10-05T23:59:59Z'):new Date(item.dueAt);
-  const available=tester?CANOPY_ASSIGNMENT_SCHEDULE:openAssignments(now);
-  const safelyAvailable=available.filter(item=>{
+  const available=(tester?CANOPY_ASSIGNMENT_SCHEDULE:openAssignments(now)).filter(item=>{
     if(tester)return true;
     if(item.moduleId==='04'&&now<new Date('2026-10-12T00:00:00Z'))return false;
     if(item.moduleId==='05'&&now<new Date('2026-10-19T00:00:00Z'))return false;
@@ -213,8 +217,17 @@ export default function CanopyAssignmentsV2({viewer}){
 
   async function load(){
     try{await refreshLearningAutomation(viewer.session)}catch{}
-    const[s,p]=await Promise.all([getWeeklyAssignmentSubmissions(viewer.session),getPuzzleProgress(viewer.session)]);
-    setSubs(s||[]);setPuzzles(p||[]);
+    const results=await Promise.allSettled([
+      getWeeklyAssignmentSubmissions(viewer.session),
+      getPuzzleProgress(viewer.session)
+    ]);
+    setSubs(results[0].status==='fulfilled'?(results[0].value||[]):[]);
+    setPuzzles(results[1].status==='fulfilled'?(results[1].value||[]):[]);
+    if(results[0].status==='rejected'){
+      console.error('Canopy assignment submissions failed to load:',results[0].reason);
+      setMessage('Your assignments could not be refreshed. Please try again.');
+    }
+    if(results[1].status==='rejected')console.warn('Optional puzzle progress could not be loaded:',results[1].reason);
   }
   /* WOMATE_PROGRESSIVE_DRAFT_LOADER */
   async function loadDrafts(){
@@ -266,12 +279,12 @@ export default function CanopyAssignmentsV2({viewer}){
 
   const latest=weekKey=>subs.filter(x=>x.week_key===weekKey).sort((a,b)=>b.attempt_no-a.attempt_no)[0];
   const attempts=weekKey=>subs.filter(x=>x.week_key===weekKey).length;
-  const scoreVisible=s=>s&&((tester&&(s.final_score!=null||s.auto_score!=null))||(s.review_source==='manual'&&s.assessment_status==='completed'&&s.final_score!=null&&now>=new Date(s.release_at)));
+  const scoreVisible=s=>!!s&&(tester||(s.review_source==='manual'&&s.assessment_status==='completed'&&s.final_score!=null&&(!s.release_at||now>=new Date(s.release_at))));
   const finalScore=s=>tester?(s?.final_score??s?.auto_score):s?.final_score;
-  const finalFeedback=s=>String(s?.final_feedback||s?.feedback_hint||'').replace(/^\[CANOPY_REVISION:([a-z]+(?:,[a-z]+)*)\]\s*/i,'');
+  const finalFeedback=s=>cleanReviewFeedback(s?.final_feedback||s?.manual_feedback||s?.feedback_hint||'');
   const reviewLabel=s=>s?.review_source==='manual'?'WOMATE review':'Automated formative baseline';
 
-  function assignmentPartState(d,speakerOpen,moduleId){
+  function assignmentPartState(d,speakerOpen){
     const paragraphWords=(d?.paragraph_response||'')
       .trim()
       .split(/\s+/)
@@ -280,10 +293,9 @@ export default function CanopyAssignmentsV2({viewer}){
 
     const paragraphReady=paragraphWords>=80;
 
-    const canvasReady=/^https:\/\/(drive|docs)\.google\.com\//i
-      .test((d?.canvas_link||'').trim());
+    const canvasReady=isPracticalFileUrl(d?.canvas_link);
 
-    const linkedinReady=!!speakerOpen && isSpeakerSocialUrl(d?.linkedin_link,moduleId);
+    const linkedinReady=!!speakerOpen && isSpeakerSocialUrl(d?.linkedin_link);
 
     const completed=[
       paragraphReady,
@@ -361,10 +373,14 @@ export default function CanopyAssignmentsV2({viewer}){
 
   async function send(item){
     const currentSubmission=latest(item.weekKey);
-    const currentManualRevision=!!currentSubmission&&currentSubmission.review_source==='manual'&&currentSubmission.assessment_status==='revision_required';
-    const requiredPart=currentManualRevision?revisionPart(currentSubmission):'all';
-    const requiredParts=requiredPart==='all'?['paragraph','practical','speaker']:requiredPart.split(',');
-    if(!tester&&!currentSubmission&&now>individualDue(item)){
+    const currentManualRevision=!!currentSubmission
+      &&currentSubmission.review_source==='manual'
+      &&currentSubmission.assessment_status==='revision_required';
+    const requiredParts=currentManualRevision
+      ?revisionParts(currentSubmission)
+      :['paragraph','practical','speaker'];
+
+    if(!tester&&!currentSubmission&&now>new Date(item.dueAt)&&!isModule12GraceWindow(item,now)){
       setMessage('Submission closed. The Sunday deadline has passed.');
       return;
     }
@@ -372,79 +388,98 @@ export default function CanopyAssignmentsV2({viewer}){
       setMessage('Revision window closed. The Wednesday deadline has passed.');
       return;
     }
-    const raw=drafts[item.weekKey]||{};
-    const saved=currentManualRevision?{paragraph_response:currentSubmission.paragraph_response||'',canvas_link:currentSubmission.canvas_link||'',linkedin_link:currentSubmission.linkedin_link||''}:{};
-    const d={...saved,...raw};
-    const paragraph=(d.paragraph_response||currentSubmission?.paragraph_response||'').trim();
-    const canvas=(d.canvas_link||currentSubmission?.canvas_link||'').trim();
-    const linkedin=(d.linkedin_link||currentSubmission?.linkedin_link||'').trim();
-    if((requiredParts.includes('paragraph'))&&paragraph.split(/\s+/).filter(Boolean).length<80){setMessage('Your paragraph needs at least 80 words. Add enough detail to show what you learned and how you would apply it.');return}
-    if((requiredParts.includes('speaker'))&&!isSpeakerSocialUrl(linkedin,item.moduleId)){setMessage('Paste a valid speaker-post link from an allowed social platform.');return}
-    if((requiredParts.includes('practical'))&&!/^https:\/\/(drive|docs)\.google\.com\//i.test(canvas)){setMessage('Paste your viewable Google Drive practical-evidence link.');return}
+
+    const d=drafts[item.weekKey]||{};
+    const paragraph=requiredParts.includes('paragraph')
+      ?String(d.paragraph_response||'').trim()
+      :String(currentSubmission?.paragraph_response||'').trim();
+    const canvas=requiredParts.includes('practical')
+      ?String(d.canvas_link||'').trim()
+      :String(currentSubmission?.canvas_link||'').trim();
+    const linkedin=requiredParts.includes('speaker')
+      ?String(d.linkedin_link||'').trim()
+      :String(currentSubmission?.linkedin_link||'').trim();
+
+    if(requiredParts.includes('paragraph')&&paragraph.split(/\s+/).filter(Boolean).length<80){
+      setMessage('Your paragraph needs at least 80 words.');
+      return;
+    }
+    if(requiredParts.includes('practical')&&!isPracticalFileUrl(canvas)){
+      setMessage('Add a viewable Google Drive, Google Docs, OneDrive or SharePoint link for the practical task.');
+      return;
+    }
+    const speakerOpen=tester||speakerChallengeOpen(item,now);
+    if(requiredParts.includes('speaker')&&!speakerOpen){
+      setMessage('The speaker challenge is not open yet.');
+      return;
+    }
+    if(requiredParts.includes('speaker')&&!isSpeakerSocialUrl(linkedin)){
+      setMessage('Paste a valid LinkedIn or X/Twitter speaker-post link.');
+      return;
+    }
+
     setBusy(item.weekKey);setMessage('');
     try{
       await (tester?submitTesterWeeklyAssignment:submitWeeklyAssignment)(
         viewer.session,
         item.weekKey,
-        {
-          paragraph_response:paragraph,
-          canvas_link:canvas,
-          linkedin_link:linkedin
-        }
+        {paragraph_response:paragraph,canvas_link:canvas,linkedin_link:linkedin}
       );
 
       try{
         await saveWeeklyAssignmentDraft(
           viewer.session,
           item.weekKey,
-          {
-            paragraph_response:'',
-            canvas_link:'',
-            linkedin_link:''
-          }
+          {paragraph_response:'',canvas_link:'',linkedin_link:''}
         );
       }catch{}
 
       setDrafts(x=>({...x,[item.weekKey]:{}}));
       setDraftNotes(x=>({...x,[item.weekKey]:''}));
-
       await load();
-
-      setMessage('Assignment submitted successfully.');
+      setMessage(currentManualRevision?'Revision submitted successfully.':'Assignment submitted successfully.');
+    }catch(e){
+      setMessage(e?.message||'Submission failed. Try again.');
+    }finally{
+      setBusy('');
     }
-    catch(e){setMessage(e?.message||'Submission failed. Try again.')}
-    finally{setBusy('')}
   }
 
   return <section className="ca-page">
     <div className="ca-head"><span className="ca-kicker">ASSIGNMENTS</span><h1>Weekly work.</h1><p>Save Parts 01–02 as you work. Part 03 opens after Thursday’s live session.</p></div>
-    {!safelyAvailable.length&&<div className="ca-empty"><h2>Your first assignment is not open yet.</h2><p>Module 01 opens Monday, 21 September 2026.</p></div>}
+    {!available.length&&<div className="ca-empty"><h2>Your first assignment is not open yet.</h2><p>Module 01 opens Monday, 21 September 2026.</p></div>}
     <div className="ca-stack">
-      {safelyAvailable.map(item=>{
-        const sub=latest(item.weekKey),count=attempts(item.weekKey),raw=drafts[item.weekKey]||{};
-        const d=sub?.assessment_status==='revision_required'&&sub?.review_source==='manual'?{paragraph_response:sub.paragraph_response||'',canvas_link:sub.canvas_link||'',linkedin_link:sub.linkedin_link||'',...raw}:raw;
+      {available.map(item=>{
+        const sub=latest(item.weekKey),count=attempts(item.weekKey),baseDraft=drafts[item.weekKey]||{};
         const manualCompleted=!!sub&&sub.review_source==='manual'&&sub.assessment_status==='completed';
         const manualRevision=!!sub&&sub.review_source==='manual'&&sub.assessment_status==='revision_required';
-        const requestedPart=manualRevision?revisionPart(sub):'all';
-        const requestedParts=requestedPart==='all'?['paragraph','practical','speaker']:requestedPart.split(',');
-        const onlyRevision=manualRevision&&requestedPart!=='all';
-        const firstSubmissionOpen=tester||now<=individualDue(item);
+        const requestedParts=manualRevision?revisionParts(sub):['paragraph','practical','speaker'];
+        const onlyRevision=manualRevision&&requestedParts.length<3;
+        const graceWindowOpen=isModule12GraceWindow(item,now);
+        const firstSubmissionOpen=tester||now<=new Date(item.dueAt)||graceWindowOpen;
         const revisionWindowOpen=tester||now<=new Date(item.resubmitUntil)||graceWindowOpen;
         const mayResubmit=tester||(manualRevision&&count<3&&revisionWindowOpen);
         const canSubmitForm=tester||(!sub?firstSubmissionOpen:mayResubmit);
         const puzzleDone=puzzles.some(p=>p.week_key===item.weekKey&&p.completed);
         const speakerOpen=tester||speakerChallengeOpen(item,now);
-        const parts=assignmentPartState(d,speakerOpen,item.moduleId);
-        const requiredReady=requestedParts.every(part=>part==='paragraph'?parts.paragraphReady:part==='practical'?parts.canvasReady:parts.linkedinReady);
+        const d=manualRevision?{
+          paragraph_response:requestedParts.includes('paragraph')?(baseDraft.paragraph_response||sub.paragraph_response||''):'',
+          canvas_link:requestedParts.includes('practical')?(baseDraft.canvas_link||sub.canvas_link||''):'',
+          linkedin_link:requestedParts.includes('speaker')?(baseDraft.linkedin_link||sub.linkedin_link||''):''
+        }:baseDraft;
+        const parts=assignmentPartState(d,speakerOpen);
+        const requiredReady=(!requestedParts.includes('paragraph')||parts.paragraphReady)
+          &&(!requestedParts.includes('practical')||parts.canvasReady)
+          &&(!requestedParts.includes('speaker')||parts.linkedinReady);
         const visible=scoreVisible(sub),score=finalScore(sub),status=(sub?.assessment_status||sub?.status||'submitted').replaceAll('_',' ');
-        const scoreReleased=!!sub&&manualCompleted&&!!sub.release_at&&now>=new Date(sub.release_at)&&score!=null;
-        const archived=scoreReleased;
+        const scoreReleased=visible&&score!=null;
+        const archived=manualCompleted&&scoreReleased;
         const remark=finalFeedback(sub)||sub?.score_band||status;
         const curriculum=moduleContent(item.moduleId);
         const paragraphPrompt=curriculum?.assignment?.paragraphPrompt||'Respond to the weekly learning task with reflection, analysis and a concrete application to climate action.';
         const practicalTitle=curriculum?.assignment?.practicalTitle||'Practical challenge';
         const practicalBrief=curriculum?.assignment?.practicalBrief||curriculum?.assignment?.canvasBrief||'Create the practical work for this module and submit a viewable Google Drive or OneDrive link.';
-        const practicalInstructions=curriculum?.assignment?.practicalInstructions||'Upload the completed work to Google Drive, OneDrive or SharePoint, make it viewable by link, and attach that link below.';
+        const practicalInstructions=curriculum?.assignment?.practicalInstructions||'Upload the completed work to Google Drive, OneDrive or SharePoint, make the file viewable by link, and attach that link below.';
         const practicalHref=curriculum?.assignment?.practicalHref||'';
         const practicalActionLabel=curriculum?.assignment?.practicalActionLabel||'';
         const practicalLinkLabel=curriculum?.assignment?.practicalLinkLabel||'Practical task Google Drive / OneDrive link';
@@ -462,24 +497,26 @@ export default function CanopyAssignmentsV2({viewer}){
           </div>
         </article>;
         return <article className="ca-card" key={item.weekKey}>
-          <div className="ca-card-head"><div><small>MODULE {item.moduleId}</small><h2>{item.title}</h2></div><div className="ca-dates"><span>Due {formatCanopyDate(individualDue(item))}</span>{count>0&&<strong>Attempt {count} of 3</strong>}</div></div>
-          {!onlyRevision&&<div className="ca-threefold">
+          <div className="ca-card-head"><div><small>MODULE {item.moduleId}</small><h2>{item.title}</h2></div><div className="ca-dates"><span>Due {formatCanopyDate(item.dueAt)}</span>{count>0&&<strong>Attempt {count} of 3</strong>}</div></div>
+          <div className="ca-threefold">
             <div><b>01</b><h3>Paragraph response</h3><p>{paragraphPrompt}</p></div>
             <div className="ca-practical-brief"><b>02</b><small className="ca-challenge-tag">PRACTICAL</small><h3>{practicalTitle}</h3><p>{practicalBrief}</p>{item.moduleId==='01'&&<ModuleOneCanvasGuide/>}{practicalInstructions&&<details className="ca-instructions"><summary>How to submit</summary><p>{practicalInstructions}</p></details>}{practicalHref&&<a href={practicalHref}>{practicalActionLabel||'Open tool →'}</a>}<PracticalExample assignment={curriculum?.assignment}/></div>
-            <div><b>03</b><h3>Speaker challenge</h3>{speakerOpen?<><p>{item.speakerPrompt}</p><p>{item.moduleId==='01'?'Submit your LinkedIn or X/Twitter post link.':'Submit a post link from LinkedIn, X, Facebook, TikTok or Instagram.'}</p></>:<p>Opens after Thursday’s live session.</p>}</div>
-          </div>}
+            <div><b>03</b><h3>Speaker challenge</h3>{speakerOpen?<><p>{item.speakerPrompt}</p><p>Submit your LinkedIn or X/Twitter post link.</p></>:<p>Opens after Thursday’s live session.</p>}</div>
+          </div>
           {sub&&<div className="ca-status">
             <div><span>Latest submission</span><strong>{new Date(sub.submitted_at).toLocaleString()}</strong></div>
             <div><span>Status</span><strong>{status}</strong></div>
-            <div><span>Final score</span><strong>{visible?`${score}/100 · ${sub.score_band||''}`:(sub&&sub.release_at&&now>=new Date(sub.release_at)?'Awaiting WOMATE review':'Releases after the week closes')}</strong>{visible&&<small>{reviewLabel(sub)}</small>}</div>
+            <div><span>Final score</span><strong>{visible?`${score}/100 · ${sub.score_band||''}`:'Awaiting WOMATE review'}</strong>{visible&&<small>{reviewLabel(sub)}</small>}</div>
             {visible&&finalFeedback(sub)&&<div className="ca-feedback"><span>Feedback</span><strong>{finalFeedback(sub)}</strong></div>}
             {manualCompleted&&<div className="ca-feedback ca-complete-locked"><span>Completed</span><strong>WOMATE has completed the manual review. This assignment is closed and no further resubmission is required.</strong></div>}
-            {manualRevision&&<div className="ca-feedback ca-revision"><span>Revision required</span><strong>WOMATE requests a {requestedPart==='all'?'revision of all three parts':requestedParts.map(p=>p==='paragraph'?'paragraph':p==='practical'?'practical link':'speaker link').join(' + ')+' revision'}. Only the requested part needs to be updated.</strong></div>}
-            {sub&&!manualCompleted&&!manualRevision&&<div className="ca-feedback ca-awaiting-review"><span>Submitted</span><strong>Your assignment is closed while WOMATE reviews it. It will reopen only if a revision is requested.</strong></div>}
+            {manualRevision&&<><div className="ca-feedback ca-revision"><span>Revision required</span><strong>WOMATE requests a {requestedParts.length===3?'revision':requestedParts.map(p=>p==='paragraph'?'paragraph':p==='practical'?'practical link':'speaker link').join(' and ')+' revision'}. Only the requested task{requestedParts.length===1?'':'s'} need to be updated.</strong></div>{finalFeedback(sub)&&<div className="ca-feedback"><span>Reviewer feedback</span><strong>{finalFeedback(sub)}</strong></div>}</>}
+            {sub&&!manualCompleted&&!manualRevision&&<div className="ca-feedback ca-awaiting-review"><span>Submitted</span><strong>Your assignment is safely received and awaiting WOMATE manual review. No final score is released until the review is completed.</strong></div>}
           </div>}
           {canSubmitForm&&<div className="ca-form">
 
-            {onlyRevision?<p className="ca-revision-focus">Revise only: {requestedParts.map(p=>p==='paragraph'?'paragraph response':p==='practical'?'practical evidence link':'speaker post link').join(' and ')}. All unselected parts are carried forward unchanged.</p>:<div className="ca-assignment-progress">
+            {onlyRevision&&<p className="ca-revision-focus">Revise only your {requestedParts.map(p=>p==='paragraph'?'paragraph response':p==='practical'?'practical evidence link':'speaker post link').join(' and ')}. Your unrequested work will be carried forward unchanged.</p>}
+
+            {!onlyRevision&&<div className="ca-assignment-progress">
               <div className="ca-assignment-progress-head">
                 <strong>{parts.completed} of 3 required parts ready</strong>
                 <span>{parts.remaining} remaining</span>
@@ -524,7 +561,7 @@ export default function CanopyAssignmentsV2({viewer}){
               }
             </div>}
 
-            {(requestedParts.includes('paragraph'))&&<label>
+            {requestedParts.includes('paragraph')&&<label>
               Paragraph answer
 
               <textarea
@@ -552,7 +589,7 @@ export default function CanopyAssignmentsV2({viewer}){
               </small>
             </label>}
 
-            {(requestedParts.includes('practical'))&&<label>
+            {requestedParts.includes('practical')&&<label>
               {practicalLinkLabel}
 
               <input
@@ -569,9 +606,9 @@ export default function CanopyAssignmentsV2({viewer}){
               />
             </label>}
 
-            {speakerOpen&&(requestedParts.includes('speaker'))&&
+            {speakerOpen&&requestedParts.includes('speaker')&&
               <label>
-                Speaker-task post link ({item.moduleId==='01'?'LinkedIn or X/Twitter':'LinkedIn, X, Facebook, TikTok or Instagram'})
+                Speaker-task post link (LinkedIn or X/Twitter)
 
                 <input
                   inputMode="url"
@@ -583,7 +620,7 @@ export default function CanopyAssignmentsV2({viewer}){
                       linkedin_link:e.target.value
                     }
                   }))}
-                  placeholder={item.moduleId==='01'?'https://linkedin.com/…':'Paste your public speaker-post URL'}
+                  placeholder="https://linkedin.com/… or https://lnkd.in/…"
                 />
               </label>
             }
@@ -605,19 +642,19 @@ export default function CanopyAssignmentsV2({viewer}){
                 type="button"
                 disabled={
                   busy===item.weekKey||
-                  !speakerOpen||
+                  (requestedParts.includes('speaker')&&!speakerOpen)||
                   !requiredReady
                 }
                 onClick={()=>send(item)}
               >
                 {busy===item.weekKey
                   ?'Submitting…'
-                  :!speakerOpen
+                  :requestedParts.includes('speaker')&&!speakerOpen
                     ?'Final submit opens Thursday'
                     :!requiredReady
-                      ?'Complete '+(onlyRevision?1:parts.remaining)+
+                      ?'Complete '+(onlyRevision?requestedParts.length:parts.remaining)+
                         ' remaining part'+
-                        (onlyRevision||parts.remaining===1?'':'s')
+                        ((onlyRevision?requestedParts.length:parts.remaining)===1?'':'s')
                       :sub
                         ?'Submit revision'
                         :'Submit final assignment'}
