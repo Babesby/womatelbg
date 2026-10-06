@@ -1,6 +1,6 @@
 import React,{useEffect,useState} from 'react';
 import {CANOPY_ASSIGNMENT_SCHEDULE,formatCanopyDate,openAssignments,speakerChallengeOpen} from './canopySchedule';
-import {getWeeklyAssignmentSubmissions,submitWeeklyAssignment,submitTesterWeeklyAssignment,getPuzzleProgress,savePuzzleCompletion,refreshLearningAutomation,getWeeklyAssignmentDrafts,saveWeeklyAssignmentDraft} from './canopyApi';
+import {getWeeklyAssignmentSubmissions,submitWeeklyAssignment,submitTesterWeeklyAssignment,getPuzzleProgress,savePuzzleCompletion,getWeeklyAssignmentDrafts,saveWeeklyAssignmentDraft} from './canopyApi';
 import {canopyModules2026} from './canopyCurriculum2026';
 import {playCanopyCorrectSound,playCanopyErrorSound} from './canopyFeedbackAudio';
 
@@ -57,6 +57,15 @@ function isModule12GraceWindow(item,now){
   if(!item||!['01','02'].includes(String(item.moduleId)))return false;
   const t=now instanceof Date?now:new Date(now);
   return t>=new Date('2026-10-12T00:00:00Z')&&t<=new Date('2026-10-13T23:59:59Z');
+}
+
+function firstSubmissionDue(item,viewer){
+  const normal=new Date(item?.dueAt);
+  if(item?.weekKey!=='module-02')return normal;
+  const learner=String(viewer?.profile?.full_name||viewer?.user?.user_metadata?.full_name||'').trim().toLowerCase();
+  if(learner==='lusanda majikijela')return new Date('2026-10-05T23:59:59Z');
+  if(learner==='cecilia serwaa nkansah')return new Date('2026-10-07T23:59:59Z');
+  return normal;
 }
 
 const PUZZLES={
@@ -216,7 +225,6 @@ export default function CanopyAssignmentsV2({viewer}){
   const moduleContent=moduleId=>canopyModules2026.find(module=>module.id===moduleId);
 
   async function load(){
-    try{await refreshLearningAutomation(viewer.session)}catch{}
     const results=await Promise.allSettled([
       getWeeklyAssignmentSubmissions(viewer.session),
       getPuzzleProgress(viewer.session)
@@ -380,7 +388,7 @@ export default function CanopyAssignmentsV2({viewer}){
       ?revisionParts(currentSubmission)
       :['paragraph','practical','speaker'];
 
-    if(!tester&&!currentSubmission&&now>new Date(item.dueAt)&&!isModule12GraceWindow(item,now)){
+    if(!tester&&!currentSubmission&&now>firstSubmissionDue(item,viewer)&&!isModule12GraceWindow(item,now)){
       setMessage('Submission closed. The Sunday deadline has passed.');
       return;
     }
@@ -456,7 +464,8 @@ export default function CanopyAssignmentsV2({viewer}){
         const requestedParts=manualRevision?revisionParts(sub):['paragraph','practical','speaker'];
         const onlyRevision=manualRevision&&requestedParts.length<3;
         const graceWindowOpen=isModule12GraceWindow(item,now);
-        const firstSubmissionOpen=tester||now<=new Date(item.dueAt)||graceWindowOpen;
+        const individualDue=firstSubmissionDue(item,viewer);
+        const firstSubmissionOpen=tester||now<=individualDue||graceWindowOpen;
         const revisionWindowOpen=tester||now<=new Date(item.resubmitUntil)||graceWindowOpen;
         const mayResubmit=tester||(manualRevision&&count<3&&revisionWindowOpen);
         const canSubmitForm=tester||(!sub?firstSubmissionOpen:mayResubmit);
@@ -497,7 +506,7 @@ export default function CanopyAssignmentsV2({viewer}){
           </div>
         </article>;
         return <article className="ca-card" key={item.weekKey}>
-          <div className="ca-card-head"><div><small>MODULE {item.moduleId}</small><h2>{item.title}</h2></div><div className="ca-dates"><span>Due {formatCanopyDate(item.dueAt)}</span>{count>0&&<strong>Attempt {count} of 3</strong>}</div></div>
+          <div className="ca-card-head"><div><small>MODULE {item.moduleId}</small><h2>{item.title}</h2></div><div className="ca-dates"><span>Due {formatCanopyDate(individualDue)}</span>{count>0&&<strong>Attempt {count} of 3</strong>}</div></div>
           <div className="ca-threefold">
             <div><b>01</b><h3>Paragraph response</h3><p>{paragraphPrompt}</p></div>
             <div className="ca-practical-brief"><b>02</b><small className="ca-challenge-tag">PRACTICAL</small><h3>{practicalTitle}</h3><p>{practicalBrief}</p>{item.moduleId==='01'&&<ModuleOneCanvasGuide/>}{practicalInstructions&&<details className="ca-instructions"><summary>How to submit</summary><p>{practicalInstructions}</p></details>}{practicalHref&&<a href={practicalHref}>{practicalActionLabel||'Open tool →'}</a>}<PracticalExample assignment={curriculum?.assignment}/></div>
