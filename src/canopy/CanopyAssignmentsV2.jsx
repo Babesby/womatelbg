@@ -53,10 +53,19 @@ function cleanReviewFeedback(value){
   return String(value||'').replace(/^\[CANOPY_REVISION:([a-z,]+)\]\s*/i,'').trim();
 }
 
+const MODULE12_GRACE_START=new Date('2026-10-12T00:00:00Z');
+const MODULE12_GRACE_END=new Date('2026-10-13T23:59:59Z');
+
 function isModule12GraceWindow(item,now){
   if(!item||!['01','02'].includes(String(item.moduleId)))return false;
   const t=now instanceof Date?now:new Date(now);
-  return t>=new Date('2026-10-12T00:00:00Z')&&t<=new Date('2026-10-13T23:59:59Z');
+  return t>=MODULE12_GRACE_START&&t<=MODULE12_GRACE_END;
+}
+
+function revisionDraftValue(draft,field,fallback=''){
+  return Object.prototype.hasOwnProperty.call(draft||{},field)
+    ?String(draft?.[field]??'')
+    :String(fallback??'');
 }
 
 function firstSubmissionDue(item,viewer){
@@ -399,13 +408,13 @@ export default function CanopyAssignmentsV2({viewer}){
 
     const d=drafts[item.weekKey]||{};
     const paragraph=requiredParts.includes('paragraph')
-      ?String(d.paragraph_response||'').trim()
+      ?revisionDraftValue(d,'paragraph_response',currentManualRevision?currentSubmission?.paragraph_response:'').trim()
       :String(currentSubmission?.paragraph_response||'').trim();
     const canvas=requiredParts.includes('practical')
-      ?String(d.canvas_link||'').trim()
+      ?revisionDraftValue(d,'canvas_link',currentManualRevision?currentSubmission?.canvas_link:'').trim()
       :String(currentSubmission?.canvas_link||'').trim();
     const linkedin=requiredParts.includes('speaker')
-      ?String(d.linkedin_link||'').trim()
+      ?revisionDraftValue(d,'linkedin_link',currentManualRevision?currentSubmission?.linkedin_link:'').trim()
       :String(currentSubmission?.linkedin_link||'').trim();
 
     if(requiredParts.includes('paragraph')&&paragraph.split(/\s+/).filter(Boolean).length<80){
@@ -469,17 +478,27 @@ export default function CanopyAssignmentsV2({viewer}){
         const revisionWindowOpen=tester||now<=new Date(item.resubmitUntil)||graceWindowOpen;
         const mayResubmit=tester||(manualRevision&&count<3&&revisionWindowOpen);
         const canSubmitForm=tester||(!sub?firstSubmissionOpen:mayResubmit);
+        const graceEligible=!tester&&['01','02'].includes(String(item.moduleId))&&(!sub||manualRevision);
+        const normalWindowClosed=!sub?now>individualDue:(manualRevision&&now>new Date(item.resubmitUntil));
+        const graceUpcoming=graceEligible&&normalWindowClosed&&now<MODULE12_GRACE_START;
+        const graceActive=graceEligible&&graceWindowOpen;
+        const graceStillAvailable=graceEligible&&now<=MODULE12_GRACE_END;
         const puzzleDone=puzzles.some(p=>p.week_key===item.weekKey&&p.completed);
         const speakerOpen=tester||speakerChallengeOpen(item,now);
         const d=manualRevision?{
-          paragraph_response:requestedParts.includes('paragraph')?(baseDraft.paragraph_response||sub.paragraph_response||''):'',
-          canvas_link:requestedParts.includes('practical')?(baseDraft.canvas_link||sub.canvas_link||''):'',
-          linkedin_link:requestedParts.includes('speaker')?(baseDraft.linkedin_link||sub.linkedin_link||''):''
+          paragraph_response:requestedParts.includes('paragraph')?revisionDraftValue(baseDraft,'paragraph_response',sub.paragraph_response):'',
+          canvas_link:requestedParts.includes('practical')?revisionDraftValue(baseDraft,'canvas_link',sub.canvas_link):'',
+          linkedin_link:requestedParts.includes('speaker')?revisionDraftValue(baseDraft,'linkedin_link',sub.linkedin_link):''
         }:baseDraft;
         const parts=assignmentPartState(d,speakerOpen);
         const requiredReady=(!requestedParts.includes('paragraph')||parts.paragraphReady)
           &&(!requestedParts.includes('practical')||parts.canvasReady)
           &&(!requestedParts.includes('speaker')||parts.linkedinReady);
+        const revisionRemaining=requestedParts.filter(part=>
+          part==='paragraph'?!parts.paragraphReady:
+          part==='practical'?!parts.canvasReady:
+          !parts.linkedinReady
+        ).length;
         const visible=scoreVisible(sub),score=finalScore(sub),status=(sub?.assessment_status||sub?.status||'submitted').replaceAll('_',' ');
         const scoreReleased=visible&&score!=null;
         const archived=manualCompleted&&scoreReleased;
@@ -492,7 +511,7 @@ export default function CanopyAssignmentsV2({viewer}){
         const practicalHref=curriculum?.assignment?.practicalHref||'';
         const practicalActionLabel=curriculum?.assignment?.practicalActionLabel||'';
         const practicalLinkLabel=curriculum?.assignment?.practicalLinkLabel||'Practical task Google Drive / OneDrive link';
-        const missedFirstSubmission=!sub&&!firstSubmissionOpen;
+        const missedFirstSubmission=!sub&&!firstSubmissionOpen&&!graceStillAvailable;
         if(missedFirstSubmission)return <article className="ca-card ca-result-card ca-missed-result-card" key={item.weekKey}>
           <div className="ca-result-title"><small>MODULE {item.moduleId}</small><h2>{item.title}</h2><span className="ca-result-ready">Submission window closed</span></div>
           <div className="ca-result-score"><span>FINAL SCORE</span><strong>0/100</strong></div>
@@ -507,6 +526,8 @@ export default function CanopyAssignmentsV2({viewer}){
         </article>;
         return <article className="ca-card" key={item.weekKey}>
           <div className="ca-card-head"><div><small>MODULE {item.moduleId}</small><h2>{item.title}</h2></div><div className="ca-dates"><span>Due {formatCanopyDate(individualDue)}</span>{count>0&&<strong>Attempt {count} of 3</strong>}</div></div>
+          {graceUpcoming&&<div className="ca-feedback ca-revision"><span>48-hour grace window</span><strong>Your normal Module {item.moduleId} window is closed, but WOMATE has approved a final grace period. This page will unlock automatically on Monday, 12 October at 00:00 GMT and remain open through Tuesday, 13 October at 23:59 GMT.</strong></div>}
+          {graceActive&&<div className="ca-feedback ca-revision"><span>48-hour grace window open</span><strong>Your approved Module {item.moduleId} grace access is active now and closes Tuesday, 13 October at 23:59 GMT. Submit the outstanding first attempt or only the revision task(s) WOMATE requested.</strong></div>}
           <div className="ca-threefold">
             <div><b>01</b><h3>Paragraph response</h3><p>{paragraphPrompt}</p></div>
             <div className="ca-practical-brief"><b>02</b><small className="ca-challenge-tag">PRACTICAL</small><h3>{practicalTitle}</h3><p>{practicalBrief}</p>{item.moduleId==='01'&&<ModuleOneCanvasGuide/>}{practicalInstructions&&<details className="ca-instructions"><summary>How to submit</summary><p>{practicalInstructions}</p></details>}{practicalHref&&<a href={practicalHref}>{practicalActionLabel||'Open tool →'}</a>}<PracticalExample assignment={curriculum?.assignment}/></div>
@@ -661,9 +682,9 @@ export default function CanopyAssignmentsV2({viewer}){
                   :requestedParts.includes('speaker')&&!speakerOpen
                     ?'Final submit opens Thursday'
                     :!requiredReady
-                      ?'Complete '+(onlyRevision?requestedParts.length:parts.remaining)+
+                      ?'Complete '+(onlyRevision?revisionRemaining:parts.remaining)+
                         ' remaining part'+
-                        ((onlyRevision?requestedParts.length:parts.remaining)===1?'':'s')
+                        ((onlyRevision?revisionRemaining:parts.remaining)===1?'':'s')
                       :sub
                         ?'Submit revision'
                         :'Submit final assignment'}
@@ -691,8 +712,10 @@ export default function CanopyAssignmentsV2({viewer}){
             }
 
           </div>}
-          {!sub&&!firstSubmissionOpen&&<p className="ca-locked">Submission closed. The Sunday deadline has passed.</p>}
-          {sub&&manualRevision&&!revisionWindowOpen&&<p className="ca-locked">Revision window closed. The Wednesday deadline has passed.</p>}
+          {!sub&&!firstSubmissionOpen&&graceUpcoming&&<p className="ca-locked">Normal submission window closed. Your approved 48-hour grace access opens automatically on 12 October 2026 at 00:00 GMT.</p>}
+          {!sub&&!firstSubmissionOpen&&!graceUpcoming&&<p className="ca-locked">Submission closed. The Sunday deadline has passed.</p>}
+          {sub&&manualRevision&&!revisionWindowOpen&&graceUpcoming&&<p className="ca-locked">Normal revision window closed. Your approved 48-hour grace access opens automatically on 12 October 2026 at 00:00 GMT.</p>}
+          {sub&&manualRevision&&!revisionWindowOpen&&!graceUpcoming&&<p className="ca-locked">Revision window closed. The Wednesday deadline has passed.</p>}
           {sub&&!manualRevision&&!mayResubmit&&<p className="ca-locked">{manualCompleted?'Completed and closed.':'Submitted. Resubmission opens only when WOMATE requests a revision.'}</p>}
           <WeeklyPuzzle viewer={viewer} item={item} completed={puzzleDone} onComplete={load}/>
         </article>

@@ -17,7 +17,10 @@ async function mac(signed:string){const key=await crypto.subtle.importKey('raw',
 function equal(a:string,b:string){const x=enc.encode(a),y=enc.encode(b);let diff=x.length^y.length;for(let i=0;i<Math.max(x.length,y.length);i++)diff|=(x[i]||0)^(y[i]||0);return diff===0;}
 async function authorized(req:Request){const token=(req.headers.get('Authorization')||'').replace(/^Bearer\s+/i,'');const [payload,sig,extra]=token.split('.');if(!payload||!sig||extra||!equal(sig,await mac(payload)))return '';try{const data=JSON.parse(atob(payload.replace(/-/g,'+').replace(/_/g,'/')));if(data.exp<Date.now()||!REVIEWERS.includes(data.name))return '';return data.name;}catch{return '';}}
 async function db(path:string,method='GET',body?:unknown){const response=await fetch(`${URL}/rest/v1/${path}`,{method,headers:{apikey:SERVICE,Authorization:`Bearer ${SERVICE}`,'Content-Type':'application/json',Prefer:'return=representation'},...(body===undefined?{}:{body:JSON.stringify(body)})});const json=await response.json().catch(()=>null);if(!response.ok){console.error('Publication database error',response.status,JSON.stringify(json).slice(0,400));throw new Error('Publication database request failed (HTTP '+response.status+', code '+String(json?.code||'unknown')+').');}return json;}
-async function allowed(req:Request,action:'submit'|'login',max:number,mins:number){const ip=(req.headers.get('x-forwarded-for')||'').split(',')[0].trim()||req.headers.get('cf-connecting-ip')||'unknown';const key=await sha(ip+SIGNING);const data=await db('rpc/womate_publication_allow','POST',{p_key:key,p_action:action,p_max:max,p_window_minutes:mins});return data===true;}
+async function allowed(req:Request,action:'submit'|'submit_v2'|'login',max:number,mins:number){const ip=(req.headers.get('x-forwarded-for')||'').split(',')[0].trim()||req.headers.get('cf-connecting-ip')||'unknown';const key=await sha(ip+SIGNING);const data=await db('rpc/womate_publication_allow','POST',{p_key:key,p_action:action,p_max:max,p_window_minutes:mins});return data===true;}
+function cleanText(v:unknown,max:number){return s(v,max).replace(/[\u200B-\u200D\uFEFF]/g,'').trim();}
+function cleanPublicationUrl(v:unknown){return cleanText(v,1500).replace(/\s+/g,'');}
+function canonicalKind(v:unknown){const raw=cleanText(v,40).toLowerCase();return TYPES.find(x=>x.toLowerCase()===raw)||'';}
 function validUrl(raw:string){try{const u=new URL(raw);return u.protocol==='https:'&&!u.username&&!u.password&&u.hostname.includes('.')&&!['localhost','127.0.0.1','0.0.0.0'].includes(u.hostname)&&u.href.length<=1500;}catch{return false;}}
 Deno.serve(async(req)=>{
  const origin=req.headers.get('origin')||'';
@@ -34,11 +37,19 @@ Deno.serve(async(req)=>{
   const rows=await db('womate_publications?select=id,name,affiliation,title,kind,summary,document_url,published_at&status=eq.approved&order=published_at.desc&limit=60');return out({items:rows},200,origin);
  }
  case 'submit':{
-  if(!(await allowed(req,'submit',4,1440)))return out({error:'Submission limit reached. Please try again later.'},429,origin);
   const e=input.entry||{};
-  if(s(e.website,100))return out({ok:true},200,origin);
-  const name=s(e.name,120),email=s(e.email,200).toLowerCase(),phone=s(e.phone,40),country=s(e.country,100),affiliation=s(e.affiliation,160),title=s(e.title,180),kind=s(e.kind,40),summary=s(e.summary,2500),document_url=s(e.document_url,1500);
-  if(name.length<2||name.length>120||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)||phone.length<3||!country||title.length<5||!TYPES.includes(kind)||summary.length<40||summary.length>2500||!validUrl(document_url)||e.consent!==true)return out({error:'Please complete all required fields, provide a valid HTTPS document link and confirm your consent.'},400,origin);
+  const name=cleanText(e.name,120),email=cleanText(e.email,200).toLowerCase(),phone=cleanText(e.phone,40),country=cleanText(e.country,100),affiliation=cleanText(e.affiliation,160),title=cleanText(e.title,180),kind=canonicalKind(e.kind),summary=cleanText(e.summary,2500),document_url=cleanPublicationUrl(e.document_url);
+  if(name.length<2||name.length>120)return out({error:'Please enter your full name.'},400,origin);
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return out({error:'Please enter a valid email address.'},400,origin);
+  if(phone.length<3)return out({error:'Please enter a valid phone number.'},400,origin);
+  if(!country)return out({error:'Please enter your country.'},400,origin);
+  if(title.length<5)return out({error:'Publication title must be at least 5 characters.'},400,origin);
+  if(!TYPES.includes(kind))return out({error:'Please choose a valid publication type.'},400,origin);
+  if(summary.length<40)return out({error:'Abstract / summary must be at least 40 characters.'},400,origin);
+  if(summary.length>2500)return out({error:'Abstract / summary is too long.'},400,origin);
+  if(!validUrl(document_url))return out({error:'Please paste a valid HTTPS document link.'},400,origin);
+  if(e.consent!==true)return out({error:'Please confirm the publication consent checkbox.'},400,origin);
+  if(!(await allowed(req,'submit_v2',4,1440)))return out({error:'Submission limit reached. Please try again later.'},429,origin);
   await db('womate_publications','POST',{name,email,phone,country,affiliation,title,kind,summary,document_url,consent_at:new Date().toISOString()});
   return out({ok:true},200,origin);
  }
