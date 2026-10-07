@@ -2,7 +2,7 @@ import React,{useEffect,useMemo,useRef,useState} from 'react';
 import {ArrowRight,BadgeCheck,Brain,BriefcaseBusiness,Check,ExternalLink,Play,Printer,RotateCcw,Sparkles,Star,Trophy,Users,Zap} from 'lucide-react';
 import {modules} from './canopyData';
 import {CANOPY_ASSIGNMENT_SCHEDULE,formatCanopyDate,getLiveSessionAt} from './canopySchedule';
-import { getFeaturedSpotlights,reactToCanopySpotlight,submitCanopySpotlightProfessionalImage, getMyCanopyMissionHub } from './canopyApi';
+import { getFeaturedSpotlights,getCanopySpecialRecognitions,reactToCanopySpotlight,submitCanopySpotlightProfessionalImage, getMyCanopyMissionHub } from './canopyApi';
 import {playCanopyCorrectSound,playCanopyErrorSound,primeCanopyFeedbackAudio} from './canopyFeedbackAudio';
 
 export const CANOPY_JOURNEY_STAGES=[
@@ -338,7 +338,7 @@ export function CanopySpotlight({session}){
   const[photoBusy,setPhotoBusy]=useState('');
   const[photoMessage,setPhotoMessage]=useState({});
   const[slideIndex,setSlideIndex]=useState({});
-  useEffect(()=>{let live=true;getFeaturedSpotlights(session,5).then(x=>{if(live){const rows=x||[];setItems(rows);setPhotoDrafts(Object.fromEntries(rows.filter(i=>i.is_me).map(i=>[i.id,i.professional_image_drive_url||''])));setPhotoConsent(Object.fromEntries(rows.filter(i=>i.is_me).map(i=>[i.id,Boolean(i.professional_image_drive_url)])))}}).catch(()=>{});return()=>{live=false}},[session?.access_token]);
+  useEffect(()=>{let live=true;Promise.all([getFeaturedSpotlights(session,5),getCanopySpecialRecognitions(session)]).then(([featured,special])=>{if(live){const rows=[...(special||[]),...(featured||[])];setItems(rows);setPhotoDrafts(Object.fromEntries(rows.filter(i=>i.is_me&&!i.is_special).map(i=>[i.id,i.professional_image_drive_url||''])));setPhotoConsent(Object.fromEntries(rows.filter(i=>i.is_me&&!i.is_special).map(i=>[i.id,Boolean(i.professional_image_drive_url)])))}}).catch(()=>{});return()=>{live=false}},[session?.access_token]);
   useEffect(()=>{if(!expanded)return;const close=e=>{if(e.key==='Escape')setExpanded(null)};window.addEventListener('keydown',close);return()=>window.removeEventListener('keydown',close)},[expanded]);
   async function react(item,reaction){
     if(reacting)return;
@@ -389,10 +389,11 @@ export function CanopySpotlight({session}){
         const counts=item.reaction_counts||{};
         const reactions=[['love','/assets/canopy/reactions/heart.webp','Love'],['clap','/assets/canopy/reactions/clap.webp','Clap'],['insightful','/assets/canopy/reactions/insightful.webp','Insightful']];
         const submittedPhoto=String(item.professional_image_drive_url||'').trim();
-        return <article key={item.id} className={item.is_me?'is-own-spotlight':''}>
-          <div className="cx-spotlight-topline"><div className="cx-spotlight-star"><Star size={16}/></div><small>{moduleNo?`MODULE ${moduleNo}`:'FEATURED'}</small></div>
+        return <article key={item.id} className={`${item.is_me?'is-own-spotlight ':''}${item.is_special?'is-special-recognition':''}`.trim()}>
+          <div className="cx-spotlight-topline"><div className="cx-spotlight-star"><Star size={16}/></div><small>{item.is_special?(item.special_label||'SPECIAL RECOGNITION'):(moduleNo?`MODULE ${moduleNo}`:'FEATURED')}</small></div>
           <h3>{item.learner_name||'She Leads fellow'}</h3>
-          {item.is_me&&<div className="cx-spotlight-congrats">
+          {item.is_special&&<div className="cx-special-recognition-copy"><strong>{item.special_title||'WOMATE Special Recognition'}</strong><p>{item.special_body||'WOMATE recognises this outstanding applied climate leadership work.'}</p></div>}
+          {item.is_me&&!item.is_special&&<div className="cx-spotlight-congrats">
             <small>TOP 5 OUTSTANDING LEARNER</small>
             <h4>Congratulations{item.learner_name?`, ${String(item.learner_name).trim().split(/\s+/)[0]}`:''}.</h4>
             <p>You’re one of WOMATE’s Top 5 Outstanding Learners for Module {moduleNo||''}. We’d love to celebrate you on WOMATE’s official channels.</p>
@@ -409,9 +410,9 @@ export function CanopySpotlight({session}){
             {item.canvas_link&&<a href={item.canvas_link} target="_blank" rel="noreferrer">{practicalLabel} <ExternalLink size={13}/></a>}
             {item.linkedin_link&&<a href={item.linkedin_link} target="_blank" rel="noreferrer">LinkedIn post <ExternalLink size={13}/></a>}
           </div>
-          <div className="cx-spotlight-reactions" aria-label="React to this Spotlight">
+          {!item.is_special&&<div className="cx-spotlight-reactions" aria-label="React to this Spotlight">
             {reactions.map(([key,icon,label])=><button type="button" key={key} className={item.my_reaction===key?'is-active':''} disabled={Boolean(reacting)} onClick={()=>react(item,key)} aria-pressed={item.my_reaction===key}><img src={icon} alt="" aria-hidden="true"/><b>{label}</b><em>{Number(counts[key])||0}</em></button>)}
-          </div>
+          </div>}
         </article>;
           })}
           </div>
