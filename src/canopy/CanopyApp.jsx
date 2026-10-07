@@ -467,6 +467,7 @@ function ManagerOperations({snapshot,session,onReload,viewer,view='overview'}){
  const enrolFor=id=>snapshot.enrollments.find(e=>e.user_id===id);
  const nameFor=id=>learners.find(p=>p.user_id===id)?.full_name||'Learner';
  const trueAdmin=viewer?.profile?.role==='admin';
+ const canRunReviewAudit=trueAdmin||viewer?.profile?.role==='manager'||viewer?.staffAccess?.role==='programme_manager';
  const withdrawalFor=id=>(snapshot.withdrawals||[]).find(w=>w.user_id===id&&w.active);
  const accessStateOf=p=>{const withdrawn=Boolean(withdrawalFor(p.user_id));if(withdrawn)return 'withdrawn';const e=enrolFor(p.user_id);return e?.status==='active'?'active':'pending'};
  const accessCounts={all:learners.length,active:learners.filter(p=>accessStateOf(p)==='active').length,pending:learners.filter(p=>accessStateOf(p)==='pending').length,withdrawn:learners.filter(p=>accessStateOf(p)==='withdrawn').length};
@@ -560,9 +561,10 @@ function ManagerOperations({snapshot,session,onReload,viewer,view='overview'}){
  const reviewModuleOptions=[['all','All modules'],...CANOPY_ASSIGNMENT_SCHEDULE.map((m,i)=>[m.weekKey,`Module ${String(i+1).padStart(2,'0')}`])];
  const reviewCurrentCounts=Object.fromEntries(reviewStatuses.map(([value])=>[value,value==='all'?moduleReviewRows.length:moduleReviewRows.filter(s=>reviewStatusOf(s)===value).length]));
  const reviewHistoricalCounts=Object.fromEntries(reviewStatuses.map(([value])=>[value,value==='all'?moduleReviewHistory.length:moduleReviewHistory.filter(s=>reviewStatusOf(s)===value).length]));
- // Completed is a review-history total: every completed submission attempt for the selected module.
- // Other workflow filters remain latest-state counts so the editable queue stays one row per learner/module.
- const reviewCounts={...reviewCurrentCounts,completed:reviewHistoricalCounts.completed};
+ const reviewHistoricalManualCompleted=moduleReviewHistory.filter(s=>s.review_source==='manual'&&s.assessment_status==='completed').length;
+ // Filter badges describe the current/latest learner queue so clicking a badge matches the rows shown.
+ // Historical completed records remain visible separately below.
+ const reviewCounts=reviewCurrentCounts;
  const reviewAttemptCounts={recent:moduleReviewRows.length,first:moduleReviewRows.filter(s=>reviewAttemptNo(s)===1).length,second:moduleReviewRows.filter(s=>reviewAttemptNo(s)===2).length,third:moduleReviewRows.filter(s=>reviewAttemptNo(s)===3).length};
  const reviewAttemptFilters=[['recent','Recent'],['first','1st attempt'],['second','2nd attempt'],['third','3rd attempt']];
  const reviewRows=moduleReviewRows.filter(s=>{if(reviewFilter!=='all'&&reviewStatusOf(s)!==reviewFilter)return false;const attempt=reviewAttemptNo(s);if(reviewAttemptFilter==='first'&&attempt!==1)return false;if(reviewAttemptFilter==='second'&&attempt!==2)return false;if(reviewAttemptFilter==='third'&&attempt!==3)return false;const q=reviewQuery.trim().toLowerCase();if(!q)return true;const learner=learners.find(p=>p.user_id===s.user_id);return [learner?.full_name,learner?.email,s.learner_name,s.learner_email,s.email,s.week_key].some(v=>String(v||'').toLowerCase().includes(q))});
@@ -570,8 +572,46 @@ function ManagerOperations({snapshot,session,onReload,viewer,view='overview'}){
  const draftFor=s=>reviewDrafts[s.id]||{score:s.final_score??s.auto_score??'',feedback:String(s.final_feedback||s.feedback_hint||'').replace(/^\[CANOPY_REVISION:(paragraph|practical|speaker|all|[a-z]+(?:,[a-z]+)+)\]\s*/i,''),revisionPart:String(s.final_feedback||'').match(/\[CANOPY_REVISION:([a-z]+(?:,[a-z]+)*)\]/i)?.[1]||'paragraph',decision:reviewStatusOf(s)==='revision_required'?'revision_required':'completed'};
  const setReviewDraft=(id,patch)=>setReviewDrafts(x=>({...x,[id]:{...draftFor((snapshot.submissions||[]).find(s=>s.id===id)||{}),...patch}}));
  const reviewSubmission=async s=>{const d=draftFor(s);const score=Number(d.score);if(!Number.isFinite(score)||score<0||score>100){setMsg('Enter a score from 0 to 100.');return}if(d.decision==='revision_required'&&!d.revisionPart){setMsg('Select at least one part to revise.');return}setBusy('review-'+s.id);setMsg('');try{await reviewWeeklyAssignment(session,{submissionId:s.id,score,feedback:d.decision==='revision_required'?('[CANOPY_REVISION:'+(d.revisionPart||'paragraph')+'] '+String(d.feedback||'').replace(/^\[CANOPY_REVISION:(paragraph|practical|speaker|all|[a-z]+(?:,[a-z]+)+)\]\s*/i,'')):String(d.feedback||'').replace(/^\[CANOPY_REVISION:(paragraph|practical|speaker|all|[a-z]+(?:,[a-z]+)+)\]\s*/i,''),decision:d.decision});setMsg(d.decision==='revision_required'?'Review saved. The learner has been notified that a revision is required.':'Review saved and delivered to the learner in Canopy.');await onReload?.()}catch(e){setMsg(e.message)}finally{setBusy('')}};
- const automatedDriveCandidates=(()=>{const latest=new Map();for(const s of (snapshot.submissions||[])){const key=`${s.user_id}|${s.week_key}`;const prev=latest.get(key);if(!prev||new Date(s.submitted_at)>new Date(prev.submitted_at))latest.set(key,s)}return [...latest.values()].filter(s=>reviewStatusOf(s)==='auto_reviewed'&&/^https:\/\/(drive|docs)\.google\.com\//i.test(String(s.canvas_link||'')))})();
- const auditAutomatedDriveAccess=async()=>{if(!trueAdmin||busy==='drive-audit')return;const rows=automatedDriveCandidates;if(!rows.length){setMsg('No current auto-reviewed Google Drive submissions need an access check.');return}if(!window.confirm(`Check anonymous view access for ${rows.length} auto-reviewed practical submission${rows.length===1?'':'s'}? Restricted files will be set to 60/100 and Revision required.`))return;setBusy('drive-audit');setMsg(`Checking Drive access · 0/${rows.length}`);let restricted=0,publicCount=0,unknown=0,failed=0;const feedback='[CANOPY_REVISION:practical] We can’t view your practical evidence / CanopyCanvas submission because the Google Drive file is restricted. Change sharing to “Anyone with the link” → “Viewer”, then resubmit. You do not need to recreate the work. Watch the short guide: https://youtu.be/DxpkYuSxxic';for(let i=0;i<rows.length;i++){const s=rows[i];try{const result=await checkCanopyDriveAccess(session,s.canvas_link);if(result?.status==='restricted'){await reviewWeeklyAssignment(session,{submissionId:s.id,score:60,feedback,decision:'revision_required'});restricted+=1}else if(result?.status==='public'){publicCount+=1}else{unknown+=1}}catch{failed+=1}setMsg(`Checking Drive access · ${i+1}/${rows.length} · ${restricted} restricted`)}setBusy('');setMsg(`Drive access audit complete · ${restricted} restricted sent for revision · ${publicCount} viewable · ${unknown+failed} unchanged/uncertain.`);if(restricted)await onReload?.()};
+ const automatedDriveCandidates=(()=>{
+  const latest=new Map();
+  for(const s of (snapshot.submissions||[])){
+   if(reviewModule!=='all'&&s.week_key!==reviewModule)continue;
+   const key=`${s.user_id}|${s.week_key}`;
+   const prev=latest.get(key);
+   if(!prev||reviewAttemptNo(s)>reviewAttemptNo(prev)||(reviewAttemptNo(s)===reviewAttemptNo(prev)&&new Date(s.submitted_at||0)>new Date(prev.submitted_at||0)))latest.set(key,s);
+  }
+  return [...latest.values()].filter(s=>
+   s.review_source!=='manual'&&
+   reviewStatusOf(s)==='auto_reviewed'&&
+   /^https:\/\/(drive|docs)\.google\.com\//i.test(String(s.canvas_link||''))
+  );
+ })();
+ const auditAutomatedDriveAccess=async()=>{
+  if(!canRunReviewAudit||busy==='drive-audit')return;
+  const rows=automatedDriveCandidates;
+  const scope=reviewModule==='all'?'all modules':moduleLabel({week_key:reviewModule});
+  if(!rows.length){setMsg(`No current auto-reviewed Google Drive submissions in ${scope} need an access check.`);return}
+  if(!window.confirm(`Check anonymous view access for ${rows.length} current auto-reviewed practical submission${rows.length===1?'':'s'} in ${scope}? Manual WOMATE reviews will not be changed. Restricted files will be set to 60/100 and Practical-only Revision required.`))return;
+  setBusy('drive-audit');setMsg(`Checking Drive access · 0/${rows.length}`);
+  let restricted=0,publicCount=0,unknown=0,failed=0;
+  const feedback='[CANOPY_REVISION:practical] We can’t view your practical evidence / CanopyCanvas submission because the Google Drive file is restricted. Change sharing to “Anyone with the link” → “Viewer”, then resubmit. You do not need to recreate the work. Watch the short guide: https://youtu.be/DxpkYuSxxic';
+  for(let i=0;i<rows.length;i++){
+   const s=rows[i];
+   try{
+    if(s.review_source==='manual'){unknown+=1;continue}
+    const result=await checkCanopyDriveAccess(session,s.canvas_link);
+    if(result?.status==='restricted'){
+     await reviewWeeklyAssignment(session,{submissionId:s.id,score:60,feedback,decision:'revision_required'});
+     restricted+=1;
+    }else if(result?.status==='public')publicCount+=1;
+    else unknown+=1;
+   }catch{failed+=1}
+   setMsg(`Checking Drive access · ${i+1}/${rows.length} · ${restricted} restricted · ${publicCount} viewable`);
+  }
+  setBusy('');
+  setMsg(`Drive access audit complete · ${restricted} restricted sent for Practical-only revision · ${publicCount} viewable · ${unknown+failed} unchanged/uncertain.`);
+  if(restricted)await onReload?.();
+ };
  return <main className="canopyManager canopyOps">
   <div className="canopyPageHead"><span className="canopyEyebrow">WOMATE · CANOPY</span><h1>{sectionTitle}</h1><p>{view==='overview'?'Operational control for She Leads Climate Mentorship · Cohort 2 · 2026.':'Manage this workstream from one authorised WOMATE account.'}</p></div>
   <ManagerNotice>{msg}</ManagerNotice>
@@ -598,10 +638,18 @@ function ManagerOperations({snapshot,session,onReload,viewer,view='overview'}){
   </section>}
   {view==='reviews'&&<section className="canopyReviewWorkspace">
    <div className="canopyReviewToolbar">
-    <div className="canopyReviewToolbarLead"><span>SUBMISSION REVIEW</span><strong>{reviewCurrentRows.length} current · {snapshot.submissions.length} attempts</strong>{trueAdmin&&<button type="button" className="canopyDriveAuditButton" disabled={busy==='drive-audit'} onClick={auditAutomatedDriveAccess}>{busy==='drive-audit'?'Checking Drive access…':`Check Drive access · ${automatedDriveCandidates.length}`}</button>}</div>
+    <div className="canopyReviewToolbarLead"><span>SUBMISSION REVIEW</span><strong>{reviewCurrentRows.length} current learner/module records · {snapshot.submissions.length} retained attempts</strong></div>
     <div className="canopyReviewModules" role="group" aria-label="Filter submissions by module">{reviewModuleOptions.map(([value,label])=><button type="button" key={value} className={reviewModule===value?'active':''} aria-pressed={reviewModule===value} onClick={()=>setReviewModule(value)}>{label}<small>{value==='all'?reviewCurrentRows.length:reviewCurrentRows.filter(s=>s.week_key===value).length}</small></button>)}</div>
-    <div className="canopyReviewFilters">{reviewStatuses.map(([value,label])=><button type="button" key={value} className={reviewFilter===value?'active':''} onClick={()=>setReviewFilter(value)}>{value==='completed'?'Completed reviews':label}<small>{reviewCounts[value]||0}</small></button>)}</div>
-    <div className="canopyAdminReviewTotals" aria-label="Review count explanation"><span><b>{reviewHistoricalCounts.completed||0}</b> completed review records</span><span><b>{reviewCurrentCounts.completed||0}</b> learners currently completed</span><small>The completed total includes every completed attempt retained in WOMATE's review history. The editable list below stays on each learner's latest submission.</small></div>
+    <section className="canopyReviewIntegrity" aria-label="Review history and evidence checks">
+      <div className="canopyReviewIntegrityCounts">
+        <span><small>ACTUAL COMPLETED REVIEW RECORDS</small><strong>{reviewHistoricalCounts.completed||0}</strong></span>
+        <span><small>MANUAL WOMATE COMPLETIONS</small><strong>{reviewHistoricalManualCompleted||0}</strong></span>
+        <span><small>LEARNERS CURRENTLY COMPLETED</small><strong>{reviewCurrentCounts.completed||0}</strong></span>
+      </div>
+      {canRunReviewAudit&&<div className="canopyDriveAuditPanel"><div><small>EVIDENCE ACCESS</small><strong>Google Drive visibility check</strong><p>Checks only current auto-reviewed Drive evidence in {reviewModule==='all'?'all modules':moduleLabel({week_key:reviewModule})}. Manual WOMATE decisions are protected.</p></div><button type="button" className="canopyDriveAuditButton" disabled={busy==='drive-audit'||automatedDriveCandidates.length===0} onClick={auditAutomatedDriveAccess}>{busy==='drive-audit'?'Checking Drive access…':`Check Drive access · ${automatedDriveCandidates.length}`}</button></div>}
+    </section>
+    <div className="canopyReviewFilters">{reviewStatuses.map(([value,label])=><button type="button" key={value} className={reviewFilter===value?'active':''} onClick={()=>setReviewFilter(value)}>{value==='completed'?'Completed learners':label}<small>{reviewCounts[value]||0}</small></button>)}</div>
+    <div className="canopyAdminReviewTotals" aria-label="Review count explanation"><span><b>{reviewHistoricalCounts.completed||0}</b> completed review records</span><span><b>{reviewCurrentCounts.completed||0}</b> learners currently completed</span><small>Historical totals include every completed attempt retained by WOMATE. Filters and editable rows stay on each learner's latest submission so older attempts cannot be accidentally re-reviewed.</small></div>
     <div className="canopyAdminReviewFind">
      <label className="canopyAdminReviewSearch"><span>Search learner</span><input type="search" value={reviewQuery} onChange={e=>setReviewQuery(e.target.value)} placeholder="Name or email"/></label>
      <div className="canopyAdminAttemptFilters" role="group" aria-label="Filter assignment attempt">{reviewAttemptFilters.map(([value,label])=><button type="button" key={value} className={reviewAttemptFilter===value?'active':''} aria-pressed={reviewAttemptFilter===value} onClick={()=>setReviewAttemptFilter(value)}>{label}<small>{reviewAttemptCounts[value]||0}</small></button>)}</div>
