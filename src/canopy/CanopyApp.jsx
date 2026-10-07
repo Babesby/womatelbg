@@ -501,6 +501,8 @@ function ManagerOperations({snapshot,session,onReload,viewer,view='overview'}){
  const resolve=async(a,status='resolved')=>{setBusy(a.id);setMsg('');try{await updateManagerAction(session,a.id,{status,resolved_at:new Date().toISOString()});setMsg('Record updated.');await onReload?.()}catch(e){setMsg(e.message)}finally{setBusy('')}};
  const spotlight=snapshot.spotlight||{nominations:[],weekly:[],loves:[]};
  const spotlightNominations=spotlight.nominations||[];
+ const spotlightPendingNominations=[...spotlightNominations].filter(n=>['nominated','shortlisted'].includes(n.status)).sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0));
+ const spotlightPendingCountFor=moduleId=>spotlightPendingNominations.filter(n=>n.module_id===moduleId).length;
  const spotlightWeekCounts=spotlight.weekly||[];
  const spotlightLoves=spotlight.loves||[];
  const spotlightRecognitionAssets=spotlight.recognition_assets||[];
@@ -588,7 +590,8 @@ function ManagerOperations({snapshot,session,onReload,viewer,view='overview'}){
     <div><span>WOMATE FINAL SELECTION</span><h2>Weekly Spotlight</h2><p>Nominate freely. Shortlist freely. Final Spotlight is limited to five learners per week.</p></div>
     <div className="canopySpotlightQuota"><strong>{spotlightCount}<small>/5</small></strong><span>featured this week</span></div>
    </div>
-   <div className="canopySpotlightWeekTabs">{CANOPY_ASSIGNMENT_SCHEDULE.map(item=><button type="button" key={item.weekKey} className={spotlightWeek===item.weekKey?'active':''} onClick={()=>setSpotlightWeek(item.weekKey)}><span>Module {item.moduleId}</span><small>{Number(spotlightWeekCounts.find(x=>x.module_id===item.weekKey)?.featured_count||0)}/5</small></button>)}</div>
+   <section className="canopySpotlightPendingDesk"><header><div><span>NOMINATIONS NEEDING ATTENTION</span><h3>Pending Spotlight queue</h3><p>All nominated and shortlisted learners are visible here regardless of which module is open below.</p></div><strong>{spotlightPendingNominations.length}</strong></header>{spotlightPendingNominations.length?<div>{spotlightPendingNominations.map(n=><article key={n.id}><div><small>{moduleLabel({week_key:n.module_id})}</small><b>{n.learner_name||'Learner'}</b><span>{String(n.category||'Spotlight').replaceAll('_',' ')} · {n.status}</span></div><button type="button" onClick={()=>setSpotlightWeek(n.module_id)}>Review module <ArrowRight size={13}/></button></article>)}</div>:<p className="canopyMuted">No pending nominations. All current nominations have been resolved.</p>}</section>
+   <div className="canopySpotlightWeekTabs">{CANOPY_ASSIGNMENT_SCHEDULE.map(item=><button type="button" key={item.weekKey} className={(spotlightWeek===item.weekKey?'active ':'')+(spotlightPendingCountFor(item.weekKey)>0?'hasPending':'')} onClick={()=>setSpotlightWeek(item.weekKey)}><span>Module {item.moduleId}{spotlightPendingCountFor(item.weekKey)>0&&<b>{spotlightPendingCountFor(item.weekKey)} pending</b>}</span><small>{Number(spotlightWeekCounts.find(x=>x.module_id===item.weekKey)?.featured_count||0)}/5</small></button>)}</div>
    <section className="canopySpotlightMediaDesk">
     <div className="canopySpotlightMediaHead"><div><span>SPOTLIGHT MEDIA</span><h3>Professional images</h3><p>Track the final featured learners, image consent and WOMATE-channel readiness in one place.</p></div><div className="canopySpotlightMediaSummary"><strong>{spotlightMediaCounts.approved}<small>/{spotlightMediaCounts.all}</small></strong><span>approved</span></div></div>
     <div className="canopySpotlightMediaTools"><label className="canopySpotlightMediaSearch"><span>Find learner</span><input type="search" value={spotlightMediaQuery} onChange={e=>setSpotlightMediaQuery(e.target.value)} placeholder="Name or email"/></label><div className="canopySpotlightMediaFilters">{[['all','All'],['missing','No image'],['received','Image received'],['approved','Approved'],['replacement_requested','Needs replacement']].map(([value,label])=><button type="button" key={value} className={spotlightMediaFilter===value?'active':''} onClick={()=>setSpotlightMediaFilter(value)}>{label}<small>{spotlightMediaCounts[value]||0}</small></button>)}</div></div>
@@ -705,10 +708,9 @@ const __womateStaffWorkspacePath=
   path==='/canopy/coordinator'||path.startsWith('/canopy/coordinator/')||
   path==='/canopy/fellow'||path.startsWith('/canopy/fellow/');
 
-const __womateLiveProgrammeManagerPath=
-  (path==='/canopy/manage'||path.startsWith('/canopy/manage/'))&&
-  !__womatePreviewPath&&
-  viewer?.profile?.role!=='admin';
+// Programme Manager now uses the same live ManagerOperations pages as Admin
+// for reviews, communications and complaints so operational state cannot drift.
+const __womateLiveProgrammeManagerPath=false;
 
 if(__womatePreviewPath||__womateStaffWorkspacePath||__womateLiveProgrammeManagerPath){
   return <CanopyStaffWorkspace

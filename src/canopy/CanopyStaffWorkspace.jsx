@@ -154,11 +154,10 @@ function PreviewChooser(){
 
 function Overview({role,moduleId,data}){
   const c=data?.counts||{};
+  const deputy=role==='programme_operations';
   return <div>
     <section className="cstaffStats">
-      <Stat value={c.learners} label="learners"/><Stat value={c.active_access} label="active access"/>
-      <Stat value={c.submissions} label="submissions"/><Stat value={c.needs_attention} label="needs attention"/>
-      <Stat value={c.revision_required} label="revision required"/><Stat value={c.completed} label="completed"/>
+      {deputy?<><Stat value={c.learners} label="learners"/><Stat value={c.active_access} label="active access"/><Stat value={c.submissions} label="submissions"/><Stat value={c.open_actions??c.open_complaints} label="open actions"/></>:<><Stat value={c.learners} label="learners"/><Stat value={c.active_access} label="active access"/><Stat value={c.submissions} label="submissions"/><Stat value={c.needs_attention} label="needs attention"/><Stat value={c.revision_required} label="revision required"/><Stat value={c.completed} label="completed"/></>}
     </section>
     <section className="cstaffPanel cstaffMission"><Sparkles/><div><small>DELIVERY MANDATE</small><h2>{role==='programme_manager'?'Keep the full She Leads learning operation moving with quality and accountability.':role==='programme_operations'?'Support assessment quality and learner care through submission reviews and complaint responses.':role==='module_coordinator'?'Make the assigned module feel guided, active and human for every learner.':'Make sure learners do not disappear into an online course.'}</h2><p>{moduleId?`${moduleLabel(moduleId)} scope. `:''}Your navigation reflects only the functions authorised for this role.</p></div></section>
     <RecentSubmissions items={data?.recent_submissions||data?.submissions||[]} compact/>
