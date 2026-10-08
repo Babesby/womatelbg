@@ -20,10 +20,17 @@ function cleanPublicationText(value){
 }
 function cleanPublicationUrl(value){
  let text=cleanPublicationText(value).normalize('NFKC').replace(/[“”‘’]/g,'').trim();
- const found=text.match(/https?:\/\/[^\s<>"']+/i)?.[0];
- let candidate=(found||text).replace(/^[\s(<\[{]+/,'').replace(/[\s)>\]}.,;:]+$/,'');
- if(!/^https?:\/\//i.test(candidate)&&/^(?:www\.)?[a-z0-9.-]+\.[a-z]{2,}(?:\/|$)/i.test(candidate))candidate='https://'+candidate.replace(/^www\./i,'');
- return candidate;
+ if(!text)return'';
+ const markdown=text.match(/\[[^\]]*\]\((https?:\/\/[^)\s]+)\)/i)?.[1];
+ const angle=text.match(/<\s*(https?:\/\/[^>\s]+)\s*>/i)?.[1];
+ const plain=text.match(/https?:\/\/[^\s<>"'\]\)]+/i)?.[0];
+ let candidate=(markdown||angle||plain||text)
+   .replace(/^[\s(<\[{]+/,'')
+   .replace(/[\s)>\]}.,;:]+$/,'');
+ if(!/^https?:\/\//i.test(candidate)&&/^(?:www\.)?[a-z0-9.-]+\.[a-z]{2,}(?:\/|$)/i.test(candidate)){
+   candidate='https://'+candidate.replace(/^www\./i,'');
+ }
+ try{return new URL(candidate).href}catch{return candidate}
 }
 function publicationProblem(entry){
  if(entry.name.length<2)return 'Please enter your full name.';
@@ -36,8 +43,8 @@ function publicationProblem(entry){
  if(entry.summary.length>2500)return 'Abstract / summary is too long.';
  try{
   const u=new URL(entry.document_url);
-  if(u.protocol!=='https:'||u.username||u.password||!u.hostname.includes('.'))return 'Please paste a valid HTTPS document link.';
- }catch{return 'Please paste a valid HTTPS document link.'}
+  if(u.protocol!=='https:'||u.username||u.password||!u.hostname.includes('.'))return 'Please paste a valid HTTPS document link. Google Drive and Google Docs share links are accepted.';
+ }catch{return 'Please paste a valid HTTPS document link. Google Drive and Google Docs share links are accepted.'}
  if(entry.consent!==true)return 'Please confirm the publication consent checkbox.';
  return '';
 }
