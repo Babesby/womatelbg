@@ -2,6 +2,7 @@ import React,{useEffect,useState} from 'react';
 import {CANOPY_ASSIGNMENT_SCHEDULE,formatCanopyDate,openAssignments,speakerChallengeOpen} from './canopySchedule';
 import {getWeeklyAssignmentSubmissions,submitWeeklyAssignment,submitTesterWeeklyAssignment,getPuzzleProgress,savePuzzleCompletion,getWeeklyAssignmentDrafts,saveWeeklyAssignmentDraft} from './canopyApi';
 import {canopyModules2026} from './canopyCurriculum2026';
+import {climateDebateAssignment,isClimateDebateSocialUrl} from './canopyClimateDebate';
 import {playCanopyCorrectSound,playCanopyErrorSound} from './canopyFeedbackAudio';
 
 function scramble(word){
@@ -312,7 +313,7 @@ export default function CanopyAssignmentsV2({viewer}){
 
     const canvasReady=isPracticalFileUrl(d?.canvas_link);
 
-    const linkedinReady=!!speakerOpen && isSpeakerSocialUrl(d?.linkedin_link);
+    const linkedinReady=!!speakerOpen && (item?.weekKey==='module-03'?isClimateDebateSocialUrl(d?.linkedin_link):isSpeakerSocialUrl(d?.linkedin_link));
 
     const completed=[
       paragraphReady,
@@ -430,10 +431,7 @@ export default function CanopyAssignmentsV2({viewer}){
       setMessage('The speaker challenge is not open yet.');
       return;
     }
-    if(requiredParts.includes('speaker')&&!isSpeakerSocialUrl(linkedin)){
-      setMessage('Paste a valid LinkedIn or X/Twitter speaker-post link.');
-      return;
-    }
+    if(requiredParts.includes('speaker')){const speakerLinkOk=item.weekKey==='module-03'?isClimateDebateSocialUrl(linkedin):isSpeakerSocialUrl(linkedin);if(!speakerLinkOk){setMessage(item.weekKey==='module-03'?'Paste the public link to your Climate Debate post on LinkedIn, X/Twitter, Instagram, Facebook, Threads, TikTok, YouTube or Bluesky.':'Paste a valid LinkedIn or X/Twitter speaker-post link.');return;}}
 
     setBusy(item.weekKey);setMessage('');
     try{
@@ -511,6 +509,7 @@ export default function CanopyAssignmentsV2({viewer}){
         const practicalHref=curriculum?.assignment?.practicalHref||'';
         const practicalActionLabel=curriculum?.assignment?.practicalActionLabel||'';
         const practicalLinkLabel=curriculum?.assignment?.practicalLinkLabel||'Practical task Google Drive / OneDrive link';
+        const climateDebate=item.weekKey==='module-03'?climateDebateAssignment(viewer?.user?.id||viewer?.profile?.user_id):null;
         const missedFirstSubmission=!sub&&!firstSubmissionOpen&&!graceStillAvailable;
         if(missedFirstSubmission)return <article className="ca-card ca-result-card ca-missed-result-card" key={item.weekKey}>
           <div className="ca-result-title"><small>MODULE {item.moduleId}</small><h2>{item.title}</h2><span className="ca-result-ready">Submission window closed</span></div>
@@ -531,7 +530,7 @@ export default function CanopyAssignmentsV2({viewer}){
           <div className="ca-threefold">
             <div><b>01</b><h3>Paragraph response</h3><p>{paragraphPrompt}</p></div>
             <div className="ca-practical-brief"><b>02</b><small className="ca-challenge-tag">PRACTICAL</small><h3>{practicalTitle}</h3><p>{practicalBrief}</p>{item.moduleId==='01'&&<ModuleOneCanvasGuide/>}{practicalInstructions&&<details className="ca-instructions"><summary>How to submit</summary><p>{practicalInstructions}</p></details>}{practicalHref&&<a href={practicalHref}>{practicalActionLabel||'Open tool →'}</a>}<PracticalExample assignment={curriculum?.assignment}/></div>
-            <div><b>03</b><h3>Speaker challenge</h3>{speakerOpen?<><p>{item.speakerPrompt}</p><p>Submit your LinkedIn or X/Twitter post link.</p></>:<p>Opens after Thursday’s live session.</p>}</div>
+            <div className={item.weekKey==='module-03'?'ca-debate-summary':''}><b>03</b><h3>{item.weekKey==='module-03'?'The Climate Debate':'Speaker challenge'}</h3>{speakerOpen?item.weekKey==='module-03'?<><span className={'ca-debate-position is-'+climateDebate.position.toLowerCase()}>{climateDebate.position}</span><p className="ca-debate-motion">“{climateDebate.motion.motion}”</p><p>{climateDebate.caseText}</p><small>Your motion and position are assigned to your account and will stay the same.</small></>:<><p>{item.speakerPrompt}</p><p>Submit your LinkedIn or X/Twitter post link.</p></>:<p>Opens after Thursday’s live session.</p>}</div>
           </div>
           {sub&&<div className="ca-status">
             <div><span>Latest submission</span><strong>{new Date(sub.submitted_at).toLocaleString()}</strong></div>
@@ -636,24 +635,8 @@ export default function CanopyAssignmentsV2({viewer}){
               />
             </label>}
 
-            {speakerOpen&&requestedParts.includes('speaker')&&
-              <label>
-                Speaker-task post link (LinkedIn or X/Twitter)
-
-                <input
-                  inputMode="url"
-                  value={d.linkedin_link||''}
-                  onChange={e=>setDrafts(x=>({
-                    ...x,
-                    [item.weekKey]:{
-                      ...d,
-                      linkedin_link:e.target.value
-                    }
-                  }))}
-                  placeholder="https://linkedin.com/… or https://lnkd.in/…"
-                />
-              </label>
-            }
+            {speakerOpen&&requestedParts.includes('speaker')&&item.weekKey==='module-03'&&<section className="ca-climate-debate" aria-label="The Climate Debate speaker assignment"><header><div><small>SPEAKER ASSIGNMENT · MODULE 03</small><h3>The Climate Debate</h3><p>Create one digital advocacy graphic defending the position WOMATE assigned to you. Publish it on your chosen social platform and invite people into the conversation.</p></div><span className={'ca-debate-position is-'+climateDebate.position.toLowerCase()}>{climateDebate.position}</span></header><div className="ca-debate-assignment"><small>YOUR MOTION</small><strong>“{climateDebate.motion.motion}”</strong><p>{climateDebate.caseText}</p></div><div className="ca-debate-requirements"><h4>Your graphic must communicate</h4><div><span>01</span><p>Your position — <b>{climateDebate.position}</b></p></div><div><span>02</span><p>Your strongest argument</p></div><div><span>03</span><p>At least <b>2 credible pieces of evidence</b></p></div><div><span>04</span><p>One African or community-specific perspective</p></div><div><span>05</span><p>A clear takeaway or call to action</p></div></div><details className="ca-debate-framework"><summary>The 5-part Climate Argument</summary><ol><li><b>CLAIM</b><span>What is your position?</span></li><li><b>EVIDENCE</b><span>What credible evidence supports it?</span></li><li><b>CONTEXT</b><span>Why does this matter, particularly in an African/community context?</span></li><li><b>COUNTERARGUMENT</b><span>What would someone on the other side say?</span></li><li><b>ACTION</b><span>After reading your argument, what should your audience think, discuss or do?</span></li></ol></details><div className="ca-debate-social"><h4>Make the graphic visual — not a mini essay</h4><p>Lead with one compelling argument. Put the fuller evidence and context in your caption. Invite responses or discussion.</p><p><b>Tag:</b> WOMATE + the speaker · <b>Hashtag:</b> #WOMATEClimateDebate</p></div><label className="ca-debate-link">Published Climate Debate post link<input inputMode="url" value={d.linkedin_link||''} onChange={e=>setDrafts(x=>({...x,[item.weekKey]:{...d,linkedin_link:e.target.value}}))} placeholder="Paste the public link to your post"/><small>Accepted: LinkedIn, X/Twitter, Instagram, Facebook, Threads, TikTok, YouTube or Bluesky.</small></label></section>}
+            {speakerOpen&&requestedParts.includes('speaker')&&item.weekKey!=='module-03'&&<label>Speaker-task post link (LinkedIn or X/Twitter)<input inputMode="url" value={d.linkedin_link||''} onChange={e=>setDrafts(x=>({...x,[item.weekKey]:{...d,linkedin_link:e.target.value}}))} placeholder="https://linkedin.com/… or https://lnkd.in/…"/></label>}
 
             <div className="ca-assignment-form-actions">
 
