@@ -13,16 +13,62 @@ const deadline='Friday, 23 October 2026 at 11:59 PM GMT';
 
 function go(path){window.history.pushState({},'',path);window.dispatchEvent(new PopStateEvent('popstate'));window.scrollTo({top:0,behavior:'smooth'})}
 function statusText(v){return String(v||'').replaceAll('_',' ')}
+function cleanMissionDriveUrl(value){
+  let text=String(value||'').normalize('NFKC').replace(/[“”‘’]/g,'').trim();
+  if(!text)return'';
+  const found=text.match(/https?:\/\/[^\s<>"']+/i)?.[0];
+  let candidate=(found||text).replace(/^[\s(<\[{]+/,'').replace(/[\s)>\]}.,;:]+$/,'');
+  if(!/^https?:\/\//i.test(candidate)&&/^(?:www\.)?(?:drive|docs)\.google\.com\//i.test(candidate))candidate='https://'+candidate.replace(/^www\./i,'');
+  try{
+    const url=new URL(candidate);
+    const host=url.hostname.toLowerCase().replace(/^www\./,'');
+    if(!['http:','https:'].includes(url.protocol))return'';
+    if(host!=='drive.google.com'&&host!=='docs.google.com')return'';
+    return url.href;
+  }catch{return''}
+}
 
 export default function CanopyMissionHub({viewer}){
   const[data,setData]=useState(null),[busy,setBusy]=useState(''),[msg,setMsg]=useState('');
   const[chat,setChat]=useState(''),[folder,setFolder]=useState(''),[report,setReport]=useState({summary:'',proofUrl:''});
+  const[reportMsg,setReportMsg]=useState(''),[folderMsg,setFolderMsg]=useState('');
   const[missionConcern,setMissionConcern]=useState(''),[concernBusy,setConcernBusy]=useState(false),[concernMsg,setConcernMsg]=useState('');
   const[edit,setEdit]=useState({name:'',choice:'standard',customBrief:''});
   const timer=useRef(null);
   const load=async(silent=false)=>{try{const d=await getMyCanopyMissionHub(viewer.session);setData(d);if(d?.group){setEdit({name:d.group.name||'',choice:d.group.mission_choice||'standard',customBrief:d.group.custom_brief||''});setFolder(d.group.evidence_folder_url||'')}if(!silent)setMsg('')}catch(e){if(!silent)setMsg(e.message)}};
   useEffect(()=>{let live=true;const refresh=()=>{if(live&&document.visibilityState==='visible')load(true)};load();timer.current=window.setInterval(refresh,30000);const onVisibility=()=>{if(document.visibilityState==='visible')refresh()};document.addEventListener('visibilitychange',onVisibility);return()=>{live=false;window.clearInterval(timer.current);document.removeEventListener('visibilitychange',onVisibility)}},[viewer?.session?.access_token]);
-  const act=async(key,fn)=>{setBusy(key);setMsg('');try{const d=await fn();setData(d);setMsg('Saved.')}catch(e){setMsg(e.message)}finally{setBusy('')}};
+  const act=async(key,fn)=>{setBusy(key);setMsg('');try{const d=await fn();setData(d);setMsg('Saved.');return d}catch(e){setMsg(e.message);throw e}finally{setBusy('')}};
+  async function saveMissionReport(){
+    if(busy)return;
+    const summary=String(report.summary||'').trim();
+    if(summary.length<20){setReportMsg('Please add at least 20 characters about what happened.');return}
+    const rawProof=String(report.proofUrl||'').trim();
+    const proofUrl=rawProof?cleanMissionDriveUrl(rawProof):'';
+    if(rawProof&&!proofUrl){setReportMsg('That proof link could not be read as a Google Drive or Google Docs link. You can also leave this optional field blank.');return}
+    setBusy('report');setReportMsg('Submitting your report…');
+    try{
+      const d=await submitCanopyMissionReport(viewer.session,{summary,proofUrl});
+      setData(d);
+      const saved=(d?.reports||[]).find(r=>r.user_id===viewer?.user?.id);
+      setReport({summary:saved?.summary||summary,proofUrl:saved?.proof_url||proofUrl});
+      setReportMsg('Report submitted successfully. Your team progress has been updated.');
+    }catch(e){setReportMsg(e?.message||'Your report could not be submitted. Please try again.')}
+    finally{setBusy('')}
+  }
+  async function saveMissionGroup(){
+    if(busy)return;
+    if(!allAccepted){setFolderMsg('All five members must accept before the final group mission can be submitted.');return}
+    if(!allReports){setFolderMsg(`Your team has ${new Set(reports.map(r=>r.mission_no)).size}/5 mission reports. All five reports must be submitted first.`);return}
+    const folderUrl=cleanMissionDriveUrl(folder);
+    if(!folderUrl){setFolderMsg('Paste a Google Drive or Google Docs link for the shared final evidence.');return}
+    setBusy('submit');setFolderMsg('Submitting the complete mission to WOMATE…');
+    try{
+      const d=await submitCanopyMissionGroup(viewer.session,folderUrl);
+      setData(d);setFolder(folderUrl);
+      setFolderMsg('Complete group mission submitted successfully for WOMATE verification.');
+    }catch(e){setFolderMsg(e?.message||'The complete mission could not be submitted. Please try again.')}
+    finally{setBusy('')}
+  }
   async function submitMissionConcern(){
     const text=missionConcern.trim();
     if(text.length<10){
@@ -81,9 +127,9 @@ export default function CanopyMissionHub({viewer}){
 
         <section className="cm-section"><header><span>MISSION IDENTITY</span><h2>Make it yours.</h2><p>Name the group mission and choose whether to follow WOMATE's standard five-stage challenge or adapt it around a climate issue your group cares about.</p></header><div className="cm-form"><label>Mission name<input value={edit.name} onChange={e=>setEdit(v=>({...v,name:e.target.value}))}/></label><div className="cm-choice"><button className={edit.choice==='standard'?'on':''} onClick={()=>setEdit(v=>({...v,choice:'standard'}))}>Use standard mission</button><button className={edit.choice==='custom'?'on':''} onClick={()=>setEdit(v=>({...v,choice:'custom'}))}>Choose our own theme</button></div>{edit.choice==='custom'&&<label>Our mission focus<textarea value={edit.customBrief} onChange={e=>setEdit(v=>({...v,customBrief:e.target.value}))} placeholder="What issue will your five-country team explore or act on?"/></label>}<button disabled={busy} onClick={()=>act('group',()=>updateCanopyMissionGroup(viewer.session,edit))}>Save group mission</button></div></section>
 
-        <section className="cm-section"><header><span>YOUR REPORT</span><h2>Mission {member?.mission_no}: {myMission?.title}</h2><p>Lead your stage, report what happened to the group, and add proof. Your teammates can then learn from your country and hold the full mission together.</p></header><div className="cm-form"><label>What happened?<textarea value={report.summary} onChange={e=>setReport(v=>({...v,summary:e.target.value}))} placeholder="Briefly report what you did, what you learned and what the group should know."/></label><label>Proof link (optional here; final folder is required)<input value={report.proofUrl} onChange={e=>setReport(v=>({...v,proofUrl:e.target.value}))} placeholder="https://..."/></label><button disabled={busy} onClick={()=>act('report',()=>submitCanopyMissionReport(viewer.session,report))}>{myReport?'Update my report':'Submit my report'}</button></div></section>
+        <section className="cm-section"><header><span>YOUR REPORT</span><h2>Mission {member?.mission_no}: {myMission?.title}</h2><p>Lead your stage and report what happened to the group. Proof is optional here; your team will submit one final shared evidence link later.</p></header><div className="cm-form"><label>What happened?<textarea value={report.summary} onChange={e=>{setReportMsg('');setReport(v=>({...v,summary:e.target.value}))}} placeholder="Briefly report what you did, what you learned and what the group should know."/></label><label>Proof link <small>(optional — Google Drive / Google Docs)</small><input inputMode="url" autoCapitalize="none" autoCorrect="off" spellCheck="false" value={report.proofUrl} onChange={e=>{setReportMsg('');setReport(v=>({...v,proofUrl:e.target.value}))}} onBlur={e=>{const cleaned=cleanMissionDriveUrl(e.target.value);if(cleaned)setReport(v=>({...v,proofUrl:cleaned}))}} placeholder="Paste a Drive link, or leave blank"/></label><button type="button" disabled={busy==='report'} onClick={saveMissionReport}>{busy==='report'?'Submitting…':myReport?'Update my report':'Submit my report'}</button>{reportMsg&&<p className={`cm-msg cm-inline-result ${/successfully/i.test(reportMsg)?'ok':''}`} role="status" aria-live="polite">{reportMsg}</p>}{myReport&&<small className="cm-saved-note"><Check/> This mission report is already saved. You can update it until the deadline.</small>}</div></section>
 
-        <section className="cm-section cm-submit"><header><span>ONE GROUP FOLDER</span><h2>Submit the complete mission to WOMATE.</h2><p>Keep all five mission outputs in one shared folder. Make the folder viewable by link before submitting.</p></header><div className="cm-readiness"><span className={allAccepted?'ok':''}>{allAccepted?'5/5':'Not all'} members accepted</span><span className={allReports?'ok':''}>{reports.length}/5 mission reports ready</span></div><div className="cm-form"><label>Shared evidence folder<input value={folder} onChange={e=>setFolder(e.target.value)} placeholder="Google Drive or another viewable folder link"/></label>{folder&&<a href={folder} target="_blank" rel="noreferrer">Open folder <ExternalLink/></a>}<button disabled={busy||!allAccepted||!allReports||group?.status==='submitted'||group?.status==='verified'} onClick={()=>act('submit',()=>submitCanopyMissionGroup(viewer.session,folder))}>{group?.status==='verified'?'WOMATE verified':group?.status==='submitted'?'Submitted for WOMATE verification':'Submit complete group mission'}</button>{group?.verification_remark&&<p className="cm-msg">WOMATE note: {group.verification_remark}</p>}</div></section>
+        <section className="cm-section cm-submit"><header><span>ONE GROUP FOLDER</span><h2>Submit the complete mission to WOMATE.</h2><p>Keep all five mission outputs in one shared Drive folder or document set. Make it viewable by link before submitting.</p></header><div className="cm-readiness"><span className={allAccepted?'ok':''}>{allAccepted?'5/5':'Not all'} members accepted</span><span className={allReports?'ok':''}>{new Set(reports.map(r=>r.mission_no)).size}/5 mission reports ready</span></div><div className="cm-form"><label>Shared final evidence link<input inputMode="url" autoCapitalize="none" autoCorrect="off" spellCheck="false" value={folder} onChange={e=>{setFolderMsg('');setFolder(e.target.value)}} onBlur={e=>{const cleaned=cleanMissionDriveUrl(e.target.value);if(cleaned)setFolder(cleaned)}} placeholder="Paste any Google Drive or Google Docs share link"/></label>{cleanMissionDriveUrl(folder)&&<a href={cleanMissionDriveUrl(folder)} target="_blank" rel="noreferrer">Open final evidence <ExternalLink/></a>}<button type="button" disabled={busy==='submit'||group?.status==='submitted'||group?.status==='verified'} onClick={saveMissionGroup}>{group?.status==='verified'?'WOMATE verified':group?.status==='submitted'?'Submitted for WOMATE verification':busy==='submit'?'Submitting…':'Submit complete group mission'}</button>{!allReports&&group?.status!=='submitted'&&group?.status!=='verified'&&<small className="cm-submit-hint">Final submission unlocks as soon as all five mission leads have successfully submitted their reports.</small>}{folderMsg&&<p className={`cm-msg cm-inline-result ${/successfully/i.test(folderMsg)?'ok':''}`} role="status" aria-live="polite">{folderMsg}</p>}{group?.verification_remark&&<p className="cm-msg">WOMATE note: {group.verification_remark}</p>}</div></section>
       </div>
 
       <aside className="cm-chat"><header><div><MessageCircle/><span>PRIVATE GROUP CHAT</span></div><small>Only accepted mission members can read this chat.</small></header><div className="cm-chat-stream">{messages.length?messages.map(m=><div key={m.id} className={m.user_id===myId?'mine':''}><b>{m.sender_name}</b><p>{m.body}</p><small>{new Date(m.created_at).toLocaleString()}</small></div>):<p className="cm-empty">Start with introductions. Share how you would like the group to work together.</p>}</div><div className="cm-chat-compose"><textarea value={chat} onChange={e=>setChat(e.target.value)} placeholder="Message your team. You may voluntarily exchange WhatsApp or phone details here if you choose."/><button disabled={busy||!chat.trim()} onClick={()=>act('chat',async()=>{const d=await sendCanopyMissionMessage(viewer.session,chat);setChat('');return d})}><Send/></button></div><p className="cm-privacy">Canopy does not reveal anyone's phone number automatically. Share contact details only if you want to continue coordination outside Canopy.</p></aside>
