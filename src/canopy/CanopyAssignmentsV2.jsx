@@ -302,7 +302,7 @@ export default function CanopyAssignmentsV2({viewer}){
   const finalFeedback=s=>cleanReviewFeedback(s?.final_feedback||s?.manual_feedback||s?.feedback_hint||'');
   const reviewLabel=s=>s?.review_source==='manual'?'WOMATE review':'Automated formative baseline';
 
-  function assignmentPartState(d,speakerOpen){
+  function assignmentPartState(item,d,speakerOpen){
     const paragraphWords=(d?.paragraph_response||'')
       .trim()
       .split(/\s+/)
@@ -369,7 +369,7 @@ export default function CanopyAssignmentsV2({viewer}){
       );
 
       const speakerOpen=tester||speakerChallengeOpen(item,now);
-      const state=assignmentPartState(d,speakerOpen);
+      const state=assignmentPartState(item,d,speakerOpen);
 
       setDraftNotes(current=>({
         ...current,
@@ -488,7 +488,7 @@ export default function CanopyAssignmentsV2({viewer}){
           canvas_link:requestedParts.includes('practical')?revisionDraftValue(baseDraft,'canvas_link',sub.canvas_link):'',
           linkedin_link:requestedParts.includes('speaker')?revisionDraftValue(baseDraft,'linkedin_link',sub.linkedin_link):''
         }:baseDraft;
-        const parts=assignmentPartState(d,speakerOpen);
+        const parts=assignmentPartState(item,d,speakerOpen);
         const requiredReady=(!requestedParts.includes('paragraph')||parts.paragraphReady)
           &&(!requestedParts.includes('practical')||parts.canvasReady)
           &&(!requestedParts.includes('speaker')||parts.linkedinReady);

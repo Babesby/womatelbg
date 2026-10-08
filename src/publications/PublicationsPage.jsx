@@ -21,6 +21,16 @@ function cleanPublicationText(value){
 function cleanPublicationUrl(value){
  let text=cleanPublicationText(value).normalize('NFKC').replace(/[“”‘’]/g,'').trim();
  if(!text)return'';
+
+ // Prefer a Google Drive / Docs identifier even when the user pasted Markdown,
+ // rich-text wrappers, copied punctuation or surrounding prose.
+ const driveId=text.match(/drive\.google\.com\/file\/d\/([A-Za-z0-9_-]+)/i)?.[1]
+   ||text.match(/drive\.google\.com\/open\?[^\s)]*\bid=([A-Za-z0-9_-]+)/i)?.[1];
+ if(driveId)return `https://drive.google.com/file/d/${driveId}/view`;
+
+ const docs=text.match(/docs\.google\.com\/(document|spreadsheets|presentation)\/d\/([A-Za-z0-9_-]+)/i);
+ if(docs)return `https://docs.google.com/${docs[1]}/d/${docs[2]}/edit`;
+
  const markdown=text.match(/\[[^\]]*\]\((https?:\/\/[^)\s]+)\)/i)?.[1];
  const angle=text.match(/<\s*(https?:\/\/[^>\s]+)\s*>/i)?.[1];
  const plain=text.match(/https?:\/\/[^\s<>"'\]\)]+/i)?.[0];
@@ -30,7 +40,7 @@ function cleanPublicationUrl(value){
  if(!/^https?:\/\//i.test(candidate)&&/^(?:www\.)?[a-z0-9.-]+\.[a-z]{2,}(?:\/|$)/i.test(candidate)){
    candidate='https://'+candidate.replace(/^www\./i,'');
  }
- try{return new URL(candidate).href}catch{return candidate}
+ return candidate;
 }
 function publicationProblem(entry){
  if(entry.name.length<2)return 'Please enter your full name.';
@@ -41,10 +51,7 @@ function publicationProblem(entry){
  if(!TYPES.includes(entry.kind))return 'Please choose a valid publication type.';
  if(entry.summary.length<40)return 'Abstract / summary must be at least 40 characters.';
  if(entry.summary.length>2500)return 'Abstract / summary is too long.';
- try{
-  const u=new URL(entry.document_url);
-  if(u.protocol!=='https:'||u.username||u.password||!u.hostname.includes('.'))return 'Please paste a valid HTTPS document link. Google Drive and Google Docs share links are accepted.';
- }catch{return 'Please paste a valid HTTPS document link. Google Drive and Google Docs share links are accepted.'}
+ if(!entry.document_url)return 'Please add your document link.';
  if(entry.consent!==true)return 'Please confirm the publication consent checkbox.';
  return '';
 }

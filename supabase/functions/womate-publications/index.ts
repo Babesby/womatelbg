@@ -22,15 +22,31 @@ function cleanText(v:unknown,max:number){return s(v,max).replace(/[\u200B-\u200D
 function cleanPublicationUrl(v:unknown){
  let text=cleanText(v,1500).normalize('NFKC').replace(/[“”‘’]/g,'').trim();
  if(!text)return'';
+
+ const driveId=text.match(/drive\.google\.com\/file\/d\/([A-Za-z0-9_-]+)/i)?.[1]
+   ||text.match(/drive\.google\.com\/open\?[^\s)]*\bid=([A-Za-z0-9_-]+)/i)?.[1];
+ if(driveId)return `https://drive.google.com/file/d/${driveId}/view`;
+
+ const docs=text.match(/docs\.google\.com\/(document|spreadsheets|presentation)\/d\/([A-Za-z0-9_-]+)/i);
+ if(docs)return `https://docs.google.com/${docs[1]}/d/${docs[2]}/edit`;
+
  const markdown=text.match(/\[[^\]]*\]\((https?:\/\/[^)\s]+)\)/i)?.[1];
  const angle=text.match(/<\s*(https?:\/\/[^>\s]+)\s*>/i)?.[1];
  const plain=text.match(/https?:\/\/[^\s<>"'\]\)]+/i)?.[0];
  let candidate=(markdown||angle||plain||text).replace(/^[\s(<\[{]+/,'').replace(/[\s)>\]}.,;:]+$/,'');
  if(!/^https?:\/\//i.test(candidate)&&/^(?:www\.)?[a-z0-9.-]+\.[a-z]{2,}(?:\/|$)/i.test(candidate))candidate='https://'+candidate.replace(/^www\./i,'');
- try{return new URL(candidate).href}catch{return candidate}
+ return candidate;
 }
 function canonicalKind(v:unknown){const raw=cleanText(v,40).toLowerCase();return TYPES.find(x=>x.toLowerCase()===raw)||'';}
-function validUrl(raw:string){try{const u=new URL(raw);return u.protocol==='https:'&&!u.username&&!u.password&&u.hostname.includes('.')&&!['localhost','127.0.0.1','0.0.0.0'].includes(u.hostname)&&u.href.length<=1500;}catch{return false;}}
+function safeDocumentLink(raw:string){
+ if(!raw||raw.length>1500)return false;
+ try{
+  const u=new URL(raw);
+  return ['http:','https:'].includes(u.protocol)
+    &&!u.username&&!u.password
+    &&!['localhost','127.0.0.1','0.0.0.0'].includes(u.hostname.toLowerCase());
+ }catch{return false}
+}
 Deno.serve(async(req)=>{
  const origin=req.headers.get('origin')||'';
  if(req.method==='OPTIONS')return new Response(null,{status:204,headers:cors(origin)});
@@ -56,7 +72,8 @@ Deno.serve(async(req)=>{
   if(!TYPES.includes(kind))return out({error:'Please choose a valid publication type.'},400,origin);
   if(summary.length<40)return out({error:'Abstract / summary must be at least 40 characters.'},400,origin);
   if(summary.length>2500)return out({error:'Abstract / summary is too long.'},400,origin);
-  if(!validUrl(document_url))return out({error:'Please paste a valid HTTPS document link.'},400,origin);
+  if(!document_url)return out({error:'Please add your document link.'},400,origin);
+  if(!safeDocumentLink(document_url))return out({error:'We could not read that document link. Paste the Drive/Docs link again or copy the browser address directly.'},400,origin);
   if(e.consent!==true)return out({error:'Please confirm the publication consent checkbox.'},400,origin);
   if(!(await allowed(req,'submit_v2',4,1440)))return out({error:'Submission limit reached. Please try again later.'},429,origin);
   await db('womate_publications','POST',{name,email,phone,country,affiliation,title,kind,summary,document_url,consent_at:new Date().toISOString()});
