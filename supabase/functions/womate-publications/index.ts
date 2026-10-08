@@ -50,7 +50,6 @@ Deno.serve(async(req)=>{
   if(summary.length>2500)return out({error:'Abstract / summary is too long.'},400,origin);
   if(!document_url)return out({error:'Please add your document or evidence reference.'},400,origin);
   if(e.consent!==true)return out({error:'Please confirm the publication consent checkbox.'},400,origin);
-  if(!(await allowed(req,'submit_v2',4,1440)))return out({error:'Submission limit reached. Please try again later.'},429,origin);
   await db('womate_publications','POST',{name,email,phone,country,affiliation,title,kind,summary,document_url,consent_at:new Date().toISOString()});
   return out({ok:true},200,origin);
  }
