@@ -3090,3 +3090,30 @@ html[data-canopy-theme="dark"] .canopyReviewIntegrityCounts>span,html[data-canop
 
 /* WOMATE Mission Drive submission reliability · 2026-10-08 */
 .cm-form label>small{font-size:10px;font-weight:700;color:#71817c}.cm-inline-result{margin:0!important;padding:10px 12px!important;border-radius:11px;background:#fff4e6;color:#7a4b0b!important;font-size:11px!important;line-height:1.45}.cm-inline-result.ok{background:#eaf7ef;color:#175f3a!important}.cm-saved-note{display:flex!important;align-items:center;gap:6px;color:#3f685b!important;font-size:10px!important}.cm-saved-note svg{width:14px;height:14px}.cm-submit-hint{display:block;color:#71817c;font-size:10px;line-height:1.45}.cm-submit .cm-form button:not(:disabled){box-shadow:0 8px 22px rgba(14,77,74,.12)}@media(max-width:600px){.cm-inline-result{font-size:12px!important;padding:11px 12px!important}.cm-form button{min-height:48px}}html[data-canopy-theme="dark"] .cm-inline-result{background:#3c321f;color:#ffe4a8!important}html[data-canopy-theme="dark"] .cm-inline-result.ok{background:#173b34;color:#c8f5d8!important}
+
+
+/* WOMATE Mission Operations + individual Mission Completed recognition · 2026-10-08 */
+.cm-mission-ops-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:18px 0}
+.cm-mission-ops-tabs button{display:flex;justify-content:space-between;align-items:center;gap:8px;border:1px solid var(--canopy-border,#d9dfd8);background:var(--canopy-surface,#fff);border-radius:14px;padding:13px 14px;font:inherit;text-align:left;cursor:pointer}
+.cm-mission-ops-tabs button.active{border-color:#153f2e;box-shadow:0 0 0 1px #153f2e inset}
+.cm-mission-ops-tabs button b{min-width:28px;text-align:center;border-radius:999px;padding:3px 7px;background:#edf4ef}
+.cm-mission-ops-toolbar{display:flex;gap:10px;align-items:center;margin:0 0 18px}
+.cm-mission-ops-toolbar input,.cm-mission-ops-toolbar select{min-height:44px;border:1px solid var(--canopy-border,#d9dfd8);border-radius:12px;background:var(--canopy-surface,#fff);padding:0 12px;font:inherit}
+.cm-mission-ops-toolbar input{flex:1;min-width:0}
+.cm-mission-review-list,.cm-mission-completed-grid{display:grid;gap:14px}
+.cm-mission-review-list article,.cm-mission-completed-grid article{border:1px solid var(--canopy-border,#d9dfd8);border-radius:18px;background:var(--canopy-surface,#fff);padding:18px}
+.cm-mission-review-list article>header{display:flex;justify-content:space-between;gap:18px;align-items:flex-start}
+.cm-mission-review-list article>header h2,.cm-mission-completed-grid h2{margin:3px 0 2px}
+.cm-mission-report-copy{margin:14px 0;padding:14px;border-radius:13px;background:rgba(21,63,46,.05)}
+.cm-mission-report-copy p{white-space:pre-wrap}
+.cm-mission-review-list textarea{width:100%;min-height:74px;border:1px solid var(--canopy-border,#d9dfd8);border-radius:12px;padding:10px;font:inherit;resize:vertical}
+.cm-mission-completed-tag{display:inline-flex;align-items:center;gap:6px;font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:#153f2e;background:#dff4e5;border-radius:999px;padding:7px 10px}
+.cm-mission-awaiting{font-size:.78rem;font-weight:700;color:#765d00;background:#fff3bf;border-radius:999px;padding:7px 10px}
+.cm-mission-completed-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+.cm-mission-completed-grid article{display:flex;flex-direction:column;gap:7px}
+.cm-mission-completed-grid time{font-size:.82rem;opacity:.72}
+.cx-impact-mission-edge{font-weight:800}
+.cx-mission-completed-record{border:2px solid #153f2e}
+.cx-mission-completed-record .cx-mission-portfolio-kicker{font-weight:900;letter-spacing:.08em}
+@media(max-width:850px){.cm-mission-ops-tabs{grid-template-columns:1fr 1fr}.cm-mission-completed-grid{grid-template-columns:1fr}.cm-mission-ops-toolbar{align-items:stretch;flex-direction:column}.cm-mission-review-list article>header{flex-direction:column}}
+@media(max-width:520px){.cm-mission-ops-tabs{grid-template-columns:1fr}.cm-mission-ops-tabs button{min-height:48px}}
