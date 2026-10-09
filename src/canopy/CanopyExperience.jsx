@@ -338,6 +338,8 @@ export function CanopySpotlight({session}){
   const[photoBusy,setPhotoBusy]=useState('');
   const[photoMessage,setPhotoMessage]=useState({});
   const[slideIndex,setSlideIndex]=useState({});
+  const[desktopSpotlight,setDesktopSpotlight]=useState(()=>typeof window!=='undefined'&&window.matchMedia('(min-width:761px)').matches);
+  useEffect(()=>{const media=window.matchMedia('(min-width:761px)');const sync=()=>setDesktopSpotlight(media.matches);sync();media.addEventListener?.('change',sync);return()=>media.removeEventListener?.('change',sync)},[]);
   useEffect(()=>{let live=true;Promise.all([getFeaturedSpotlights(session,5),getCanopySpecialRecognitions(session)]).then(([featured,special])=>{if(live){const rows=[...(special||[]),...(featured||[])];setItems(rows);setPhotoDrafts(Object.fromEntries(rows.filter(i=>i.is_me&&!i.is_special).map(i=>[i.id,i.professional_image_drive_url||''])));setPhotoConsent(Object.fromEntries(rows.filter(i=>i.is_me&&!i.is_special).map(i=>[i.id,Boolean(i.professional_image_drive_url)])))}}).catch(()=>{});return()=>{live=false}},[session?.access_token]);
   useEffect(()=>{if(!expanded)return;const close=e=>{if(e.key==='Escape')setExpanded(null)};window.addEventListener('keydown',close);return()=>window.removeEventListener('keydown',close)},[expanded]);
   async function react(item,reaction){
@@ -365,12 +367,15 @@ export function CanopySpotlight({session}){
   return <section className="cx-spotlight" id="spotlight">
     <header><div><span>CANOPY SPOTLIGHT</span><h2>Featured this week.</h2></div></header>
     <div className="cx-spotlight-modules">
-      {Object.entries(items.reduce((groups,item)=>{
-        const key=String(item.module_id||item.week_key||'').replace('module-','').replace(/[^0-9]/g,'').slice(-2)||'FEATURED';
-        (groups[key] ||= []).push(item);
-        return groups;
-      },{})).sort(([a],[b])=>a.localeCompare(b,undefined,{numeric:true})).map(([moduleNo,moduleItems])=><section className="cx-spotlight-module" key={moduleNo}>
-        <div className="cx-spotlight-module-head"><small>{moduleNo==='FEATURED'?'FEATURED':`MODULE ${moduleNo}`}</small><span>{moduleItems.length} spotlight{moduleItems.length===1?'':'s'}</span></div>
+      {(desktopSpotlight
+        ? [['ALL',items]]
+        : Object.entries(items.reduce((groups,item)=>{
+            const key=String(item.module_id||item.week_key||'').replace('module-','').replace(/[^0-9]/g,'').slice(-2)||'FEATURED';
+            (groups[key] ||= []).push(item);
+            return groups;
+          },{})).sort(([a],[b])=>a.localeCompare(b,undefined,{numeric:true}))
+      ).map(([moduleNo,moduleItems])=><section className={`cx-spotlight-module ${moduleNo==='ALL'?'is-desktop-rail':''}`} key={moduleNo}>
+        <div className="cx-spotlight-module-head"><small>{moduleNo==='ALL'?'FEATURED COLLECTION':moduleNo==='FEATURED'?'FEATURED':`MODULE ${moduleNo}`}</small><span>{moduleItems.length} spotlight{moduleItems.length===1?'':'s'}{moduleNo==='ALL'&&moduleItems.length>4?' · scroll for more':''}</span></div>
         <div className="cx-spotlight-slider">
           {moduleItems.length>1&&<button type="button" className="cx-spotlight-nav cx-spotlight-prev" aria-label={`Previous ${moduleNo==='FEATURED'?'featured':`Module ${moduleNo}`} Spotlight`} onClick={e=>{const track=e.currentTarget.parentElement?.querySelector('.cx-spotlight-row');track?.scrollBy({left:-track.clientWidth,behavior:'smooth'})}}></button>}
           <div className="cx-spotlight-row" aria-label={`${moduleNo==='FEATURED'?'Featured':`Module ${moduleNo}`} Spotlights`} onScroll={e=>{
@@ -382,7 +387,8 @@ export function CanopySpotlight({session}){
           setSlideIndex(current=>current[moduleNo]===active?current:{...current,[moduleNo]:active});
         }}>
           {moduleItems.map(item=>{
-        const practicalLabel=moduleNo==='01'?'Open CanopyCanvas':'Open practical work';
+        const itemModuleNo=String(item.module_id||item.week_key||'').replace('module-','').replace(/[^0-9]/g,'').slice(-2)||'';
+        const practicalLabel=itemModuleNo==='01'?'Open CanopyCanvas':'Open practical work';
         const response=String(item.paragraph_response||'').trim();
         const long=response.length>180;
         const preview=long?`${response.slice(0,180).trimEnd()}`:response;
@@ -390,13 +396,13 @@ export function CanopySpotlight({session}){
         const reactions=[['love','/assets/canopy/reactions/heart.webp','Love'],['clap','/assets/canopy/reactions/clap.webp','Clap'],['insightful','/assets/canopy/reactions/insightful.webp','Insightful']];
         const submittedPhoto=String(item.professional_image_drive_url||'').trim();
         return <article key={item.id} className={`${item.is_me?'is-own-spotlight ':''}${item.is_special?'is-special-recognition':''}`.trim()}>
-          <div className="cx-spotlight-topline"><div className="cx-spotlight-star"><Star size={16}/></div><small>{item.is_special?(item.special_label||'SPECIAL RECOGNITION'):(moduleNo?`MODULE ${moduleNo}`:'FEATURED')}</small></div>
+          <div className="cx-spotlight-topline"><div className="cx-spotlight-star"><Star size={16}/></div><small>{item.is_special?(item.special_label||'SPECIAL RECOGNITION'):(itemModuleNo?`MODULE ${itemModuleNo}`:'FEATURED')}</small></div>
           <h3>{item.learner_name||'She Leads fellow'}</h3>
           {item.is_special&&<div className="cx-special-recognition-copy"><strong>{item.special_title||'WOMATE Special Recognition'}</strong><p>{item.special_body||'WOMATE recognises this outstanding applied climate leadership work.'}</p></div>}
           {item.is_me&&!item.is_special&&<div className="cx-spotlight-congrats">
             <small>TOP 5 OUTSTANDING LEARNER</small>
             <h4>Congratulations{item.learner_name?`, ${String(item.learner_name).trim().split(/\s+/)[0]}`:''}.</h4>
-            <p>You’re one of WOMATE’s Top 5 Outstanding Learners for Module {moduleNo||''}. We’d love to celebrate you on WOMATE’s official channels.</p>
+            <p>You’re one of WOMATE’s Top 5 Outstanding Learners for Module {itemModuleNo||''}. We’d love to celebrate you on WOMATE’s official channels.</p>
             <label>Professional image · Google Drive
               <input inputMode="url" value={photoDrafts[item.id]??submittedPhoto} onChange={e=>setPhotoDrafts(x=>({...x,[item.id]:e.target.value}))} placeholder="https://drive.google.com/…"/>
               <span>Set sharing to <b>Anyone with the link → Viewer</b>.</span>
