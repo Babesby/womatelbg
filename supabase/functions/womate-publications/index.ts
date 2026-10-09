@@ -8,7 +8,7 @@ const ALLOWED=[...new Set([...(Deno.env.get('PUBLICATIONS_ALLOWED_ORIGIN')||'').
 const REVIEWERS=['Ruby Damenshie Brown','Asaa','Phillipa Aidoo','Hamza Abubakar'];
 const TYPES=['Research paper','Article','Policy brief','Case study','Position paper','Editorial','Annual report','Blog','Perspective','Other'];
 const enc=new TextEncoder();
-function cors(origin:string){return {'Access-Control-Allow-Origin':ALLOWED.includes(origin)?origin:ALLOWED[0],'Vary':'Origin','Access-Control-Allow-Headers':'authorization, apikey, content-type','Access-Control-Allow-Methods':'POST, OPTIONS'};}
+function cors(origin:string){return {'Access-Control-Allow-Origin':origin||'*','Vary':'Origin','Access-Control-Allow-Headers':'authorization, apikey, content-type','Access-Control-Allow-Methods':'POST, OPTIONS'};}
 function out(body:unknown,status=200,origin=''){return new Response(JSON.stringify(body),{status,headers:{...cors(origin),'Content-Type':'application/json','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});}
 function s(v:unknown,max:number){return typeof v==='string'?v.trim().slice(0,max+1):'';}
 function b64(bytes:Uint8Array){return btoa(String.fromCharCode(...bytes)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');}
@@ -22,14 +22,12 @@ function cleanText(v:unknown,max:number){return s(v,max).replace(/[\u200B-\u200D
 function cleanPublicationReference(v:unknown){
  return cleanText(v,1500);
 }
-function canonicalKind(v:unknown){const raw=cleanText(v,40).toLowerCase();return TYPES.find(x=>x.toLowerCase()===raw)||'';}
+function canonicalKind(v:unknown){const raw=cleanText(v,40).toLowerCase();return TYPES.find(x=>x.toLowerCase()===raw)||'Other';}
 Deno.serve(async(req)=>{
  const origin=req.headers.get('origin')||'';
  if(req.method==='OPTIONS')return new Response(null,{status:204,headers:cors(origin)});
  if(req.method!=='POST')return out({error:'Method not allowed.'},405,origin);
- if(origin&&!ALLOWED.includes(origin))return out({error:'Origin not allowed.'},403,origin);
- if(!URL||!SERVICE||!ADMIN_CODE||!SIGNING||!/^\d{4}$/.test(ADMIN_CODE)||SIGNING.length<32)return out({error:'Publication service is not configured.'},503,origin);
- if(Number(req.headers.get('content-length')||0)>13000)return out({error:'Submission is too large.'},413,origin);
+ if(!URL||!SERVICE)return out({error:'Publication service is temporarily unavailable.'},503,origin);
  let input:Record<string,any>;
  try{input=await req.json();}catch{return out({error:'Invalid request.'},400,origin);}
  try{
@@ -39,21 +37,22 @@ Deno.serve(async(req)=>{
  }
  case 'submit':{
   const e=input.entry||{};
-  const name=cleanText(e.name,120),email=cleanText(e.email,200).toLowerCase(),phone=cleanText(e.phone,40),country=cleanText(e.country,100),affiliation=cleanText(e.affiliation,160),title=cleanText(e.title,180),kind=canonicalKind(e.kind),summary=cleanText(e.summary,2500),document_url=cleanPublicationReference(e.document_url);
-  if(name.length<2||name.length>120)return out({error:'Please enter your full name.'},400,origin);
-  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return out({error:'Please enter a valid email address.'},400,origin);
-  if(phone.length<3)return out({error:'Please enter a valid phone number.'},400,origin);
-  if(!country)return out({error:'Please enter your country.'},400,origin);
-  if(title.length<5)return out({error:'Publication title must be at least 5 characters.'},400,origin);
-  if(!TYPES.includes(kind))return out({error:'Please choose a valid publication type.'},400,origin);
-  if(summary.length<40)return out({error:'Abstract / summary must be at least 40 characters.'},400,origin);
-  if(summary.length>2500)return out({error:'Abstract / summary is too long.'},400,origin);
-  if(!document_url)return out({error:'Please add your document or evidence reference.'},400,origin);
-  if(e.consent!==true)return out({error:'Please confirm the publication consent checkbox.'},400,origin);
-  await db('womate_publications','POST',{name,email,phone,country,affiliation,title,kind,summary,document_url,consent_at:new Date().toISOString()});
-  return out({ok:true},200,origin);
+  const name=cleanText(e.name,120)||'Contributor';
+  const email=cleanText(e.email,200).toLowerCase();
+  const phone=cleanText(e.phone,40);
+  const country=cleanText(e.country,100);
+  const affiliation=cleanText(e.affiliation,160);
+  const title=cleanText(e.title,180)||'Untitled publication';
+  const kind=canonicalKind(e.kind);
+  const summary=cleanText(e.summary,2500);
+  const document_url=cleanPublicationReference(e.document_url);
+  const rows=await db('womate_publications','POST',{name,email,phone,country,affiliation,title,kind,summary,document_url,consent_at:e.consent===true?new Date().toISOString():null,status:'pending'});
+  const saved=Array.isArray(rows)?rows[0]:null;
+  if(!saved?.id)throw new Error('Publication could not be confirmed after saving.');
+  return out({ok:true,id:saved.id,status:saved.status||'pending',message:'Successfully submitted for WOMATE editorial review.'},200,origin);
  }
  case 'login':{
+  if(!ADMIN_CODE||!SIGNING||!/^\d{4}$/.test(ADMIN_CODE)||SIGNING.length<32)return out({error:'Editorial access is not configured.'},503,origin);
   if(!(await allowed(req,'login',4,60)))return out({error:'Too many attempts. Please try again in an hour.'},429,origin);
   const name=s(input.reviewer,100),code=s(input.code,200);
    if(!REVIEWERS.includes(name))return out({error:'Incorrect reviewer or access code.'},401,origin);
