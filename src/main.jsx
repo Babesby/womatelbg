@@ -5,6 +5,7 @@ import { ArrowUpRight, Menu, X, ChevronRight, ChevronDown, ChevronLeft, Leaf, Us
 import'./style.css';
 import CanopyApp from'./canopy/CanopyApp.jsx';
 import PublicationsPage from './publications/PublicationsPage.jsx';
+import PublicTalentDiscovery from './talent/PublicTalentDiscovery.jsx';
 
 import SheLeads2027Interest from "./components/SheLeads2027Interest.jsx";
 // WOMATE_SELECTED_ROUTE_GATE
@@ -102,7 +103,7 @@ function Header(){
   <header className="globalHeader">
    <Link to="/" className="brand" onClick={close}><img src="/assets/img/logo.svg" alt="WOMATE"/></Link>
    <nav className="desktopNav">
-    <div className="navGroup"><button className="navTrigger" type="button" aria-haspopup="true">Our work <ChevronDown size={15}/></button><div className="megaMenu workMenu"><div className="megaIntro"><span>WOMATE ECOSYSTEM</span><strong>Women leading climate action.</strong></div><div className="megaLinks"><div><span className="megaLabel">LEARN & LEAD</span><Link to="/she-leads"><b>She Leads</b><small>Climate mentorship & leadership</small></Link><Link to="/circle"><b>The WOMATE Circle</b><small>Community & professional network</small></Link></div><div><span className="megaLabel">KNOWLEDGE & CARE</span><Link to="/wok-action"><b>WoK Action</b><small>Women’s local climate knowledge</small></Link><Link to="/research"><b>Research</b><small>Gender-responsive evidence</small></Link><Link to="/resilient-minds"><b>Resilient Minds</b><small>Climate & mental-health support</small></Link></div></div><Link to="/honours" className="megaFeature"><span>CLIMATE HONOURS</span><strong>Amplify the Untold.</strong><ArrowUpRight size={18}/></Link></div></div>
+    <div className="navGroup"><button className="navTrigger" type="button" aria-haspopup="true">Our work <ChevronDown size={15}/></button><div className="megaMenu workMenu"><div className="megaIntro"><span>WOMATE ECOSYSTEM</span><strong>Women leading climate action.</strong></div><div className="megaLinks"><div><span className="megaLabel">LEARN & LEAD</span><Link to="/she-leads"><b>She Leads</b><small>Climate mentorship & leadership</small></Link><Link to="/talent-discovery"><b>Talent Discovery</b><small>WOMATE verified climate talent</small></Link><Link to="/circle"><b>The WOMATE Circle</b><small>Community & professional network</small></Link></div><div><span className="megaLabel">KNOWLEDGE & CARE</span><Link to="/wok-action"><b>WoK Action</b><small>Women’s local climate knowledge</small></Link><Link to="/research"><b>Research</b><small>Gender-responsive evidence</small></Link><Link to="/resilient-minds"><b>Resilient Minds</b><small>Climate & mental-health support</small></Link></div></div><Link to="/honours" className="megaFeature"><span>CLIMATE HONOURS</span><strong>Amplify the Untold.</strong><ArrowUpRight size={18}/></Link></div></div>
     <Link to="/honours" className="desktopDirect">Climate Honours</Link>
      <Link to="/publications" className="desktopDirect">Publications & Research</Link>
     <div className="navGroup"><button className="navTrigger" type="button" aria-haspopup="true">Organisation <ChevronDown size={15}/></button><div className="megaMenu orgMenu"><div className="megaIntro"><span>ABOUT WOMATE</span><strong>Africa-rooted. Future-facing.</strong></div><div className="orgLinks"><Link to="/leadership"><b>Our organisation</b><small>Leadership & institutional direction</small></Link><Link to="/funding"><b>Funding support</b><small>Grant application programme</small></Link><Link to="/womateer"><b>WOMATEER</b><small>Volunteer your professional skill</small></Link><Link to="/merchandise"><b>The Vault</b><small>WOMATE merchandise</small></Link></div></div></div>
@@ -112,7 +113,7 @@ function Header(){
   </header>
   {open&&<nav className="mobileNav mobileNavCategorised" aria-label="Mobile navigation">
    <div className="mobileNavTop"><span>EXPLORE WOMATE</span><button type="button" onClick={close} aria-label="Close navigation"><X size={20}/></button></div>
-   <div className="mobileNavGroup"><span className="mobileNavLabel">LEARN & COMMUNITY</span><Link onClick={close} to="/she-leads">She Leads <ChevronRight size={16}/></Link><Link onClick={close} to="/circle">The WOMATE Circle <ChevronRight size={16}/></Link></div>
+   <div className="mobileNavGroup"><span className="mobileNavLabel">LEARN & COMMUNITY</span><Link onClick={close} to="/she-leads">She Leads <ChevronRight size={16}/></Link><Link onClick={close} to="/talent-discovery">Talent Discovery <ChevronRight size={16}/></Link><Link onClick={close} to="/circle">The WOMATE Circle <ChevronRight size={16}/></Link></div>
    <div className="mobileNavGroup"><span className="mobileNavLabel">KNOWLEDGE & CARE</span><Link onClick={close} to="/wok-action">WoK Action <ChevronRight size={16}/></Link><Link onClick={close} to="/research">Research <ChevronRight size={16}/></Link><Link onClick={close} to="/publications">Publications & Research <ChevronRight size={16}/></Link><Link onClick={close} to="/resilient-minds">Resilient Minds <ChevronRight size={16}/></Link><Link onClick={close} to="/honours">Climate Honours <ChevronRight size={16}/></Link></div>
    <div className="mobileNavGroup"><span className="mobileNavLabel">ORGANISATION</span><Link onClick={close} to="/leadership">Our organisation <ChevronRight size={16}/></Link><Link onClick={close} to="/funding">Funding support <ChevronRight size={16}/></Link><Link onClick={close} to="/womateer">WOMATEER <ChevronRight size={16}/></Link><Link onClick={close} to="/merchandise">The Vault <ChevronRight size={16}/></Link></div>
    <Link onClick={close} to="/donate" className="mobileDonate">Donate to WOMATE <ArrowUpRight size={17}/></Link>
@@ -1273,10 +1274,11 @@ let path=window.location.pathname.replace(/\/$/,'')||'/';
 let p=pages[path]||pages['/'];
 useEffect(()=>{window.scrollTo(0,0);},[]);
 if(path==='/canopy'||path.startsWith('/canopy/'))return <CanopyApp/>;
+const publicTalent=path==='/talent'||path==='/talent-discovery'||path.startsWith('/talent/');
 return <>
-<PageSEO path={path}/><UIPolish/><DeepRepairStyles/>
+{!publicTalent&&<PageSEO path={path}/>}<UIPolish/><DeepRepairStyles/>
 <Header/>
-{p.type==='home'?<Home/>:p.type==='she'?<SheLeads/>:p.type==='wok'?<WokAction/>:p.type==='research'?<ResearchPage/>:p.type==='publications'?<PublicationsPage/>:p.type==='circle'?<CirclePage/>:p.type==='minds'?<ResilientMinds/>:p.type==='honours'?<HonoursPage/>:p.type==='leadership'?<LeadershipPage/>:p.type==='volunteer'?<WomateerPage/>:p.type==='merch'?<MerchandisePage/>:p.type==='funding'?<FundingPage/>:p.type==='donate'?<DonationPage/>:p.type==='privacy'?<LegalPage kind="privacy"/>:p.type==='terms'?<LegalPage kind="terms"/>:<Standard p={p}/>}
+{publicTalent?<PublicTalentDiscovery/>:p.type==='home'?<Home/>:p.type==='she'?<SheLeads/>:p.type==='wok'?<WokAction/>:p.type==='research'?<ResearchPage/>:p.type==='publications'?<PublicationsPage/>:p.type==='circle'?<CirclePage/>:p.type==='minds'?<ResilientMinds/>:p.type==='honours'?<HonoursPage/>:p.type==='leadership'?<LeadershipPage/>:p.type==='volunteer'?<WomateerPage/>:p.type==='merch'?<MerchandisePage/>:p.type==='funding'?<FundingPage/>:p.type==='donate'?<DonationPage/>:p.type==='privacy'?<LegalPage kind="privacy"/>:p.type==='terms'?<LegalPage kind="terms"/>:<Standard p={p}/>}
 <Footer/>
 </>
 }
