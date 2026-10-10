@@ -3216,3 +3216,175 @@ html[data-canopy-theme="dark"] .canopyReviewIntegrityCounts>span,html[data-canop
     background:#c6ff52
   }
 }
+
+/* WOMATE CANOPY · FINAL desktop Spotlight carousel override · 2026-10-10
+   Purpose: make desktop behave like mobile carousel while preserving module grouping.
+   Mobile <=760px is intentionally untouched. */
+@media (min-width:761px){
+  .cx-spotlight{
+    overflow:hidden!important;
+  }
+
+  .cx-spotlight-modules{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:26px!important;
+    min-width:0!important;
+  }
+
+  .cx-spotlight-module{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:10px!important;
+    min-width:0!important;
+    width:100%!important;
+  }
+
+  .cx-spotlight-module-head{
+    display:flex!important;
+    align-items:center!important;
+    justify-content:space-between!important;
+    gap:12px!important;
+    padding:0 4px!important;
+  }
+
+  .cx-spotlight-slider{
+    position:relative!important;
+    width:min(100%,920px)!important;
+    max-width:920px!important;
+    min-width:0!important;
+    margin:0 auto!important;
+    overflow:hidden!important;
+  }
+
+  .cx-spotlight-module .cx-spotlight-row{
+    display:flex!important;
+    grid-template-columns:none!important;
+    grid-auto-flow:unset!important;
+    grid-auto-columns:unset!important;
+    gap:0!important;
+    width:100%!important;
+    max-width:100%!important;
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+    scroll-snap-type:x mandatory!important;
+    scroll-behavior:smooth!important;
+    scroll-padding:0!important;
+    overscroll-behavior-x:contain!important;
+    -webkit-overflow-scrolling:touch!important;
+    scrollbar-width:none!important;
+    -ms-overflow-style:none!important;
+    padding:0!important;
+    margin:0!important;
+  }
+
+  .cx-spotlight-module .cx-spotlight-row::-webkit-scrollbar{
+    display:none!important;
+    width:0!important;
+    height:0!important;
+  }
+
+  .cx-spotlight-module .cx-spotlight-row>article{
+    flex:0 0 100%!important;
+    width:100%!important;
+    min-width:100%!important;
+    max-width:100%!important;
+    box-sizing:border-box!important;
+    scroll-snap-align:start!important;
+    scroll-snap-stop:always!important;
+    margin:0!important;
+  }
+
+  .cx-spotlight-module .cx-spotlight-nav{
+    display:grid!important;
+    visibility:visible!important;
+    opacity:1!important;
+    pointer-events:auto!important;
+    place-items:center!important;
+    position:absolute!important;
+    top:50%!important;
+    transform:translateY(-50%)!important;
+    z-index:20!important;
+    width:42px!important;
+    height:42px!important;
+    min-width:42px!important;
+    padding:0!important;
+    border:1px solid rgba(14,77,74,.16)!important;
+    border-radius:999px!important;
+    background:rgba(255,255,255,.96)!important;
+    color:transparent!important;
+    box-shadow:0 8px 24px rgba(9,38,29,.16)!important;
+    font-size:0!important;
+    cursor:pointer!important;
+    backdrop-filter:blur(10px)!important;
+  }
+
+  .cx-spotlight-module .cx-spotlight-prev{
+    left:10px!important;
+  }
+
+  .cx-spotlight-module .cx-spotlight-next{
+    right:10px!important;
+  }
+
+  .cx-spotlight-module .cx-spotlight-nav::before{
+    content:""!important;
+    display:block!important;
+    width:10px!important;
+    height:10px!important;
+    border-top:2px solid #0e4d4a!important;
+    border-right:2px solid #0e4d4a!important;
+    box-sizing:border-box!important;
+  }
+
+  .cx-spotlight-module .cx-spotlight-prev::before{
+    transform:rotate(-135deg)!important;
+    margin-left:4px!important;
+  }
+
+  .cx-spotlight-module .cx-spotlight-next::before{
+    transform:rotate(45deg)!important;
+    margin-right:4px!important;
+  }
+
+  .cx-spotlight-module .cx-spotlight-dots{
+    display:flex!important;
+    justify-content:center!important;
+    align-items:center!important;
+    gap:6px!important;
+    min-height:12px!important;
+    margin-top:2px!important;
+  }
+
+  .cx-spotlight-module .cx-spotlight-dots i{
+    display:block!important;
+    width:6px!important;
+    height:6px!important;
+    border-radius:999px!important;
+    background:rgba(14,77,74,.20)!important;
+    transition:width .18s ease,background .18s ease!important;
+  }
+
+  .cx-spotlight-module .cx-spotlight-dots i.active{
+    width:22px!important;
+    background:#0e4d4a!important;
+  }
+
+  html[data-canopy-theme="dark"] .cx-spotlight-module .cx-spotlight-nav{
+    background:rgba(15,41,37,.96)!important;
+    border-color:#31514a!important;
+  }
+
+  html[data-canopy-theme="dark"] .cx-spotlight-module .cx-spotlight-nav::before{
+    border-top-color:#c6ff52!important;
+    border-right-color:#c6ff52!important;
+  }
+
+  html[data-canopy-theme="dark"] .cx-spotlight-module .cx-spotlight-dots i{
+    background:rgba(255,255,255,.22)!important;
+  }
+
+  html[data-canopy-theme="dark"] .cx-spotlight-module .cx-spotlight-dots i.active{
+    background:#c6ff52!important;
+  }
+}
