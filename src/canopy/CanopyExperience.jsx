@@ -393,7 +393,7 @@ export function CanopySpotlight({session}){
         return <article key={item.id} className={`${item.is_me?'is-own-spotlight ':''}${item.is_special?'is-special-recognition':''}`.trim()}>
           <div className="cx-spotlight-topline"><div className="cx-spotlight-star"><Star size={16}/></div><small>{item.is_special?(item.special_label||'SPECIAL RECOGNITION'):(itemModuleNo?`MODULE ${itemModuleNo}`:'FEATURED')}</small></div>
           <h3>{item.learner_name||'She Leads fellow'}</h3>
-          {item.is_special&&<div className="cx-special-recognition-copy"><strong>{item.special_title||'WOMATE Special Recognition'}</strong><p>{item.special_body||'WOMATE recognises this outstanding applied climate leadership work.'}</p></div>}
+          {item.is_special&&<div className="cx-special-recognition-copy"><strong>{item.special_title||'WOMATE Special Recognition'}</strong><p>{item.special_body||'WOMATE recognises this outstanding applied climate leadership work.'}</p>{item.is_me&&item.celebration_youtube_embed_url&&<div className="cx-special-recognition-song"><span>YOUR CELEBRATION SONG</span><iframe src={item.celebration_youtube_embed_url} title={`${item.learner_name||'Learner'} celebration song`} loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen/></div>}</div>}
           {item.is_me&&!item.is_special&&<div className="cx-spotlight-congrats">
             <small>TOP 5 OUTSTANDING LEARNER</small>
             <h4>Congratulations{item.learner_name?`, ${String(item.learner_name).trim().split(/\s+/)[0]}`:''}.</h4>

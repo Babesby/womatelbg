@@ -3388,3 +3388,10 @@ html[data-canopy-theme="dark"] .canopyReviewIntegrityCounts>span,html[data-canop
     background:#c6ff52!important;
   }
 }
+
+/* WOMATE CANOPY · personal special-recognition celebration media · 2026-10-10 */
+.cx-special-recognition-song{display:grid;gap:8px;margin-top:15px;padding-top:14px;border-top:1px solid rgba(14,77,74,.12)}
+.cx-special-recognition-song>span{font-size:9px;font-weight:950;letter-spacing:.12em;color:var(--canopy)}
+.cx-special-recognition-song iframe{display:block;width:100%;aspect-ratio:16/9;border:0;border-radius:14px;background:#09261d}
+html[data-canopy-theme="dark"] .cx-special-recognition-song{border-top-color:#31514a}
+html[data-canopy-theme="dark"] .cx-special-recognition-song>span{color:var(--canopy-lime)}
