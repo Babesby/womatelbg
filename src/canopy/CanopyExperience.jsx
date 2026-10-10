@@ -491,7 +491,7 @@ export function CanopyPortfolioPage({viewer,submissions=[]}){
     </section>
     {!submitted.length&&<p className="cx-portfolio-empty">Your Impact Profile will build automatically as you submit real work through Canopy.</p>}
         {missionCompletion&&<section className="cx-mission-portfolio-record cx-mission-completed-record" aria-label="WOMATE Mission Completed recognition">
-      <div className="cx-mission-portfolio-kicker">MISSION COMPLETED · WOMATE VERIFIED</div>
+      <div className="cx-mission-portfolio-kicker">{missionGroup?.name&&missionGroup.name.toLowerCase()!=='cross-country climate mission'?`${missionGroup.name.toUpperCase()} · MISSION COMPLETED · WOMATE VERIFIED`:'MISSION COMPLETED · WOMATE VERIFIED'}</div>
       <div className="cx-mission-portfolio-main">
         <div>
           <h2>{missionGroup?.name||'Cross-country climate mission'}</h2>

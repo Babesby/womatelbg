@@ -9,7 +9,8 @@ async function rpc(name,body={}){
   return data;
 }
 export const publicTalentPhotoUrl=path=>{const clean=String(path||'').replace(/^\/+/,'');return clean&&URL?`${URL}/storage/v1/object/public/canopy-profile-images/${clean}`:''};
-export const getPublicTalentDirectory=({query='',after=null,limit=24}={})=>rpc('canopy_public_talent_directory',{p_query:query||null,p_after_slug:after||null,p_limit:limit});
+export const getPublicTalentDirectory=({query='',after=null,limit=24,country='',achievement='',missionGroupId=null,collaborationOpen=null}={})=>rpc('canopy_public_talent_directory',{p_query:query||null,p_after_slug:after||null,p_limit:limit,p_country:country||null,p_achievement:achievement||null,p_mission_group:missionGroupId||null,p_collaboration_open:collaborationOpen});
+export const getPublicTalentFilterOptions=()=>rpc('canopy_public_talent_filter_options');
 export const getPublicTalentProfile=slug=>rpc('canopy_public_talent_profile',{p_slug:slug});
 export const submitPublicCollaborationRequest=payload=>rpc('canopy_public_submit_collaboration_request',{
  p_slug:payload.slug,p_name:payload.name,p_email:payload.email,p_organization:payload.organization||null,p_message:payload.message

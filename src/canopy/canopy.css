@@ -3395,3 +3395,5 @@ html[data-canopy-theme="dark"] .canopyReviewIntegrityCounts>span,html[data-canop
 .cx-special-recognition-song iframe{display:block;width:100%;aspect-ratio:16/9;border:0;border-radius:14px;background:#09261d}
 html[data-canopy-theme="dark"] .cx-special-recognition-song{border-top-color:#31514a}
 html[data-canopy-theme="dark"] .cx-special-recognition-song>span{color:var(--canopy-lime)}
+
+.cm-identity-alert{display:flex;gap:12px;align-items:flex-start;margin:0 0 18px;padding:16px 18px;border:1px solid rgba(14,77,74,.18);border-radius:16px;background:#f3f8f5;color:#123d37}.cm-identity-alert svg{flex:0 0 auto;margin-top:2px}.cm-identity-alert b{display:block;margin-bottom:3px}.cm-identity-alert p{margin:0;line-height:1.55;color:#536d65}
