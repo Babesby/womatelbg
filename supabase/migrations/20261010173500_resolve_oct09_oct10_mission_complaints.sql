@@ -24,7 +24,12 @@ begin
     select e.full_name,e.subject,count(a.id) n
     from expected e
     left join public.canopy_profiles p
-      on lower(trim(coalesce(p.full_name,'')))=lower(trim(e.full_name))
+      on (
+        regexp_replace(lower(coalesce(p.full_name,'')),'[^a-z0-9]+','','g')
+          = regexp_replace(lower(e.full_name),'[^a-z0-9]+','','g')
+        or regexp_replace(lower(coalesce(p.full_name,'')),'[^a-z0-9]+','','g')
+          like '%'||regexp_replace(lower(e.full_name),'[^a-z0-9]+','','g')||'%'
+      )
     left join public.canopy_manager_actions a
       on a.learner_id=p.user_id
      and a.action_type='complaint'
@@ -110,7 +115,12 @@ matched as (
   select a.id,a.learner_id,r.response_text
   from ranked_actions a
   join replies r
-    on lower(trim(a.full_name))=lower(trim(r.full_name))
+    on (
+      regexp_replace(lower(coalesce(a.full_name,'')),'[^a-z0-9]+','','g')
+        = regexp_replace(lower(r.full_name),'[^a-z0-9]+','','g')
+      or regexp_replace(lower(coalesce(a.full_name,'')),'[^a-z0-9]+','','g')
+        like '%'||regexp_replace(lower(r.full_name),'[^a-z0-9]+','','g')||'%'
+    )
    and lower(trim(a.subject))=lower(trim(r.subject))
   where a.rn=1
 ),
@@ -156,14 +166,14 @@ begin
     and a.created_at>='2026-10-08T00:00:00Z'::timestamptz
     and a.created_at<'2026-10-11T00:00:00Z'::timestamptz
     and (
-      (lower(trim(p.full_name))=lower('Cleve Pride Biira') and lower(trim(a.subject))=lower('Mission progress check-in / challenge'))
-      or (lower(trim(p.full_name))=lower('NJIFACK LINDA CHOPNJUNG') and lower(trim(a.subject))=lower('Mission progress check-in / challenge'))
-      or (lower(trim(p.full_name))=lower('Blessing Adiza Amaana') and lower(trim(a.subject))=lower('Mission progress check-in / challenge'))
-      or (lower(trim(p.full_name))=lower('Bukola Meshinoye') and lower(trim(a.subject))=lower('Mission progress check-in / challenge'))
-      or (lower(trim(p.full_name))=lower('Rediet Mulugeta') and lower(trim(a.subject))=lower('Mission progress check-in / challenge'))
-      or (lower(trim(p.full_name))=lower('mariama sesay') and lower(trim(a.subject))=lower('Where can I find my mission'))
-      or (lower(trim(p.full_name))=lower('Mmesoma Jennifer Obiezu') and lower(trim(a.subject))=lower('Mission progress check-in / challenge'))
-      or (lower(trim(p.full_name))=lower('yollanda Gomani') and lower(trim(a.subject))=lower('Mission progress check-in / challenge'))
+      (regexp_replace(lower(coalesce(p.full_name,'')),'[^a-z0-9]+','','g') like '%'||regexp_replace(lower('Cleve Pride Biira'),'[^a-z0-9]+','','g')||'%' and lower(trim(a.subject))=lower('Mission progress check-in / challenge'))
+      or (regexp_replace(lower(coalesce(p.full_name,'')),'[^a-z0-9]+','','g') like '%'||regexp_replace(lower('NJIFACK LINDA CHOPNJUNG'),'[^a-z0-9]+','','g')||'%' and lower(trim(a.subject))=lower('Mission progress check-in / challenge'))
+      or (regexp_replace(lower(coalesce(p.full_name,'')),'[^a-z0-9]+','','g') like '%'||regexp_replace(lower('Blessing Adiza Amaana'),'[^a-z0-9]+','','g')||'%' and lower(trim(a.subject))=lower('Mission progress check-in / challenge'))
+      or (regexp_replace(lower(coalesce(p.full_name,'')),'[^a-z0-9]+','','g') like '%'||regexp_replace(lower('Bukola Meshinoye'),'[^a-z0-9]+','','g')||'%' and lower(trim(a.subject))=lower('Mission progress check-in / challenge'))
+      or (regexp_replace(lower(coalesce(p.full_name,'')),'[^a-z0-9]+','','g') like '%'||regexp_replace(lower('Rediet Mulugeta'),'[^a-z0-9]+','','g')||'%' and lower(trim(a.subject))=lower('Mission progress check-in / challenge'))
+      or (regexp_replace(lower(coalesce(p.full_name,'')),'[^a-z0-9]+','','g') like '%'||regexp_replace(lower('mariama sesay'),'[^a-z0-9]+','','g')||'%' and lower(trim(a.subject))=lower('Where can I find my mission'))
+      or (regexp_replace(lower(coalesce(p.full_name,'')),'[^a-z0-9]+','','g') like '%'||regexp_replace(lower('Mmesoma Jennifer Obiezu'),'[^a-z0-9]+','','g')||'%' and lower(trim(a.subject))=lower('Mission progress check-in / challenge'))
+      or (regexp_replace(lower(coalesce(p.full_name,'')),'[^a-z0-9]+','','g') like '%'||regexp_replace(lower('yollanda Gomani'),'[^a-z0-9]+','','g')||'%' and lower(trim(a.subject))=lower('Mission progress check-in / challenge'))
     );
 
   if remaining<>0 then
