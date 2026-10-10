@@ -3,3 +3,172 @@
 .pt-hero.pt-heroClean{display:block;grid-template-columns:none;margin-bottom:22px;padding:clamp(32px,5vw,58px);border-radius:24px}.pt-heroClean>div{max-width:920px}.pt-heroClean h1{font-size:clamp(34px,5vw,62px);line-height:.98;letter-spacing:-.045em;margin:0 0 16px}.pt-heroClean p{max-width:860px;margin:0;color:#d7e8e3;line-height:1.7;font-size:17px}.pt-discoveryControls{display:grid;gap:12px;margin:0 0 22px;padding:16px;border:1px solid #d9e4df;border-radius:18px;background:#fff;box-shadow:0 12px 30px rgba(14,77,74,.05)}.pt-discoveryControls .pt-searchWrap{position:relative;display:block}.pt-discoveryControls .pt-searchWrap svg{position:absolute;left:14px;top:16px}.pt-discoveryControls .pt-searchWrap input{width:100%;min-height:50px;box-sizing:border-box;border:1px solid #d9e4df;border-radius:14px;padding:0 16px 0 43px;font:inherit}.pt-filterRow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr)) auto;gap:10px;align-items:end}.pt-filterRow label{display:grid;gap:6px}.pt-filterRow label>span{font-size:10px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:#617a73}.pt-filterRow select,.pt-collabToggle button,.pt-clearFilters{min-height:44px;border:1px solid #d9e4df;border-radius:11px;background:#fff;padding:0 12px;font:inherit;color:#123d37}.pt-collabToggle button{display:flex;align-items:center;justify-content:center;gap:7px;font-weight:800;cursor:pointer}.pt-collabToggle button.active{background:#0e4d4a;color:#fff;border-color:#0e4d4a}.pt-clearFilters{cursor:pointer;font-weight:850;background:#f4f8f6}.pt-heroAside,.pt-toolbar{display:none!important}@media(max-width:900px){.pt-filterRow{grid-template-columns:repeat(2,minmax(0,1fr))}.pt-clearFilters{width:100%}}@media(max-width:620px){.pt-filterRow{grid-template-columns:1fr}.pt-discoveryControls{padding:12px}.pt-hero.pt-heroClean{margin-bottom:14px;padding:28px 20px}.pt-heroClean h1{font-size:clamp(32px,11vw,46px)}}
 
 .pt-hero.pt-heroClean{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(280px,.92fr);align-items:end;gap:clamp(24px,5vw,72px);overflow:hidden}.pt-heroCopy{align-self:center;max-width:760px}.pt-heroVisual{align-self:end;justify-self:end;width:100%;display:flex;align-items:flex-end;justify-content:center;min-height:330px;margin-bottom:calc(clamp(32px,5vw,58px) * -1);padding-top:10px}.pt-heroVisual img{display:block;width:min(100%,430px);height:auto;max-height:520px;object-fit:contain;object-position:center bottom;filter:drop-shadow(0 24px 36px rgba(0,0,0,.2))}@media(max-width:900px){.pt-hero.pt-heroClean{grid-template-columns:1fr minmax(230px,.65fr);gap:20px}.pt-heroVisual{min-height:280px}.pt-heroVisual img{width:min(100%,340px)}}@media(max-width:680px){.pt-hero.pt-heroClean{grid-template-columns:1fr;padding-bottom:0}.pt-heroCopy{padding-bottom:4px}.pt-heroVisual{min-height:250px;margin-bottom:0}.pt-heroVisual img{width:min(92%,350px)}}
+
+/* WOMATE Talent Discovery responsive hero fix · 2026-10-10 */
+.pt-page{
+  padding-top:calc(84px + clamp(24px,3vw,40px));
+}
+
+.pt-hero.pt-heroClean{
+  min-height:0;
+}
+
+.pt-heroCopy{
+  min-width:0;
+}
+
+.pt-heroClean h1{
+  overflow-wrap:normal;
+  word-break:normal;
+  text-wrap:balance;
+}
+
+.pt-heroClean p{
+  text-wrap:pretty;
+}
+
+.pt-heroVisual{
+  min-width:0;
+}
+
+@media(max-width:900px){
+  .pt-page{
+    padding-top:calc(84px + 24px);
+  }
+
+  .pt-hero.pt-heroClean{
+    grid-template-columns:minmax(0,1fr) minmax(210px,.58fr);
+    gap:18px;
+    padding:34px 28px 0;
+    align-items:end;
+  }
+
+  .pt-heroClean h1{
+    font-size:clamp(38px,7vw,54px);
+    line-height:.94;
+    letter-spacing:-.045em;
+  }
+
+  .pt-heroClean p{
+    font-size:15px;
+    line-height:1.6;
+    max-width:600px;
+  }
+
+  .pt-heroVisual{
+    min-height:0;
+    margin-bottom:0;
+    align-self:end;
+  }
+
+  .pt-heroVisual img{
+    width:min(100%,300px);
+    max-height:360px;
+  }
+}
+
+@media(max-width:680px){
+  .pt-page{
+    padding:calc(72px + 16px) 14px 64px;
+  }
+
+  .pt-hero.pt-heroClean{
+    grid-template-columns:1fr;
+    gap:14px;
+    padding:28px 20px 0;
+    border-radius:20px;
+  }
+
+  .pt-heroCopy{
+    width:100%;
+    max-width:none;
+    padding:0;
+  }
+
+  .pt-heroClean h1{
+    font-size:clamp(34px,10.2vw,43px);
+    line-height:.94;
+    letter-spacing:-.04em;
+    margin:0 0 14px;
+    max-width:100%;
+  }
+
+  .pt-heroClean p{
+    font-size:14px;
+    line-height:1.55;
+    max-width:34rem;
+  }
+
+  .pt-heroVisual{
+    width:100%;
+    min-height:0;
+    height:auto;
+    margin:2px auto 0;
+    padding:0;
+    justify-self:center;
+    overflow:hidden;
+  }
+
+  .pt-heroVisual img{
+    width:min(78vw,280px);
+    max-width:100%;
+    max-height:270px;
+    margin:0 auto;
+    object-fit:contain;
+    object-position:center bottom;
+  }
+
+  .pt-discoveryControls{
+    margin-top:16px;
+    padding:12px;
+    border-radius:16px;
+  }
+
+  .pt-discoveryControls .pt-searchWrap input{
+    min-height:46px;
+    padding-left:40px;
+    font-size:14px;
+  }
+
+  .pt-discoveryControls .pt-searchWrap svg{
+    top:14px;
+  }
+
+  .pt-filterRow{
+    grid-template-columns:1fr;
+    gap:9px;
+  }
+
+  .pt-filterRow select,
+  .pt-collabToggle button,
+  .pt-clearFilters{
+    width:100%;
+    min-height:46px;
+  }
+}
+
+@media(max-width:390px){
+  .pt-page{
+    padding-left:10px;
+    padding-right:10px;
+  }
+
+  .pt-hero.pt-heroClean{
+    padding:24px 16px 0;
+  }
+
+  .pt-heroClean h1{
+    font-size:clamp(31px,10vw,38px);
+    line-height:.96;
+  }
+
+  .pt-heroClean p{
+    font-size:13.5px;
+    line-height:1.52;
+  }
+
+  .pt-heroVisual img{
+    width:min(76vw,245px);
+    max-height:235px;
+  }
+}
