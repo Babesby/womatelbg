@@ -76,10 +76,10 @@ begin
   limit 1;
 
   recognition_body :=
-    'Priscilla, WOMATE sees the consistency, care and leadership behind your work. Being selected for Canopy Spotlight twice is exceptional, and your Module 03 Climate Advocacy & Digital Innovation work shows the depth, clarity and commitment you continue to bring to this programme. We are deeply proud of you and grateful for the standard you are setting. This second Spotlight makes you specially eligible for WOMATE Talent Discovery. Keep building your professional profile so your work can be seen and celebrated. One more Spotlight — a third — would place you in a very rare circle we’ll be watching closely as we shape a special She Leads 2026 recognition and representation opportunity. Please receive this celebration song as a small reminder that your effort is seen, valued and remembered. 💚';
+    'Priscilla, WOMATE sees the consistency, care and leadership behind your work. Being selected for Canopy Spotlight twice is exceptional, and your Module 03 Climate Advocacy & Digital Innovation work shows the depth, clarity and commitment you continue to bring to this programme. We are deeply proud of you and grateful for the standard you are setting. Your work reflects the spirit of She Leads, thoughtful learning, applied climate leadership and consistent excellence. Please join us in celebrating Priscilla for this remarkable second Spotlight recognition. 💚';
 
   notification_body :=
-    'Priscilla, congratulations on becoming the first learner in this cohort to be selected for Canopy Spotlight twice. WOMATE sees your consistency, thoughtfulness and leadership, and we deeply appreciate the care you bring to your work. Your second Spotlight has now made you specially eligible for Talent Discovery. Please keep your professional profile complete and current. A third Spotlight would place you in a very rare circle we’ll be watching closely as we shape a special She Leads 2026 recognition and representation opportunity. We have also added a celebration song to your Spotlight recognition — this moment is yours. 💚';
+    'Priscilla, congratulations on becoming the first learner in this cohort to be selected for Canopy Spotlight twice. WOMATE sees your consistency, thoughtfulness and leadership, and we deeply appreciate the care you bring to your work. Your second Spotlight has now made you specially eligible for Talent Discovery. Please keep your professional profile complete and current. A third Spotlight would place you in a very rare circle we will be watching closely as we shape a special She Leads 2026 recognition and representation opportunity. We have also added a celebration song to your Spotlight recognition, this moment is yours. 💚';
 
   insert into public.canopy_talent_eligibility_overrides(
     user_id,reason,recognition_key,active,granted_at
@@ -128,7 +128,7 @@ begin
   values(
     learner_id,
     'special_recognition',
-    'Priscilla — twice in Canopy Spotlight. WOMATE sees you 💚',
+    'Priscilla, twice in Canopy Spotlight. WOMATE sees you 💚',
     notification_body,
     '/canopy#spotlight',
     'special-recognition:priscilla-double-spotlight-2026'
