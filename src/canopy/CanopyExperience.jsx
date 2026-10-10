@@ -338,8 +338,6 @@ export function CanopySpotlight({session}){
   const[photoBusy,setPhotoBusy]=useState('');
   const[photoMessage,setPhotoMessage]=useState({});
   const[slideIndex,setSlideIndex]=useState({});
-  const[desktopSpotlight,setDesktopSpotlight]=useState(()=>typeof window!=='undefined'&&window.matchMedia('(min-width:761px)').matches);
-  useEffect(()=>{const media=window.matchMedia('(min-width:761px)');const sync=()=>setDesktopSpotlight(media.matches);sync();media.addEventListener?.('change',sync);return()=>media.removeEventListener?.('change',sync)},[]);
   useEffect(()=>{let live=true;Promise.all([getFeaturedSpotlights(session,5),getCanopySpecialRecognitions(session)]).then(([featured,special])=>{if(live){const rows=[...(special||[]),...(featured||[])];setItems(rows);setPhotoDrafts(Object.fromEntries(rows.filter(i=>i.is_me&&!i.is_special).map(i=>[i.id,i.professional_image_drive_url||''])));setPhotoConsent(Object.fromEntries(rows.filter(i=>i.is_me&&!i.is_special).map(i=>[i.id,Boolean(i.professional_image_drive_url)])))}}).catch(()=>{});return()=>{live=false}},[session?.access_token]);
   useEffect(()=>{if(!expanded)return;const close=e=>{if(e.key==='Escape')setExpanded(null)};window.addEventListener('keydown',close);return()=>window.removeEventListener('keydown',close)},[expanded]);
   async function react(item,reaction){
@@ -367,15 +365,12 @@ export function CanopySpotlight({session}){
   return <section className="cx-spotlight" id="spotlight">
     <header><div><span>CANOPY SPOTLIGHT</span><h2>Featured this week.</h2></div></header>
     <div className="cx-spotlight-modules">
-      {(desktopSpotlight
-        ? [['ALL',items]]
-        : Object.entries(items.reduce((groups,item)=>{
-            const key=String(item.module_id||item.week_key||'').replace('module-','').replace(/[^0-9]/g,'').slice(-2)||'FEATURED';
-            (groups[key] ||= []).push(item);
-            return groups;
-          },{})).sort(([a],[b])=>a.localeCompare(b,undefined,{numeric:true}))
-      ).map(([moduleNo,moduleItems])=><section className={`cx-spotlight-module ${moduleNo==='ALL'?'is-desktop-rail':''}`} key={moduleNo}>
-        <div className="cx-spotlight-module-head"><small>{moduleNo==='ALL'?'FEATURED COLLECTION':moduleNo==='FEATURED'?'FEATURED':`MODULE ${moduleNo}`}</small><span>{moduleItems.length} spotlight{moduleItems.length===1?'':'s'}{moduleNo==='ALL'&&moduleItems.length>4?' · scroll for more':''}</span></div>
+      {Object.entries(items.reduce((groups,item)=>{
+        const key=String(item.module_id||item.week_key||'').replace('module-','').replace(/[^0-9]/g,'').slice(-2)||'FEATURED';
+        (groups[key] ||= []).push(item);
+        return groups;
+      },{})).sort(([a],[b])=>a.localeCompare(b,undefined,{numeric:true})).map(([moduleNo,moduleItems])=><section className="cx-spotlight-module is-desktop-module-rail" key={moduleNo}>
+        <div className="cx-spotlight-module-head"><small>{moduleNo==='FEATURED'?'FEATURED':`MODULE ${moduleNo}`}</small><span>{moduleItems.length} spotlight{moduleItems.length===1?'':'s'}{moduleItems.length>4?' · swipe for more':''}</span></div>
         <div className="cx-spotlight-slider">
           {moduleItems.length>1&&<button type="button" className="cx-spotlight-nav cx-spotlight-prev" aria-label={`Previous ${moduleNo==='FEATURED'?'featured':`Module ${moduleNo}`} Spotlight`} onClick={e=>{const track=e.currentTarget.parentElement?.querySelector('.cx-spotlight-row');track?.scrollBy({left:-track.clientWidth,behavior:'smooth'})}}></button>}
           <div className="cx-spotlight-row" aria-label={`${moduleNo==='FEATURED'?'Featured':`Module ${moduleNo}`} Spotlights`} onScroll={e=>{
