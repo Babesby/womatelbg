@@ -56,6 +56,11 @@ export const CANOPY_ASSIGNMENT_SCHEDULE = [
     dueAt:'2026-10-18T23:59:59Z',
     resubmitUntil:'2026-10-21T23:59:59Z',
     puzzleTerms:['POLICY','NDC','UNFCCC','GOVERNANCE'],
+    liveUrl:'https://youtube.com/live/JGGkONVM94k',
+    livePoster:'/assets/canopy/live/module-04-live.jpg',
+    liveHost:'Mercy Jacob',
+    liveSpeaker:'Valerie Nutakor',
+    liveSpeakerRole:'Country Programme Coordinator, CDKN Ghana',
     speakerPrompt:'Complete the challenge announced by the expert during the Thursday live session and publish the required reflection or action post on LinkedIn or X/Twitter.'
   },
   {
