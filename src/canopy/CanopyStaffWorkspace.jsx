@@ -121,7 +121,17 @@ function useWorkspace({viewer,previewRole,previewModule,refreshKey=0}){
           :viewer?.staffAccess?.role==='programme_operations'
             ?await rpc(viewer?.session,'canopy_deputy_review_complaint_data',{})
             :await rpc(viewer?.session,'canopy_staff_workspace_data',{});
-        if(live)setData(result||{});
+        const effectiveRole=previewRole||viewer?.staffAccess?.role||'';
+        let assignmentMetrics=null,assignmentReviewRows=null;
+        if(['programme_manager','programme_operations'].includes(effectiveRole)){
+          try{
+            [assignmentMetrics,assignmentReviewRows]=await Promise.all([
+              rpc(viewer?.session,'canopy_assignment_review_metrics',{}),
+              rpc(viewer?.session,'canopy_assignment_review_rows',{})
+            ]);
+          }catch(e){console.warn('Assignment truth data could not be loaded:',e)}
+        }
+        if(live)setData({...result,assignment_metrics:assignmentMetrics,assignment_review_rows:assignmentReviewRows});
       }catch(e){if(live)setError('This workspace could not be loaded. Refresh the page or contact WOMATE if the problem continues.')}
       finally{if(live)setLoading(false)}
     })();
@@ -231,7 +241,7 @@ function Spotlight({viewer,data,preview,role,onRefresh}){
 function ActionNotice({text}){return text?<p className="cstaffMsg">{text}</p>:null}
 function StaffForm({children}){return <div className="cstaffFunctionalForm">{children}</div>}
 function ReviewAssignments({viewer,data,preview,onRefresh}){
- const allRows=data?.recent_submissions||[];
+ const allRows=data?.assignment_review_rows||data?.recent_submissions||[];
  // Treat each learner + module as one current review item. Older attempts stay in
  // the database for audit/history, but once a learner submits a newer revision
  // the superseded attempt must not remain in Revision required or duplicate
@@ -254,7 +264,11 @@ function ReviewAssignments({viewer,data,preview,onRefresh}){
  const[reviewModule,setReviewModule]=useState('module-02');
  const[open,setOpen]=useState('');const[revisionPart,setRevisionPart]=useState('paragraph');const[score,setScore]=useState('');const[feedback,setFeedback]=useState('');const[decision,setDecision]=useState('completed');const[busy,setBusy]=useState(false);const[msg,setMsg]=useState('');
  const moduleReviewRows=useMemo(()=>reviewModule==='all'?rows:rows.filter(row=>(row.week_key||row.module_id)===reviewModule),[rows,reviewModule]);
- const moduleReviewCounts=useMemo(()=>Object.fromEntries(['all','module-01','module-02','module-03','module-04','module-05'].map(key=>[key,key==='all'?rows.length:rows.filter(row=>(row.week_key||row.module_id)===key).length])),[rows]);
+ const metricModules=data?.assignment_metrics?.modules||{};
+ const fallbackMetric=key=>({current_records:key==='all'?rows.length:rows.filter(row=>(row.week_key||row.module_id)===key).length,total_attempts:null,manual_completed:null,current_completed:null,post_completion_attempts:0});
+ const metricFor=key=>metricModules?.[key]||fallbackMetric(key);
+ const moduleReviewCounts=useMemo(()=>Object.fromEntries(['all','module-01','module-02','module-03','module-04','module-05'].map(key=>[key,Number(metricModules?.[key]?.manual_completed??metricModules?.[key]?.current_records??(key==='all'?rows.length:rows.filter(row=>(row.week_key||row.module_id)===key).length))])),[rows,metricModules]);
+ const activeMetric=metricFor(reviewModule);
  const statusCounts=useMemo(()=>{const counts={all:moduleReviewRows.length,needs_action:0,auto_reviewed:0,needs_manual_review:0,revision_required:0,completed:0};for(const row of moduleReviewRows){const status=row.assessment_status||'submitted';if(counts[status]!=null)counts[status]+=1;if(['auto_reviewed','needs_manual_review','revision_required'].includes(status))counts.needs_action+=1}return counts},[moduleReviewRows]);
  const attemptNo=row=>Math.max(1,Math.min(3,Number(row?.attempt_no||row?.attempt_number||row?.attempt||1)||1));
  const attemptCounts=useMemo(()=>({first:moduleReviewRows.filter(r=>attemptNo(r)===1).length,second:moduleReviewRows.filter(r=>attemptNo(r)===2).length,third:moduleReviewRows.filter(r=>attemptNo(r)===3).length}),[moduleReviewRows]);
@@ -267,7 +281,7 @@ function ReviewAssignments({viewer,data,preview,onRefresh}){
  async function auditDriveAccess(){if(preview||busy)return;if(!automatedDriveCandidates.length){setMsg('No current auto-reviewed Google Drive submissions need an access check.');return}if(!window.confirm(`Check ${automatedDriveCandidates.length} auto-reviewed practical submission${automatedDriveCandidates.length===1?'':'s'} for anonymous Drive access? Restricted files will be marked Revision required at 60/100.`))return;setBusy(true);let restricted=0,publicCount=0,unknown=0;const note='[CANOPY_REVISION:practical] We can’t view your practical evidence / CanopyCanvas submission because the Google Drive file is restricted. Change sharing to “Anyone with the link” → “Viewer”, then resubmit. You do not need to recreate the work. Watch the short guide: https://youtu.be/DxpkYuSxxic';for(let i=0;i<automatedDriveCandidates.length;i++){const s=automatedDriveCandidates[i];try{const result=await checkCanopyDriveAccess(viewer.session,s.canvas_link);if(result?.status==='restricted'){await rpc(viewer.session,'canopy_manager_review_assignment',{p_submission_id:s.id,p_score:60,p_feedback:note,p_decision:'revision_required'});restricted+=1}else if(result?.status==='public'){publicCount+=1}else unknown+=1}catch{unknown+=1}setMsg(`Checking Drive access · ${i+1}/${automatedDriveCandidates.length} · ${restricted} restricted`)}setBusy(false);setMsg(`Drive audit complete · ${restricted} restricted · ${publicCount} viewable · ${unknown} unchanged/uncertain.`);if(restricted)onRefresh?.()}
  return <section className="cstaffPanel cstaffReviewPanel">
    <header className="cstaffReviewHead"><div><small>ASSIGNMENTS</small><h2>Review dashboard</h2><p>Filter the queue, open the evidence and add a human review where it helps.</p></div><div className="cstaffReviewHeadActions"><span>{visibleRows.length} shown</span><button type="button" className="cstaffDriveAudit" disabled={preview||busy} onClick={auditDriveAccess}>{busy?'Checking…':`Check Drive access · ${automatedDriveCandidates.length}`}</button></div></header>
-   <div className="cstaffReviewModules" role="group" aria-label="Filter assessments by module">{[['all','All modules'],...Array.from({length:5},(_,i)=>['module-'+String(i+1).padStart(2,'0'),'Module '+String(i+1).padStart(2,'0')])].map(([key,label])=><button key={key} type="button" className={reviewModule===key?'active':''} aria-pressed={reviewModule===key} onClick={()=>{setReviewModule(key);setOpen('')}}>{label}<b>{moduleReviewCounts[key]||0}</b></button>)}</div>
+   <div className="cstaffAccuracyLegend"><div><strong>{activeMetric?.total_attempts??'n/a'}</strong><span>Total attempts</span></div><div><strong>{activeMetric?.current_records??moduleReviewRows.length}</strong><span>Current learner-module records</span></div><div><strong>{activeMetric?.manual_completed??'n/a'}</strong><span>Ever manually completed</span></div><div><strong>{activeMetric?.current_completed??'n/a'}</strong><span>Currently completed</span></div></div>{Number(activeMetric?.post_completion_attempts||0)>0&&<p className="cstaffAccuracyWarning"><b>Audit flag:</b> {activeMetric.post_completion_attempts} later attempt{Number(activeMetric.post_completion_attempts)===1?'':'s'} exist after an earlier manual completion. The completed WOMATE decision remains authoritative and learner records have not been rewritten.</p>}<p className="cstaffAccuracyNote">Module badges now show durable manual completions. The smaller line shows current learner-module records and total historical attempts, so attempts are never confused with completed learners.</p><div className="cstaffReviewModules" role="group" aria-label="Filter assessments by module">{[['all','All modules'],...Array.from({length:5},(_,i)=>['module-'+String(i+1).padStart(2,'0'),'Module '+String(i+1).padStart(2,'0')])].map(([key,label])=>{const metric=metricFor(key);return <button key={key} type="button" className={reviewModule===key?'active':''} aria-pressed={reviewModule===key} onClick={()=>{setReviewModule(key);setOpen('')}}><span>{label}</span><b>{moduleReviewCounts[key]||0}</b><small>{metric?.total_attempts!=null?String(metric.current_records||0)+' current / '+String(metric.total_attempts||0)+' attempts':'current records'}</small></button>})}</div>
    <div className="cstaffReviewTools">
      <div className="cstaffReviewFilters" role="tablist" aria-label="Assignment review filters">{filters.map(([key,label])=><button type="button" role="tab" aria-selected={filter===key} className={filter===key?'active':''} key={key} onClick={()=>{setFilter(key);setOpen('')}}><span>{label}</span><b>{statusCounts[key]??0}</b></button>)}</div>
      <div className="cstaffAssessFind">
