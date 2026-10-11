@@ -90,28 +90,52 @@ async function rest(path,{token,method='GET',body,prefer}={}){
   return parse(r);
 }
 
-async function restAll(path,{token,method='GET',body,prefer,pageSize=500}={}){
+async function restAll(path,{token,method='GET',body,prefer,pageSize=500,maxPages=40}={}){
   if(!canopyConfigured)throw new Error('Canopy database is not configured yet.');
   const rows=[];
-  let start=0;
-  for(;;){
-    const end=start+pageSize-1;
-    const r=await fetch(`${URL}/rest/v1/${path}`,{
-      method,
-      headers:{
-        ...headers(token),
-        Range:`${start}-${end}`,
-        'Range-Unit':'items',
-        ...(prefer?{Prefer:prefer}:{})
-      },
-      body:body?JSON.stringify(body):undefined
-    });
+  const pageFingerprints=new Set();
+  let offset=0;
+  for(let pageNo=0;pageNo<maxPages;pageNo+=1){
+    const separator=path.includes('?')?'&':'?';
+    const pagedPath=`${path}${separator}limit=${pageSize}&offset=${offset}`;
+    const controller=new AbortController();
+    const timeout=window.setTimeout(()=>controller.abort(),15000);
+    let r;
+    try{
+      r=await fetch(`${URL}/rest/v1/${pagedPath}`,{
+        method,
+        headers:{
+          ...headers(token),
+          ...(prefer?{Prefer:prefer}:{})
+        },
+        body:body?JSON.stringify(body):undefined,
+        signal:controller.signal
+      });
+    }finally{
+      window.clearTimeout(timeout);
+    }
     if(r.status===416)break;
     const page=await parse(r);
     if(!Array.isArray(page)||page.length===0)break;
+
+    const first=page[0]||{};
+    const last=page[page.length-1]||{};
+    const fingerprint=[
+      page.length,
+      first.id||first.user_id||first.created_at||first.submitted_at||'',
+      last.id||last.user_id||last.created_at||last.submitted_at||''
+    ].join('|');
+    if(pageFingerprints.has(fingerprint)){
+      throw new Error('Canopy pagination repeated the same page. Loading stopped safely instead of looping.');
+    }
+    pageFingerprints.add(fingerprint);
+
     rows.push(...page);
-    if(page.length<pageSize)break;
-    start+=page.length;
+    if(page.length<pageSize)return rows;
+    offset+=page.length;
+  }
+  if(rows.length>=pageSize*maxPages){
+    throw new Error('Canopy pagination reached its safety ceiling. Narrow the query or increase the audited page limit.');
   }
   return rows;
 }
