@@ -89,6 +89,51 @@ async function rest(path,{token,method='GET',body,prefer}={}){
   const r=await fetch(`${URL}/rest/v1/${path}`,{method,headers:{...headers(token),...(prefer?{Prefer:prefer}:{})},body:body?JSON.stringify(body):undefined});
   return parse(r);
 }
+
+async function restAll(path,{token,method='GET',body,prefer,pageSize=500}={}){
+  if(!canopyConfigured)throw new Error('Canopy database is not configured yet.');
+  const rows=[];
+  let start=0;
+  for(;;){
+    const end=start+pageSize-1;
+    const r=await fetch(`${URL}/rest/v1/${path}`,{
+      method,
+      headers:{
+        ...headers(token),
+        Range:`${start}-${end}`,
+        'Range-Unit':'items',
+        ...(prefer?{Prefer:prefer}:{})
+      },
+      body:body?JSON.stringify(body):undefined
+    });
+    if(r.status===416)break;
+    const page=await parse(r);
+    if(!Array.isArray(page)||page.length===0)break;
+    rows.push(...page);
+    if(page.length<pageSize)break;
+    start+=page.length;
+  }
+  return rows;
+}
+
+function dedupeRows(rows=[]){
+  const seen=new Set();
+  const out=[];
+  for(const row of rows||[]){
+    const key=row?.id||[
+      row?.user_id,
+      row?.week_key,
+      row?.attempt_no,
+      row?.submitted_at,
+      row?.created_at,
+      row?.issued_at
+    ].map(x=>String(x??'')).join('|');
+    if(seen.has(key))continue;
+    seen.add(key);
+    out.push(row);
+  }
+  return out;
+}
 export async function getViewer(session){
   const fresh=await refreshSession(session||getStoredSession());
   if(!fresh?.access_token)return null;
@@ -118,12 +163,12 @@ export async function getManagerSnapshot(session){
   const s=await refreshSession(session||getStoredSession());if(!s?.access_token)return null;
   try{await rest('rpc/canopy_refresh_learning_automation',{token:s.access_token,method:'POST',body:{}})}catch{}
   const [profiles,enrollments,progress,submissions,actions,certificates]=await Promise.all([
-    rest('canopy_profiles?select=user_id,full_name,country,role&order=full_name.asc',{token:s.access_token}),
-    rest('canopy_enrollments?select=*&order=created_at.asc',{token:s.access_token}),
-    rest('canopy_lesson_progress?select=*',{token:s.access_token}),
-    rest('rpc/canopy_manager_weekly_submissions',{token:s.access_token,method:'POST',body:{}}),
-    rest('canopy_manager_actions?select=*&order=created_at.desc',{token:s.access_token}),
-    rest('canopy_certificates?select=*&order=issued_at.desc',{token:s.access_token})
+    restAll('canopy_profiles?select=user_id,full_name,country,role&order=full_name.asc',{token:s.access_token}),
+    restAll('canopy_enrollments?select=*&order=created_at.asc',{token:s.access_token}),
+    restAll('canopy_lesson_progress?select=*',{token:s.access_token}),
+    restAll('rpc/canopy_manager_weekly_submissions',{token:s.access_token,method:'POST',body:{},pageSize:500}),
+    restAll('canopy_manager_actions?select=*&order=created_at.desc',{token:s.access_token}),
+    restAll('canopy_certificates?select=*&order=issued_at.desc',{token:s.access_token})
   ]);
   const testerIds=new Set((profiles||[]).filter(p=>p.role==='tester').map(p=>p.user_id));
   let withdrawals=[];
@@ -133,12 +178,12 @@ export async function getManagerSnapshot(session){
   try{const assets=await rest('rpc/canopy_admin_spotlight_recognition_assets',{token:s.access_token,method:'POST',body:{p_module_id:null}});spotlight={...spotlight,recognition_assets:Array.isArray(assets)?assets:[]}}catch{}
   try{const media=await rest('rpc/canopy_admin_spotlight_media_queue',{token:s.access_token,method:'POST',body:{p_module_id:null}});spotlight={...spotlight,media_queue:Array.isArray(media)?media:[]}}catch{}
   return {
-    profiles:(profiles||[]).filter(p=>!testerIds.has(p.user_id)),
-    enrollments:(enrollments||[]).filter(x=>!testerIds.has(x.user_id)),
-    progress:(progress||[]).filter(x=>!testerIds.has(x.user_id)),
-    submissions:(submissions||[]).filter(x=>!testerIds.has(x.user_id)),
-    actions:(actions||[]).filter(x=>!testerIds.has(x.learner_id)),
-    certificates:(certificates||[]).filter(x=>!testerIds.has(x.user_id)),
+    profiles:dedupeRows(profiles).filter(p=>!testerIds.has(p.user_id)),
+    enrollments:dedupeRows(enrollments).filter(x=>!testerIds.has(x.user_id)),
+    progress:dedupeRows(progress).filter(x=>!testerIds.has(x.user_id)),
+    submissions:dedupeRows(submissions).filter(x=>!testerIds.has(x.user_id)),
+    actions:dedupeRows(actions).filter(x=>!testerIds.has(x.learner_id)),
+    certificates:dedupeRows(certificates).filter(x=>!testerIds.has(x.user_id)),
     withdrawals:(withdrawals||[]).filter(x=>!testerIds.has(x.user_id)),
     spotlight
   };
