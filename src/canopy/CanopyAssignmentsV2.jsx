@@ -12,7 +12,9 @@ function scramble(word){
 const RESULT_CELEBRATION_GIFS=[
   'https://giphy.com/embed/FBzeCJhUUVh3TedptK',
   'https://giphy.com/embed/7UyhJrObrFS5RrnASI',
-  'https://giphy.com/embed/8OJFaKKr8wKJqIFtvS'
+  'https://giphy.com/embed/8OJFaKKr8wKJqIFtvS',
+  'https://giphy.com/embed/ATe6Re9HBxmxUSK14k',
+  'https://giphy.com/embed/YopgE1KtD38aDmwzV1'
 ];
 
 function resultCelebrationGif(moduleId){
