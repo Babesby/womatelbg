@@ -362,6 +362,13 @@ export async function submitWeeklyAssignment(session,weekKey,payload){
   }});
 }
 
+export async function submitAccommodatedOptionalEvidence(session,weekKey,payload={}){
+  const s=await refreshSession(session||getStoredSession());if(!s?.access_token)throw new Error('Your Canopy session has expired. Sign in again.');
+  return rest('rpc/canopy_submit_accommodated_optional_evidence',{token:s.access_token,method:'POST',body:{
+    p_week_key:weekKey,p_canvas_link:String(payload.canvas_link||'').trim()||null,p_linkedin_link:String(payload.linkedin_link||'').trim()||null
+  }});
+}
+
 export async function submitTesterWeeklyAssignment(session,weekKey,payload){
   const s=await refreshSession(session||getStoredSession());if(!s?.access_token)throw new Error('Your Canopy session has expired. Sign in again.');
   if(String(s.user?.email||'').trim().toLowerCase()!=='p.viewmultimedia@gmail.com')throw new Error('Tester access is restricted to the designated WOMATE tester account.');

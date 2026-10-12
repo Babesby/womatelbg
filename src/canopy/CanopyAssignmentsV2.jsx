@@ -1,6 +1,6 @@
 import React,{useEffect,useState} from 'react';
 import {CANOPY_ASSIGNMENT_SCHEDULE,formatCanopyDate,openAssignments,speakerChallengeOpen} from './canopySchedule';
-import {getWeeklyAssignmentSubmissions,submitWeeklyAssignment,submitTesterWeeklyAssignment,getPuzzleProgress,savePuzzleCompletion,getWeeklyAssignmentDrafts,saveWeeklyAssignmentDraft} from './canopyApi';
+import {getWeeklyAssignmentSubmissions,submitWeeklyAssignment,submitTesterWeeklyAssignment,submitAccommodatedOptionalEvidence,getPuzzleProgress,savePuzzleCompletion,getWeeklyAssignmentDrafts,saveWeeklyAssignmentDraft} from './canopyApi';
 import {canopyModules2026} from './canopyCurriculum2026';
 import {climateDebateAssignment,isClimateDebateSocialUrl} from './canopyClimateDebate';
 import {playCanopyCorrectSound,playCanopyErrorSound} from './canopyFeedbackAudio';
@@ -460,6 +460,20 @@ export default function CanopyAssignmentsV2({viewer}){
     }
   }
 
+  async function sendOptionalEvidence(item){
+    const d=drafts[item.weekKey]||{},canvas=String(d.canvas_link||'').trim(),linkedin=String(d.linkedin_link||'').trim();
+    if(!canvas&&!linkedin){setMessage('Add the optional Voice-Off link or your public speaker/social link first.');return}
+    if(canvas&&!isPracticalFileUrl(canvas)){setMessage('Use a viewable Google Drive, Google Docs, OneDrive or SharePoint link for the optional Voice-Off.');return}
+    if(linkedin&&!isClimateDebateSocialUrl(linkedin)){setMessage('Use a public LinkedIn, X/Twitter, Instagram, Facebook, Threads, TikTok, YouTube or Bluesky link.');return}
+    setBusy('optional-'+item.weekKey);setMessage('');
+    try{
+      await submitAccommodatedOptionalEvidence(viewer.session,item.weekKey,{canvas_link:canvas,linkedin_link:linkedin});
+      try{await saveWeeklyAssignmentDraft(viewer.session,item.weekKey,{paragraph_response:'',canvas_link:'',linkedin_link:''})}catch{}
+      setDrafts(x=>({...x,[item.weekKey]:{}}));await load();
+      setMessage('Optional Module 03 evidence saved. Your existing 100/100 WOMATE completion remains unchanged.');
+    }catch(e){setMessage(e?.message||'Optional evidence could not be saved.')}finally{setBusy('')}
+  }
+
   return <section className="ca-page">
     <div className="ca-head"><span className="ca-kicker">ASSIGNMENTS</span><h1>Weekly work.</h1><p>Save Parts 01–02 as you work. Part 03 opens after Thursday’s live session.</p></div>
     {!available.length&&<div className="ca-empty"><h2>Your first assignment is not open yet.</h2><p>Module 01 opens Monday, 21 September 2026.</p></div>}
@@ -515,14 +529,16 @@ export default function CanopyAssignmentsV2({viewer}){
           <div className="ca-result-title"><small>MODULE {item.moduleId}</small><h2>{item.title}</h2><span className="ca-result-ready">Submission window closed</span></div>
           <div className="ca-result-score"><span>FINAL SCORE</span><strong>0/100</strong></div>
           <div className="ca-missed-result-note"><strong>No submission received</strong><p>The first-submission deadline for this module has passed. Keep going - submit your next module assignment on time so WOMATE can review and count your work.</p></div>
-        </article>;        if(archived)return <article className="ca-card ca-archive-row ca-result-card" key={item.weekKey}>
+        </article>;        if(archived){const optionalEvidenceOpen=!!sub?.optional_evidence_until&&now<=new Date(sub.optional_evidence_until);return <article className="ca-card ca-archive-row ca-result-card" key={item.weekKey}>
           <div className="ca-archive-title ca-result-title"><small>MODULE {item.moduleId}</small><h2>{item.title}</h2><span className="ca-result-ready">Your result is ready</span></div>
           <div className="ca-archive-score ca-result-score"><span>FINAL SCORE</span><strong>{score}/100</strong></div>
           <div className="ca-archive-remark ca-result-remark"><span>REMARKS</span><p>{remark}</p></div>
+          {sub?.practical_waived&&<div className="ca-feedback ca-complete-locked"><span>WOMATE accommodation</span><strong>The practical task is waived for this module. Your completed result is protected.</strong></div>}
+          {optionalEvidenceOpen&&<div className="ca-feedback ca-revision"><span>OPTIONAL EVIDENCE GRACE PERIOD</span><strong>Your 100/100 completion is already secured. You do not need to submit the Climate Voice-Off practical. If you still want to add the Voice-Off or your public speaker/social post, you may do so through {new Date(sub.optional_evidence_until).toLocaleString('en-GB',{timeZone:'UTC',day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})} GMT. The practical link will remain hidden from your Impact Profile; a public speaker/social link may appear there.</strong><label>Optional Climate Voice-Off link<input value={baseDraft.canvas_link||''} onChange={e=>setDrafts(x=>({...x,[item.weekKey]:{...(x[item.weekKey]||{}),canvas_link:e.target.value}}))} placeholder="Google Drive / OneDrive link"/></label><label>Optional public speaker/social link<input value={baseDraft.linkedin_link||''} onChange={e=>setDrafts(x=>({...x,[item.weekKey]:{...(x[item.weekKey]||{}),linkedin_link:e.target.value}}))} placeholder="LinkedIn, X/Twitter or other accepted public post"/></label><button type="button" className="canopyPrimary" disabled={busy==='optional-'+item.weekKey} onClick={()=>sendOptionalEvidence(item)}>{busy==='optional-'+item.weekKey?'Saving…':'Save optional evidence'}</button></div>}
           <div className="ca-archive-celebration ca-result-gif" aria-label="Celebration">
             <iframe loading="lazy" src={resultCelebrationGif(item.moduleId)} title={`Celebrating your Module ${item.moduleId} result`} allow="fullscreen"/>
           </div>
-        </article>;
+        </article>}
         return <article className="ca-card" key={item.weekKey}>
           <div className="ca-card-head"><div><small>MODULE {item.moduleId}</small><h2>{item.title}</h2></div><div className="ca-dates"><span>Due {formatCanopyDate(individualDue)}</span>{count>0&&<strong>Attempt {count} of 3</strong>}</div></div>
           {graceUpcoming&&<div className="ca-feedback ca-revision"><span>48-hour grace window</span><strong>Your normal Module {item.moduleId} window is closed, but WOMATE has approved a final grace period. This page will unlock automatically on Monday, 12 October at 00:00 GMT and remain open through Tuesday, 13 October at 23:59 GMT.</strong></div>}
