@@ -56,13 +56,21 @@ function cleanReviewFeedback(value){
   return String(value||'').replace(/^\[CANOPY_REVISION:([a-z,]+)\]\s*/i,'').trim();
 }
 
-const MODULE12_GRACE_START=new Date('2026-10-12T00:00:00Z');
-const MODULE12_GRACE_END=new Date('2026-10-13T23:59:59Z');
+const FINAL_GRACE_WINDOWS={
+  '01':{start:new Date('2026-10-12T12:00:00Z'),end:new Date('2026-10-14T12:00:00Z'),label:'48-hour'},
+  '02':{start:new Date('2026-10-12T12:00:00Z'),end:new Date('2026-10-14T12:00:00Z'),label:'48-hour'},
+  '03':{start:new Date('2026-10-12T12:00:00Z'),end:new Date('2026-10-13T12:00:00Z'),label:'24-hour'}
+};
 
-function isModule12GraceWindow(item,now){
-  if(!item||!['01','02'].includes(String(item.moduleId)))return false;
+function finalGraceWindow(item){
+  return FINAL_GRACE_WINDOWS[String(item?.moduleId||'')]||null;
+}
+
+function isFinalGraceWindow(item,now){
+  const grace=finalGraceWindow(item);
+  if(!grace)return false;
   const t=now instanceof Date?now:new Date(now);
-  return t>=MODULE12_GRACE_START&&t<=MODULE12_GRACE_END;
+  return t>=grace.start&&t<=grace.end;
 }
 
 function revisionDraftValue(draft,field,fallback=''){
@@ -400,12 +408,14 @@ export default function CanopyAssignmentsV2({viewer}){
       ?revisionParts(currentSubmission)
       :['paragraph','practical','speaker'];
 
-    if(!tester&&!currentSubmission&&now>firstSubmissionDue(item,viewer)&&!isModule12GraceWindow(item,now)){
-      setMessage('Submission closed. The Sunday deadline has passed.');
+    const graceWindowOpen=isFinalGraceWindow(item,now);
+    const module12RevisionGrace=['01','02'].includes(String(item?.moduleId))&&graceWindowOpen;
+    if(!tester&&!currentSubmission&&now>firstSubmissionDue(item,viewer)&&!graceWindowOpen){
+      setMessage('Submission closed. The normal deadline has passed and the final grace window is not open.');
       return;
     }
-    if(!tester&&currentManualRevision&&now>new Date(item.resubmitUntil)&&!isModule12GraceWindow(item,now)){
-      setMessage('Revision window closed. The Wednesday deadline has passed.');
+    if(!tester&&currentManualRevision&&now>new Date(item.resubmitUntil)&&!module12RevisionGrace){
+      setMessage('Revision window closed. The authorised revision period has passed.');
       return;
     }
 
@@ -486,17 +496,19 @@ export default function CanopyAssignmentsV2({viewer}){
         const manualRevision=!!sub&&sub.review_source==='manual'&&sub.assessment_status==='revision_required';
         const requestedParts=manualRevision?revisionParts(sub):['paragraph','practical','speaker'];
         const onlyRevision=manualRevision&&requestedParts.length<3;
-        const graceWindowOpen=isModule12GraceWindow(item,now);
+        const grace=finalGraceWindow(item);
+        const graceWindowOpen=isFinalGraceWindow(item,now);
+        const module12RevisionGrace=['01','02'].includes(String(item.moduleId))&&graceWindowOpen;
         const individualDue=firstSubmissionDue(item,viewer);
         const firstSubmissionOpen=tester||now<=individualDue||graceWindowOpen;
-        const revisionWindowOpen=tester||now<=new Date(item.resubmitUntil)||graceWindowOpen;
+        const revisionWindowOpen=tester||now<=new Date(item.resubmitUntil)||module12RevisionGrace;
         const mayResubmit=tester||(manualRevision&&count<3&&revisionWindowOpen);
         const canSubmitForm=tester||(!sub?firstSubmissionOpen:mayResubmit);
-        const graceEligible=!tester&&['01','02'].includes(String(item.moduleId))&&(!sub||manualRevision);
+        const graceEligible=!tester&&!!grace&&(!sub||(manualRevision&&['01','02'].includes(String(item.moduleId))));
         const normalWindowClosed=!sub?now>individualDue:(manualRevision&&now>new Date(item.resubmitUntil));
-        const graceUpcoming=graceEligible&&normalWindowClosed&&now<MODULE12_GRACE_START;
+        const graceUpcoming=graceEligible&&normalWindowClosed&&now<grace.start;
         const graceActive=graceEligible&&graceWindowOpen;
-        const graceStillAvailable=graceEligible&&now<=MODULE12_GRACE_END;
+        const graceStillAvailable=graceEligible&&now<=grace.end;
         const puzzleDone=puzzles.some(p=>p.week_key===item.weekKey&&p.completed);
         const speakerOpen=tester||speakerChallengeOpen(item,now);
         const d=manualRevision?{
@@ -543,8 +555,8 @@ export default function CanopyAssignmentsV2({viewer}){
         </article>}
         return <article className="ca-card" key={item.weekKey}>
           <div className="ca-card-head"><div><small>MODULE {item.moduleId}</small><h2>{item.title}</h2></div><div className="ca-dates"><span>Due {formatCanopyDate(individualDue)}</span>{count>0&&<strong>Attempt {count} of 3</strong>}</div></div>
-          {graceUpcoming&&<div className="ca-feedback ca-revision"><span>48-hour grace window</span><strong>Your normal Module {item.moduleId} window is closed, but WOMATE has approved a final grace period. This page will unlock automatically on Monday, 12 October at 00:00 GMT and remain open through Tuesday, 13 October at 23:59 GMT.</strong></div>}
-          {graceActive&&<div className="ca-feedback ca-revision"><span>48-hour grace window open</span><strong>Your approved Module {item.moduleId} grace access is active now and closes Tuesday, 13 October at 23:59 GMT. Submit the outstanding first attempt or only the revision task(s) WOMATE requested.</strong></div>}
+          {graceUpcoming&&<div className="ca-feedback ca-revision"><span>{grace.label} FINAL grace window</span><strong>Your normal Module {item.moduleId} window is closed, but WOMATE has approved one final grace period. It opens {formatCanopyDate(grace.start)} and closes {formatCanopyDate(grace.end)}. There will be no further grace period after this window.</strong></div>}
+          {graceActive&&<div className="ca-feedback ca-revision"><span>{grace.label} FINAL grace window open</span><strong>Your final Module {item.moduleId} grace access is active now and closes {formatCanopyDate(grace.end)}. Submit before the deadline. There will be no further grace period after this window.</strong></div>}
           <div className="ca-threefold">
             <div><b>01</b><h3>Paragraph response</h3><p>{paragraphPrompt}</p></div>
             <div className="ca-practical-brief"><b>02</b><small className="ca-challenge-tag">PRACTICAL</small><h3>{practicalTitle}</h3><p>{practicalBrief}</p>{item.moduleId==='01'&&<ModuleOneCanvasGuide/>}{practicalInstructions&&<details className="ca-instructions"><summary>How to submit</summary><p>{practicalInstructions}</p></details>}{practicalHref&&<a href={practicalHref}>{practicalActionLabel||'Open tool →'}</a>}<PracticalExample assignment={curriculum?.assignment}/></div>
