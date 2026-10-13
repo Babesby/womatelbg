@@ -15,12 +15,13 @@ import {activateTeamAccess,getStaffAccess,getStaffDashboard} from './canopyTeamA
 import {CanopyAdminRolePreview,CanopyTeamAccessAdmin,CanopyTeamActivation,CanopyStaffDashboard,teamRoleLabel} from './CanopyTeamAccess';
 import {CANOPY_ASSIGNMENT_SCHEDULE,CANOPY_ACCESS_DATE} from './canopySchedule';
 import CanopyStaffWorkspace from './CanopyStaffWorkspace';
-import {CanopyAdmin2027Portfolio,CanopyTester2027Preview} from './CanopyCohortControl';
+import {CanopyTester2027Preview} from './CanopyCohortControl';
+import {CanopyAdminCohortBar,CanopyAdminCohortEmpty,CanopyAdminCohortSafeHold,LEGACY_CANOPY_COHORT} from './CanopyAdminCohortContext';
 import{ArrowLeft,ArrowRight,BookOpen,Check,ChevronRight,ClipboardCheck,Clock,FileText,GraduationCap,Leaf,Lock,LogOut,Menu,PlayCircle,Sparkles,UserRound,X,BookMarked,UsersRound,PenLine,TrendingUp,Eye,EyeOff,MessageSquare,ShieldAlert,Award,BarChart3,Bell,Moon,Sun,Globe2,Mail,ShieldCheck,BriefcaseBusiness,Heart,Volume2,Square,Camera,Trash2} from 'lucide-react';
 import'./canopy.css';
 import{CANOPY_BRAND,modules,resources}from'./canopyData';
 import{climateDebateAssignment}from'./canopyClimateDebate';
-import{canopyConfigured,consumeAuthCallback,getStoredSession,getViewer,getProgress,getManagerSnapshot,markLesson,requestPasswordReset,resendConfirmation,saveQuiz,signIn,signOut,signUp,updatePassword,setLearnerEnrollmentStatus,createManagerAction,createBulkManagerAction,updateManagerAction,reviewWeeklyAssignment,checkCanopyDriveAccess,getUnreadNotificationCount,getWeeklyAssignmentSubmissions,issueCanopyCertificate,signInWithGoogle,updateOwnCanopyProfile,getOwnCanopyDeletionRequest,requestOwnCanopyAccountDeletion,withdrawCanopyLearner,restoreCanopyLearnerEligibility,adminFeatureCanopySpotlight,updateCanopySpotlightDecision,toggleCanopySpotlightLove,updateCanopySpotlightMediaReview,uploadOwnCanopyProfilePhoto,removeOwnCanopyProfilePhoto,canopyProfilePhotoUrl,getCanopyTalentNetwork,saveCanopyTalentSettings,reconcileOwnCanopyProfilePhoto,getMyCanopyMissionCompletion} from './canopyApi';
+import{canopyConfigured,consumeAuthCallback,getStoredSession,getViewer,getProgress,getManagerSnapshot,markLesson,requestPasswordReset,resendConfirmation,saveQuiz,signIn,signOut,signUp,updatePassword,setLearnerEnrollmentStatus,createManagerAction,createBulkManagerAction,updateManagerAction,reviewWeeklyAssignment,checkCanopyDriveAccess,getUnreadNotificationCount,getWeeklyAssignmentSubmissions,issueCanopyCertificate,signInWithGoogle,updateOwnCanopyProfile,getOwnCanopyDeletionRequest,requestOwnCanopyAccountDeletion,withdrawCanopyLearner,restoreCanopyLearnerEligibility,adminFeatureCanopySpotlight,updateCanopySpotlightDecision,toggleCanopySpotlightLove,updateCanopySpotlightMediaReview,uploadOwnCanopyProfilePhoto,removeOwnCanopyProfilePhoto,canopyProfilePhotoUrl,getCanopyTalentNetwork,saveCanopyTalentSettings,reconcileOwnCanopyProfilePhoto,getMyCanopyMissionCompletion,getAdminCohortCatalog} from './canopyApi';
 import{applyCanopyTheme,getCanopyTheme}from'./canopyTheme';
 import{CanopyJourneyMap,CanopyThisWeek,CanopyLessonActivity,CanopyReflectionTimeline,CanopyModuleComplete,CanopySpotlight,CanopyPortfolioPage}from'./CanopyExperience';
 import{playCanopyCorrectSound,playCanopyErrorSound,primeCanopyFeedbackAudio}from'./canopyFeedbackAudio';
@@ -135,7 +136,7 @@ const manager=canManageCanopy(viewer);
  const tester=isCanopyTester(viewer);
  const learnerItems=[['/canopy/classroom','Home',BookOpen],['/canopy/course/she-leads','Course',GraduationCap],['/canopy/assignments','Assignments',FileText],['/canopy/progress','Progress',ClipboardCheck],['/canopy/portfolio','Impact profile',BriefcaseBusiness],['/canopy/opportunities','Missions',Globe2],['/canopy/opportunity-board','Opportunities',TrendingUp],['/canopy/funding','Funding & paid work',Award],['/canopy/talent','Talent network',UsersRound],['/canopy/resources','Resources',Sparkles],['/canopy/canvas','CanopyCanvas',PenLine],['/canopy/notifications','Notifications',MessageSquare],['/canopy/help','Help',ShieldAlert],['/canopy/certificate','Certificates',Award]];
  const legacyAdmin=['manager','admin'].includes(viewer?.profile?.role);
- const managerItems=[['/canopy/manage','Operations',ClipboardCheck],['/canopy/manage/access','Manage cohort',UsersRound],...(manager?[[ '/canopy/manage/cohorts-2027','2027 cohorts',Globe2]]:[]),['/canopy/manage/reviews','Assess submissions',FileText],['/canopy/manage/communications','Warnings & feedback',MessageSquare],['/canopy/manage/reminders','Reminders',Bell],['/canopy/manage/complaints','Complaints',ShieldAlert],['/canopy/manage/attendance','Attendance',UsersRound],['/canopy/manage/certificates','Certificates',Award],['/canopy/manage/reports','Reports',BarChart3],['/canopy/manage/opportunities','Opportunities',BriefcaseBusiness],['/canopy/manage/funding','Funding & paid work',Award],['/canopy/manage/talent','Talent network',UsersRound],['/canopy/manage/missions','Mission groups',Globe2],...((viewer?.staffAccess?.role==='programme_manager'||viewer?.profile?.role==='admin')?[[ '/canopy/manage/spotlight','Canopy Spotlight',Sparkles]]:[]),...(legacyAdmin?[[ '/canopy/manage/team-access','Team Access',UserRound]]:[])];
+ const managerItems=[['/canopy/manage','Operations',ClipboardCheck],['/canopy/manage/access','Manage cohort',UsersRound],['/canopy/manage/reviews','Assess submissions',FileText],['/canopy/manage/communications','Warnings & feedback',MessageSquare],['/canopy/manage/reminders','Reminders',Bell],['/canopy/manage/complaints','Complaints',ShieldAlert],['/canopy/manage/attendance','Attendance',UsersRound],['/canopy/manage/certificates','Certificates',Award],['/canopy/manage/reports','Reports',BarChart3],['/canopy/manage/opportunities','Opportunities',BriefcaseBusiness],['/canopy/manage/funding','Funding & paid work',Award],['/canopy/manage/talent','Talent network',UsersRound],['/canopy/manage/missions','Mission groups',Globe2],...((viewer?.staffAccess?.role==='programme_manager'||viewer?.profile?.role==='admin')?[[ '/canopy/manage/spotlight','Canopy Spotlight',Sparkles]]:[]),...(legacyAdmin?[[ '/canopy/manage/team-access','Team Access',UserRound]]:[])];
  if(viewer?.profile?.role==='admin')managerItems.push(['/canopy/manage/selection-codes','Selection codes',Award]);
  const staffRole=viewer?.staffAccess?.role;
  const staffItems=staffRole==='programme_operations'?[['/canopy/operations','Operations',ClipboardCheck],['/canopy/notifications','Notifications',Bell],['/canopy/profile','Profile',UserRound]]:staffRole==='module_coordinator'?[['/canopy/coordinator','My module',BookOpen],['/canopy/notifications','Notifications',Bell],['/canopy/profile','Profile',UserRound]]:staffRole==='learning_fellow'?[['/canopy/fellow','Learning experience',Sparkles],['/canopy/notifications','Notifications',Bell],['/canopy/profile','Profile',UserRound]]:learnerItems;
@@ -464,6 +465,21 @@ function Profile({viewer,onReload}){
   {msg&&<p className="canopyProfileToast" role="status" aria-live="polite">{msg}</p>}
  </main>
 }
+function scopeAdminSnapshotByCohort(snapshot,cohort){
+ if(!snapshot||!cohort||cohort.cohort_key===LEGACY_CANOPY_COHORT)return snapshot;
+ const ids=new Set((cohort.member_ids||[]).map(String));
+ const keep=(rows,key='user_id')=>(rows||[]).filter(x=>ids.has(String(x?.[key]||'')));
+ return {...snapshot,
+  profiles:keep(snapshot.profiles),
+  enrollments:keep(snapshot.enrollments),
+  progress:keep(snapshot.progress),
+  submissions:keep(snapshot.submissions),
+  actions:keep(snapshot.actions,'learner_id'),
+  certificates:keep(snapshot.certificates),
+  withdrawals:keep(snapshot.withdrawals),
+  spotlight:{nominations:[],weekly:[],recognition_assets:[],media_queue:[]}
+ };
+}
 function ManagerNotice({children}){return children?<p className="canopyFormMsg" role="status">{children}</p>:null}
 function ManagerOperations({snapshot,session,onReload,viewer,view='overview'}){
  const[busy,setBusy]=useState('');const[msg,setMsg]=useState('');const[form,setForm]=useState({learner_id:'',action_type:'reminder',subject:'',message:'',audience:'individual',week_key:'all'});const[accessFilter,setAccessFilter]=useState('all');const[reviewFilter,setReviewFilter]=useState('all');const[reviewModule,setReviewModule]=useState('module-02');const[reviewQuery,setReviewQuery]=useState('');const[reviewAttemptFilter,setReviewAttemptFilter]=useState('recent');const[reviewDrafts,setReviewDrafts]=useState({});const[spotlightWeek,setSpotlightWeek]=useState('module-01');const[spotlightCategory,setSpotlightCategory]=useState('emerging_leadership');const[spotlightNote,setSpotlightNote]=useState('');const[spotlightReviewSource,setSpotlightReviewSource]=useState('all');const[spotlightOutcome,setSpotlightOutcome]=useState('all');const[spotlightCommentType,setSpotlightCommentType]=useState('all');const[spotlightLovedOnly,setSpotlightLovedOnly]=useState(false);const[spotlightMediaQuery,setSpotlightMediaQuery]=useState('');const[spotlightMediaFilter,setSpotlightMediaFilter]=useState('all');const[spotlightMediaNotes,setSpotlightMediaNotes]=useState({});const[spotlightInspect,setSpotlightInspect]=useState(null);
@@ -764,7 +780,7 @@ function CanopyLearningGuide({path,viewer}){
 }
 
 export default function CanopyApp(){
- const[path,setPath]=useState(route());const[loading,setLoading]=useState(true);const[viewer,setViewer]=useState(null);const[progress,setProgress]=useState([]);const[submissions,setSubmissions]=useState([]);const[snapshot,setSnapshot]=useState(null);const[staffDashboard,setStaffDashboard]=useState(null);
+ const[path,setPath]=useState(route());const[loading,setLoading]=useState(true);const[viewer,setViewer]=useState(null);const[progress,setProgress]=useState([]);const[submissions,setSubmissions]=useState([]);const[snapshot,setSnapshot]=useState(null);const[staffDashboard,setStaffDashboard]=useState(null);const[adminCohorts,setAdminCohorts]=useState([]);const[adminCohortKey,setAdminCohortKey]=useState(()=>localStorage.getItem('canopy_admin_cohort_key')||LEGACY_CANOPY_COHORT);
  useEffect(()=>{applyCanopyTheme(getCanopyTheme(),{persist:false})},[]);
  const load=async()=>{const session=getStoredSession();if(!session){setViewer(null);setProgress([]);setSubmissions([]);setSnapshot(null);setStaffDashboard(null);setLoading(false);return}try{
    const pending=sessionStorage.getItem('canopy_team_access_code_pending');
@@ -781,8 +797,11 @@ export default function CanopyApp(){
     if(manager){try{setSnapshot(await getManagerSnapshot(v.session))}catch(err){console.error('Canopy manager snapshot failed:',err);setSnapshot({profiles:[],enrollments:[],progress:[],submissions:[],actions:[],certificates:[],dataError:String(err?.message||err)})}if(staffAccess?.role==='programme_manager'){try{setStaffDashboard(await getStaffDashboard(v.session))}catch(err){console.error('Canopy programme dashboard failed:',err);setStaffDashboard({role:'programme_manager',module_id:null,counts:{},recent_submissions:[],spotlights:[]})}}}else setSnapshot(null)
    }
  }catch(err){console.error('Canopy viewer load failed:',err);setViewer(null);setProgress([]);setSubmissions([]);setSnapshot(null);setStaffDashboard(null)}finally{setLoading(false)}};
+ useEffect(()=>{let live=true;if(viewer?.profile?.role!=='admin'){setAdminCohorts([]);return()=>{live=false}};(async()=>{try{const rows=await getAdminCohortCatalog(viewer.session);if(!live)return;const list=Array.isArray(rows)?rows:[];setAdminCohorts(list);const current=list.find(x=>x.cohort_key===adminCohortKey);if(!current&&list.length){const fallback=list.find(x=>x.cohort_key===LEGACY_CANOPY_COHORT)||list[0];setAdminCohortKey(fallback.cohort_key);localStorage.setItem('canopy_admin_cohort_key',fallback.cohort_key)}}catch(err){console.error('Canopy admin cohort catalog failed:',err)}})();return()=>{live=false}},[viewer?.session?.access_token,viewer?.profile?.role]);
+ const selectAdminCohort=key=>{setAdminCohortKey(key);localStorage.setItem('canopy_admin_cohort_key',key)};
  useEffect(()=>{const fn=()=>setPath(route());window.addEventListener('popstate',fn);return()=>window.removeEventListener('popstate',fn)},[]);
  useEffect(()=>{setLoading(true);load()},[path]);
+ if(path==='/canopy/manage/cohorts-2027'&&viewer?.profile?.role==='admin'){go('/canopy/manage');return null}
  const publicRoute=path==='/canopy'||path==='/canopy/';const authRoute=path==='/canopy/login'||path==='/canopy/signup';
  if(path==='/canopy/auth/callback')return <AuthCallback/>;if(path==='/canopy/reset-password')return <ResetPassword/>;
  if(publicRoute)return <><Helmet><title>WOMATE Canopy | Climate Learning</title><meta name="description" content="WOMATE Canopy is the learning environment for structured climate education and She Leads Climate Mentorship."/></Helmet><Landing/><CanopyLearningGuide path={path} viewer={viewer}/></>;
@@ -814,18 +833,19 @@ if(__womatePreviewPath||__womateStaffWorkspacePath||__womateLiveProgrammeManager
 const manager=canManageCanopy(viewer);const operational=isCanopyOperationsStaff(viewer);const staffRole=viewer?.staffAccess?.role;const tester=isCanopyTester(viewer);const legacyAdmin=['manager','admin'].includes(viewer?.profile?.role);
  if(manager&&!path.startsWith('/canopy/manage')&&!['/canopy/profile','/canopy/notifications','/canopy/team-access'].includes(path)){go('/canopy/manage');return null}
  if(operational){const home=staffRole==='programme_operations'?'/canopy/operations':staffRole==='module_coordinator'?'/canopy/coordinator':'/canopy/fellow';if(![home,'/canopy/profile','/canopy/notifications','/canopy/team-access'].includes(path)){go(home);return null}}
+ const selectedAdminCohort=viewer?.profile?.role==='admin'?(adminCohorts.find(x=>x.cohort_key===adminCohortKey)||adminCohorts.find(x=>x.cohort_key===LEGACY_CANOPY_COHORT)||adminCohorts[0]||null):null;
+ const scopedAdminSnapshot=viewer?.profile?.role==='admin'?scopeAdminSnapshotByCohort(snapshot,selectedAdminCohort):snapshot;
  const active=tester||viewer.enrollments?.some(e=>e.status==='active');let content;
  if(path==='/canopy/team-access')content=<CanopyTeamActivation viewer={viewer} onActivated={()=>{setLoading(true);load().then(()=>window.location.assign('/canopy/classroom'))}}/>;
- else if(manager&&path==='/canopy/manage/team-access')content=legacyAdmin?<CanopyTeamAccessAdmin viewer={viewer}/>:<ManagerOperations snapshot={snapshot} session={viewer.session} onReload={load} viewer={viewer} view="overview"/>;
- else if(manager&&path==='/canopy/manage/role-preview')content=legacyAdmin?<CanopyAdminRolePreview viewer={viewer}/>:<ManagerOperations snapshot={snapshot} session={viewer.session} onReload={load} viewer={viewer} view="overview"/>;
+ else if(manager&&path==='/canopy/manage/team-access')content=legacyAdmin?<CanopyTeamAccessAdmin viewer={viewer}/>:<ManagerOperations snapshot={scopedAdminSnapshot} session={viewer.session} onReload={load} viewer={viewer} view="overview"/>;
+ else if(manager&&path==='/canopy/manage/role-preview')content=legacyAdmin?<CanopyAdminRolePreview viewer={viewer}/>:<ManagerOperations snapshot={scopedAdminSnapshot} session={viewer.session} onReload={load} viewer={viewer} view="overview"/>;
 
- else if(manager&&path==='/canopy/manage/cohorts-2027')content=<CanopyAdmin2027Portfolio viewer={viewer}/>;
  else if(tester&&path==='/canopy/test/cohort-preview')content=<CanopyTester2027Preview viewer={viewer}/>;
  else if(manager&&path==='/canopy/manage/missions')content=<CanopyMissionAdmin viewer={viewer}/>;
  else if(manager&&path==='/canopy/manage/opportunities')content=<CanopyOpportunityAdmin viewer={viewer}/>;
  else if(manager&&path==='/canopy/manage/funding')content=<CanopyFundingAdmin viewer={viewer}/>;
  else if(manager&&path==='/canopy/manage/talent')content=<CanopyTalentAdmin viewer={viewer}/>;
- else if(manager&&path.startsWith('/canopy/manage')){const sub=path.split('/').pop();const view=path==='/canopy/manage'?'overview':sub;content=view==='selection-codes'?<CanopySelectionCodes session={viewer.session}/>:<ManagerOperations snapshot={snapshot} session={viewer.session} onReload={load} viewer={viewer} view={view}/>}
+ else if(manager&&path.startsWith('/canopy/manage')){const sub=path.split('/').pop();const view=path==='/canopy/manage'?'overview':sub;content=view==='selection-codes'?<CanopySelectionCodes session={viewer.session}/>:<ManagerOperations snapshot={scopedAdminSnapshot} session={viewer.session} onReload={load} viewer={viewer} view={view}/>}
  else if(operational&&['/canopy/operations','/canopy/coordinator','/canopy/fellow'].includes(path))content=<CanopyStaffDashboard viewer={viewer} access={viewer.staffAccess} data={staffDashboard} onReload={async()=>{try{setStaffDashboard(await getStaffDashboard(viewer.session))}catch(err){console.error(err)}}}/>;
  else if(path==='/canopy/classroom')content=tester?<TesterDashboard viewer={viewer} progress={progress}/>:<Dashboard viewer={viewer} progress={progress} submissions={submissions}/>;
  else if(!active&&!['/canopy/profile','/canopy/notifications','/canopy/help','/canopy/certificate'].includes(path))content=<Dashboard viewer={viewer} progress={progress} submissions={submissions}/>;
@@ -844,6 +864,15 @@ const manager=canManageCanopy(viewer);const operational=isCanopyOperationsStaff(
  else if(path==='/canopy/resources')content=<Resources/>;
  else if(path==='/canopy/profile')content=<Profile viewer={viewer} onReload={load}/>;
  else{const match=path.match(/^\/canopy\/course\/she-leads\/([^/]+)\/([^/]+)$/);if(match){const[,moduleId,last]=match;content=last==='quiz'?<Quiz moduleId={moduleId} session={viewer.session} reload={load} tester={tester}/>:<Lesson moduleId={moduleId} lessonId={last} progress={progress} session={viewer.session} reload={load} tester={tester}/>}else content=tester?<TesterDashboard viewer={viewer} progress={progress}/>:<Dashboard viewer={viewer} progress={progress} submissions={submissions}/>}
+ if(viewer?.profile?.role==='admin'&&path.startsWith('/canopy/manage')){
+  const selected=selectedAdminCohort;
+  const empty=selected&&Number(selected.member_count||0)===0;
+  const legacy=!selected||selected.cohort_key===LEGACY_CANOPY_COHORT;
+  const legacyOnlyPaths=['/canopy/manage/missions','/canopy/manage/opportunities','/canopy/manage/funding','/canopy/manage/talent','/canopy/manage/attendance','/canopy/manage/team-access','/canopy/manage/selection-codes'];
+  if(empty)content=<CanopyAdminCohortEmpty cohort={selected} section="This management area"/>;
+  else if(!legacy&&legacyOnlyPaths.includes(path))content=<CanopyAdminCohortSafeHold cohort={selected} section={path.split('/').pop()?.replaceAll('-',' ')||'This management area'}/>;
+  content=<><CanopyAdminCohortBar cohorts={adminCohorts} value={selected?.cohort_key||adminCohortKey} onChange={selectAdminCohort}/>{content}</>;
+ }
  return <><Helmet><title>{isAnyCanopyStaff(viewer)?'Canopy Operations':'My Canopy'} | WOMATE</title></Helmet><CanopyLearningGuide path={path} viewer={viewer}/><LearnerShell viewer={viewer} progress={progress}>{content}</LearnerShell></>
 }
 
