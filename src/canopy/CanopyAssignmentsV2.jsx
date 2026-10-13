@@ -305,8 +305,25 @@ export default function CanopyAssignmentsV2({viewer}){
   },[viewer?.session?.access_token]);
   useEffect(()=>{const timer=window.setInterval(()=>setNow(new Date()),60000);return()=>window.clearInterval(timer)},[]);
 
-  const latest=weekKey=>subs.filter(x=>x.week_key===weekKey).sort((a,b)=>b.attempt_no-a.attempt_no)[0];
-  const attempts=weekKey=>subs.filter(x=>x.week_key===weekKey).length;
+  const moduleSubmissions=weekKey=>subs.filter(x=>x.week_key===weekKey);
+  const latest=weekKey=>moduleSubmissions(weekKey).sort((a,b)=>
+    (Number(b.attempt_no||1)-Number(a.attempt_no||1))
+    ||(new Date(b.submitted_at||0)-new Date(a.submitted_at||0))
+    ||String(b.id||'').localeCompare(String(a.id||''))
+  )[0];
+  const releasedManualCompletion=weekKey=>moduleSubmissions(weekKey)
+    .filter(s=>
+      s?.review_source==='manual'
+      &&s?.assessment_status==='completed'
+      &&s?.final_score!=null
+      &&(!s?.release_at||now>=new Date(s.release_at))
+    )
+    .sort((a,b)=>
+      (new Date(b.reviewed_at||b.submitted_at||0)-new Date(a.reviewed_at||a.submitted_at||0))
+      ||(Number(b.attempt_no||1)-Number(a.attempt_no||1))
+      ||String(b.id||'').localeCompare(String(a.id||''))
+    )[0];
+  const attempts=weekKey=>moduleSubmissions(weekKey).length;
   const scoreVisible=s=>!!s&&(tester||(s.review_source==='manual'&&s.assessment_status==='completed'&&s.final_score!=null&&(!s.release_at||now>=new Date(s.release_at))));
   const finalScore=s=>tester?(s?.final_score??s?.auto_score):s?.final_score;
   const finalFeedback=s=>cleanReviewFeedback(s?.final_feedback||s?.manual_feedback||s?.feedback_hint||'');
@@ -491,8 +508,11 @@ export default function CanopyAssignmentsV2({viewer}){
     {!available.length&&<div className="ca-empty"><h2>Your first assignment is not open yet.</h2><p>Module 01 opens Monday, 21 September 2026.</p></div>}
     <div className="ca-stack">
       {available.map(item=>{
-        const sub=latest(item.weekKey),count=attempts(item.weekKey),baseDraft=drafts[item.weekKey]||{};
-        const manualCompleted=!!sub&&sub.review_source==='manual'&&sub.assessment_status==='completed';
+        const latestSub=latest(item.weekKey);
+        const completedTruth=releasedManualCompletion(item.weekKey);
+        const sub=completedTruth||latestSub;
+        const count=attempts(item.weekKey),baseDraft=drafts[item.weekKey]||{};
+        const manualCompleted=!!completedTruth;
         const manualRevision=!!sub&&sub.review_source==='manual'&&sub.assessment_status==='revision_required';
         const requestedParts=manualRevision?revisionParts(sub):['paragraph','practical','speaker'];
         const onlyRevision=manualRevision&&requestedParts.length<3;
@@ -527,7 +547,10 @@ export default function CanopyAssignmentsV2({viewer}){
         ).length;
         const visible=scoreVisible(sub),score=finalScore(sub),status=(sub?.assessment_status||sub?.status||'submitted').replaceAll('_',' ');
         const scoreReleased=visible&&score!=null;
-        const archived=manualCompleted&&scoreReleased;
+        // Once WOMATE has manually completed and released a result, that record
+        // is the learner-facing truth. Never leave the submission form expanded
+        // because of an older/stale/later attempt row.
+        const archived=!!completedTruth&&scoreReleased;
         const remark=finalFeedback(sub)||sub?.score_band||status;
         const curriculum=moduleContent(item.moduleId);
         const paragraphPrompt=curriculum?.assignment?.paragraphPrompt||'Respond to the weekly learning task with reflection, analysis and a concrete application to climate action.';
