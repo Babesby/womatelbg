@@ -169,7 +169,18 @@ export async function getViewer(session){
   ]);
   let withdrawal=null;
   try{withdrawal=await rest('rpc/canopy_get_own_withdrawal_status',{token:fresh.access_token,method:'POST',body:{}})}catch{}
-  return {session:fresh,user:fresh.user,profile:profiles?.[0]||null,enrollments:enrollments||[],announcements:announcements||[],withdrawal};
+  let cohorts=[];let activeCohort=null;
+  try{const rows=await rest('rpc/canopy_my_cohorts',{token:fresh.access_token,method:'POST',body:{}});cohorts=Array.isArray(rows)?rows:[]}catch{}
+  try{activeCohort=await rest('rpc/canopy_my_active_cohort',{token:fresh.access_token,method:'POST',body:{}})}catch{}
+  return {session:fresh,user:fresh.user,profile:profiles?.[0]||null,enrollments:enrollments||[],announcements:announcements||[],withdrawal,cohorts,activeCohort};
+}
+export async function getAdmin2027Portfolio(session){
+  const s=await refreshSession(session||getStoredSession());if(!s?.access_token)return[];
+  return rest('rpc/canopy_admin_2027_portfolio',{token:s.access_token,method:'POST',body:{}});
+}
+export async function setAdminCohortMembership(session,{userId,cohortKey,status='active'}){
+  const s=await refreshSession(session||getStoredSession());if(!s?.access_token)throw new Error('Your Canopy session has expired. Sign in again.');
+  return rest('rpc/canopy_admin_set_cohort_membership',{token:s.access_token,method:'POST',body:{p_user_id:userId,p_cohort_key:cohortKey,p_status:status}});
 }
 export async function getProgress(session){
   const s=await refreshSession(session||getStoredSession());if(!s?.access_token)return[];
@@ -428,7 +439,7 @@ export async function getCanopyCertificateEligibility(session,userId=null){
 
 
 
-/* WOMATE · progressive weekly assignment drafts · 2026-09-21 */
+/* WOMATE ┬╖ progressive weekly assignment drafts ┬╖ 2026-09-21 */
 
 export async function getWeeklyAssignmentDrafts(session){
   const s=await refreshSession(session||getStoredSession());
@@ -506,7 +517,7 @@ export async function getMyCanopyMissionHub(session){const s=await refreshSessio
 export async function respondCanopyMissionInvite(session,accept){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_respond_mission_invite',{token:s.access_token,method:'POST',body:{p_accept:Boolean(accept)}})}
 export async function sendCanopyMissionMessage(session,body){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_send_mission_message',{token:s.access_token,method:'POST',body:{p_body:body}})}
 export async function updateCanopyMissionGroup(session,{name,choice,customBrief}){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_update_mission_group',{token:s.access_token,method:'POST',body:{p_name:name,p_choice:choice,p_custom_brief:customBrief||null}})}
-function cleanMissionDriveLink(value){let text=String(value||'').normalize('NFKC').replace(/[“”‘’]/g,'').trim();if(!text)return'';const found=text.match(/https?:\/\/[^\s<>"']+/i)?.[0];let candidate=(found||text).replace(/^[\s(<\[{]+/,'').replace(/[\s)>\]}.,;:]+$/,'');if(!/^https?:\/\//i.test(candidate)&&/^(?:www\.)?(?:drive|docs)\.google\.com\//i.test(candidate))candidate='https://'+candidate.replace(/^www\./i,'');return candidate}
+function cleanMissionDriveLink(value){let text=String(value||'').normalize('NFKC').replace(/[ΓÇ£ΓÇ¥ΓÇÿΓÇÖ]/g,'').trim();if(!text)return'';const found=text.match(/https?:\/\/[^\s<>"']+/i)?.[0];let candidate=(found||text).replace(/^[\s(<\[{]+/,'').replace(/[\s)>\]}.,;:]+$/,'');if(!/^https?:\/\//i.test(candidate)&&/^(?:www\.)?(?:drive|docs)\.google\.com\//i.test(candidate))candidate='https://'+candidate.replace(/^www\./i,'');return candidate}
 export async function submitCanopyMissionReport(session,{summary,proofUrl}){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_submit_mission_report',{token:s.access_token,method:'POST',body:{p_summary:String(summary||'').trim(),p_proof_url:cleanMissionDriveLink(proofUrl)||null}})}
 export async function submitCanopyMissionGroup(session,folderUrl){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_submit_mission_group',{token:s.access_token,method:'POST',body:{p_folder_url:cleanMissionDriveLink(folderUrl)}})}
 export async function getCanopyMissionAdmin(session){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_admin_mission_groups',{token:s.access_token,method:'POST',body:{}})}

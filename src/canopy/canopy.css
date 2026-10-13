@@ -185,7 +185,7 @@
 
 /* 1. Hero remains light */
 
-/* 2. SHE LEADS · COHORT 2 becomes deep green */
+/* 2. SHE LEADS ┬╖ COHORT 2 becomes deep green */
 .canopyCourseIntroEditorial{
   position:relative!important;
   overflow:hidden!important;
@@ -727,7 +727,7 @@
 .cc-action-button{display:inline-flex!important;align-items:center!important;justify-content:center!important;width:auto!important;max-width:100%!important;margin:clamp(14px,2.2vw,28px) 0 0!important;padding:clamp(10px,1.2vw,14px) clamp(18px,2.4vw,30px)!important;min-height:44px!important;line-height:1.2!important;white-space:normal!important;text-align:center!important;box-sizing:border-box!important}.cc-action-button.is-pill{border-radius:999px!important}.cc-action-button.is-rectangle{border-radius:8px!important}@media(max-width:760px){.cc-action-button{margin-top:14px!important;padding:10px 18px!important;max-width:100%!important;font-size:14px!important}}
 
 
-/* CANOPY MANAGER — ASSIGNMENT REVIEW */
+/* CANOPY MANAGER ΓÇö ASSIGNMENT REVIEW */
 .canopyReviewWorkspace{display:grid;gap:20px}
 .canopyReviewToolbar{background:#fff;border:1px solid rgba(14,77,74,.1);border-radius:20px;padding:18px 20px;display:grid;gap:16px}
 .canopyReviewToolbar>div:first-child{display:flex;align-items:center;justify-content:space-between;gap:16px}
@@ -823,7 +823,7 @@
 @media(max-width:620px){.canopyHelpForm,.canopyHelpHistory{padding:18px;border-radius:18px}.canopyHelpSubmit{align-items:flex-end}.canopyHelpSubmit .canopyPrimary{min-height:44px}}
 
 /* ================================================================
-   CANOPY LAUNCH HARDENING · 20 SEPTEMBER 2026
+   CANOPY LAUNCH HARDENING ┬╖ 20 SEPTEMBER 2026
    Green learning environment inspired by the approved Canopy direction.
    No new/generated imagery is required by this treatment.
    ================================================================ */
@@ -995,7 +995,7 @@
 }
 
 
-/* CANOPY TESTER MODE — isolated account only */
+/* CANOPY TESTER MODE ΓÇö isolated account only */
 .canopyTesterWelcome{border:1px solid rgba(198,255,82,.45)}
 .canopyTesterStatus{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem;margin:1rem 0 1.25rem}
 .canopyTesterStatus article{display:flex;align-items:center;gap:.8rem;padding:1rem 1.05rem;border:1px solid rgba(14,77,74,.12);border-radius:18px;background:#fff}
@@ -1014,7 +1014,7 @@
 .ca-jigsaw-piece{display:grid;grid-template-columns:42px minmax(0,1fr) auto;gap:10px;align-items:center;padding:12px;border:1px solid #dfe7e4;border-radius:14px;background:#fff}.ca-jigsaw-piece>b{color:#0E4D4A}.ca-jigsaw-piece>span{font-weight:750;color:#173b39}.ca-jigsaw-piece>div{display:flex;gap:6px}.ca-jigsaw .ca-jigsaw-move{width:34px;height:34px;padding:0;border-radius:999px;background:#eef4f1;color:#0E4D4A}
 @media(max-width:720px){.ca-match-row,.ca-crossword label{grid-template-columns:1fr}.ca-anagram-grid{grid-template-columns:1fr}.ca-jigsaw-piece{grid-template-columns:34px minmax(0,1fr) auto}}
 
-/* Completed curriculum module marker — force WOMATE lemon check in participant + tester classroom */
+/* Completed curriculum module marker ΓÇö force WOMATE lemon check in participant + tester classroom */
 .canopyCoursePage .canopyCurriculum .canopyModuleRow .canopyModuleNo svg,
 .canopyCoursePage .canopyCurriculum .canopyModuleRow .canopyModuleNo svg path,
 .canopyCoursePage .canopyCurriculum .canopyModuleRow .canopyModuleNo svg polyline {
@@ -1027,7 +1027,7 @@
   stroke-width:2.8;
 }
 
-/* WOMATE Canopy — role-based team access + delivery operations */
+/* WOMATE Canopy ΓÇö role-based team access + delivery operations */
 .canopyTeamAccessToggle{display:grid;gap:5px;margin:-2px 0 4px}.canopyTeamAccessToggle button{width:max-content;border:0;background:transparent;padding:0;color:#174834;font:700 13px/1.3 inherit;text-decoration:underline;text-underline-offset:3px;cursor:pointer}.canopyTeamAccessToggle small,.canopyFieldHint{font-size:11px;color:#6a776f}.canopyTopRole{display:block!important;margin-top:2px;color:#6b776f!important;font-size:10px!important;text-transform:uppercase;letter-spacing:.08em}.canopyTeamActivate{max-width:900px;margin:0 auto;padding:54px 32px}.canopyTeamActivate>section{background:#fff;border:1px solid #e4e9e5;border-radius:28px;padding:40px;box-shadow:0 22px 70px rgba(21,55,43,.08)}.canopyTeamActivateIcon{width:50px;height:50px;border-radius:16px;display:grid;place-items:center;background:#eff6ef;margin-bottom:24px}.canopyTeamActivate h1{font-size:clamp(30px,4vw,50px);max-width:700px;margin:10px 0}.canopyTeamActivate>section>p{max-width:690px;color:#58655d}.canopyTeamActivate form{display:flex;gap:12px;align-items:end;margin-top:28px}.canopyTeamActivate form label{display:grid;gap:8px;flex:1;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.08em}.canopyTeamActivate form input{width:100%;height:50px;border:1px solid #cad4cd;border-radius:13px;padding:0 15px;font:700 15px/1.2 inherit;letter-spacing:.05em}.canopyTeamActivateNote{display:flex;gap:10px;align-items:flex-start;margin-top:24px;padding-top:20px;border-top:1px solid #e8ece9;color:#647068;font-size:12px}.canopyTeamAccessGrid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(300px,.8fr);gap:20px;align-items:stretch}.canopyTeamPack{border:1px solid #dbe4de;border-radius:22px;padding:26px;background:linear-gradient(145deg,#f7faf8,#eef5ef);display:flex;flex-direction:column;justify-content:space-between;gap:24px}.canopyTeamPack>div>span,.canopyTeamAdminSection header span,.canopyIssuedCodes header span,.canopyStaffSubmissionList article header small{font-size:10px;font-weight:900;letter-spacing:.11em;color:#537060}.canopyTeamPack h2,.canopyTeamAdminSection h2,.canopyIssuedCodes h2{margin:6px 0 8px}.canopyTeamPack p,.canopyTeamAdminSection header p{color:#68746d;line-height:1.55}.canopyTeamPackNumbers{display:grid!important;grid-template-columns:auto 1fr auto 1fr;gap:8px 12px;align-items:baseline}.canopyTeamPackNumbers strong{font-size:26px}.canopyTeamPackNumbers span{font-size:12px;color:#58655d}.canopyIssuedCodes,.canopyTeamAdminSection{margin-top:24px;border:1px solid #dde5df;border-radius:22px;background:#fff;padding:24px}.canopyIssuedCodes>header,.canopyTeamAdminSection>header{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:18px}.canopyIssuedCodes>div{display:grid;gap:9px}.canopyIssuedCodes article{display:grid;grid-template-columns:minmax(220px,1fr) minmax(250px,auto) 38px;gap:14px;align-items:center;padding:13px 14px;background:#f7f9f7;border-radius:13px}.canopyIssuedCodes article div{display:grid;gap:3px}.canopyIssuedCodes article small{color:#657169}.canopyIssuedCodes code{font-size:12px;font-weight:800;word-break:break-all}.canopyIssuedCodes article button,.canopyCodeRegister button{border:0;background:#edf3ee;border-radius:9px;width:36px;height:36px;display:grid;place-items:center;cursor:pointer}.canopyIssuedCodes>p{font-size:11px;color:#6d776f;margin:14px 0 0}.canopyTeamMemberList,.canopyCodeRegister,.canopyStaffSubmissionList,.canopySpotlightList{display:grid;gap:10px}.canopyTeamMemberList article{display:grid;grid-template-columns:44px minmax(180px,1fr) auto auto;gap:12px;align-items:center;padding:13px;border:1px solid #e5e9e6;border-radius:14px}.canopyTeamMemberAvatar{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:#173f31;color:#fff;font-weight:900}.canopyTeamMemberList article>div:nth-child(2){display:grid;gap:2px}.canopyTeamMemberList article>div:nth-child(2) span{font-size:12px;color:#69736d}.canopyTeamMemberList article>div:nth-child(2) small{font-size:11px;color:#345846}.canopyCodeRegister article{display:grid;grid-template-columns:minmax(220px,1fr) 120px 100px 110px 36px;gap:12px;align-items:center;padding:12px 13px;border-bottom:1px solid #edf0ee}.canopyCodeRegister article>div{display:grid;gap:2px}.canopyCodeRegister article small,.canopyCodeRegister article>span{font-size:11px;color:#657169}.canopyCodeRegister code{font-size:11px;font-weight:800}.canopyStaffModule{display:inline-flex;margin-top:12px;padding:8px 12px;border-radius:999px;background:#eef5ef;color:#244c39;font-size:12px}.canopyStaffStats{margin-top:24px}.canopyStaffMandate{display:flex!important;gap:14px!important;align-items:flex-start!important;text-align:left!important;cursor:default!important}.canopyStaffMandate svg{flex:none;margin-top:2px}.canopyStaffMandate span{display:grid;gap:5px}.canopyStaffMandate small{line-height:1.5}.canopyStaffSubmissionList article{border:1px solid #e3e9e5;border-radius:17px;padding:18px;background:#fbfcfb}.canopyStaffSubmissionList article>header{display:flex;justify-content:space-between;gap:16px}.canopyStaffSubmissionList article>header>div:first-child{display:grid;gap:3px}.canopyStaffSubmissionList article>header>div:first-child span{font-size:11px;color:#707a74}.canopyStaffSubmissionList article>header>div:last-child{display:grid;text-align:right;align-content:start}.canopyStaffSubmissionList article>header strong{font-size:22px}.canopyStaffSubmissionList article>header div:last-child small{font-size:10px;color:#597060}.canopyStaffSubmissionList article>p{margin:16px 0;color:#405147;line-height:1.6}.canopyStaffSubmissionList article>footer{display:flex;justify-content:space-between;gap:12px;align-items:center}.canopyStaffSubmissionList article>footer a{font-size:12px;font-weight:800;color:#214f3a;text-decoration:none}.canopySpotlightForm{margin-top:24px}.canopySpotlightActions{display:flex;justify-content:flex-end;gap:10px}.canopySpotlightList article{display:grid;grid-template-columns:30px minmax(180px,1fr) auto auto;gap:12px;align-items:start;padding:14px;border:1px solid #e5e9e6;border-radius:14px}.canopySpotlightList article>svg{margin-top:3px}.canopySpotlightList article>div:nth-child(2){display:grid;gap:3px}.canopySpotlightList article>div:nth-child(2)>span{font-size:11px;color:#68746d}.canopySpotlightList article p{margin:5px 0 0;color:#45554b;font-size:12px}.canopySpotlightDecision{display:flex;gap:6px}.canopySpotlightDecision button{border:1px solid #cfd9d2;background:#fff;border-radius:9px;padding:8px 10px;font:700 11px/1 inherit;cursor:pointer}.canopyTeamAdmin .canopyPageHead{max-width:850px}
 @media(max-width:900px){.canopyTeamAccessGrid{grid-template-columns:1fr}.canopyTeamActivate{padding:30px 18px}.canopyTeamActivate>section{padding:26px}.canopyTeamActivate form{display:grid}.canopyIssuedCodes article{grid-template-columns:1fr 38px}.canopyIssuedCodes article code{grid-column:1}.canopyTeamMemberList article{grid-template-columns:44px 1fr auto}.canopyTeamMemberList article>button{grid-column:2/4;justify-self:start}.canopyCodeRegister article{grid-template-columns:1fr auto}.canopyCodeRegister article>code,.canopyCodeRegister article>span{grid-column:auto}.canopyStaffSubmissionList article>footer{align-items:flex-start;flex-direction:column}.canopySpotlightList article{grid-template-columns:28px 1fr auto}.canopySpotlightDecision{grid-column:2/4}}
 @media(max-width:560px){.canopyTeamPackNumbers{grid-template-columns:auto 1fr!important}.canopyTeamMemberList article{grid-template-columns:40px 1fr}.canopyTeamMemberList article>.canopyAccessStatus{grid-column:2}.canopyTeamMemberList article>button{grid-column:2}.canopyCodeRegister article{grid-template-columns:1fr}.canopyCodeRegister article>*{grid-column:1!important}.canopyIssuedCodes>header,.canopyTeamAdminSection>header{display:grid}.canopyStaffSubmissionList article>header{display:grid}.canopyStaffSubmissionList article>header>div:last-child{text-align:left}.canopySpotlightList article{grid-template-columns:26px 1fr}.canopySpotlightList article>.canopyAccessStatus,.canopySpotlightDecision{grid-column:2}}
@@ -1038,7 +1038,7 @@
 @media(max-width:820px){.canopyAdminPreviewPanel{display:block}.canopyAdminPreviewActions{justify-content:flex-start;margin-top:18px}.canopyPreviewControls{display:grid}.canopyPreviewControls label,.canopyPreviewControls select,.canopyPreviewControls button{width:100%;min-width:0}}
 
 
-/* WOMATE CANOPY · progressive assignment submission · 2026-09-21 */
+/* WOMATE CANOPY ┬╖ progressive assignment submission ┬╖ 2026-09-21 */
 
 .ca-assignment-progress{
   margin:0 0 18px;
@@ -1158,7 +1158,7 @@
 }
 
 
-/* WOMATE CanopyCanvas · responsive campaign graphics V2 · 2026-09-21 */
+/* WOMATE CanopyCanvas ┬╖ responsive campaign graphics V2 ┬╖ 2026-09-21 */
 .cc-graphic-choice{margin-top:2px}
 .cc-graphic-choice>span{display:flex;align-items:baseline;justify-content:space-between;gap:10px}.cc-graphic-choice>span small{font-size:10px;color:#6f827e;font-weight:700}
 .cc-graphic-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-top:10px;max-height:430px;overflow:auto;padding:2px 4px 8px 2px;scrollbar-width:thin}
@@ -1179,7 +1179,7 @@
 .cc-preview-upgraded>small,.cc-preview-upgraded>h2,.cc-preview-upgraded>p,.cc-preview-upgraded>.cc-action-button,.cc-preview-upgraded>em,.cc-preview-upgraded>.cc-watermark,.cc-preview-upgraded>.cc-preview-icons{position:relative;z-index:4}
 @media(max-width:760px){.cc-graphic-grid{grid-template-columns:repeat(2,minmax(0,1fr));max-height:360px}.cc-graphic-grid button{grid-template-rows:72px auto}.cc-graphic-grid button img,.cc-no-graphic{height:72px}.cc-graphic-choice>span{align-items:flex-start;flex-direction:column;gap:2px}}
 
-/* WOMATE · Canopy participant profile self-service · 2026-09-23 */
+/* WOMATE ┬╖ Canopy participant profile self-service ┬╖ 2026-09-23 */
 .canopyProfileSettings .canopyProfileFacts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:18px}
 .canopyProfileSettings .canopyProfileFacts>div{padding:16px;border:1px solid rgba(14,77,74,.12);border-radius:16px;background:#fff;display:flex;flex-direction:column;gap:5px}
 .canopyProfileSettings .canopyProfileFacts small{color:#667b77;font-size:11px;text-transform:uppercase;letter-spacing:.08em}
@@ -1198,7 +1198,7 @@
 @media(max-width:820px){.canopyProfileSettings .canopyProfileFacts{grid-template-columns:1fr 1fr}.canopyProfileEdit{grid-template-columns:1fr}}
 @media(max-width:520px){.canopyProfileSettings .canopyProfileFacts{grid-template-columns:1fr}.canopyProfileEdit,.canopyDangerZone{padding:17px}}
 
-/* WOMATE · Ask Canopy floating participant guide · 2026-09-23 */
+/* WOMATE ┬╖ Ask Canopy floating participant guide ┬╖ 2026-09-23 */
 .canopyHelpLazyState{background:#fff;border:1px solid var(--canopy-line);border-radius:20px;padding:32px;color:var(--canopy-muted)}
 .askCanopyWidget{position:fixed;right:22px;bottom:22px;z-index:1200;display:flex;flex-direction:column;align-items:flex-end;gap:12px;pointer-events:none}
 .askCanopyWidget>*{pointer-events:auto}
@@ -1239,7 +1239,7 @@
 .askCanopyPanel>footer{display:flex;align-items:center;gap:6px;padding:0 13px 10px;background:#fff;color:#72857f;font-size:8px}
 @media(max-width:620px){.askCanopyWidget{right:12px;bottom:12px}.askCanopyPanel{width:calc(100vw - 24px);height:min(620px,calc(100vh - 92px));border-radius:20px}.askCanopyLauncher{padding-right:11px}.askCanopyLauncherAvatar{width:44px;height:44px}.askCanopyQuick{padding-left:10px;padding-right:10px}.askCanopyTranscript{padding:12px 10px}.askCanopyBubble{max-width:92%}}
 
-/* WOMATE CANOPY · MODERN PROFILE SETTINGS · 2026-09-24 */
+/* WOMATE CANOPY ┬╖ MODERN PROFILE SETTINGS ┬╖ 2026-09-24 */
 .canopyProfileModern{width:100%;max-width:1120px;margin:0 auto}
 .canopyProfilePageHead{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:22px}
 .canopyProfilePageHead .canopyEyebrow{margin:0 0 8px}
@@ -1451,7 +1451,7 @@ html[data-canopy-theme="dark"] .canopyAuth input{background:#091f1c;color:#f4fff
 html[data-canopy-theme="dark"] .canopyAuth input:focus{border-color:#42e6ca;box-shadow:0 0 0 3px rgba(66,230,202,.12)}
 html[data-canopy-theme="dark"] .canopyModulePreview article{border-color:#294842}
 
-/* Canopy dark-mode contrast hardening · 2026-09-24
+/* Canopy dark-mode contrast hardening ┬╖ 2026-09-24
    Keep learning, assignment, certificate and complaint surfaces readable
    without changing their light-mode appearance or layout. */
 html[data-canopy-theme="dark"] .canopyCoursePage .canopySectionHead h2,
@@ -1714,7 +1714,7 @@ html[data-canopy-theme="dark"] .canopyDeleteControlsModern input{background:#0a2
 html[data-canopy-theme="dark"] .canopyDeleteControlsModern input:focus{border-color:#ff9a8f;box-shadow:0 0 0 4px rgba(255,154,143,.1)}
 
 /* ========================================================================
-   WOMATE CANOPY · LEARNER EXPERIENCE LAYER · 2026-09-24
+   WOMATE CANOPY ┬╖ LEARNER EXPERIENCE LAYER ┬╖ 2026-09-24
    Journey, This Week, live countdown, reflection memory, Spotlight, portfolio
    and creative assignment examples. Lightweight CSS only.
    ======================================================================== */
@@ -1779,7 +1779,7 @@ html[data-canopy-theme="dark"] .canopyDeleteControlsModern input:focus{border-co
 /* Dashboard extra card */
 .cx-dashboard-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
 
-/* Reflection micro moments — Modules 02–05 only */
+/* Reflection micro moments ΓÇö Modules 02ΓÇô05 only */
 .cx-reflect{margin:30px 0 6px;padding:20px;display:grid;grid-template-columns:40px 1fr;gap:14px;border:1px solid #dce7e1;border-radius:18px;background:linear-gradient(145deg,#f8fbf9,#eef6f1)}
 .cx-reflect-icon{width:40px;height:40px;border-radius:13px;display:grid;place-items:center;background:#0e4d4a;color:#c6ff52}
 .cx-reflect-main small{font-size:9px;font-weight:900;letter-spacing:.12em;color:#0e4d4a}
@@ -1959,7 +1959,7 @@ html[data-canopy-theme="dark"] .ca-practical-example figure{background:#102f2b}
  .ca-practical-example figure img,.cx-portfolio-grid article,.cx-journey-node{transition:none!important}
 }
 
-/* Portfolio print / PDF export — no heavyweight PDF dependency */
+/* Portfolio print / PDF export ΓÇö no heavyweight PDF dependency */
 @media print{
  body *{visibility:hidden!important}
  .cx-portfolio,.cx-portfolio *{visibility:visible!important}
@@ -1974,7 +1974,7 @@ html[data-canopy-theme="dark"] .ca-practical-example figure{background:#102f2b}
 .ca-practical-gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:8px}.ca-practical-example>small{display:block;margin:8px 0 6px;font-size:9px;font-weight:900;letter-spacing:.08em;color:#6d847c}.ca-practical-example:not(.is-gallery) .ca-practical-gallery{grid-template-columns:1fr}@media(max-width:680px){.ca-practical-gallery{grid-template-columns:1fr 1fr}.ca-practical-gallery figure:nth-child(3){grid-column:1/-1}}
 
 .canopyReviewModules{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:4px 0 12px}.canopyReviewModules button{border:1px solid var(--canopy-line);background:#fff;color:#536965;border-radius:999px;padding:8px 11px;min-height:38px;display:inline-flex;align-items:center;gap:7px;font:inherit;font-size:12px;font-weight:800;cursor:pointer}.canopyReviewModules button small{background:#eef4f1;border-radius:99px;padding:3px 7px;font-size:10px}.canopyReviewModules button.active{background:var(--canopy);border-color:var(--canopy);color:#fff}.canopyReviewModules button.active small{background:rgba(255,255,255,.16);color:var(--canopy-lime)}html[data-canopy-theme="dark"] .canopyReviewModules button:not(.active){background:#13231f;color:#dce9e5;border-color:#35534b}
-/* === WOMATE CANOPY · learner play + live session polish · 2026-09-24 === */
+/* === WOMATE CANOPY ┬╖ learner play + live session polish ┬╖ 2026-09-24 === */
 .cx-live.has-poster{grid-template-columns:minmax(150px,220px) minmax(0,1fr);padding:0;align-items:stretch;background:linear-gradient(120deg,#082f2c,#0e4d4a)}
 .cx-live-poster{width:100%;height:100%;min-height:250px;object-fit:cover;display:block}
 .cx-live-body{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:16px;padding:20px 22px;min-width:0;position:relative;z-index:1}
@@ -2059,7 +2059,7 @@ html[data-canopy-theme="dark"] .canopyAccessStatus.isWithdrawn{background:#3b211
 @media(max-width:520px){.cx-live:not(.has-poster) .cx-live-body{grid-template-columns:1fr}.cx-live:not(.has-poster) .cx-live-pulse{display:none}.cx-live:not(.has-poster) .cx-link{grid-column:1}}
 
 
-/* WOMATE CANOPY · DEEP LEARNER UX FIX · 2026-09-24
+/* WOMATE CANOPY ┬╖ DEEP LEARNER UX FIX ┬╖ 2026-09-24
    Less carding, shorter copy, responsive live sessions, large examples, word search. */
 
 /* Minimal learning journey */
@@ -2130,7 +2130,7 @@ html[data-canopy-theme="dark"] .cx-wordsearch-grid button{background:#0a211e;bor
 }
 @media(prefers-reduced-motion:reduce){.cx-wordsearch-grid.is-wrong{animation:none!important}}
 
-/* WOMATE CANOPY · PREMIUM UI ARCHITECTURE PASS · 2026-09-24
+/* WOMATE CANOPY ┬╖ PREMIUM UI ARCHITECTURE PASS ┬╖ 2026-09-24
    Global-standard spacing, typography, contrast, responsive rhythm and reduced carding. */
 
 :root{
@@ -2164,7 +2164,7 @@ html[data-canopy-theme="dark"] .cx-wordsearch-grid button{background:#0a211e;bor
 .canopyAppTop{height:66px;padding:0 clamp(18px,2.7vw,34px);gap:18px;background:rgba(255,255,255,.96);backdrop-filter:blur(12px)}
 .canopySignout{border-radius:10px;padding:8px 10px}
 
-/* HOME — strong contrast and deliberate hierarchy */
+/* HOME ΓÇö strong contrast and deliberate hierarchy */
 .canopyWelcome{min-height:220px;align-items:center;background:linear-gradient(125deg,#092F2C 0%,#0E4D4A 70%,#125A55 100%);padding:clamp(30px,4vw,50px);border-radius:24px;box-shadow:0 24px 70px rgba(9,47,44,.12)}
 .canopyWelcome,.canopyWelcome h1,.canopyWelcome h2,.canopyWelcome h3,.canopyWelcome strong,.canopyWelcome b{color:#fff!important}
 .canopyWelcome .canopyEyebrow{color:var(--canopy-lime)!important}
@@ -2174,13 +2174,13 @@ html[data-canopy-theme="dark"] .cx-wordsearch-grid button{background:#0a211e;bor
 .canopyProgressRing>div{width:94px;height:94px;background:#0B403C}
 .canopyProgressRing strong{font-size:26px;color:#fff!important}.canopyProgressRing span{color:#CBE1DA!important}
 
-/* One flat progress strip — no extra quick-link cards */
+/* One flat progress strip ΓÇö no extra quick-link cards */
 .canopyDashStrip{margin:0;padding:22px 0;border-top:0;border-bottom:1px solid var(--canopy-line)}
 .canopyDashProgress small{font-size:9px}.canopyDashProgress strong{font-size:18px;letter-spacing:-.01em;color:var(--canopy-ink)}
 .canopyDashProgress .canopyLine{height:5px;max-width:560px;margin-top:11px}
 .canopyDashActions .canopyPrimary{min-height:44px;padding:0 18px}
 
-/* THIS WEEK — one section with rows, not nested cards */
+/* THIS WEEK ΓÇö one section with rows, not nested cards */
 .cx-week{margin:26px 0 0;padding:0;border:0;background:transparent;box-shadow:none}
 .cx-week>header{padding-bottom:10px;margin:0;border-bottom:1px solid var(--canopy-line)}
 .cx-week>header>span{font-size:9px}.cx-week>header>strong{font-size:11px}
@@ -2189,7 +2189,7 @@ html[data-canopy-theme="dark"] .cx-wordsearch-grid button{background:#0a211e;bor
 .cx-week-row:last-child{border-bottom:0}
 .cx-week-row strong{font-size:13px;font-weight:760}.cx-week-row .cx-text-action{font-size:11px}
 
-/* LIVE SESSION — use the full horizontal space on laptop */
+/* LIVE SESSION ΓÇö use the full horizontal space on laptop */
 .cx-live,.cx-live.has-poster{margin-top:22px;width:100%;min-height:230px;border-radius:22px;background:linear-gradient(118deg,#092F2C,#0E4D4A);box-shadow:0 24px 60px rgba(9,47,44,.14);overflow:hidden;color:#fff}
 .cx-live.has-poster{display:grid;grid-template-columns:clamp(150px,17%,205px) minmax(0,1fr)}
 .cx-live-poster{width:100%;height:100%;min-height:230px;object-fit:cover;object-position:50% 18%}
@@ -2213,7 +2213,7 @@ html[data-canopy-theme="dark"] .cx-wordsearch-grid button{background:#0a211e;bor
 .cx-journey-node{width:34px;height:34px;background:var(--canopy-page);box-shadow:none}
 .cx-journey-stop>strong{font-size:11px;font-weight:760;color:#536A64}
 
-/* COURSE — premium dark hero, then a clean module list */
+/* COURSE ΓÇö premium dark hero, then a clean module list */
 .canopyCourseHero{display:block;margin:0;padding:clamp(34px,4vw,52px);border:0;border-radius:24px;background:linear-gradient(125deg,#092F2C,#0E4D4A);box-shadow:0 24px 70px rgba(9,47,44,.11)}
 .canopyCourseHero .canopyEyebrow{color:var(--canopy-lime)!important}
 .canopyCourseHero h1{max-width:850px;margin:8px 0 20px;color:#fff!important;font-size:clamp(38px,4.8vw,62px);line-height:.98;letter-spacing:-.05em}
@@ -2233,7 +2233,7 @@ html[data-canopy-theme="dark"] .cx-wordsearch-grid button{background:#0a211e;bor
 .canopyModuleRow>div>span{font-size:10px;color:#6E817B;font-weight:700}
 .canopyModuleArrow{display:flex;align-items:center;gap:8px;color:var(--canopy)}
 
-/* Progress — one metric band, not three cards */
+/* Progress ΓÇö one metric band, not three cards */
 .canopyProgressHero{display:flex;align-items:stretch;gap:0;border-top:1px solid var(--canopy-line);border-bottom:1px solid var(--canopy-line);margin:6px 0 22px}
 .canopyProgressHero>div{flex:1;background:transparent!important;color:var(--canopy-ink)!important;border-radius:0!important;padding:20px 18px 18px;border-right:1px solid var(--canopy-line)}
 .canopyProgressHero>div:first-child{padding-left:0}.canopyProgressHero>div:last-child{border-right:0}
@@ -2241,20 +2241,20 @@ html[data-canopy-theme="dark"] .cx-wordsearch-grid button{background:#0a211e;bor
 .canopyProgressModules{gap:0;border-top:1px solid var(--canopy-line)}
 .canopyProgressModules article{background:transparent;border:0;border-bottom:1px solid var(--canopy-line);border-radius:0;padding:18px 0}
 
-/* Resources — editorial rows, no card wall */
+/* Resources ΓÇö editorial rows, no card wall */
 .canopyResources>section{gap:0;border-top:1px solid var(--canopy-line)}
 .canopyResources a{grid-template-columns:34px minmax(0,1fr) 28px;border:0;border-bottom:1px solid var(--canopy-line);border-radius:0;background:transparent;padding:18px 2px}
 .canopyResources a:hover{background:linear-gradient(90deg,rgba(14,77,74,.035),transparent)}
 .canopyResources h3{font-size:17px;margin:2px 0;color:var(--canopy-ink)}
 
-/* Assignments — preserve richness, remove container-on-container feeling */
+/* Assignments ΓÇö preserve richness, remove container-on-container feeling */
 .ca-page{max-width:1240px;padding:34px clamp(20px,3vw,42px) 74px}
 .ca-card{border-radius:20px;border-color:#DDE7E3;box-shadow:0 12px 34px rgba(20,55,47,.035)}
 .ca-threefold>div{padding:20px 18px}
 .ca-practical-slider{border:1px solid #DDE7E3;border-radius:18px;background:#F2F6F4}
 .ca-practical-slider figure{min-height:420px}.ca-practical-slider img{height:min(68vh,700px);min-height:420px;padding:10px}
 
-/* CANOPYCANVAS — workspace architecture instead of a scattered control wall */
+/* CANOPYCANVAS ΓÇö workspace architecture instead of a scattered control wall */
 .cc-page{max-width:1260px;padding:34px clamp(18px,3vw,42px) 76px}
 .cc-head{max-width:760px;margin-bottom:24px}.cc-head h1{font-size:clamp(36px,4.5vw,58px);line-height:.98;letter-spacing:-.05em;margin:8px 0 10px;color:var(--canopy-ink)}
 .cc-head p{max-width:640px;font-size:15px;line-height:1.5;color:var(--canopy-muted);margin:0}.cc-kicker{font-size:9px;font-weight:900;letter-spacing:.13em;color:var(--canopy)}
@@ -2266,7 +2266,7 @@ html[data-canopy-theme="dark"] .cx-wordsearch-grid button{background:#0a211e;bor
 .cc-options{border-top:1px solid var(--canopy-line);border-bottom:1px solid var(--canopy-line)}
 .cc-options+ .cc-options{border-top:0}
 .cc-options>summary{list-style:none;min-height:48px;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;font-size:12px;font-weight:900;color:var(--canopy-ink)}
-.cc-options>summary::-webkit-details-marker{display:none}.cc-options>summary:after{content:"+";font-size:20px;line-height:1;color:#7A8E87}.cc-options[open]>summary:after{content:"–"}
+.cc-options>summary::-webkit-details-marker{display:none}.cc-options>summary:after{content:"+";font-size:20px;line-height:1;color:#7A8E87}.cc-options[open]>summary:after{content:"ΓÇô"}
 .cc-options>summary small{margin-left:auto;margin-right:8px;color:#81918C;font-size:9px;font-weight:750}
 .cc-options-body{display:grid;gap:14px;padding:2px 0 18px}
 .cc-palette-grid,.cc-texture-grid{gap:7px}.cc-palette-grid button,.cc-texture-grid button{border-radius:10px;box-shadow:none!important}
@@ -2351,7 +2351,7 @@ html[data-canopy-theme="dark"] .cc-head p{color:#ABC2BB}
 }
 
 
-/* WOMATE CANOPY · MOBILE COURSE + PROGRESS RESPONSIVE FIX · 2026-09-24
+/* WOMATE CANOPY ┬╖ MOBILE COURSE + PROGRESS RESPONSIVE FIX ┬╖ 2026-09-24
    Keep the five-stage journey fully visible without horizontal scrolling and
    centre the progress metric band on phones. */
 .canopyCoursePage,.canopyProgressPage{overflow-x:hidden}
@@ -2435,7 +2435,7 @@ html[data-canopy-theme="dark"] .cc-head p{color:#ABC2BB}
   .canopyProgressHero span{font-size:7.5px!important;max-width:76px}
 }
 
-/* WOMATE CANOPY · ADMIN SPOTLIGHT FINAL SELECTION · 2026-09-24 */
+/* WOMATE CANOPY ┬╖ ADMIN SPOTLIGHT FINAL SELECTION ┬╖ 2026-09-24 */
 .canopyAdminSpotlight{display:grid;gap:28px;max-width:1180px;margin:0 auto;padding-bottom:42px}
 .canopySpotlightTop{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;padding:30px 0 24px;border-bottom:1px solid var(--canopy-line)}
 .canopySpotlightTop>div:first-child{max-width:720px}.canopySpotlightTop span,.canopySpotlightControls label,.canopySpotlightQueue .canopySectionHead span{font-size:11px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--canopy-muted)}
@@ -2452,10 +2452,10 @@ html[data-canopy-theme='dark'] .canopySpotlightWeekTabs,html[data-canopy-theme='
 @media(max-width:560px){.canopyAdminSpotlight{gap:20px}.canopySpotlightTop{display:grid;gap:18px;padding-top:18px}.canopySpotlightQuota{text-align:left;min-width:0}.canopySpotlightQuota strong{font-size:36px}.canopySpotlightWeekTabs{border-radius:12px}.canopySpotlightWeekTabs button{padding:12px 10px;display:grid;justify-items:start}.canopySpotlightCandidateAction{flex-wrap:wrap}.canopySpotlightCandidateAction button{width:100%}}
 
 
-/* WOMATE CANOPY · SPOTLIGHT REVIEW FILTERS + LOVE IT · 2026-09-25 */
+/* WOMATE CANOPY ┬╖ SPOTLIGHT REVIEW FILTERS + LOVE IT ┬╖ 2026-09-25 */
 .canopySpotlightFilterBar{display:flex;align-items:end;gap:10px;flex-wrap:wrap;padding:2px 0 4px}.canopySpotlightFilterBar label{display:grid;gap:6px;min-width:150px;font-size:10px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--canopy-muted)}.canopySpotlightFilterBar select{min-height:42px;border:1px solid var(--canopy-line);border-radius:11px;padding:0 12px;background:var(--canopy-white);color:var(--canopy-ink);font-size:13px;font-weight:700;letter-spacing:0;text-transform:none}.canopySpotlightLoveFilter,.canopySpotlightLove{border:1px solid var(--canopy-line);background:transparent;color:var(--canopy-muted);display:inline-flex;align-items:center;justify-content:center;gap:7px;font-weight:850;border-radius:999px}.canopySpotlightLoveFilter{min-height:42px;padding:0 14px}.canopySpotlightLove{padding:8px 11px}.canopySpotlightLoveFilter.active,.canopySpotlightLove.isLoved{border-color:#e7a0ad;background:#fff2f4;color:#b72643}.canopySpotlightAdminList>article.is-loved{background:linear-gradient(90deg,rgba(255,242,244,.78),transparent 55%)}.canopySpotlightCandidateMeta{display:flex;align-items:center;gap:7px;flex-wrap:wrap}.canopySpotlightCandidateMeta>span{font-size:9px;font-weight:850;padding:4px 7px;border-radius:999px;background:#eef4f1;color:var(--canopy-muted);text-transform:capitalize}.canopySpotlightCandidateMain blockquote{margin:7px 0 9px;padding:8px 11px;border-left:2px solid var(--canopy-lime);background:rgba(198,255,82,.08);font-size:12px;line-height:1.45;color:var(--canopy-ink)}html[data-canopy-theme='dark'] .canopySpotlightFilterBar select{background:#0f2624;border-color:#2b4541;color:#fff}html[data-canopy-theme='dark'] .canopySpotlightLoveFilter.active,html[data-canopy-theme='dark'] .canopySpotlightLove.isLoved{background:#3a1820;border-color:#7b3544;color:#ffb8c4}html[data-canopy-theme='dark'] .canopySpotlightAdminList>article.is-loved{background:linear-gradient(90deg,rgba(82,30,41,.34),transparent 55%)}html[data-canopy-theme='dark'] .canopySpotlightCandidateMain blockquote{color:#fff;background:rgba(198,255,82,.05)}@media(max-width:700px){.canopySpotlightFilterBar{display:grid;grid-template-columns:1fr 1fr}.canopySpotlightFilterBar label{min-width:0}.canopySpotlightLoveFilter{width:100%}}@media(max-width:460px){.canopySpotlightFilterBar{grid-template-columns:1fr}.canopySpotlightCandidateMeta{gap:5px}.canopySpotlightCandidateAction{align-items:stretch}.canopySpotlightLove{width:auto!important}}
 
-/* WOMATE CANOPY · participant Spotlight full submission view · 2026-09-25 */
+/* WOMATE CANOPY ┬╖ participant Spotlight full submission view ┬╖ 2026-09-25 */
 .cx-spotlight>header{margin-bottom:16px;align-items:flex-start}
 .cx-spotlight>header>div{min-width:0}
 .cx-spotlight-row{grid-auto-columns:minmax(360px,440px);gap:14px;scrollbar-width:none;padding:0 0 2px}
@@ -2477,7 +2477,7 @@ html[data-canopy-theme='dark'] .cx-spotlight article .cx-spotlight-actions a{bac
 @media(max-width:700px){.cx-spotlight{padding:20px 16px}.cx-spotlight-row{grid-auto-columns:minmax(0,88vw)}.cx-spotlight-row article{padding:18px}.cx-spotlight-response p{font-size:12.5px!important}.cx-spotlight-actions{display:grid;grid-template-columns:1fr}.cx-spotlight article .cx-spotlight-actions a{justify-content:center;text-align:center}}
 
 
-/* WOMATE CANOPY · Learner access filters · 2026-09-25 */
+/* WOMATE CANOPY ┬╖ Learner access filters ┬╖ 2026-09-25 */
 .canopyAccessWorkspace{display:grid;gap:14px}
 .canopyAccessFilterBar{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:4px 0 2px}
 .canopyAccessFilterBar>div:first-child{display:grid;gap:3px}
@@ -2496,7 +2496,7 @@ html[data-canopy-theme="dark"] .canopyAccessFilters button.active{background:var
 html[data-canopy-theme="dark"] .canopyAccessFilters button.active small{background:rgba(16,35,34,.12);color:#102322}
 @media(max-width:760px){.canopyAccessFilterBar{align-items:stretch;display:grid;gap:10px}.canopyAccessFilters{justify-content:flex-start;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.canopyAccessFilters button{justify-content:space-between;width:100%}}
 
-/* WOMATE CANOPY · targeted admin communications + submission lock · 2026-09-26 */
+/* WOMATE CANOPY ┬╖ targeted admin communications + submission lock ┬╖ 2026-09-26 */
 .ca-feedback.ca-awaiting-review{background:rgba(14,77,74,.055);border-color:rgba(14,77,74,.12)}
 .ca-feedback.ca-awaiting-review span{color:var(--canopy)}
 .canopyCommunicationComposer{display:grid;gap:18px}
@@ -2508,7 +2508,7 @@ html[data-canopy-theme="dark"] .canopyAudiencePicker{border-color:rgba(255,255,2
 @media(max-width:700px){.canopyAudienceLabel{display:grid;gap:3px}.canopyAudienceBadges{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.canopyAudienceBadges button{justify-content:space-between;width:100%}.canopyCommunicationSend{align-items:stretch;display:grid}.canopyCommunicationSend .canopyPrimary{width:100%}}
 
 
-/* WOMATE CANOPY · mobile profile + Spotlight responsive/reactions + lesson read-aloud · 2026-09-26 */
+/* WOMATE CANOPY ┬╖ mobile profile + Spotlight responsive/reactions + lesson read-aloud ┬╖ 2026-09-26 */
 .canopyMobileProfileAvatar{display:none;width:38px;height:38px;flex:0 0 38px;border:0;border-radius:50%;place-items:center;background:#0e4d4a;color:#fff;font-size:11px;font-weight:900;letter-spacing:.04em;box-shadow:0 0 0 3px rgba(14,77,74,.08);cursor:pointer}
 .canopyLessonHeader{display:flex;align-items:flex-start;justify-content:space-between;gap:18px}
 .canopyLessonHeader>div{min-width:0}
@@ -2516,7 +2516,7 @@ html[data-canopy-theme="dark"] .canopyAudiencePicker{border-color:rgba(255,255,2
 .canopyReadAloud:hover{background:#eef6f1;border-color:#bdd4c9}
 .canopyReadAloud.is-reading{background:#0e4d4a;color:#fff;border-color:#0e4d4a}
 
-/* Spotlight uses a true responsive grid — never a forced horizontal feed. */
+/* Spotlight uses a true responsive grid ΓÇö never a forced horizontal feed. */
 .cx-spotlight{overflow:hidden}
 .cx-spotlight-row{display:grid!important;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))!important;grid-auto-flow:row!important;grid-auto-columns:unset!important;gap:14px!important;overflow:visible!important;scroll-snap-type:none!important;padding:0!important}
 .cx-spotlight-row article{width:100%;min-width:0;min-height:0!important;padding:20px!important;border-radius:18px!important;overflow:hidden}
@@ -2580,7 +2580,7 @@ html[data-canopy-theme="dark"] .cx-spotlight-modal-close{background:#173a34;colo
  .cx-spotlight-reactions button{font-size:9px}
 }
 
-/* WOMATE CANOPY · closed-week assignment summary + Module 01 CanopyCanvas guide · 2026-09-26 */
+/* WOMATE CANOPY ┬╖ closed-week assignment summary + Module 01 CanopyCanvas guide ┬╖ 2026-09-26 */
 .ca-archive-row{display:grid;grid-template-columns:minmax(220px,1.15fr) minmax(120px,.34fr) minmax(260px,1fr);gap:24px;align-items:center;padding:20px 0!important;border:0!important;border-bottom:1px solid var(--canopy-line)!important;border-radius:0!important;background:transparent!important;box-shadow:none!important}
 .ca-archive-title small,.ca-archive-score span,.ca-archive-remark span{display:block;font-size:9px;font-weight:900;letter-spacing:.11em;color:var(--canopy-muted)}
 .ca-archive-title h2{margin:5px 0 0!important;font-size:18px!important;line-height:1.25!important;letter-spacing:-.02em!important}
@@ -2601,7 +2601,7 @@ html[data-canopy-theme="dark"] .ca-archive-remark p{color:#b8cbc5!important}
 @media(max-width:820px){.ca-archive-row{grid-template-columns:minmax(0,1fr) auto;gap:12px 18px}.ca-archive-score{padding-left:16px}.ca-archive-remark{grid-column:1/-1;padding:12px 0 0;border-left:0;border-top:1px solid var(--canopy-line)}html[data-canopy-theme="dark"] .ca-archive-remark{border-color:#28443f}}
 @media(max-width:520px){.ca-archive-row{grid-template-columns:1fr;gap:10px;padding:16px 0!important}.ca-archive-score,.ca-archive-remark{padding:10px 0 0;border-left:0;border-top:1px solid var(--canopy-line)}.ca-archive-score{display:flex;align-items:baseline;justify-content:space-between;gap:12px}.ca-archive-score strong{font-size:22px}.ca-archive-remark p{-webkit-line-clamp:3}.ca-canvas-guide-frame{border-radius:12px}}
 
-/* WOMATE CANOPY · Drive-access audit + premium Spotlight reaction assets · 2026-09-27 */
+/* WOMATE CANOPY ┬╖ Drive-access audit + premium Spotlight reaction assets ┬╖ 2026-09-27 */
 .canopyReviewToolbarLead{display:flex;align-items:center;gap:12px;flex-wrap:wrap;min-width:0}
 .canopyDriveAuditButton{min-height:34px;border:1px solid rgba(14,77,74,.18);border-radius:999px;background:#eef6f1;color:#0e4d4a;padding:7px 12px;font-size:10px;font-weight:900;letter-spacing:.02em;cursor:pointer;white-space:nowrap}
 .canopyDriveAuditButton:hover{background:#e3f1e9;border-color:rgba(14,77,74,.32)}
@@ -2613,7 +2613,7 @@ html[data-canopy-theme="dark"] .canopyDriveAuditButton{background:#173b34;border
 html[data-canopy-theme="dark"] .canopyDriveAuditButton:hover{background:#1d493f}
 @media(max-width:760px){.canopyReviewToolbarLead{width:100%;justify-content:space-between}.canopyDriveAuditButton{width:auto;max-width:100%}.cx-spotlight-reactions{gap:6px}.cx-spotlight-reactions button{flex:1 1 96px;justify-content:center;min-width:0}.cx-spotlight-reactions button img{width:24px;height:24px;flex-basis:24px}}
 
-/* WOMATE CANOPY · Spotlight Top 5 recognition · 2026-09-27 */
+/* WOMATE CANOPY ┬╖ Spotlight Top 5 recognition ┬╖ 2026-09-27 */
 .cx-spotlight-row>article.is-own-spotlight{border-color:rgba(198,255,82,.55);box-shadow:0 18px 48px rgba(14,77,74,.11)}
 .cx-spotlight-congrats{margin:16px 0 18px;padding:18px;border-radius:18px;background:linear-gradient(135deg,var(--canopy) 0%,#0a3e3b 100%);color:#fff}
 .cx-spotlight-congrats>small{display:block;color:var(--canopy-lime);font-size:10px;font-weight:900;letter-spacing:.13em;margin-bottom:6px}
@@ -2636,7 +2636,7 @@ html[data-canopy-theme="dark"] .canopyDriveAuditButton:hover{background:#1d493f}
 
 
 
-/* WOMATE CANOPY · TRUE ADMIN ASSESS SUBMISSIONS · latest-attempt search/filter fix · 2026-09-27 */
+/* WOMATE CANOPY ┬╖ TRUE ADMIN ASSESS SUBMISSIONS ┬╖ latest-attempt search/filter fix ┬╖ 2026-09-27 */
 .canopyAdminReviewFind{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap;padding-top:2px}
 .canopyAdminReviewSearch{display:grid;gap:6px;flex:1 1 280px;max-width:420px}
 .canopyAdminReviewSearch>span{font-size:9px;font-weight:900;letter-spacing:.09em;text-transform:uppercase;color:#6f817b}
@@ -2653,7 +2653,7 @@ html[data-canopy-theme="dark"] .canopyAdminAttemptFilters button.active{backgrou
 html[data-canopy-theme="dark"] .canopyAdminAttemptFilters button.active small{background:#12352f;color:var(--canopy-lime)}
 @media(max-width:760px){.canopyAdminReviewFind{align-items:stretch}.canopyAdminReviewSearch{max-width:none;flex-basis:100%}.canopyAdminAttemptFilters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%}.canopyAdminAttemptFilters button{justify-content:space-between;width:100%}.canopyAdminReviewShown{justify-self:start}}
 
-/* WOMATE CANOPY · celebratory final-result reveal · 2026-09-27 */
+/* WOMATE CANOPY ┬╖ celebratory final-result reveal ┬╖ 2026-09-27 */
 .ca-archive-row{grid-template-columns:minmax(200px,1fr) minmax(110px,.3fr) minmax(240px,.9fr) minmax(150px,.48fr)}
 .ca-result-ready{display:inline-flex;margin-top:8px;padding:5px 9px;border-radius:999px;background:rgba(198,255,82,.2);color:var(--canopy);font-size:9px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}
 .ca-archive-celebration{min-width:0;padding-left:18px;border-left:1px solid var(--canopy-line)}
@@ -2664,7 +2664,7 @@ html[data-canopy-theme="dark"] .ca-archive-celebration{border-color:#28443f}
 @media(max-width:680px){.ca-archive-row{grid-template-columns:minmax(0,1fr) auto}.ca-archive-remark{grid-column:1/-1}.ca-archive-celebration{grid-column:1/-1;grid-row:auto;padding:12px 0 0;border-left:0;border-top:1px solid var(--canopy-line)}.ca-archive-celebration iframe{width:min(100%,320px);max-height:none;aspect-ratio:16/9}.ca-result-ready{margin-top:7px}}
 @media(max-width:520px){.ca-archive-row{grid-template-columns:1fr}.ca-archive-score,.ca-archive-remark,.ca-archive-celebration{grid-column:1;padding:10px 0 0;border-left:0;border-top:1px solid var(--canopy-line)}.ca-archive-celebration iframe{width:100%;aspect-ratio:16/9;border-radius:12px}}
 
-/* WOMATE CANOPY · final-result responsive polish · 2026-09-27 */
+/* WOMATE CANOPY ┬╖ final-result responsive polish ┬╖ 2026-09-27 */
 /* Desktop: keep score visually centred and give the celebration its own space. */
 .ca-archive-row{grid-template-columns:minmax(220px,.9fr) minmax(150px,.34fr) minmax(260px,1.05fr) minmax(220px,.58fr)!important;gap:28px!important;align-items:center!important}
 .ca-archive-title{min-width:0}
@@ -2680,7 +2680,7 @@ html[data-canopy-theme="dark"] .ca-archive-score{border-color:#28443f!important}
 @media(max-width:680px){.ca-archive-row{grid-template-columns:1fr!important;gap:12px!important}.ca-archive-score,.ca-archive-remark,.ca-archive-celebration{grid-column:1!important;grid-row:auto!important;width:100%!important;padding:14px 0 0!important;border-left:0!important;border-right:0!important;border-top:1px solid var(--canopy-line)!important}.ca-archive-score{display:grid!important;justify-items:start!important;text-align:left!important}.ca-archive-score span,.ca-archive-score strong{text-align:left!important}.ca-archive-score strong{font-size:28px!important}.ca-archive-celebration{justify-content:flex-start!important}.ca-archive-celebration iframe{width:100%!important;max-width:420px!important;margin:0!important;aspect-ratio:16/9!important}.ca-result-ready{white-space:normal}}
 @media(max-width:420px){.ca-archive-celebration iframe{max-width:100%!important;border-radius:13px!important}.ca-archive-score strong{font-size:26px!important}}
 
-/* WOMATE CANOPY · stable final-result card v3 · 2026-09-27 */
+/* WOMATE CANOPY ┬╖ stable final-result card v3 ┬╖ 2026-09-27 */
 .ca-result-card{display:grid!important;grid-template-columns:minmax(230px,.95fr) minmax(170px,.42fr) minmax(260px,1fr) minmax(260px,.75fr)!important;gap:28px!important;align-items:stretch!important;padding:24px!important;border:1px solid var(--canopy-line)!important;border-radius:22px!important;background:var(--canopy-surface)!important;box-shadow:none!important;overflow:hidden}
 .ca-result-card>div{min-width:0}
 .ca-result-title{display:flex;flex-direction:column;justify-content:center}
@@ -2695,7 +2695,7 @@ html[data-canopy-theme="dark"] .ca-archive-score{border-color:#28443f!important}
 html[data-canopy-theme="dark"] .ca-result-score{border-color:#35514b!important;background:rgba(198,255,82,.07)}
 @media(max-width:1100px){.ca-result-card{grid-template-columns:minmax(0,1fr) minmax(170px,.34fr)!important;gap:18px 22px!important}.ca-result-title{grid-column:1}.ca-result-score{grid-column:2}.ca-result-remark{grid-column:1;padding:16px 0 0!important;border-top:1px solid var(--canopy-line)!important}.ca-result-gif{grid-column:2;padding-top:16px!important;border-top:1px solid var(--canopy-line)!important}.ca-result-gif iframe{min-height:150px!important;aspect-ratio:16/9!important}}
 @media(max-width:700px){.ca-result-card{grid-template-columns:1fr!important;padding:18px!important;gap:14px!important}.ca-result-title,.ca-result-score,.ca-result-remark,.ca-result-gif{grid-column:1!important;grid-row:auto!important}.ca-result-score{padding:16px!important}.ca-result-score strong{font-size:38px!important}.ca-result-remark,.ca-result-gif{padding-top:14px!important;border-top:1px solid var(--canopy-line)!important}.ca-result-gif iframe{width:100%!important;min-height:0!important;aspect-ratio:16/9!important;border-radius:15px!important}}
-/* Canopy Impact Profile — evidence, verified work and leadership progression */
+/* Canopy Impact Profile ΓÇö evidence, verified work and leadership progression */
 .cx-impact-profile{position:relative}
 .cx-impact-hero{padding-top:4px}
 .cx-impact-record{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.5fr);gap:34px;align-items:stretch;margin:30px 0 16px;padding:26px;border:1px solid #d8e7df;border-radius:24px;background:linear-gradient(135deg,#f7fbf8 0%,#eef7f2 100%)}
@@ -3031,7 +3031,7 @@ html[data-canopy-theme="dark"] .ca-missed-result-note p{color:#afc5be}
 @media(max-width:900px){.ca-missed-result-card{grid-template-columns:minmax(0,1fr) minmax(150px,.34fr)!important}.ca-missed-result-card .ca-missed-result-note{grid-column:1/-1;padding-top:14px;border-top:1px solid var(--canopy-line)}}
 @media(max-width:700px){.ca-missed-result-card{grid-template-columns:1fr!important}.ca-missed-result-card .ca-result-title,.ca-missed-result-card .ca-result-score,.ca-missed-result-card .ca-missed-result-note{grid-column:1!important}.ca-missed-result-card .ca-missed-result-note{padding-top:14px;border-top:1px solid var(--canopy-line)}}
 
-/* WOMATE CANOPY · Spotlight professional-image desk · 2026-09-28 */
+/* WOMATE CANOPY ┬╖ Spotlight professional-image desk ┬╖ 2026-09-28 */
 .canopySpotlightMediaDesk{margin:18px 0 26px;padding:20px;border:1px solid var(--canopy-line);border-radius:20px;background:color-mix(in srgb,var(--canopy-white) 96%,var(--canopy) 4%)}
 .canopySpotlightMediaHead{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:16px}.canopySpotlightMediaHead>div>span{display:block;font-size:10px;font-weight:950;letter-spacing:.13em;color:var(--canopy)}.canopySpotlightMediaHead h3{margin:5px 0 4px;font-size:22px}.canopySpotlightMediaHead p{margin:0;color:var(--canopy-muted);font-size:13px;line-height:1.5}.canopySpotlightMediaSummary{min-width:86px;text-align:right}.canopySpotlightMediaSummary strong{display:block;font-size:28px;line-height:1;color:var(--canopy)}.canopySpotlightMediaSummary strong small{font-size:13px;color:var(--canopy-muted)}.canopySpotlightMediaSummary span{font-size:10px;font-weight:850;color:var(--canopy-muted);text-transform:uppercase;letter-spacing:.08em}
 .canopySpotlightMediaTools{display:grid;grid-template-columns:minmax(220px,320px) 1fr;gap:14px;align-items:end;margin-bottom:14px}.canopySpotlightMediaSearch{display:grid;gap:6px}.canopySpotlightMediaSearch span{font-size:10px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--canopy-muted)}.canopySpotlightMediaSearch input{min-height:42px;border:1px solid var(--canopy-line);border-radius:11px;padding:0 12px;background:var(--canopy-white);color:var(--canopy-ink)}.canopySpotlightMediaFilters{display:flex;gap:7px;flex-wrap:wrap}.canopySpotlightMediaFilters button{min-height:38px;border:1px solid var(--canopy-line);border-radius:999px;background:transparent;color:var(--canopy-muted);font-weight:850;padding:0 11px;display:inline-flex;align-items:center;gap:6px}.canopySpotlightMediaFilters button small{min-width:20px;height:20px;border-radius:999px;display:grid;place-items:center;background:rgba(14,77,74,.08);font-size:9px}.canopySpotlightMediaFilters button.active{background:var(--canopy);border-color:var(--canopy);color:#fff}.canopySpotlightMediaFilters button.active small{background:rgba(255,255,255,.16);color:#fff}
@@ -3063,36 +3063,36 @@ html[data-canopy-theme="dark"] .canopyComplaintFilters button.active b{backgroun
 .canopyPublicProfileSection{display:grid;gap:20px}.canopyPublicProfilePhotoRow{display:flex;align-items:center;gap:16px;padding:16px;border:1px solid var(--canopy-line);border-radius:16px;background:var(--canopy-soft,#f6faf8)}.canopyPublicProfilePhotoRow>.canopyProfileAvatar{width:72px;height:72px;min-width:72px;border-radius:20px}.canopyPublicProfilePhotoCopy{display:grid;gap:5px;min-width:0}.canopyPublicProfilePhotoCopy>span{font-size:12px;line-height:1.5;color:var(--canopy-muted)}.canopyPublicProfilePhotoButtons{display:flex;gap:8px;flex-wrap:wrap;margin-top:5px}.canopyPublicProfilePhotoButtons .canopyPhotoButton,.canopyPublicProfilePhotoButtons .canopyPhotoRemove{width:auto;padding:0 13px}.canopyPublicProfileToggles{display:grid;grid-template-columns:1fr 1fr;gap:10px}.canopyPublicProfileToggles>label{display:flex;align-items:flex-start;gap:10px;padding:14px;border:1px solid var(--canopy-line);border-radius:14px;background:var(--canopy-soft,#f6faf8);cursor:pointer}.canopyPublicProfileToggles input{margin-top:3px}.canopyPublicProfileToggles span{display:grid;gap:3px}.canopyPublicProfileToggles small{font-size:11px;line-height:1.45;color:var(--canopy-muted)}.canopyPublicProfilePreview{display:grid;gap:12px;padding:16px;border:1px dashed var(--canopy-line);border-radius:16px}.canopyPublicProfilePreview>small{font-size:10px;font-weight:900;letter-spacing:.12em;color:var(--canopy-muted)}.canopyPublicProfilePreview>div:nth-child(2){display:flex;align-items:center;gap:12px}.canopyPublicProfilePreview .canopyProfileAvatar{width:50px;height:50px;min-width:50px;border-radius:14px}.canopyPublicProfilePreview b{display:block}.canopyPublicProfilePreview span,.canopyPublicProfilePreview p{font-size:12px;color:var(--canopy-muted)}.canopyPublicProfilePreview p{margin:4px 0 0}.canopyPublicProfileTags{display:flex;gap:6px;flex-wrap:wrap}.canopyPublicProfileTags span{padding:5px 8px;border:1px solid var(--canopy-line);border-radius:999px;font-size:10px;font-weight:800}.canopyPublicProfileSection .canopySettingsActions{display:flex;gap:10px;flex-wrap:wrap}html[data-canopy-theme="dark"] .canopyPublicProfilePhotoRow,html[data-canopy-theme="dark"] .canopyPublicProfileToggles>label{background:#102b25}@media(max-width:700px){.canopyPublicProfileToggles{grid-template-columns:1fr}.canopyPublicProfilePhotoRow{align-items:flex-start}.canopyPublicProfileSection .canopySettingsActions>*{width:100%}}
 
 
-/* WOMATE Canopy Spotlight queue hierarchy · 2026-10-07 */
+/* WOMATE Canopy Spotlight queue hierarchy ┬╖ 2026-10-07 */
 .canopySpotlightPendingDesk{margin:18px 0;padding:18px;border:1px solid rgba(14,77,74,.17);border-radius:18px;background:#f8fbf7}.canopySpotlightPendingDesk>header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:12px}.canopySpotlightPendingDesk>header span{font-size:9px;font-weight:850;letter-spacing:.11em;color:#0e4d4a}.canopySpotlightPendingDesk>header h3{margin:4px 0;font-size:19px}.canopySpotlightPendingDesk>header p{margin:0;color:#667a74;font-size:12px}.canopySpotlightPendingDesk>header>strong{min-width:38px;height:38px;border-radius:12px;background:#0e4d4a;color:#fff;display:grid;place-items:center}.canopySpotlightPendingDesk>div{display:grid;gap:7px}.canopySpotlightPendingDesk article{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:11px 12px;border:1px solid #e1e9e4;border-radius:12px;background:#fff}.canopySpotlightPendingDesk article>div{display:grid;gap:2px}.canopySpotlightPendingDesk article small{font-size:9px;color:#71827d}.canopySpotlightPendingDesk article b{font-size:13px}.canopySpotlightPendingDesk article span{font-size:10px;color:#60736e;text-transform:capitalize}.canopySpotlightPendingDesk article button{border:1px solid #d2dfd9;background:#fff;color:#0e4d4a;border-radius:9px;padding:7px 9px;display:flex;align-items:center;gap:5px}.canopySpotlightWeekTabs button.hasPending{box-shadow:inset 0 -3px #c6ff52}.canopySpotlightWeekTabs button span b{display:block;margin-top:2px;font-size:8px;color:#8a6100}@media(max-width:720px){.canopySpotlightPendingDesk article{align-items:flex-start;display:grid}.canopySpotlightPendingDesk article button{width:max-content}}
 
 
-/* WOMATE Spotlight workflow deep fix · 2026-10-07 */
+/* WOMATE Spotlight workflow deep fix ┬╖ 2026-10-07 */
 .canopySpotlightWeekTabsClean{margin:18px 0 12px;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}.canopySpotlightWeekTabsClean button{min-height:62px;border:1px solid #dbe5e0;border-radius:13px;background:#fff;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;gap:8px;text-align:left}.canopySpotlightWeekTabsClean button.active{background:#0e4d4a;color:#fff;border-color:#0e4d4a}.canopySpotlightWeekTabsClean button span{font-weight:800;font-size:12px}.canopySpotlightWeekTabsClean button small{font-size:9px;white-space:nowrap;color:inherit;opacity:.78}.canopySpotlightQueuePrimary{border:1px solid #d9e4df;border-radius:18px;background:#fff;padding:18px;margin:0 0 16px}.canopySpotlightQueuePrimary>header{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;padding-bottom:14px;border-bottom:1px solid #e8eeeb}.canopySpotlightQueuePrimary>header span:first-child{font-size:9px;font-weight:900;letter-spacing:.12em;color:#0e4d4a}.canopySpotlightQueuePrimary h3{margin:4px 0;font-size:20px}.canopySpotlightQueuePrimary p{margin:0;color:#687b75;font-size:12px}.canopySpotlightQueueCounts{display:flex;gap:7px;flex-wrap:wrap}.canopySpotlightQueueCounts span{min-width:76px;padding:8px 10px;background:#f4f7f5;border-radius:11px;display:grid!important;gap:1px;font-size:9px!important;letter-spacing:0!important;color:#657872!important}.canopySpotlightQueueCounts b{font-size:18px;color:#12352f}.canopySpotlightQueueRows{display:grid}.canopySpotlightQueueRows article{display:grid;grid-template-columns:minmax(200px,1fr) 110px auto;gap:14px;align-items:center;padding:13px 2px;border-top:1px solid #edf1ef}.canopySpotlightQueueRows article:first-child{border-top:0}.canopySpotlightQueueRows article>div:first-child{display:grid;gap:2px}.canopySpotlightQueueRows small{font-size:9px;color:#71847e}.canopySpotlightQueueRows b{font-size:14px}.canopySpotlightQueueRows article>div:first-child>span{font-size:10px;color:#657872;text-transform:capitalize}.canopySpotlightQueueRows em{font-style:normal;text-transform:uppercase;font-size:9px;font-weight:850;letter-spacing:.05em;padding:6px 8px;border-radius:999px;background:#fff1d6;color:#805a00;text-align:center}.canopySpotlightQueueRows article.is-shortlisted em{background:#eaf1ff;color:#365c91}.canopySpotlightQueueRows article.is-featured em{background:#e6f5df;color:#2d6226}.canopySpotlightQueueActions{display:flex;gap:7px;justify-content:flex-end}.canopySpotlightQueueActions .canopyPrimary,.canopySpotlightQueueActions .canopySecondary{min-height:36px;padding:0 12px;font-size:10px}.canopySpotlightMediaDisclosure{border:1px solid #dfe7e3;border-radius:15px;background:#fafcfb;margin:0 0 16px}.canopySpotlightMediaDisclosure>summary{cursor:pointer;padding:13px 15px;font-size:12px;font-weight:850;color:#0e4d4a;display:flex;justify-content:space-between;gap:12px}.canopySpotlightMediaDisclosure>summary span{font-size:10px;color:#71827d}.canopySpotlightMediaDisclosure .canopySpotlightMediaDesk{margin:0;border:0;border-top:1px solid #e5ece8;border-radius:0}.canopySpotlightEligibility{display:flex;align-items:center;justify-content:space-between;gap:18px;border-left:4px solid #c6ff52;background:#f8faf7;padding:15px 17px;margin:14px 0}.canopySpotlightEligibility span{font-size:9px;font-weight:900;letter-spacing:.11em;color:#0e4d4a}.canopySpotlightEligibility h3{font-size:18px;margin:3px 0}.canopySpotlightEligibility p{font-size:11px;color:#687b75;margin:0}.canopySpotlightEligibility>strong{min-width:42px;height:42px;border-radius:12px;background:#0e4d4a;color:#fff;display:grid;place-items:center;font-size:18px}.canopySpotlightSelectionControls{margin:10px 0 14px}.canopySpotlightFilterBar{display:none!important}.canopySpotlightPendingDesk{display:none!important}.canopySpotlightQueue{display:none!important}@media(max-width:900px){.canopySpotlightWeekTabsClean{grid-template-columns:repeat(2,minmax(0,1fr))}.canopySpotlightQueuePrimary>header{display:grid}.canopySpotlightQueueRows article{grid-template-columns:1fr auto}.canopySpotlightQueueActions{grid-column:1/-1;justify-content:flex-start}}@media(max-width:620px){.canopySpotlightWeekTabsClean{grid-template-columns:1fr}.canopySpotlightQueueRows article{grid-template-columns:1fr}.canopySpotlightQueueActions{grid-column:auto}.canopySpotlightQueueCounts{width:100%}.canopySpotlightQueueCounts span{flex:1}.canopySpotlightEligibility{align-items:flex-start}.canopySpotlightMediaDisclosure>summary{display:grid}}
 
 
-/* Spotlight internal submission review + participant special recognition · 2026-10-07 */
+/* Spotlight internal submission review + participant special recognition ┬╖ 2026-10-07 */
 .canopySpotlightViewSubmission{border:1px solid #cbdad4;background:#fff;color:#0e4d4a;border-radius:9px;padding:9px 11px;font-size:10px;font-weight:800}.canopySpotlightViewSubmission:hover{background:#f4f8f6}.canopySpotlightSubmissionPanel{position:fixed;z-index:1200;left:50%;top:50%;transform:translate(-50%,-50%);width:min(820px,calc(100vw - 28px));max-height:88vh;overflow:auto;background:#fff;border:1px solid #d8e4de;border-radius:22px;box-shadow:0 28px 90px rgba(8,40,38,.25);padding:22px}.canopySpotlightSubmissionPanel:before{content:"";position:fixed;inset:-100vh -100vw;background:rgba(5,34,32,.48);z-index:-1}.canopySpotlightSubmissionClose{position:absolute;right:15px;top:13px;border:0;background:#edf3f0;width:34px;height:34px;border-radius:999px;font-size:21px;color:#0e4d4a}.canopySpotlightSubmissionPanel>header{display:flex;justify-content:space-between;gap:20px;align-items:flex-start;padding:6px 38px 16px 0;border-bottom:1px solid #e5ece8}.canopySpotlightSubmissionPanel>header small{font-size:9px;font-weight:900;letter-spacing:.12em;color:#0e4d4a}.canopySpotlightSubmissionPanel>header h3{margin:4px 0;font-size:23px}.canopySpotlightSubmissionPanel>header p{margin:0;color:#667a74;font-size:12px;text-transform:capitalize}.canopySpotlightSubmissionScore{display:flex;align-items:baseline;gap:2px}.canopySpotlightSubmissionScore strong{font-size:30px;color:#12352f}.canopySpotlightSubmissionScore span{font-size:11px;color:#6d7e79}.canopySpotlightSubmissionBody{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding:16px 0}.canopySpotlightSubmissionBody>section{border:1px solid #e1e9e5;border-radius:13px;padding:13px;display:grid;gap:5px}.canopySpotlightSubmissionBody>section.wide{grid-column:1/-1}.canopySpotlightSubmissionBody span{font-size:9px;font-weight:900;letter-spacing:.09em;color:#71827d}.canopySpotlightSubmissionBody strong{font-size:14px;color:#173a34}.canopySpotlightSubmissionBody p{margin:0;white-space:pre-wrap;font-size:12px;line-height:1.6;color:#415b55}.canopySpotlightSubmissionBody small{font-size:10px;color:#71827d}.canopySpotlightSubmissionLinks>div{display:flex;gap:9px;flex-wrap:wrap}.canopySpotlightSubmissionLinks a{border:1px solid #d2dfd9;border-radius:9px;padding:8px 10px;text-decoration:none;color:#0e4d4a;font-size:11px;display:inline-flex;align-items:center;gap:5px}.canopySpotlightSubmissionPanel>footer{display:flex;justify-content:flex-end;gap:9px;padding-top:4px}.canopySpotlightSubmissionMissing{min-height:150px;display:grid;place-items:center;text-align:center;color:#657872;padding:20px}.cx-spotlight-row>article.is-special-recognition{border-color:rgba(198,255,82,.85);background:linear-gradient(180deg,#fbfff3,#fff);box-shadow:0 16px 42px rgba(14,77,74,.08)}.cx-special-recognition-copy{margin:10px 0 14px;padding:13px 14px;border-left:4px solid #c6ff52;background:#f6faef;border-radius:0 12px 12px 0}.cx-special-recognition-copy strong{display:block;font-size:14px;color:#12352f}.cx-special-recognition-copy p{margin:5px 0 0!important;font-size:12px!important;line-height:1.55;color:#60736e}.cx-spotlight-row>article.is-special-recognition .cx-spotlight-star{background:#c6ff52;color:#0e4d4a}@media(max-width:650px){.canopySpotlightSubmissionBody{grid-template-columns:1fr}.canopySpotlightSubmissionBody>section.wide{grid-column:auto}.canopySpotlightSubmissionPanel>header{display:grid}.canopySpotlightSubmissionPanel>footer{position:sticky;bottom:-22px;background:#fff;padding:12px 0 4px}}
 
 
-/* Actual completed review totals · 2026-10-07 */
+/* Actual completed review totals ┬╖ 2026-10-07 */
 .canopyAdminReviewTotals{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:11px 13px;border:1px solid #dce6e1;border-radius:13px;background:#f8faf9;margin:10px 0}.canopyAdminReviewTotals>span{display:inline-flex;align-items:baseline;gap:5px;padding:6px 9px;border-radius:999px;background:#fff;border:1px solid #e2e9e6;font-size:10px;color:#60736e}.canopyAdminReviewTotals>span b{font-size:15px;color:#12352f}.canopyAdminReviewTotals>small{flex:1 1 320px;color:#6b7c77;font-size:10px;line-height:1.45}
 
 
-/* WOMATE review integrity + Drive audit hardening V2 · 2026-10-07 */
+/* WOMATE review integrity + Drive audit hardening V2 ┬╖ 2026-10-07 */
 .canopyReviewIntegrity{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(300px,.9fr);gap:12px}.canopyReviewIntegrityCounts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.canopyReviewIntegrityCounts>span{display:grid;align-content:center;gap:4px;min-height:82px;padding:12px 13px;border:1px solid #dce6e1;border-radius:14px;background:#f8faf9}.canopyReviewIntegrityCounts small{font-size:8px;line-height:1.35;font-weight:900;letter-spacing:.08em;color:#71827d}.canopyReviewIntegrityCounts strong{font-size:23px;color:#12352f}.canopyDriveAuditPanel{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:13px 14px;border:1px solid rgba(14,77,74,.18);border-radius:14px;background:#f1f8f4}.canopyDriveAuditPanel>div{display:grid;gap:2px;min-width:0}.canopyDriveAuditPanel small{font-size:8px;font-weight:900;letter-spacing:.1em;color:#0e4d4a}.canopyDriveAuditPanel strong{font-size:13px;color:#12352f}.canopyDriveAuditPanel p{margin:0;max-width:460px;font-size:10px;line-height:1.45;color:#657872}.canopyDriveAuditPanel .canopyDriveAuditButton{flex:0 0 auto;min-height:40px;background:#0e4d4a;color:#fff;border-color:#0e4d4a}.canopyDriveAuditPanel .canopyDriveAuditButton:hover{background:#123f3c}.canopyDriveAuditPanel .canopyDriveAuditButton:disabled{background:#dfe8e3;color:#71827d;border-color:#d3ded9;cursor:not-allowed}.canopyReviewToolbarLead{justify-content:space-between}.canopyReviewToolbarLead>strong{text-align:right;color:#5f726c;font-weight:750}@media(max-width:980px){.canopyReviewIntegrity{grid-template-columns:1fr}}@media(max-width:680px){.canopyReviewIntegrityCounts{grid-template-columns:1fr}.canopyReviewIntegrityCounts>span{min-height:64px}.canopyDriveAuditPanel{align-items:stretch;display:grid}.canopyDriveAuditPanel .canopyDriveAuditButton{width:100%}.canopyReviewToolbarLead{align-items:flex-start!important}.canopyReviewToolbarLead>strong{text-align:left}}
 html[data-canopy-theme="dark"] .canopyReviewIntegrityCounts>span,html[data-canopy-theme="dark"] .canopyDriveAuditPanel{background:#173b34;border-color:#2b4a43}html[data-canopy-theme="dark"] .canopyReviewIntegrityCounts strong,html[data-canopy-theme="dark"] .canopyDriveAuditPanel strong{color:#e8f4ef}html[data-canopy-theme="dark"] .canopyReviewIntegrityCounts small,html[data-canopy-theme="dark"] .canopyDriveAuditPanel p{color:#b8cbc5}
 
 
-/* WOMATE Module 03 · The Climate Debate speaker assignment · 2026-10-08 */
+/* WOMATE Module 03 ┬╖ The Climate Debate speaker assignment ┬╖ 2026-10-08 */
 .ca-debate-position{display:inline-flex;align-items:center;justify-content:center;min-width:62px;padding:6px 10px;border-radius:999px;font-size:10px;font-weight:950;letter-spacing:.09em}.ca-debate-position.is-for{background:rgba(198,255,82,.28);color:#194e35}.ca-debate-position.is-against{background:#fff0df;color:#8a4c08}.ca-debate-motion{font-weight:850!important;color:var(--canopy-ink)!important}.ca-climate-debate{grid-column:1/-1;display:grid;gap:16px;border:1px solid rgba(14,77,74,.15);border-radius:20px;padding:20px;background:linear-gradient(145deg,#f8fbf9,#eef7f2)}.ca-climate-debate>header{display:flex;justify-content:space-between;align-items:flex-start;gap:18px}.ca-climate-debate>header small,.ca-debate-assignment>small{display:block;font-size:9px;font-weight:950;letter-spacing:.11em;color:var(--canopy)}.ca-climate-debate>header h3{margin:5px 0 6px;font-size:22px}.ca-climate-debate>header p{margin:0;max-width:720px;color:#526963;line-height:1.55}.ca-debate-assignment{padding:16px;border-radius:16px;background:#12352f;color:#fff}.ca-debate-assignment strong{display:block;margin:6px 0 8px;font-size:18px;line-height:1.4;color:#fff}.ca-debate-assignment p{margin:0;color:#dbe8e3;line-height:1.55}.ca-debate-requirements{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}.ca-debate-requirements h4{grid-column:1/-1;margin:0 0 2px;font-size:14px}.ca-debate-requirements>div{min-width:0;padding:12px;border:1px solid #dbe6e1;border-radius:13px;background:#fff}.ca-debate-requirements span{display:block;font-size:9px;font-weight:950;color:#6e817b}.ca-debate-requirements p{margin:5px 0 0;font-size:11px;line-height:1.45;color:#405752}.ca-debate-framework{border:1px solid #dbe6e1;border-radius:14px;background:#fff;padding:0 14px}.ca-debate-framework summary{cursor:pointer;padding:13px 0;font-size:12px;font-weight:900;color:#12352f}.ca-debate-framework ol{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin:0 0 14px;padding:0;list-style:none}.ca-debate-framework li{display:grid;gap:5px;padding:10px;border-radius:11px;background:#f6f9f7}.ca-debate-framework li b{font-size:9px;letter-spacing:.08em;color:#0e4d4a}.ca-debate-framework li span{font-size:10px;line-height:1.4;color:#657872}.ca-debate-social{padding:14px 16px;border-left:4px solid var(--canopy-lime);background:#fff;border-radius:0 13px 13px 0}.ca-debate-social h4{margin:0 0 5px;font-size:13px}.ca-debate-social p{margin:4px 0;font-size:11px;line-height:1.5;color:#526963}.ca-debate-link{display:grid!important;gap:7px!important}.ca-debate-link small{font-size:10px;color:#6b7c77}.canopyReviewDebate{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:14px;padding:12px 14px;border-radius:14px;background:#12352f;color:#fff}.canopyReviewDebate small{display:block;font-size:8px;letter-spacing:.1em;color:#b8d1c8}.canopyReviewDebate strong{display:inline-flex;margin-top:4px;padding:4px 7px;border-radius:999px;background:var(--canopy-lime);color:#12352f;font-size:10px}.canopyReviewDebate p{margin:0;max-width:70%;font-size:12px;font-weight:800;line-height:1.4;color:#fff}@media(max-width:900px){.ca-debate-requirements,.ca-debate-framework ol{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:600px){.ca-climate-debate{padding:15px}.ca-climate-debate>header{display:grid}.ca-debate-requirements,.ca-debate-framework ol{grid-template-columns:1fr}.canopyReviewDebate{display:grid}.canopyReviewDebate p{max-width:none}}
 
 
-/* WOMATE Mission Drive submission reliability · 2026-10-08 */
+/* WOMATE Mission Drive submission reliability ┬╖ 2026-10-08 */
 .cm-form label>small{font-size:10px;font-weight:700;color:#71817c}.cm-inline-result{margin:0!important;padding:10px 12px!important;border-radius:11px;background:#fff4e6;color:#7a4b0b!important;font-size:11px!important;line-height:1.45}.cm-inline-result.ok{background:#eaf7ef;color:#175f3a!important}.cm-saved-note{display:flex!important;align-items:center;gap:6px;color:#3f685b!important;font-size:10px!important}.cm-saved-note svg{width:14px;height:14px}.cm-submit-hint{display:block;color:#71817c;font-size:10px;line-height:1.45}.cm-submit .cm-form button:not(:disabled){box-shadow:0 8px 22px rgba(14,77,74,.12)}@media(max-width:600px){.cm-inline-result{font-size:12px!important;padding:11px 12px!important}.cm-form button{min-height:48px}}html[data-canopy-theme="dark"] .cm-inline-result{background:#3c321f;color:#ffe4a8!important}html[data-canopy-theme="dark"] .cm-inline-result.ok{background:#173b34;color:#c8f5d8!important}
 
 
-/* WOMATE Mission Operations + individual Mission Completed recognition · 2026-10-08 */
+/* WOMATE Mission Operations + individual Mission Completed recognition ┬╖ 2026-10-08 */
 .cm-mission-ops-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:18px 0}
 .cm-mission-ops-tabs button{display:flex;justify-content:space-between;align-items:center;gap:8px;border:1px solid var(--canopy-border,#d9dfd8);background:var(--canopy-surface,#fff);border-radius:14px;padding:13px 14px;font:inherit;text-align:left;cursor:pointer}
 .cm-mission-ops-tabs button.active{border-color:#153f2e;box-shadow:0 0 0 1px #153f2e inset}
@@ -3124,7 +3124,7 @@ html[data-canopy-theme="dark"] .canopyReviewIntegrityCounts>span,html[data-canop
 
 
 
-/* WOMATE CANOPY · desktop Spotlight mirrors mobile carousel · 2026-10-10
+/* WOMATE CANOPY ┬╖ desktop Spotlight mirrors mobile carousel ┬╖ 2026-10-10
    Grouped by module; one card per slide on desktop. Mobile <=760px untouched. */
 @media(min-width:761px){
   .cx-spotlight{padding:24px 24px 20px;overflow:hidden}
@@ -3217,7 +3217,7 @@ html[data-canopy-theme="dark"] .canopyReviewIntegrityCounts>span,html[data-canop
   }
 }
 
-/* WOMATE CANOPY · FINAL desktop Spotlight carousel override · 2026-10-10
+/* WOMATE CANOPY ┬╖ FINAL desktop Spotlight carousel override ┬╖ 2026-10-10
    Purpose: make desktop behave like mobile carousel while preserving module grouping.
    Mobile <=760px is intentionally untouched. */
 @media (min-width:761px){
@@ -3389,7 +3389,7 @@ html[data-canopy-theme="dark"] .canopyReviewIntegrityCounts>span,html[data-canop
   }
 }
 
-/* WOMATE CANOPY · personal special-recognition celebration media · 2026-10-10 */
+/* WOMATE CANOPY ┬╖ personal special-recognition celebration media ┬╖ 2026-10-10 */
 .cx-special-recognition-song{display:grid;gap:8px;margin-top:15px;padding-top:14px;border-top:1px solid rgba(14,77,74,.12)}
 .cx-special-recognition-song>span{font-size:9px;font-weight:950;letter-spacing:.12em;color:var(--canopy)}
 .cx-special-recognition-song iframe{display:block;width:100%;aspect-ratio:16/9;border:0;border-radius:14px;background:#09261d}
@@ -3397,3 +3397,22 @@ html[data-canopy-theme="dark"] .cx-special-recognition-song{border-top-color:#31
 html[data-canopy-theme="dark"] .cx-special-recognition-song>span{color:var(--canopy-lime)}
 
 .cm-identity-alert{display:flex;gap:12px;align-items:flex-start;margin:0 0 18px;padding:16px 18px;border:1px solid rgba(14,77,74,.18);border-radius:16px;background:#f3f8f5;color:#123d37}.cm-identity-alert svg{flex:0 0 auto;margin-top:2px}.cm-identity-alert b{display:block;margin-bottom:3px}.cm-identity-alert p{margin:0;line-height:1.55;color:#536d65}
+
+/* WOMATE_2027_COHORT_CONTROL_START */
+.canopy2027Grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin:24px 0}
+.canopy2027Card{background:#fff;border:1px solid rgba(16,67,52,.12);border-radius:22px;padding:22px;box-shadow:0 14px 34px rgba(18,52,43,.07);display:flex;flex-direction:column;gap:16px}
+.canopy2027Card header{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}
+.canopy2027Card header small{font-weight:800;letter-spacing:.08em;color:#5d786f;text-transform:uppercase}
+.canopy2027Card h2{margin:5px 0 0;font-size:1.25rem;line-height:1.25}
+.canopy2027Card p{margin:0;color:#4e625c;line-height:1.65}
+.canopy2027Pill{padding:7px 10px;border-radius:999px;font-size:.76rem;font-weight:900;white-space:nowrap}
+.canopy2027Pill.isFree{background:#e8f6ef;color:#14553f}.canopy2027Pill.isPaid{background:#fff1cc;color:#6e4d00}
+.canopy2027Meta{display:flex;flex-wrap:wrap;gap:8px}.canopy2027Meta span{display:inline-flex;align-items:center;gap:6px;padding:7px 9px;border-radius:999px;background:#f4f7f6;color:#36584d;font-size:.79rem;font-weight:700}
+.canopy2027RoutingNote{margin:24px 0;display:flex;gap:15px;align-items:flex-start;padding:20px;border:1px solid rgba(16,67,52,.13);background:#f7fbf9;border-radius:20px}
+.canopy2027RoutingNote svg{flex:none;color:#1e6a50}.canopy2027RoutingNote h2{margin:0 0 5px}.canopy2027RoutingNote p{margin:0;color:#50655e}
+.canopy2027PreviewIdentity{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:20px 0}
+.canopy2027PreviewIdentity article{display:flex;gap:10px;align-items:center;background:#fff;border:1px solid rgba(16,67,52,.12);padding:16px;border-radius:18px}
+.canopy2027PreviewIdentity span{display:flex;flex-direction:column}.canopy2027PreviewIdentity small{font-size:.68rem;letter-spacing:.08em}.canopy2027PreviewIdentity strong{text-transform:capitalize}
+.canopy2027Loading{padding:30px;background:#fff;border-radius:20px}
+@media(max-width:900px){.canopy2027Grid{grid-template-columns:1fr}.canopy2027PreviewIdentity{grid-template-columns:1fr}}
+/* WOMATE_2027_COHORT_CONTROL_END */
