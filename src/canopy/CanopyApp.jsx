@@ -16,7 +16,9 @@ import {CanopyAdminRolePreview,CanopyTeamAccessAdmin,CanopyTeamActivation,Canopy
 import {CANOPY_ASSIGNMENT_SCHEDULE,CANOPY_ACCESS_DATE} from './canopySchedule';
 import CanopyStaffWorkspace from './CanopyStaffWorkspace';
 import {CanopyTester2027Preview} from './CanopyCohortControl';
+import CanopyCohortParticipantRuntime,{CanopyTesterRuntimeRouter} from './CanopyCohortParticipantRuntime';
 import {CanopyAdminCohortBar,CanopyAdminCohortEmpty,CanopyAdminCohortSafeHold,LEGACY_CANOPY_COHORT} from './CanopyAdminCohortContext';
+import {isPost2026RuntimeCohort} from './canopyCohortRuntime2027';
 import{ArrowLeft,ArrowRight,BookOpen,Check,ChevronRight,ClipboardCheck,Clock,FileText,GraduationCap,Leaf,Lock,LogOut,Menu,PlayCircle,Sparkles,UserRound,X,BookMarked,UsersRound,PenLine,TrendingUp,Eye,EyeOff,MessageSquare,ShieldAlert,Award,BarChart3,Bell,Moon,Sun,Globe2,Mail,ShieldCheck,BriefcaseBusiness,Heart,Volume2,Square,Camera,Trash2} from 'lucide-react';
 import'./canopy.css';
 import{CANOPY_BRAND,modules,resources}from'./canopyData';
@@ -847,12 +849,17 @@ const manager=canManageCanopy(viewer);const operational=isCanopyOperationsStaff(
  if(operational){const home=staffRole==='programme_operations'?'/canopy/operations':staffRole==='module_coordinator'?'/canopy/coordinator':'/canopy/fellow';if(![home,'/canopy/profile','/canopy/notifications','/canopy/team-access'].includes(path)){go(home);return null}}
  const selectedAdminCohort=viewer?.profile?.role==='admin'?(adminCohorts.find(x=>x.cohort_key===adminCohortKey)||adminCohorts.find(x=>x.cohort_key===LEGACY_CANOPY_COHORT)||adminCohorts[0]||null):null;
  const scopedAdminSnapshot=viewer?.profile?.role==='admin'?scopeAdminSnapshotByCohort(snapshot,selectedAdminCohort):snapshot;
- const active=tester||viewer.enrollments?.some(e=>e.status==='active');let content;
+ const activeRuntimeCohort=!tester&&!manager&&!operational&&isPost2026RuntimeCohort(viewer?.activeCohort?.cohort_key)?viewer.activeCohort:null;
+ const active=tester||viewer.enrollments?.some(e=>e.status==='active')||Boolean(activeRuntimeCohort);let content;
+ if(activeRuntimeCohort&&!['/canopy/profile','/canopy/notifications','/canopy/help'].includes(path)){
+  content=<CanopyCohortParticipantRuntime viewer={viewer} cohortKey={activeRuntimeCohort.cohort_key} path={path}/>;
+ } else
  if(path==='/canopy/team-access')content=<CanopyTeamActivation viewer={viewer} onActivated={()=>{setLoading(true);load().then(()=>window.location.assign('/canopy/classroom'))}}/>;
  else if(manager&&path==='/canopy/manage/team-access')content=legacyAdmin?<CanopyTeamAccessAdmin viewer={viewer}/>:<ManagerOperations snapshot={scopedAdminSnapshot} session={viewer.session} onReload={async()=>{await load();await loadAdminCohorts?.()}} viewer={viewer} cohort={selectedAdminCohort} view="overview"/>;
  else if(manager&&path==='/canopy/manage/role-preview')content=legacyAdmin?<CanopyAdminRolePreview viewer={viewer}/>:<ManagerOperations snapshot={scopedAdminSnapshot} session={viewer.session} onReload={async()=>{await load();await loadAdminCohorts?.()}} viewer={viewer} cohort={selectedAdminCohort} view="overview"/>;
 
  else if(tester&&path==='/canopy/test/cohort-preview')content=<CanopyTester2027Preview viewer={viewer}/>;
+ else if(tester&&path==='/canopy/test/cohort-workspace')content=<CanopyTesterRuntimeRouter/>;
  else if(manager&&path==='/canopy/manage/missions')content=<CanopyMissionAdmin viewer={viewer} cohortKey={selectedAdminCohort?.cohort_key||LEGACY_CANOPY_COHORT} cohort={selectedAdminCohort}/>;
  else if(manager&&path==='/canopy/manage/opportunities')content=<CanopyOpportunityAdmin viewer={viewer} cohortKey={selectedAdminCohort?.cohort_key||LEGACY_CANOPY_COHORT} cohort={selectedAdminCohort}/>;
  else if(manager&&path==='/canopy/manage/funding')content=<CanopyFundingAdmin viewer={viewer} cohortKey={selectedAdminCohort?.cohort_key||LEGACY_CANOPY_COHORT} cohort={selectedAdminCohort}/>;

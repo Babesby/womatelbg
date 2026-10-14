@@ -22,7 +22,7 @@ function CohortCard({cohort,preview=false}){
     {key==='she-leads-advanced-c1-2027'&&<p>Premium track for experienced professionals, with Masters/PhD-level profiles and equivalent senior experience prioritised. It will use distinct advanced assignments, premium speakers and direct feedback.</p>}
     {key==='she-leads-asia-c1-2027'&&<p>Free regional cohort designed for Asia-led delivery: Asian speakers, coordinators and regional examples, with WOMATE coordinating standards, systems and quality.</p>}
     {key==='she-leads-climate-c3-2027'&&<p>Free flagship cohort for undergraduates, recent graduates, early-career participants and emerging women climate leaders.</p>}
-    {preview&&<button className="canopySecondary" type="button" onClick={()=>go(`/canopy/test/cohort-preview?cohort=${encodeURIComponent(key)}`)}>Preview identity <ArrowRight size={15}/></button>}
+    {preview&&<div className="canopy2027PreviewActions"><button className="canopySecondary" type="button" onClick={()=>go(`/canopy/test/cohort-preview?cohort=${encodeURIComponent(key)}`)}>Preview identity <ArrowRight size={15}/></button><button className="canopyPrimary" type="button" onClick={()=>go(`/canopy/test/cohort-workspace?cohort=${encodeURIComponent(key)}`)}>Open participant workspace <ArrowRight size={15}/></button></div>}
   </article>
 }
 
@@ -50,7 +50,7 @@ export function CanopyTester2027Preview(){
       <article><CreditCard/><span><small>ACCESS</small><strong>{modelLabel(active.accessModel)}</strong></span></article>
     </section>
     <CohortCard cohort={active}/>
-    <button className="canopySecondary" type="button" onClick={()=>go('/canopy/test/cohort-preview')}>Back to all 2027 cohorts</button>
+    <div className="canopy2027PreviewActions"><button className="canopySecondary" type="button" onClick={()=>go('/canopy/test/cohort-preview')}>Back to all 2027 cohorts</button><button className="canopyPrimary" type="button" onClick={()=>go(`/canopy/test/cohort-workspace?cohort=${encodeURIComponent(active.cohortKey)}`)}>Open participant workspace <ArrowRight size={15}/></button></div>
   </main>;
   return <main className="canopyDashboard canopy2027Tester">
     <section className="canopyWelcome"><div><span className="canopyEyebrow">CANOPY TESTER · 2027</span><h1>Preview every 2027 cohort identity.</h1><p>The tester can inspect cohort routing without consuming access, changing memberships or touching Cohort 2.</p></div></section>

@@ -175,6 +175,10 @@ export async function getViewer(session){
   try{activeCohort=await rest('rpc/canopy_my_active_cohort',{token:fresh.access_token,method:'POST',body:{}})}catch{}
   return {session:fresh,user:fresh.user,profile:profiles?.[0]||null,enrollments:enrollments||[],announcements:announcements||[],withdrawal,cohorts,activeCohort};
 }
+export async function getMyRuntimeCohort(session){
+  const s=await refreshSession(session||getStoredSession());if(!s?.access_token)return null;
+  return rest('rpc/canopy_my_runtime_cohort',{token:s.access_token,method:'POST',body:{}});
+}
 export async function getAdminCohortCatalog(session){
   const s=await refreshSession(session||getStoredSession());if(!s?.access_token)return[];
   return rest('rpc/canopy_admin_cohort_catalog',{token:s.access_token,method:'POST',body:{}});
