@@ -38,7 +38,7 @@ async function rpc(session,name,body={}){
   return data;
 }
 
-export default function CanopySelectionCodes({session}){
+export default function CanopySelectionCodes({session,cohort=null}){
   const[form,setForm]=useState({
     full_name:'',
     email:'',
@@ -65,7 +65,20 @@ export default function CanopySelectionCodes({session}){
     }
   };
 
-  useEffect(()=>{load()},[]);
+  useEffect(()=>{
+    const isLegacy=!cohort||cohort.cohort_key==='she-leads-climate-c2-2026';
+    setForm(v=>({...v,
+      programme_name:cohort?.display_name?.split(' · ')[0]||'She Leads Climate Mentorship Programme',
+      programme_slug:cohort?.programme_key||'she-leads-2026',
+      cohort_label:isLegacy?'Cohort 2 · 2026':(cohort?.display_name||'')
+    }));
+    load();
+  },[cohort?.cohort_key]);
+  const acceptedLabels=new Set([
+    cohort?.display_name,
+    cohort?.cohort_key==='she-leads-climate-c2-2026'?'Cohort 2 · 2026':null
+  ].filter(Boolean));
+  const displayRows=cohort?rows.filter(row=>acceptedLabels.has(row.cohort_label)):rows;
 
   const create=async(e)=>{
     e?.preventDefault?.();
@@ -178,7 +191,7 @@ export default function CanopySelectionCodes({session}){
           WOMATE · SELECTED
         </span>
 
-        <h1>Selection codes</h1>
+        <h1>Selection codes</h1>{cohort&&<p><b>{cohort.display_name}</b></p>}
 
         <p>
           Generate secure verification codes for learners
@@ -312,6 +325,7 @@ export default function CanopySelectionCodes({session}){
           <label>
             Programme
             <input
+              readOnly={Boolean(cohort)}
               value={form.programme_name}
               onChange={e=>setForm({
                 ...form,
@@ -323,6 +337,7 @@ export default function CanopySelectionCodes({session}){
           <label>
             Cohort
             <input
+              readOnly={Boolean(cohort)}
               value={form.cohort_label}
               onChange={e=>setForm({
                 ...form,
@@ -387,11 +402,11 @@ export default function CanopySelectionCodes({session}){
           </button>
         </div>
 
-        {!rows.length?(
+        {!displayRows.length?(
           <p>No selection codes have been generated yet.</p>
         ):(
           <div style={{display:'grid',gap:'12px'}}>
-            {rows.map(row=>(
+            {displayRows.map(row=>(
               <article
                 key={row.id}
                 style={{

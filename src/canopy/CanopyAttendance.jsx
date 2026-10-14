@@ -11,7 +11,7 @@ const MODULES=[
   ['module-05','M05','Leadership & Professional Pathways','22 Oct 2026']
 ];
 
-export default function CanopyAttendance({viewer,preview=false}){
+export default function CanopyAttendance({viewer,preview=false,cohortKey='she-leads-climate-c2-2026'}){
  const[data,setData]=useState({learners:[],attendance:[]});
  const[selected,setSelected]=useState('');
  const[query,setQuery]=useState('');
@@ -24,11 +24,11 @@ export default function CanopyAttendance({viewer,preview=false}){
  const load=async(silent=false)=>{
   if(!silent)setLoading(true);
   if(!silent)setMsg('');
-  try{const x=await getCanopyAttendanceDashboard(viewer?.session);setData(x||{learners:[],attendance:[]})}
+  try{const x=await getCanopyAttendanceDashboard(viewer?.session,cohortKey);setData(x||{learners:[],attendance:[]})}
   catch(e){setMsg(e.message||'Attendance could not be loaded.')}
   finally{if(!silent)setLoading(false)}
  };
- useEffect(()=>{load()},[viewer?.session?.access_token]);
+ useEffect(()=>{load()},[viewer?.session?.access_token,cohortKey]);
 
  const attendanceMap=useMemo(()=>{
   const map=new Map();
@@ -66,7 +66,7 @@ export default function CanopyAttendance({viewer,preview=false}){
   const key=`${userId}:${moduleId}`;
   setBusy(key);setMsg('');
   try{
-   await setCanopyLiveAttendance(viewer.session,{userId,moduleId,attended:next});
+   await setCanopyLiveAttendance(viewer.session,{userId,moduleId,attended:next,cohortKey});
    await load(true);
    setMsg(next?'Attendance marked.':'Attendance removed.');
   }catch(e){setMsg(e.message||'Attendance could not be updated.')}

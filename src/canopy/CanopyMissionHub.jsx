@@ -141,11 +141,11 @@ export default function CanopyMissionHub({viewer}){
   </main>
 }
 
-export function CanopyMissionAdmin({viewer}){
+export function CanopyMissionAdmin({viewer,cohortKey='she-leads-climate-c2-2026',cohort=null}){
   const [stats,setStats]=useState(null);
   const[groups,setGroups]=useState([]),[busy,setBusy]=useState(''),[msg,setMsg]=useState(''),[remarks,setRemarks]=useState({}),[contributorNotes,setContributorNotes]=useState({});
   const[view,setView]=useState('individual'),[query,setQuery]=useState(''),[reportFilter,setReportFilter]=useState('pending'),[acceptanceFilter,setAcceptanceFilter]=useState('all'),[completedMissionFilter,setCompletedMissionFilter]=useState('all'),[completedStageFilter,setCompletedStageFilter]=useState('all');
-  const load=async()=>{try{const [x,s]=await Promise.all([getCanopyMissionAdmin(viewer.session),getCanopyMissionAdminStats(viewer.session)]);setGroups(Array.isArray(x)?x:[]);setStats(s||null)}catch(e){setMsg(e.message)}};
+  const load=async()=>{try{const [x,s]=await Promise.all([getCanopyMissionAdmin(viewer.session,cohortKey),getCanopyMissionAdminStats(viewer.session,cohortKey)]);setGroups(Array.isArray(x)?x:[]);setStats(s||null)}catch(e){setMsg(e.message)}};
   const acceptedCount=g=>(g.members||[]).filter(m=>m.status==='accepted').length;
   const acceptanceOptions=[['all','All groups'],['5','5/5 accepted'],['4','4/5 accepted'],['3','3/5 accepted'],['2','2/5 accepted'],['1','1/5 accepted'],['0','0/5 accepted']];
   const reports=groups.flatMap(g=>(g.reports||[]).map(r=>({...r,group:g,completion:(g.completions||[]).find(c=>c.user_id===r.user_id&&c.status==='completed')||null})));
@@ -156,11 +156,11 @@ export function CanopyMissionAdmin({viewer}){
   const completedMissionOptions=groups.filter(g=>(g.completions||[]).some(c=>c.status==='completed')).map(g=>({id:g.id,label:meaningfulMissionName(g.name)?g.name:'Name pending'})).sort((a,b)=>a.label.localeCompare(b.label));
   const completedRows=completions.filter(c=>(completedMissionFilter==='all'||c.group?.id===completedMissionFilter)&&(completedStageFilter==='all'||String(c.member?.mission_no||'')===completedStageFilter)&&(!q||[c.member?.name,c.member?.country,c.group?.name].some(v=>String(v||'').toLowerCase().includes(q))));
   const teamRows=(acceptanceFilter==='all'?groups:groups.filter(g=>acceptedCount(g)===Number(acceptanceFilter))).filter(g=>!q||[g.name,...(g.members||[]).flatMap(m=>[m.name,m.country])].some(v=>String(v||'').toLowerCase().includes(q)));
-  useEffect(()=>{load()},[]);
-  const review=async(g,d)=>{setBusy(g.id+d);setMsg('');try{const x=await reviewCanopyMissionGroup(viewer.session,g.id,d,remarks[g.id]||'');setGroups(Array.isArray(x)?x:[]);setMsg(d==='verified'?'Final team evidence verified. Contributor recognition remains person-by-person.':'Team notified to update the final evidence.')}catch(e){setMsg(e.message)}finally{setBusy('')}};
-  const reviewContributor=async(r,d)=>{const key=`${r.group.id}:${r.user_id}:${d}`;setBusy(key);setMsg('');try{const x=await reviewCanopyMissionContributor(viewer.session,{groupId:r.group.id,userId:r.user_id,decision:d,remark:contributorNotes[r.user_id]||''});setGroups(Array.isArray(x)?x:[]);setMsg(d==='completed'?`${r.name} now has the WOMATE Mission Completed recognition.`:`${r.name}'s Mission Completed recognition was removed.`)}catch(e){setMsg(e.message)}finally{setBusy('')}};
+  useEffect(()=>{load()},[cohortKey]);
+  const review=async(g,d)=>{setBusy(g.id+d);setMsg('');try{await reviewCanopyMissionGroup(viewer.session,g.id,d,remarks[g.id]||'');await load();setMsg(d==='verified'?'Final team evidence verified. Contributor recognition remains person-by-person.':'Team notified to update the final evidence.')}catch(e){setMsg(e.message)}finally{setBusy('')}};
+  const reviewContributor=async(r,d)=>{const key=`${r.group.id}:${r.user_id}:${d}`;setBusy(key);setMsg('');try{await reviewCanopyMissionContributor(viewer.session,{groupId:r.group.id,userId:r.user_id,decision:d,remark:contributorNotes[r.user_id]||''});await load();setMsg(d==='completed'?`${r.name} now has the WOMATE Mission Completed recognition.`:`${r.name}'s Mission Completed recognition was removed.`)}catch(e){setMsg(e.message)}finally{setBusy('')}};
   return <main className="cm-admin cm-mission-ops">
-    <header><span>MISSION OPERATIONS</span><h1>Review Mission work without the clutter.</h1><p>Individual contribution approval and final team verification are separate. Only learners WOMATE explicitly approves receive the Mission Completed recognition and its opportunity/funding advantage.</p></header>
+    <header><span>MISSION OPERATIONS</span><h1>Review Mission work without the clutter.</h1>{cohort&&<p><b>{cohort.display_name}</b></p>}<p>Individual contribution approval and final team verification are separate. Only learners WOMATE explicitly approves receive the Mission Completed recognition and its opportunity/funding advantage.</p></header>
     {stats&&<div className="cm-admin-summary"><span><b>{reports.length}</b> Individual reports</span><span><b>{reports.filter(r=>!(groups.find(g=>g.id===r.group.id)?.completions||[]).some(c=>c.user_id===r.user_id&&c.status==='completed')).length}</b> Awaiting approval</span><span><b>{finalGroups.filter(g=>g.status==='submitted').length}</b> Final review</span><span><b>{completions.length}</b> Mission completed</span><span><b>{stats.accepted||0}</b> Accepted participants</span></div>}
     <div className="cm-mission-ops-tabs" role="tablist" aria-label="Mission operations views">
       {[['individual','Individual reports',reports.length],['final','Final submissions',finalGroups.length],['completed','Mission completed',completions.length],['teams','All teams',groups.length]].map(([key,label,count])=><button type="button" key={key} className={view===key?'active':''} onClick={()=>setView(key)}><span>{label}</span><b>{count}</b></button>)}

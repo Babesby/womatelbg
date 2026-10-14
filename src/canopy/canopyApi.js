@@ -1,6 +1,7 @@
 const URL=(import.meta.env.VITE_CANOPY_SUPABASE_URL||'').replace(/\/$/,'');
 const KEY=import.meta.env.VITE_CANOPY_SUPABASE_ANON_KEY||'';
 const STORE='womate_canopy_session_v1';
+const COHORT2_KEY='she-leads-climate-c2-2026';
 
 export const canopyConfigured=Boolean(URL&&KEY);
 const headers=(token,extra={})=>({apikey:KEY,'Content-Type':'application/json',...(token?{Authorization:`Bearer ${token}`}:{Authorization:`Bearer ${KEY}`}),...extra});
@@ -291,6 +292,24 @@ export async function getManagerActions(session){
   const s=await refreshSession(session||getStoredSession());if(!s?.access_token)return[];
   return rest('canopy_manager_actions?select=*&order=created_at.desc',{token:s.access_token});
 }
+export async function createCohortManagerAction(session,{cohortKey,learnerId,actionType,subject,message,status='open',certificateCode=null}){
+  const s=await refreshSession(session||getStoredSession());
+  if(!s?.access_token)throw new Error('Your Canopy session has expired. Sign in again.');
+  return rest('rpc/canopy_admin_create_cohort_action',{token:s.access_token,method:'POST',body:{
+    p_cohort_key:cohortKey,p_learner_id:learnerId,p_action_type:actionType,
+    p_subject:String(subject||'').trim(),p_message:String(message||'').trim(),
+    p_status:status||'open',p_certificate_code:certificateCode||null
+  }});
+}
+export async function createCohortBulkManagerAction(session,{cohortKey,recipientIds,actionType,subject,message}){
+  const s=await refreshSession(session||getStoredSession());
+  if(!s?.access_token)throw new Error('Your Canopy session has expired. Sign in again.');
+  return rest('rpc/canopy_admin_create_cohort_bulk_action',{token:s.access_token,method:'POST',body:{
+    p_cohort_key:cohortKey,p_recipient_ids:Array.isArray(recipientIds)?recipientIds:[],
+    p_action_type:actionType,p_subject:String(subject||'').trim(),p_message:String(message||'').trim()
+  }});
+}
+
 export async function createManagerAction(session,payload){
   const s=await refreshSession(session||getStoredSession());
   if(!s?.access_token)throw new Error('Your Canopy session has expired. Sign in again.');
@@ -427,13 +446,15 @@ export async function getCertificates(session){
   const s=await refreshSession(session||getStoredSession());if(!s?.access_token)return[];
   return rest(`canopy_certificates?select=*&user_id=eq.${s.user.id}&order=issued_at.desc`,{token:s.access_token});
 }
-export async function getCanopyAttendanceDashboard(session){
+export async function getCanopyAttendanceDashboard(session,cohortKey=COHORT2_KEY){
   const s=await refreshSession(session||getStoredSession());if(!s?.access_token)throw new Error('Your Canopy session has expired. Sign in again.');
-  return rest('rpc/canopy_attendance_dashboard',{token:s.access_token,method:'POST',body:{}});
+  if(!cohortKey||cohortKey===COHORT2_KEY)return rest('rpc/canopy_attendance_dashboard',{token:s.access_token,method:'POST',body:{}});
+  return rest('rpc/canopy_admin_cohort_attendance',{token:s.access_token,method:'POST',body:{p_cohort_key:cohortKey}});
 }
-export async function setCanopyLiveAttendance(session,{userId,moduleId,attended}){
+export async function setCanopyLiveAttendance(session,{userId,moduleId,attended,cohortKey=COHORT2_KEY}){
   const s=await refreshSession(session||getStoredSession());if(!s?.access_token)throw new Error('Your Canopy session has expired. Sign in again.');
-  return rest('rpc/canopy_set_live_attendance',{token:s.access_token,method:'POST',body:{p_user_id:userId,p_module_id:moduleId,p_attended:Boolean(attended)}});
+  if(!cohortKey||cohortKey===COHORT2_KEY)return rest('rpc/canopy_set_live_attendance',{token:s.access_token,method:'POST',body:{p_user_id:userId,p_module_id:moduleId,p_attended:Boolean(attended)}});
+  return rest('rpc/canopy_admin_set_cohort_attendance',{token:s.access_token,method:'POST',body:{p_cohort_key:cohortKey,p_user_id:userId,p_module_id:moduleId,p_attended:Boolean(attended)}});
 }
 export async function getCanopyCertificateEligibility(session,userId=null){
   const s=await refreshSession(session||getStoredSession());if(!s?.access_token)return null;
@@ -524,9 +545,9 @@ export async function updateCanopyMissionGroup(session,{name,choice,customBrief}
 function cleanMissionDriveLink(value){let text=String(value||'').normalize('NFKC').replace(/[“”‘’]/g,'').trim();if(!text)return'';const found=text.match(/https?:\/\/[^\s<>"']+/i)?.[0];let candidate=(found||text).replace(/^[\s(<\[{]+/,'').replace(/[\s)>\]}.,;:]+$/,'');if(!/^https?:\/\//i.test(candidate)&&/^(?:www\.)?(?:drive|docs)\.google\.com\//i.test(candidate))candidate='https://'+candidate.replace(/^www\./i,'');return candidate}
 export async function submitCanopyMissionReport(session,{summary,proofUrl}){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_submit_mission_report',{token:s.access_token,method:'POST',body:{p_summary:String(summary||'').trim(),p_proof_url:cleanMissionDriveLink(proofUrl)||null}})}
 export async function submitCanopyMissionGroup(session,folderUrl){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_submit_mission_group',{token:s.access_token,method:'POST',body:{p_folder_url:cleanMissionDriveLink(folderUrl)}})}
-export async function getCanopyMissionAdmin(session){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_admin_mission_groups',{token:s.access_token,method:'POST',body:{}})}
+export async function getCanopyMissionAdmin(session,cohortKey=COHORT2_KEY){const s=await refreshSession(session||getStoredSession());if(cohortKey&&cohortKey!==COHORT2_KEY)return rest('rpc/canopy_admin_cohort_mission_groups',{token:s.access_token,method:'POST',body:{p_cohort_key:cohortKey}});return rest('rpc/canopy_admin_mission_groups',{token:s.access_token,method:'POST',body:{}})}
 
-export async function getCanopyMissionAdminStats(session){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_admin_mission_stats',{token:s.access_token,method:'POST',body:{}})}
+export async function getCanopyMissionAdminStats(session,cohortKey=COHORT2_KEY){const s=await refreshSession(session||getStoredSession());if(cohortKey&&cohortKey!==COHORT2_KEY)return rest('rpc/canopy_admin_cohort_mission_stats',{token:s.access_token,method:'POST',body:{p_cohort_key:cohortKey}});return rest('rpc/canopy_admin_mission_stats',{token:s.access_token,method:'POST',body:{}})}
 export async function reviewCanopyMissionGroup(session,groupId,decision,remark=''){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_admin_review_mission_group',{token:s.access_token,method:'POST',body:{p_group:groupId,p_decision:decision,p_remark:remark||null}})}
 export async function reviewCanopyMissionContributor(session,{groupId,userId,decision='completed',remark=''}){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_admin_review_mission_contributor',{token:s.access_token,method:'POST',body:{p_group:groupId,p_user:userId,p_decision:decision,p_remark:remark||null}})}
 export async function getMyCanopyMissionCompletion(session){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_get_my_mission_completion',{token:s.access_token,method:'POST',body:{}})}
@@ -534,8 +555,8 @@ export async function getMyCanopyMissionCompletion(session){const s=await refres
 /* WOMATE Canopy Phase 3 opportunity layer */
 export async function getCanopyOpportunityFeed(session){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_get_my_opportunities',{token:s.access_token,method:'POST',body:{}})}
 export async function toggleCanopyOpportunitySave(session,id){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_toggle_opportunity_save',{token:s.access_token,method:'POST',body:{p_opportunity:id}})}
-export async function getAdminCanopyOpportunities(session){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_admin_opportunities',{token:s.access_token,method:'POST',body:{}})}
-export async function saveAdminCanopyOpportunity(session,o){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_admin_save_opportunity',{token:s.access_token,method:'POST',body:{p_id:o.id||null,p_title:o.title,p_organization:o.organization,p_type:o.opportunity_type||'other',p_summary:o.summary,p_url:o.url,p_location:o.location||null,p_country:o.country||null,p_global:Boolean(o.global),p_compensation:o.compensation||null,p_deadline_at:o.deadline_at||null,p_min_module_no:Number(o.min_module_no||0),p_requires_spotlight:Boolean(o.requires_spotlight),p_requires_verified_mission:Boolean(o.requires_verified_mission),p_featured:Boolean(o.featured),p_published:Boolean(o.published)}})}
+export async function getAdminCanopyOpportunities(session,cohortKey=COHORT2_KEY){const s=await refreshSession(session||getStoredSession());if(cohortKey&&cohortKey!==COHORT2_KEY)return rest('rpc/canopy_admin_cohort_opportunities',{token:s.access_token,method:'POST',body:{p_cohort_key:cohortKey}});return rest('rpc/canopy_admin_opportunities',{token:s.access_token,method:'POST',body:{}})}
+export async function saveAdminCanopyOpportunity(session,o,cohortKey=COHORT2_KEY){const s=await refreshSession(session||getStoredSession());const body={p_id:o.id||null,p_title:o.title,p_organization:o.organization,p_type:o.opportunity_type||'other',p_summary:o.summary,p_url:o.url,p_location:o.location||null,p_country:o.country||null,p_global:Boolean(o.global),p_compensation:o.compensation||null,p_deadline_at:o.deadline_at||null,p_min_module_no:Number(o.min_module_no||0),p_requires_spotlight:Boolean(o.requires_spotlight),p_requires_verified_mission:Boolean(o.requires_verified_mission),p_featured:Boolean(o.featured),p_published:Boolean(o.published)};if(cohortKey&&cohortKey!==COHORT2_KEY)return rest('rpc/canopy_admin_save_cohort_opportunity',{token:s.access_token,method:'POST',body:{p_cohort_key:cohortKey,...body}});return rest('rpc/canopy_admin_save_opportunity',{token:s.access_token,method:'POST',body})}
 export async function archiveAdminCanopyOpportunity(session,id){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_admin_archive_opportunity',{token:s.access_token,method:'POST',body:{p_id:id}})}
 export async function notifyAdminCanopyOpportunity(session,id){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_admin_notify_opportunity',{token:s.access_token,method:'POST',body:{p_id:id}})}
 
@@ -544,9 +565,9 @@ export async function notifyAdminCanopyOpportunity(session,id){const s=await ref
 export async function getCanopyFundingFeed(session){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_get_my_funding_calls',{token:s.access_token,method:'POST',body:{}})}
 export async function submitCanopyFundingApplication(session,callId,{pitch,plan,evidence_url}){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_submit_funding_application',{token:s.access_token,method:'POST',body:{p_call:callId,p_pitch:pitch,p_plan:plan,p_evidence_url:String(evidence_url||'').trim()||null}})}
 export async function withdrawCanopyFundingApplication(session,callId){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_withdraw_funding_application',{token:s.access_token,method:'POST',body:{p_call:callId}})}
-export async function getAdminCanopyFundingCalls(session){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_admin_funding_calls',{token:s.access_token,method:'POST',body:{}})}
+export async function getAdminCanopyFundingCalls(session,cohortKey=COHORT2_KEY){const s=await refreshSession(session||getStoredSession());if(cohortKey&&cohortKey!==COHORT2_KEY)return rest('rpc/canopy_admin_cohort_funding_calls',{token:s.access_token,method:'POST',body:{p_cohort_key:cohortKey}});return rest('rpc/canopy_admin_funding_calls',{token:s.access_token,method:'POST',body:{}})}
 export async function getAdminCanopyFundingApplications(session,callId){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_admin_funding_applications',{token:s.access_token,method:'POST',body:{p_call:callId}})}
-export async function saveAdminCanopyFundingCall(session,c){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_admin_save_funding_call',{token:s.access_token,method:'POST',body:{p_id:c.id||null,p_title:c.title,p_sponsor:c.sponsor,p_type:c.call_type,p_summary:c.summary,p_deliverable:c.deliverable,p_amount_text:c.amount_text||null,p_url:c.url||null,p_country:c.country||null,p_global:Boolean(c.global),p_participation_mode:c.participation_mode||'individual',p_deadline_at:c.deadline_at||null,p_min_module_no:Number(c.min_module_no||0),p_requires_spotlight:Boolean(c.requires_spotlight),p_requires_verified_mission:Boolean(c.requires_verified_mission),p_slots:Number(c.slots||1),p_featured:Boolean(c.featured),p_published:Boolean(c.published)}})}
+export async function saveAdminCanopyFundingCall(session,c,cohortKey=COHORT2_KEY){const s=await refreshSession(session||getStoredSession());const body={p_id:c.id||null,p_title:c.title,p_sponsor:c.sponsor,p_type:c.call_type,p_summary:c.summary,p_deliverable:c.deliverable,p_amount_text:c.amount_text||null,p_url:c.url||null,p_country:c.country||null,p_global:Boolean(c.global),p_participation_mode:c.participation_mode||'individual',p_deadline_at:c.deadline_at||null,p_min_module_no:Number(c.min_module_no||0),p_requires_spotlight:Boolean(c.requires_spotlight),p_requires_verified_mission:Boolean(c.requires_verified_mission),p_slots:Number(c.slots||1),p_featured:Boolean(c.featured),p_published:Boolean(c.published)};if(cohortKey&&cohortKey!==COHORT2_KEY)return rest('rpc/canopy_admin_save_cohort_funding_call',{token:s.access_token,method:'POST',body:{p_cohort_key:cohortKey,...body}});return rest('rpc/canopy_admin_save_funding_call',{token:s.access_token,method:'POST',body})}
 export async function notifyAdminCanopyFundingCall(session,callId){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_admin_notify_funding_call',{token:s.access_token,method:'POST',body:{p_call:callId}})}
 export async function updateAdminCanopyFundingApplication(session,applicationId,status,remark=''){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_admin_update_funding_application',{token:s.access_token,method:'POST',body:{p_application:applicationId,p_status:status,p_remark:remark||null}})}
 
@@ -556,7 +577,7 @@ export async function getCanopyTalentNetwork(session){const s=await refreshSessi
 export async function saveCanopyTalentSettings(session,{discoverable,mentorAvailable,collaborationOpen,headline,interests}){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_save_talent_settings',{token:s.access_token,method:'POST',body:{p_discoverable:Boolean(discoverable),p_mentor_available:Boolean(mentorAvailable),p_collaboration_open:Boolean(collaborationOpen),p_headline:headline||null,p_interests:Array.isArray(interests)?interests:[]}})}
 export async function sendCanopyCollaborationRequest(session,recipientId,message){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_send_collaboration_request',{token:s.access_token,method:'POST',body:{p_recipient:recipientId,p_message:message}})}
 export async function respondCanopyCollaborationRequest(session,requestId,accept){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_respond_collaboration_request',{token:s.access_token,method:'POST',body:{p_request:requestId,p_accept:Boolean(accept)}})}
-export async function getAdminCanopyTalentNetwork(session){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_admin_talent_network',{token:s.access_token,method:'POST',body:{}})}
+export async function getAdminCanopyTalentNetwork(session,cohortKey=COHORT2_KEY){const s=await refreshSession(session||getStoredSession());if(cohortKey&&cohortKey!==COHORT2_KEY)return rest('rpc/canopy_admin_cohort_talent_network',{token:s.access_token,method:'POST',body:{p_cohort_key:cohortKey}});return rest('rpc/canopy_admin_talent_network',{token:s.access_token,method:'POST',body:{}})}
 export async function setAdminCanopyTalentVisibility(session,userId,discoverable,remark=''){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_admin_set_talent_visibility',{token:s.access_token,method:'POST',body:{p_user:userId,p_discoverable:Boolean(discoverable),p_remark:remark||null}})}
 
 export async function getCanopyExternalCollaborationRequests(session){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_get_external_collaboration_requests',{token:s.access_token,method:'POST',body:{}})}
