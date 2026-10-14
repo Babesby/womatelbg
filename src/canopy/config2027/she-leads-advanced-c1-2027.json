@@ -1,0 +1,335 @@
+{
+  "schemaVersion": 1,
+  "cohortKey": "she-leads-advanced-c1-2027",
+  "name": "She Leads Advanced · Cohort 1 · 2027",
+  "year": 2027,
+  "region": "global",
+  "timezone": "UTC",
+  "track": "advanced",
+  "accessModel": "paid",
+  "audience": "Postgraduate-qualified or equivalently experienced senior professionals",
+  "lifecycle": "draft",
+  "publication": {
+    "approved": false,
+    "published": false,
+    "approvedBy": null,
+    "approvedAt": null
+  },
+  "enrolment": {
+    "competitive": true,
+    "applicationsOpenAt": null,
+    "applicationsCloseAt": null,
+    "startsAt": null,
+    "endsAt": null
+  },
+  "delivery": {
+    "mode": "online",
+    "timezoneDisplay": "participant_local_and_session_zone",
+    "languageSupport": "not_configured",
+    "sessionDefaults": {
+      "meetingUrl": null,
+      "speakerConfirmed": false
+    }
+  },
+  "modules": [
+    {
+      "id": "m01",
+      "order": 1,
+      "title": "Systems leadership and political economy",
+      "learningOutcomes": [
+        "Analyse institutional leverage and structural constraints"
+      ],
+      "lessons": [
+        {
+          "id": "m01-l01",
+          "title": "Concepts and evidence",
+          "status": "draft",
+          "resources": []
+        },
+        {
+          "id": "m01-l02",
+          "title": "Applied practice and reflection",
+          "status": "draft",
+          "resources": []
+        }
+      ],
+      "liveSession": {
+        "id": "m01-live",
+        "status": "unscheduled",
+        "startsAt": null,
+        "endsAt": null,
+        "timezone": "UTC",
+        "speakers": [],
+        "coordinators": [],
+        "meetingUrl": null,
+        "replayUrl": null
+      },
+      "assignment": {
+        "id": "m01-assignment",
+        "title": "Systems diagnosis memo",
+        "brief": null,
+        "rubric": null,
+        "openAt": null,
+        "dueAt": null,
+        "graceUntil": null,
+        "revisionUntil": null,
+        "maxRevisions": null,
+        "status": "draft",
+        "submissionEnabled": false
+      }
+    },
+    {
+      "id": "m02",
+      "order": 2,
+      "title": "Advanced climate governance and finance",
+      "learningOutcomes": [
+        "Assess financing pathways and governance risk"
+      ],
+      "lessons": [
+        {
+          "id": "m02-l01",
+          "title": "Concepts and evidence",
+          "status": "draft",
+          "resources": []
+        },
+        {
+          "id": "m02-l02",
+          "title": "Applied practice and reflection",
+          "status": "draft",
+          "resources": []
+        }
+      ],
+      "liveSession": {
+        "id": "m02-live",
+        "status": "unscheduled",
+        "startsAt": null,
+        "endsAt": null,
+        "timezone": "UTC",
+        "speakers": [],
+        "coordinators": [],
+        "meetingUrl": null,
+        "replayUrl": null
+      },
+      "assignment": {
+        "id": "m02-assignment",
+        "title": "Climate investment or policy appraisal",
+        "brief": null,
+        "rubric": null,
+        "openAt": null,
+        "dueAt": null,
+        "graceUntil": null,
+        "revisionUntil": null,
+        "maxRevisions": null,
+        "status": "draft",
+        "submissionEnabled": false
+      }
+    },
+    {
+      "id": "m03",
+      "order": 3,
+      "title": "Research, evidence and strategic influence",
+      "learningOutcomes": [
+        "Build a defensible evidence-to-policy argument"
+      ],
+      "lessons": [
+        {
+          "id": "m03-l01",
+          "title": "Concepts and evidence",
+          "status": "draft",
+          "resources": []
+        },
+        {
+          "id": "m03-l02",
+          "title": "Applied practice and reflection",
+          "status": "draft",
+          "resources": []
+        }
+      ],
+      "liveSession": {
+        "id": "m03-live",
+        "status": "unscheduled",
+        "startsAt": null,
+        "endsAt": null,
+        "timezone": "UTC",
+        "speakers": [],
+        "coordinators": [],
+        "meetingUrl": null,
+        "replayUrl": null
+      },
+      "assignment": {
+        "id": "m03-assignment",
+        "title": "Executive evidence brief",
+        "brief": null,
+        "rubric": null,
+        "openAt": null,
+        "dueAt": null,
+        "graceUntil": null,
+        "revisionUntil": null,
+        "maxRevisions": null,
+        "status": "draft",
+        "submissionEnabled": false
+      }
+    },
+    {
+      "id": "m04",
+      "order": 4,
+      "title": "Programme design, MEL and accountability",
+      "learningOutcomes": [
+        "Define an outcome framework and credible indicators"
+      ],
+      "lessons": [
+        {
+          "id": "m04-l01",
+          "title": "Concepts and evidence",
+          "status": "draft",
+          "resources": []
+        },
+        {
+          "id": "m04-l02",
+          "title": "Applied practice and reflection",
+          "status": "draft",
+          "resources": []
+        }
+      ],
+      "liveSession": {
+        "id": "m04-live",
+        "status": "unscheduled",
+        "startsAt": null,
+        "endsAt": null,
+        "timezone": "UTC",
+        "speakers": [],
+        "coordinators": [],
+        "meetingUrl": null,
+        "replayUrl": null
+      },
+      "assignment": {
+        "id": "m04-assignment",
+        "title": "Theory of change and MEL plan",
+        "brief": null,
+        "rubric": null,
+        "openAt": null,
+        "dueAt": null,
+        "graceUntil": null,
+        "revisionUntil": null,
+        "maxRevisions": null,
+        "status": "draft",
+        "submissionEnabled": false
+      }
+    },
+    {
+      "id": "m05",
+      "order": 5,
+      "title": "Negotiation, partnerships and implementation",
+      "learningOutcomes": [
+        "Develop a strategy for stakeholder alignment"
+      ],
+      "lessons": [
+        {
+          "id": "m05-l01",
+          "title": "Concepts and evidence",
+          "status": "draft",
+          "resources": []
+        },
+        {
+          "id": "m05-l02",
+          "title": "Applied practice and reflection",
+          "status": "draft",
+          "resources": []
+        }
+      ],
+      "liveSession": {
+        "id": "m05-live",
+        "status": "unscheduled",
+        "startsAt": null,
+        "endsAt": null,
+        "timezone": "UTC",
+        "speakers": [],
+        "coordinators": [],
+        "meetingUrl": null,
+        "replayUrl": null
+      },
+      "assignment": {
+        "id": "m05-assignment",
+        "title": "Partnership and implementation strategy",
+        "brief": null,
+        "rubric": null,
+        "openAt": null,
+        "dueAt": null,
+        "graceUntil": null,
+        "revisionUntil": null,
+        "maxRevisions": null,
+        "status": "draft",
+        "submissionEnabled": false
+      }
+    },
+    {
+      "id": "m06",
+      "order": 6,
+      "title": "Capstone studio and executive presentation",
+      "learningOutcomes": [
+        "Defend an actionable professional solution"
+      ],
+      "lessons": [
+        {
+          "id": "m06-l01",
+          "title": "Concepts and evidence",
+          "status": "draft",
+          "resources": []
+        },
+        {
+          "id": "m06-l02",
+          "title": "Applied practice and reflection",
+          "status": "draft",
+          "resources": []
+        }
+      ],
+      "liveSession": {
+        "id": "m06-live",
+        "status": "unscheduled",
+        "startsAt": null,
+        "endsAt": null,
+        "timezone": "UTC",
+        "speakers": [],
+        "coordinators": [],
+        "meetingUrl": null,
+        "replayUrl": null
+      },
+      "assignment": {
+        "id": "m06-assignment",
+        "title": "Board-ready capstone and oral defence",
+        "brief": null,
+        "rubric": null,
+        "openAt": null,
+        "dueAt": null,
+        "graceUntil": null,
+        "revisionUntil": null,
+        "maxRevisions": null,
+        "status": "draft",
+        "submissionEnabled": false
+      }
+    }
+  ],
+  "completion": {
+    "enabled": false,
+    "minimumAttendancePercent": null,
+    "minimumAssignmentPassPercent": null,
+    "capstoneRequired": true,
+    "manualReviewRequired": true,
+    "certificateEnabled": false
+  },
+  "opportunities": {
+    "visible": false
+  },
+  "missions": {
+    "enabled": false,
+    "rules": null
+  },
+  "payment": {
+    "required": true,
+    "installmentsAllowed": true,
+    "gateway": "not_configured",
+    "enforceGateWhenLaunched": true,
+    "scholarships": "not_configured"
+  },
+  "editorialNotes": "Planning proposal only. All titles, outcomes and assignment concepts require WOMATE approval. No dates, people, links, rubrics or thresholds are confirmed."
+}

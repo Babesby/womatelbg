@@ -1,0 +1,335 @@
+{
+  "schemaVersion": 1,
+  "cohortKey": "she-leads-climate-c3-2027",
+  "name": "She Leads Climate Mentorship · Cohort 3 · 2027",
+  "year": 2027,
+  "region": "global",
+  "timezone": "UTC",
+  "track": "standard",
+  "accessModel": "free",
+  "audience": "Undergraduates, recent graduates, early-career and emerging women leaders",
+  "lifecycle": "draft",
+  "publication": {
+    "approved": false,
+    "published": false,
+    "approvedBy": null,
+    "approvedAt": null
+  },
+  "enrolment": {
+    "competitive": true,
+    "applicationsOpenAt": null,
+    "applicationsCloseAt": null,
+    "startsAt": null,
+    "endsAt": null
+  },
+  "delivery": {
+    "mode": "online",
+    "timezoneDisplay": "participant_local_and_session_zone",
+    "languageSupport": "not_configured",
+    "sessionDefaults": {
+      "meetingUrl": null,
+      "speakerConfirmed": false
+    }
+  },
+  "modules": [
+    {
+      "id": "m01",
+      "order": 1,
+      "title": "Climate foundations and systems thinking",
+      "learningOutcomes": [
+        "Map causes, actors and unequal impacts"
+      ],
+      "lessons": [
+        {
+          "id": "m01-l01",
+          "title": "Concepts and evidence",
+          "status": "draft",
+          "resources": []
+        },
+        {
+          "id": "m01-l02",
+          "title": "Applied practice and reflection",
+          "status": "draft",
+          "resources": []
+        }
+      ],
+      "liveSession": {
+        "id": "m01-live",
+        "status": "unscheduled",
+        "startsAt": null,
+        "endsAt": null,
+        "timezone": "UTC",
+        "speakers": [],
+        "coordinators": [],
+        "meetingUrl": null,
+        "replayUrl": null
+      },
+      "assignment": {
+        "id": "m01-assignment",
+        "title": "Local climate challenge map",
+        "brief": null,
+        "rubric": null,
+        "openAt": null,
+        "dueAt": null,
+        "graceUntil": null,
+        "revisionUntil": null,
+        "maxRevisions": null,
+        "status": "draft",
+        "submissionEnabled": false
+      }
+    },
+    {
+      "id": "m02",
+      "order": 2,
+      "title": "Gender, equity and climate justice",
+      "learningOutcomes": [
+        "Examine intersectional impacts and inclusive responses"
+      ],
+      "lessons": [
+        {
+          "id": "m02-l01",
+          "title": "Concepts and evidence",
+          "status": "draft",
+          "resources": []
+        },
+        {
+          "id": "m02-l02",
+          "title": "Applied practice and reflection",
+          "status": "draft",
+          "resources": []
+        }
+      ],
+      "liveSession": {
+        "id": "m02-live",
+        "status": "unscheduled",
+        "startsAt": null,
+        "endsAt": null,
+        "timezone": "UTC",
+        "speakers": [],
+        "coordinators": [],
+        "meetingUrl": null,
+        "replayUrl": null
+      },
+      "assignment": {
+        "id": "m02-assignment",
+        "title": "Equity-centred policy statement",
+        "brief": null,
+        "rubric": null,
+        "openAt": null,
+        "dueAt": null,
+        "graceUntil": null,
+        "revisionUntil": null,
+        "maxRevisions": null,
+        "status": "draft",
+        "submissionEnabled": false
+      }
+    },
+    {
+      "id": "m03",
+      "order": 3,
+      "title": "Digital innovation and climate advocacy",
+      "learningOutcomes": [
+        "Evaluate evidence, storytelling and digital approaches"
+      ],
+      "lessons": [
+        {
+          "id": "m03-l01",
+          "title": "Concepts and evidence",
+          "status": "draft",
+          "resources": []
+        },
+        {
+          "id": "m03-l02",
+          "title": "Applied practice and reflection",
+          "status": "draft",
+          "resources": []
+        }
+      ],
+      "liveSession": {
+        "id": "m03-live",
+        "status": "unscheduled",
+        "startsAt": null,
+        "endsAt": null,
+        "timezone": "UTC",
+        "speakers": [],
+        "coordinators": [],
+        "meetingUrl": null,
+        "replayUrl": null
+      },
+      "assignment": {
+        "id": "m03-assignment",
+        "title": "Evidence-based advocacy campaign",
+        "brief": null,
+        "rubric": null,
+        "openAt": null,
+        "dueAt": null,
+        "graceUntil": null,
+        "revisionUntil": null,
+        "maxRevisions": null,
+        "status": "draft",
+        "submissionEnabled": false
+      }
+    },
+    {
+      "id": "m04",
+      "order": 4,
+      "title": "Climate leadership and community mobilisation",
+      "learningOutcomes": [
+        "Plan ethical, participatory local action"
+      ],
+      "lessons": [
+        {
+          "id": "m04-l01",
+          "title": "Concepts and evidence",
+          "status": "draft",
+          "resources": []
+        },
+        {
+          "id": "m04-l02",
+          "title": "Applied practice and reflection",
+          "status": "draft",
+          "resources": []
+        }
+      ],
+      "liveSession": {
+        "id": "m04-live",
+        "status": "unscheduled",
+        "startsAt": null,
+        "endsAt": null,
+        "timezone": "UTC",
+        "speakers": [],
+        "coordinators": [],
+        "meetingUrl": null,
+        "replayUrl": null
+      },
+      "assignment": {
+        "id": "m04-assignment",
+        "title": "Community action plan",
+        "brief": null,
+        "rubric": null,
+        "openAt": null,
+        "dueAt": null,
+        "graceUntil": null,
+        "revisionUntil": null,
+        "maxRevisions": null,
+        "status": "draft",
+        "submissionEnabled": false
+      }
+    },
+    {
+      "id": "m05",
+      "order": 5,
+      "title": "Adaptation, resilience and project design",
+      "learningOutcomes": [
+        "Design a feasible adaptation intervention"
+      ],
+      "lessons": [
+        {
+          "id": "m05-l01",
+          "title": "Concepts and evidence",
+          "status": "draft",
+          "resources": []
+        },
+        {
+          "id": "m05-l02",
+          "title": "Applied practice and reflection",
+          "status": "draft",
+          "resources": []
+        }
+      ],
+      "liveSession": {
+        "id": "m05-live",
+        "status": "unscheduled",
+        "startsAt": null,
+        "endsAt": null,
+        "timezone": "UTC",
+        "speakers": [],
+        "coordinators": [],
+        "meetingUrl": null,
+        "replayUrl": null
+      },
+      "assignment": {
+        "id": "m05-assignment",
+        "title": "Feasibility and risk brief",
+        "brief": null,
+        "rubric": null,
+        "openAt": null,
+        "dueAt": null,
+        "graceUntil": null,
+        "revisionUntil": null,
+        "maxRevisions": null,
+        "status": "draft",
+        "submissionEnabled": false
+      }
+    },
+    {
+      "id": "m06",
+      "order": 6,
+      "title": "Impact, reflection and leadership pathway",
+      "learningOutcomes": [
+        "Demonstrate outcomes and next steps"
+      ],
+      "lessons": [
+        {
+          "id": "m06-l01",
+          "title": "Concepts and evidence",
+          "status": "draft",
+          "resources": []
+        },
+        {
+          "id": "m06-l02",
+          "title": "Applied practice and reflection",
+          "status": "draft",
+          "resources": []
+        }
+      ],
+      "liveSession": {
+        "id": "m06-live",
+        "status": "unscheduled",
+        "startsAt": null,
+        "endsAt": null,
+        "timezone": "UTC",
+        "speakers": [],
+        "coordinators": [],
+        "meetingUrl": null,
+        "replayUrl": null
+      },
+      "assignment": {
+        "id": "m06-assignment",
+        "title": "Leadership impact portfolio",
+        "brief": null,
+        "rubric": null,
+        "openAt": null,
+        "dueAt": null,
+        "graceUntil": null,
+        "revisionUntil": null,
+        "maxRevisions": null,
+        "status": "draft",
+        "submissionEnabled": false
+      }
+    }
+  ],
+  "completion": {
+    "enabled": false,
+    "minimumAttendancePercent": null,
+    "minimumAssignmentPassPercent": null,
+    "capstoneRequired": false,
+    "manualReviewRequired": true,
+    "certificateEnabled": false
+  },
+  "opportunities": {
+    "visible": false
+  },
+  "missions": {
+    "enabled": false,
+    "rules": null
+  },
+  "payment": {
+    "required": false,
+    "installmentsAllowed": false,
+    "gateway": "not_configured",
+    "enforceGateWhenLaunched": false,
+    "scholarships": "not_configured"
+  },
+  "editorialNotes": "Planning proposal only. All titles, outcomes and assignment concepts require WOMATE approval. No dates, people, links, rubrics or thresholds are confirmed."
+}
