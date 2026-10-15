@@ -65,11 +65,11 @@ function RuntimePlaceholder({runtime,section}){
 export default function CanopyCohortParticipantRuntime({viewer,cohortKey,path='/canopy/classroom',tester=false}){
   const runtime=canopyPost2026Runtime(cohortKey);
   if(!runtime)return null;
-  const view=path.includes('/assignments')?'assignments':path.includes('/progress')?'progress':path.includes('/certificate')?'certificate':path.includes('/course')?'course':path.includes('/schedule')?'schedule':'overview';
+  const view=path.includes('/assignments')?'assignments':path.includes('/progress')?'progress':path.includes('/certificate')?'certificate':path.includes('/course')?'course':path.includes('/schedule')?'schedule':path.includes('/portfolio')?'portfolio':path==='/canopy/opportunities'?'missions':path.includes('/opportunity-board')?'opportunities':path.includes('/funding')?'funding':path.includes('/talent')?'talent':path.includes('/resources')?'resources':path.includes('/canvas')?'canvas':path.includes('/notifications')?'notifications':path.includes('/help')?'help':path.includes('/profile')?'profile':'overview';
   return <main className="canopyDashboard canopyCohortRuntime">
     {tester&&<button type="button" className="canopySecondary canopyRuntimeBack" onClick={()=>go('/canopy/test/cohort-preview')}><ArrowLeft/> Back to cohort previews</button>}
     <RuntimeHeader runtime={runtime} tester={tester}/>
-    <nav className="canopyRuntimeNav" aria-label={`${runtime.shortName} participant preview`}>
+    {!tester&&<nav className="canopyRuntimeNav" aria-label={`${runtime.shortName} participant preview`}>
       {[
         ['overview','Workspace','/canopy/classroom'],
         ['course','Course','/canopy/course/she-leads'],
@@ -81,7 +81,7 @@ export default function CanopyCohortParticipantRuntime({viewer,cohortKey,path='/
         if(tester)go(`/canopy/test/cohort-workspace?cohort=${encodeURIComponent(runtime.cohortKey)}&view=${key}`);
         else go(target);
       }}>{label}</button>)}
-    </nav>
+    </nav>}
     {tester?<Canopy2027DraftPreview cohortKey={runtime.cohortKey} section={view}/>:view==='overview'?<RuntimeOverview runtime={runtime}/>:<RuntimePlaceholder runtime={runtime} section={view}/>}
   </main>;
 }

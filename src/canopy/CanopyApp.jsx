@@ -142,9 +142,11 @@ const manager=canManageCanopy(viewer);
  if(viewer?.profile?.role==='admin')managerItems.push(['/canopy/manage/selection-codes','Selection codes',Award]);
  const staffRole=viewer?.staffAccess?.role;
  const staffItems=staffRole==='programme_operations'?[['/canopy/operations','Operations',ClipboardCheck],['/canopy/notifications','Notifications',Bell],['/canopy/profile','Profile',UserRound]]:staffRole==='module_coordinator'?[['/canopy/coordinator','My module',BookOpen],['/canopy/notifications','Notifications',Bell],['/canopy/profile','Profile',UserRound]]:staffRole==='learning_fellow'?[['/canopy/fellow','Learning experience',Sparkles],['/canopy/notifications','Notifications',Bell],['/canopy/profile','Profile',UserRound]]:learnerItems;
- const items=manager?managerItems:(tester?[...staffItems,['/canopy/test/cohort-preview','2027 cohort preview',Globe2]]:staffItems);
+ const items=manager?managerItems:(tester?[...learnerItems,['/canopy/test/cohort-preview','2027 cohort preview',Globe2]]:staffItems);
+ const testerCohort=tester?sessionStorage.getItem('womate_canopy_tester_cohort')||'2026':null;
  return <aside className={'canopySidebar '+(open?'open':'')}>
   <div className="canopySideTop"><Brand compact/><button className="canopySideClose" onClick={()=>setOpen(false)}><X/></button></div>
+  {tester&&<div className="canopyTesterCohortContext"><label htmlFor="canopyTesterCohortSelect">Previewing cohort</label><select id="canopyTesterCohortSelect" value={testerCohort} onChange={e=>{sessionStorage.setItem('womate_canopy_tester_cohort',e.target.value);go('/canopy/classroom');setOpen(false)}}><option value="2026">She Leads Climate Mentorship · Cohort 2 · 2026</option><option value="she-leads-climate-c3-2027">She Leads Climate Mentorship · Cohort 3 · 2027</option><option value="she-leads-asia-c1-2027">She Leads Asia · Cohort 1 · 2027</option><option value="she-leads-advanced-c1-2027">She Leads Advanced · Cohort 1 · 2027</option></select><small>Participant-view QA only · unpublished 2027 content</small></div>}
   <nav>{items.map(([p,n,I])=><button key={p} className={route()===p?'active':''} onClick={()=>{go(p);setOpen(false)}}><I size={18}/><span>{n}</span></button>)}</nav>
   <div className="canopySideBottom"><small>{manager?'WOMATE OPERATIONS':isCanopyOperationsStaff(viewer)?'WOMATE DELIVERY TEAM':tester?'CANOPY TEST MODE':CANOPY_BRAND.programme}</small><b>{manager?'She Leads Climate Mentorship · Cohort 2 · 2026':isCanopyOperationsStaff(viewer)?teamRoleLabel(viewer.staffAccess?.role):tester?'All modules · all assignments · unrestricted':CANOPY_BRAND.cohort}</b></div>
  </aside>
@@ -850,8 +852,12 @@ const manager=canManageCanopy(viewer);const operational=isCanopyOperationsStaff(
  const selectedAdminCohort=viewer?.profile?.role==='admin'?(adminCohorts.find(x=>x.cohort_key===adminCohortKey)||adminCohorts.find(x=>x.cohort_key===LEGACY_CANOPY_COHORT)||adminCohorts[0]||null):null;
  const scopedAdminSnapshot=viewer?.profile?.role==='admin'?scopeAdminSnapshotByCohort(snapshot,selectedAdminCohort):snapshot;
  const activeRuntimeCohort=!tester&&!manager&&!operational&&isPost2026RuntimeCohort(viewer?.activeCohort?.cohort_key)?viewer.activeCohort:null;
+ const testerPreviewKey=tester&&typeof sessionStorage!=='undefined'?sessionStorage.getItem('womate_canopy_tester_cohort'):null;
+ const testerCohortKey=isPost2026RuntimeCohort(testerPreviewKey)?testerPreviewKey:null;
  const active=tester||viewer.enrollments?.some(e=>e.status==='active')||Boolean(activeRuntimeCohort);let content;
- if(activeRuntimeCohort&&!['/canopy/profile','/canopy/notifications','/canopy/help'].includes(path)){
+ if(testerCohortKey&&!['/canopy/test/cohort-preview','/canopy/test/cohort-workspace','/canopy/profile'].includes(path)){
+  content=<CanopyCohortParticipantRuntime viewer={viewer} cohortKey={testerCohortKey} path={path} tester/>;
+ } else if(activeRuntimeCohort&&!['/canopy/profile','/canopy/notifications','/canopy/help'].includes(path)){
   content=<CanopyCohortParticipantRuntime viewer={viewer} cohortKey={activeRuntimeCohort.cohort_key} path={path}/>;
  } else
  if(path==='/canopy/team-access')content=<CanopyTeamActivation viewer={viewer} onActivated={()=>{setLoading(true);load().then(()=>window.location.assign('/canopy/classroom'))}}/>;
