@@ -446,6 +446,14 @@ export async function issueCanopyCertificate(session,{userId,driveUrl}){
   if(!/^https:\/\//i.test(String(driveUrl||'').trim()))throw new Error('Add the viewable Google Drive certificate link.');
   return rest('rpc/canopy_manager_issue_certificate',{token:s.access_token,method:'POST',body:{p_user_id:userId,p_drive_url:String(driveUrl).trim()}});
 }
+export async function getCanopyGraduationOverview(session){
+ const x=await refreshSession(session||getStoredSession());if(!x?.access_token)throw new Error('Sign in to access graduation information.');
+ return rest('rpc/canopy_graduation_2026_overview',{token:x.access_token,method:'POST',body:{}});
+}
+export async function submitCanopyGraduationReflection(session,{displayName,reflection}){
+ const x=await refreshSession(session||getStoredSession());if(!x?.access_token)throw new Error('Sign in to publish your reflection.');
+ return rest('rpc/canopy_graduation_2026_submit',{token:x.access_token,method:'POST',body:{p_display_name:displayName,p_reflection:reflection}});
+}
 export async function getCertificates(session){
   const s=await refreshSession(session||getStoredSession());if(!s?.access_token)return[];
   return rest(`canopy_certificates?select=*&user_id=eq.${s.user.id}&order=issued_at.desc`,{token:s.access_token});
@@ -553,7 +561,7 @@ export async function getCanopyMissionAdmin(session,cohortKey=COHORT2_KEY){const
 
 export async function getCanopyMissionAdminStats(session,cohortKey=COHORT2_KEY){const s=await refreshSession(session||getStoredSession());if(cohortKey&&cohortKey!==COHORT2_KEY)return rest('rpc/canopy_admin_cohort_mission_stats',{token:s.access_token,method:'POST',body:{p_cohort_key:cohortKey}});return rest('rpc/canopy_admin_mission_stats',{token:s.access_token,method:'POST',body:{}})}
 export async function reviewCanopyMissionGroup(session,groupId,decision,remark=''){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_admin_review_mission_group',{token:s.access_token,method:'POST',body:{p_group:groupId,p_decision:decision,p_remark:remark||null}})}
-export async function reviewCanopyMissionContributor(session,{groupId,userId,decision='completed',remark=''}){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_admin_review_mission_contributor',{token:s.access_token,method:'POST',body:{p_group:groupId,p_user:userId,p_decision:decision,p_remark:remark||null}})}
+export async function reviewCanopyMissionContributor(session,{groupId,userId,decision='completed',remark=''}){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_admin_review_mission_contribution_v2',{token:s.access_token,method:'POST',body:{p_group:groupId,p_user:userId,p_decision:decision,p_remark:remark||null}})}
 export async function getMyCanopyMissionCompletion(session){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_get_my_mission_completion',{token:s.access_token,method:'POST',body:{}})}
 
 /* WOMATE Canopy Phase 3 opportunity layer */

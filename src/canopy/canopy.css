@@ -3434,3 +3434,6 @@ html[data-canopy-theme="dark"] .cx-special-recognition-song>span{color:var(--can
 /* WOMATE_TESTER_COHORT_CONTEXT_2027 */
 .canopyTesterCohortContext{margin:8px 12px 15px;padding:13px;border:1px solid rgba(117,175,142,.25);border-radius:14px;background:rgba(46,116,82,.09);display:flex;flex-direction:column;gap:7px}.canopyTesterCohortContext label{font-size:.72rem;font-weight:850;letter-spacing:.07em}.canopyTesterCohortContext select{width:100%;max-width:100%;border:1px solid #8cbaa3;border-radius:9px;padding:10px 8px;background:#fff;color:#17382b;font:inherit;font-size:.77rem}.canopyTesterCohortContext small{font-size:.68rem;line-height:1.4;opacity:.78}@media(max-width:720px){.canopyTesterCohortContext{margin:6px 10px 12px;padding:11px}}
 /* WOMATE_TESTER_COHORT_CONTEXT_2027_END */
+
+/* WOMATE_COHORT2_POLICY_FOOTER */
+.canopyC2Policy{max-width:1120px;margin:40px auto 48px;width:calc(100% - 32px);padding:clamp(18px,3vw,30px);background:#fff;border:1px solid #d8e4da;border-radius:20px;color:#173f38}.canopyC2Policy h2{font-size:1.2rem;margin:0 0 14px}.canopyC2Policy p{line-height:1.65;font-size:.9rem;margin:10px 0;color:#51695d}.canopyC2Policy strong{color:#153f37}
