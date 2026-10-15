@@ -596,3 +596,10 @@ export async function getCanopyExternalCollaborationRequests(session){const s=aw
 export async function getCanopyExternalCollaborationThread(session,requestId){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_get_external_collaboration_thread',{token:s.access_token,method:'POST',body:{p_request:requestId}})}
 export async function respondCanopyExternalCollaborationRequest(session,requestId,accept){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_respond_external_collaboration_request',{token:s.access_token,method:'POST',body:{p_request:requestId,p_accept:Boolean(accept)}})}
 export async function sendCanopyExternalCollaborationMessage(session,requestId,message){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_send_external_collaboration_message',{token:s.access_token,method:'POST',body:{p_request:requestId,p_message:message}})}
+
+
+// Cohort 2 admin controls; Supabase RPCs enforce authorization independently of the UI.
+export async function getCanopyAdminGraduation2026(session){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_admin_graduation_2026_list',{token:s.access_token,method:'POST',body:{}})}
+export async function markCanopyAdminGraduate2026(session,userId,graduated){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_admin_mark_graduated_2026',{token:s.access_token,method:'POST',body:{p_user_id:userId,p_graduated:Boolean(graduated)}})}
+export async function getCanopyInactiveCandidates(session){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_admin_inactivity_2026_preview',{token:s.access_token,method:'POST',body:{}})}
+export async function queueCanopyInactivityReviews(session){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_admin_c2_queue_inactivity_reviews',{token:s.access_token,method:'POST',body:{}})}

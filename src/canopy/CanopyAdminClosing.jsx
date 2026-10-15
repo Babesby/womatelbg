@@ -1,0 +1,20 @@
+import React,{useEffect,useState} from 'react';
+import {Award,RefreshCw,ShieldAlert,UsersRound} from 'lucide-react';
+import {getCanopyAdminGraduation2026,markCanopyAdminGraduate2026,getCanopyInactiveCandidates,queueCanopyInactivityReviews} from './canopyApi';
+import './canopyAdminClosing.css';
+export default function CanopyAdminClosing({viewer,area='graduation'}){
+ const [rows,setRows]=useState([]),[busy,setBusy]=useState(false),[error,setError]=useState(''),[query,setQuery]=useState(''),[note,setNote]=useState('');
+ const graduation=area==='graduation';
+ const load=async()=>{setBusy(true);setError('');try{const result=graduation?await getCanopyAdminGraduation2026(viewer.session):await getCanopyInactiveCandidates(viewer.session);setRows(Array.isArray(result)?result:[])}catch(e){setError(e.message||'Unable to load records.')}finally{setBusy(false)}};
+ useEffect(()=>{load()},[viewer?.session?.access_token,graduation]);
+ async function approve(row,value){if(!window.confirm(value?'Confirm this learner has met the graduation standards? This does NOT issue a certificate.':'Revoke this graduation approval?'))return;setBusy(true);try{await markCanopyAdminGraduate2026(viewer.session,row.user_id,value);await load()}catch(e){setError(e.message)}finally{setBusy(false)}}
+ async function queue(){if(!window.confirm('Add eligible records to the internal review queue? This will NOT unenrol or delete anyone.'))return;setBusy(true);try{const n=await queueCanopyInactivityReviews(viewer.session);setNote(`${n} new cases queued for review. No accounts were changed.`);await load()}catch(e){setError(e.message)}finally{setBusy(false)}}
+ const filtered=rows.filter(r=>`${r.full_name||''} ${r.email||''} ${r.user_id||''}`.toLowerCase().includes(query.toLowerCase()));
+ return <main className="cac-page"><header className="cac-head"><span className="canopyEyebrow">WOMATE · COHORT 2 · 2026</span><h1>{graduation?'Graduation operations':'Zero-activity review'}</h1><p>{graduation?'Verify learner eligibility, approval and certificate issuance before graduation day. Approval and issuance remain separate.':'Screen zero-activity accounts for manual investigation. Team access, accessibility issues and pending reviews require independent checks before withdrawal.'}</p></header>
+ <div className="cac-stats"><article><UsersRound/><strong>{rows.length}</strong><span>{graduation?'Learners listed':'Preliminary candidates'}</span></article>{graduation&&<><article><Award/><strong>{rows.filter(r=>r.graduated).length}</strong><span>Marked graduated</span></article><article><Award/><strong>{rows.filter(r=>r.has_certificate).length}</strong><span>Issued certificates</span></article></>}</div>
+ <div className="cac-toolbar"><input type="search" aria-label="Search learners" value={query} placeholder="Search learner…" onChange={e=>setQuery(e.target.value)}/><button type="button" onClick={load} disabled={busy}><RefreshCw size={16}/> Refresh</button>{!graduation&&<button type="button" onClick={queue} disabled={busy}>Queue for review</button>}</div>
+ {error&&<p className="cac-error" role="alert">{error}</p>}{note&&<p role="status">{note}</p>}
+ {!graduation&&<p className="cac-warning"><ShieldAlert size={18}/> Screening is not an authorization to withdraw or delete. Verify role, staff access, pending work, appeal and identity dependencies before any action. Contact for appeals: womatead@gmail.com.</p>}
+ <div className="cac-list">{filtered.map(r=><article key={r.user_id}><div><h2>{r.full_name||'Learner'}</h2><p>{r.email||r.user_id}</p>{graduation?<small>{r.has_certificate?'Certificate issued':'No certificate issued'} · {r.graduated?'Marked graduated':'Awaiting approval'}</small>:<small>Enrolled {r.enrolled_at?new Date(r.enrolled_at).toLocaleDateString('en-GB'):'date unavailable'} · 0 recorded lessons, attendance and submissions</small>}</div>{graduation&&<button type="button" disabled={busy} className={r.graduated?'cac-revoke':''} onClick={()=>approve(r,!r.graduated)}>{r.graduated?'Revoke approval':'Mark graduated'}</button>}</article>)}{!busy&&!filtered.length&&<p>No matching records.</p>}</div>
+ </main>;
+}
