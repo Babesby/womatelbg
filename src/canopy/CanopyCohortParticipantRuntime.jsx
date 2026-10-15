@@ -1,4 +1,5 @@
 import React from 'react';
+import Canopy2027DraftPreview from './Canopy2027DraftPreview';
 import {ArrowLeft,BookOpen,CalendarDays,CheckCircle2,CreditCard,FileText,Globe2,GraduationCap,LockKeyhole,Radio,ShieldCheck,Sparkles,UsersRound} from 'lucide-react';
 import {canopyPost2026Runtime,CANOPY_POST_2026_RUNTIMES} from './canopyCohortRuntime2027';
 
@@ -81,7 +82,7 @@ export default function CanopyCohortParticipantRuntime({viewer,cohortKey,path='/
         else go(target);
       }}>{label}</button>)}
     </nav>
-    {view==='overview'?<RuntimeOverview runtime={runtime}/>:<RuntimePlaceholder runtime={runtime} section={view}/>}
+    {tester?<Canopy2027DraftPreview cohortKey={runtime.cohortKey} section={view}/>:view==='overview'?<RuntimeOverview runtime={runtime}/>:<RuntimePlaceholder runtime={runtime} section={view}/>}
   </main>;
 }
 
