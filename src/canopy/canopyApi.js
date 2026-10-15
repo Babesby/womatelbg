@@ -603,3 +603,11 @@ export async function getCanopyAdminGraduation2026(session){const s=await refres
 export async function markCanopyAdminGraduate2026(session,userId,graduated){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_admin_mark_graduated_2026',{token:s.access_token,method:'POST',body:{p_user_id:userId,p_graduated:Boolean(graduated)}})}
 export async function getCanopyInactiveCandidates(session){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_admin_inactivity_2026_preview',{token:s.access_token,method:'POST',body:{}})}
 export async function queueCanopyInactivityReviews(session){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_admin_c2_queue_inactivity_reviews',{token:s.access_token,method:'POST',body:{}})}
+
+
+// Cohort 2 completion controls; authorization enforced by SECURITY DEFINER RPCs.
+export async function getCanopyAdminGraduationReflections2026(session){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_admin_graduation_reflections_2026',{token:s.access_token,method:'POST',body:{}})}
+export async function moderateCanopyGraduationReflection2026(session,userId,state,reason=''){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_admin_moderate_graduation_reflection_2026',{token:s.access_token,method:'POST',body:{p_user:userId,p_state:state,p_reason:reason||null}})}
+export async function getCanopyAdminInactivityCases2026(session){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_admin_c2_inactivity_cases_list',{token:s.access_token,method:'POST',body:{}})}
+export async function decideCanopyAdminInactivityCase2026(session,userId,decision,reason){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_admin_c2_inactivity_decide',{token:s.access_token,method:'POST',body:{p_user:userId,p_decision:decision,p_reason:reason}})}
+export async function sendCanopyAdminInactivityReviewNotice2026(session,userId,reason){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_admin_c2_send_review_notice',{token:s.access_token,method:'POST',body:{p_user:userId,p_reason:reason}})}

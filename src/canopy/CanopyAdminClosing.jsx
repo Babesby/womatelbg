@@ -2,6 +2,7 @@ import React,{useEffect,useState} from 'react';
 import {Award,RefreshCw,ShieldAlert,UsersRound} from 'lucide-react';
 import {getCanopyAdminGraduation2026,markCanopyAdminGraduate2026,getCanopyInactiveCandidates,queueCanopyInactivityReviews} from './canopyApi';
 import './canopyAdminClosing.css';
+import CanopyClosingReviewTools from './CanopyClosingReviewTools';
 export default function CanopyAdminClosing({viewer,area='graduation'}){
  const [rows,setRows]=useState([]),[busy,setBusy]=useState(false),[error,setError]=useState(''),[query,setQuery]=useState(''),[note,setNote]=useState('');
  const graduation=area==='graduation';
@@ -16,5 +17,5 @@ export default function CanopyAdminClosing({viewer,area='graduation'}){
  {error&&<p className="cac-error" role="alert">{error}</p>}{note&&<p role="status">{note}</p>}
  {!graduation&&<p className="cac-warning"><ShieldAlert size={18}/> Screening is not an authorization to withdraw or delete. Verify role, staff access, pending work, appeal and identity dependencies before any action. Contact for appeals: womatead@gmail.com.</p>}
  <div className="cac-list">{filtered.map(r=><article key={r.user_id}><div><h2>{r.full_name||'Learner'}</h2><p>{r.email||r.user_id}</p>{graduation?<small>{r.has_certificate?'Certificate issued':'No certificate issued'} · {r.graduated?'Marked graduated':'Awaiting approval'}</small>:<small>Enrolled {r.enrolled_at?new Date(r.enrolled_at).toLocaleDateString('en-GB'):'date unavailable'} · 0 recorded lessons, attendance and submissions</small>}</div>{graduation&&<button type="button" disabled={busy} className={r.graduated?'cac-revoke':''} onClick={()=>approve(r,!r.graduated)}>{r.graduated?'Revoke approval':'Mark graduated'}</button>}</article>)}{!busy&&!filtered.length&&<p>No matching records.</p>}</div>
- </main>;
+ <CanopyClosingReviewTools viewer={viewer} area={area}/></main>;
 }
