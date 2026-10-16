@@ -1,5 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Permanent+Marker&family=Pacifico&display=swap');
-.cgrad-page{--cg-teal:#052d2d;--cg-green:#073b39;--cg-lime:#c6ff52;--cg-gold:#edc975;--cg-white:#f8f7ec;position:relative;isolation:isolate;overflow:hidden;min-height:100vh;padding:clamp(28px,4vw,60px) clamp(14px,3.2vw,50px) 85px;background:#042c2c url('/assets/canopy/graduation/celebration-background.webp') center top/cover fixed no-repeat;color:var(--cg-white);font-family:'DM Sans',system-ui,sans-serif}
+.cgrad-page{--cg-teal:#052d2d;--cg-green:#073b39;--cg-lime:#c6ff52;--cg-gold:#edc975;--cg-white:#f8f7ec;position:relative;isolation:isolate;overflow:hidden;min-height:100vh;padding:clamp(28px,4vw,60px) clamp(14px,3.2vw,50px) 85px;background:#042c2c url('/assets/canopy/graduation/page-celebration-v6.webp') center top/cover fixed no-repeat;color:var(--cg-white);font-family:'DM Sans',system-ui,sans-serif}
 .cgrad-page:before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(0,28,28,.18),rgba(0,24,25,.82) 72%,#032727)}
 .cgrad-page *{box-sizing:border-box}.cgrad-content{width:min(1320px,100%);margin-inline:auto;position:relative;z-index:2}.cgrad-decor{position:absolute;pointer-events:none;z-index:0;background-repeat:no-repeat;opacity:.95}.cgrad-decor-ribbon{top:-130px;left:-330px;width:700px;height:560px;background-image:url('/assets/canopy/graduation/satin-ribbon.webp');background-size:contain;transform:rotate(-10deg)}.cgrad-decor-confetti{inset:0;background-image:url('/assets/canopy/graduation/confetti.webp');background-size:100% auto;background-position:center top;opacity:.52;mask-image:linear-gradient(to bottom,black,transparent 55%)}.cgrad-decor-balloons{right:-150px;top:90px;width:445px;height:700px;background-image:url('/assets/canopy/graduation/balloons.webp');background-size:contain;background-position:right top}.cgrad-decor-stars{bottom:0;left:-100px;width:480px;height:500px;background-image:url('/assets/canopy/graduation/star-trail.webp');background-size:contain;transform:rotate(8deg)}
 .cgrad-kicker{display:block;font-size:.72rem;font-weight:800;letter-spacing:.18em;color:var(--cg-lime)}
@@ -38,3 +38,20 @@
  .cgrad-photo-grid button,.cgrad-cap-grid button{min-height:44px;font-size:.74rem;padding:9px 6px}
  .cgrad-processing{left:10px;right:10px;bottom:10px;padding:10px 12px;font-size:.78rem}
 }
+
+/* === WOMATE GRADUATION ALL-IN-ONE v6: preview/upload UX only === */
+.cgrad-stage{background:#fff url('/assets/canopy/graduation/portrait-frame-v6.webp') center/100% 100% no-repeat!important;}
+.cgrad-stage-placeholder{color:#073b39;background:transparent}
+.cgrad-stage-placeholder strong{color:#073b39}
+.cgrad-stage-placeholder>span:nth-child(3){color:#335b59}
+.cgrad-stage-icon{background:#073b39;color:#c6ff52;border-color:#b4be7b}
+.cgrad-photo-actions{display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:8px;min-width:0}
+.cgrad-clear-photo{min-height:43px;display:inline-flex;align-items:center;justify-content:center;gap:6px;border:1px solid rgba(240,213,147,.52);background:rgba(255,255,255,.07);color:#f1e5c5;font-weight:800;border-radius:10px;padding:8px 11px;cursor:pointer}
+.cgrad-clear-photo:disabled{opacity:.48;cursor:wait}
+.cgrad-guide-toggle{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:12px auto 0;font-size:.73rem;color:#c9ded3;max-width:560px}
+.cgrad-guide-toggle button{background:transparent;color:#c6ff52;border:1px solid rgba(198,255,82,.55);padding:8px 11px;border-radius:10px;min-height:36px;cursor:pointer;font-weight:800;white-space:nowrap}
+.cgrad-cap-overlay.is-clean{border-color:transparent;outline:none}
+.cgrad-cap-overlay.is-clean .cgrad-handle{display:none}
+.cgrad-stage canvas{position:relative;z-index:1}
+.cgrad-cap-overlay{z-index:2}
+@media(max-width:520px){.cgrad-studio-head{align-items:flex-start;flex-wrap:wrap}.cgrad-photo-actions{justify-content:flex-start}.cgrad-clear-photo{min-height:39px;font-size:.74rem;padding:6px 9px}.cgrad-guide-toggle{align-items:flex-start;flex-wrap:wrap}}

@@ -206,6 +206,8 @@ function PortraitStudio({graduateName}){
  const [photoLoaded,setPhotoLoaded]=useState(false),[capLoaded,setCapLoaded]=useState(false),[frameLoaded,setFrameLoaded]=useState(false),[processing,setProcessing]=useState(false);
  const [cap,setCap]=useState(START_CAP),[person,setPerson]=useState(START_PHOTO),[notice,setNotice]=useState('');
  const [exporting,setExporting]=useState(false),[assetError,setAssetError]=useState(false),[frameError,setFrameError]=useState(false);
+ const [photoVersion,setPhotoVersion]=useState(0),[showGuides,setShowGuides]=useState(true);
+ const uploadRequestRef=useRef(0); // WOMATE_GRAD_ALL_IN_ONE_V6
  const cleanPhoto=useCallback(()=>{if(objectUrlRef.current){URL.revokeObjectURL(objectUrlRef.current);objectUrlRef.current=null;} sourcePhotoRef.current=null;subjectRef.current=null;},[]);
  useEffect(()=>()=>{cleanPhoto()},[cleanPhoto]);
  useEffect(()=>{
@@ -213,45 +215,72 @@ function PortraitStudio({graduateName}){
   const capImg=new Image();
   capImg.onload=()=>{if(mounted){capRef.current=capImg;setCapLoaded(true);setAssetError(false);}};
   capImg.onerror=()=>{if(mounted)setAssetError(true)};
-  capImg.src=ASSET+'womate-cap.webp';
+  capImg.src=ASSET+'portrait-cap-v6.webp';
   const frameImg=new Image();
   frameImg.onload=()=>{if(mounted){frameRef.current=frameImg;setFrameLoaded(true);setFrameError(false);}};
   frameImg.onerror=()=>{if(mounted)setFrameError(true)};
-  frameImg.src=ASSET+'page-frame.webp';
+  frameImg.src=ASSET+'portrait-frame-v6.webp';
   return()=>{mounted=false;capImg.onload=null;capImg.onerror=null;frameImg.onload=null;frameImg.onerror=null;};
  },[]);
- useEffect(()=>{drawImageCard(canvasRef.current,frameRef.current,subjectRef.current,capRef.current,person,cap,graduateName,false);},[photoLoaded,capLoaded,frameLoaded,person,cap,graduateName]);
- const selectFile=()=>fileRef.current?.click();
+ useEffect(()=>{drawImageCard(canvasRef.current,frameRef.current,subjectRef.current,capRef.current,person,cap,graduateName,true);},[photoLoaded,capLoaded,frameLoaded,person,cap,graduateName,photoVersion]);
+ const selectFile=()=>{
+  if(processing||!fileRef.current)return;
+  fileRef.current.value='';
+  fileRef.current.click();
+ };
+ const clearPhoto=()=>{
+  uploadRequestRef.current+=1; // cancel pending segmentation results
+  cleanPhoto();
+  if(fileRef.current)fileRef.current.value='';
+  setPhotoLoaded(false);setProcessing(false);
+  setPerson({...START_PHOTO});setCap({...START_CAP});
+  setPhotoVersion(v=>v+1);setShowGuides(true);
+  setNotice('Photo removed. Choose another photo to create your portrait.');
+ };
  const nudgePerson=(dx=0,dy=0)=>setPerson(v=>({...v,x:clamp(v.x+dx,.18,.82),y:clamp(v.y+dy,.18,.82)}));
  const setPhotoStandard=()=>setPerson({...START_PHOTO});
  const onFile=async e=>{
   const file=e.target.files?.[0];
+  e.target.value=''; // choosing this same file later must still trigger change
   if(!file)return;
-  if(!file.type.startsWith('image/')){setNotice('Please choose an image file.');return;}
-  if(file.size>12*1024*1024){setNotice('Please choose a photo smaller than 12 MB.');return;}
-  if(!frameLoaded){setNotice('The WOMATE teal portrait decoration is still loading. Please try again.');return;}
-  cleanPhoto();
-  const url=URL.createObjectURL(file);objectUrlRef.current=url;
+  if(!file.type.startsWith('image/')){setNotice('Please choose a JPG, PNG or WebP photo.');return;}
+  if(file.size>12*1024*1024){setNotice('Choose a photo smaller than 12 MB.');return;}
+  if(!frameLoaded){setNotice('The WOMATE teal portrait frame is still loading; try again shortly.');return;}
+
+  const request=++uploadRequestRef.current;
+  cleanPhoto(); // revoke previous object URL and erase the old processed cutout
+  setPhotoLoaded(false);setProcessing(true);setShowGuides(true);
+  setNotice('Removing the old photo and preparing your new portrait…');
+  setPerson({...START_PHOTO});setCap({...START_CAP});
+  const url=URL.createObjectURL(file);
+  objectUrlRef.current=url;
   const img=new Image();
   img.onload=async()=>{
-   if(objectUrlRef.current!==url)return;
-   sourcePhotoRef.current=img;setProcessing(true);setPhotoLoaded(false);setNotice('Removing your background on this device…');
+   if(request!==uploadRequestRef.current||objectUrlRef.current!==url)return;
+   sourcePhotoRef.current=img;
    try{
     const cutout=await buildCutoutFromPhoto(img);
-    if(objectUrlRef.current!==url)return;
+    if(request!==uploadRequestRef.current||objectUrlRef.current!==url)return;
     subjectRef.current=cutout;
-    setPerson({...START_PHOTO});setCap({...START_CAP});setPhotoLoaded(true);
-    setNotice('Background removed. Use Photo controls to center yourself, then adjust the cap.');
+    setPhotoVersion(v=>v+1); // force a fresh canvas after each successful upload
+    setPhotoLoaded(true);
+    setNotice('New photo ready. Use the photo controls, then drag or fit your WOMATE cap.');
    }catch(err){
-    console.error('[WOMATE Canopy] Local background removal error:',err);
-    const detail=String(err?.message||'Browser processing error').slice(0,160);
-    setNotice('Background removal failed: '+detail+'. Try once more or use a smaller JPG. Your original background will not be used.');
+    if(request!==uploadRequestRef.current)return;
+    console.error('[WOMATE graduation] Background removal failed',err);
     setPhotoLoaded(false);
-   }finally{setProcessing(false);}
+    setNotice('Background removal could not finish: '+String(err?.message||'browser processing error').slice(0,150)+'. Please try a clear JPG or PNG. Your original background will never be used.');
+   }finally{
+    if(request===uploadRequestRef.current)setProcessing(false);
+   }
   };
-  img.onerror=()=>{setNotice('This picture could not be opened. Try JPG, PNG or WebP.');setProcessing(false);setPhotoLoaded(false);cleanPhoto();};
+  img.onerror=()=>{
+   if(request!==uploadRequestRef.current)return;
+   setPhotoLoaded(false);setProcessing(false);
+   setNotice('That photo could not be opened. Please choose a JPG, PNG or WebP file.');
+   cleanPhoto();
+  };
   img.src=url;
-  e.target.value='';
  };
  const pointerDown=e=>{
   if(!photoLoaded||!capLoaded)return;
@@ -307,19 +336,20 @@ function PortraitStudio({graduateName}){
   }finally{setExporting(false);}
  };
  return <section className="cgrad-studio" aria-label="Create your graduation portrait">
-  <div className="cgrad-studio-head"><div><span className="cgrad-kicker">YOUR GRADUATION PORTRAIT</span><h2>Wear your moment.</h2></div><button type="button" className="cgrad-upload" onClick={selectFile} disabled={processing}><ImagePlus size={18}/> {photoLoaded?'Change photo':'Upload photo'}</button></div>
+  <div className="cgrad-studio-head"><div><span className="cgrad-kicker">YOUR GRADUATION PORTRAIT</span><h2>Wear your moment.</h2></div><div className="cgrad-photo-actions"><button type="button" className="cgrad-upload" onClick={selectFile} disabled={processing}><ImagePlus size={18}/> {photoLoaded?'Replace photo':'Upload photo'}</button>{photoLoaded&&<button type="button" className="cgrad-clear-photo" onClick={clearPhoto} disabled={processing}><RotateCcw size={15}/> Clear photo</button>}</div></div>
   <input ref={fileRef} type="file" accept="image/*" className="cgrad-file" onChange={onFile} aria-label="Upload a photo for your graduation portrait"/>
   <div className="cgrad-stage" ref={stageRef}>
-   {photoLoaded?<><canvas ref={canvasRef} width={SIZE.width} height={SIZE.height} aria-label="Graduation portrait preview without cap"/>
-    {capLoaded&&<div role="img" aria-label="Drag to position the WOMATE graduation cap on your head" tabIndex={0} className="cgrad-cap-overlay" style={{left:`${cap.x*100}%`,top:`${cap.y*100}%`,width:`${cap.width*100}%`,transform:`translate(-50%,-50%) rotate(${cap.rotation}deg)`}} onPointerDown={pointerDown} onPointerMove={pointerMove} onPointerUp={pointerUp} onPointerCancel={pointerUp} onKeyDown={e=>{const arrows={ArrowLeft:['x',-.01],ArrowRight:['x',.01],ArrowUp:['y',-.01],ArrowDown:['y',.01]};if(arrows[e.key]){e.preventDefault();tweakCap(...arrows[e.key]);}}}>
-     <img src={`${ASSET}womate-cap.webp`} alt="" draggable="false"/>
+   {photoLoaded?<><canvas key={photoVersion} ref={canvasRef} width={SIZE.width} height={SIZE.height} aria-label="Graduation portrait preview, with white background, teal graduation decorations and updated cap"/>
+    {capLoaded&&<div role="img" aria-label="Drag to position the WOMATE graduation cap on your head" tabIndex={0} className={`cgrad-cap-overlay${showGuides?'':' is-clean'}`} style={{left:`${cap.x*100}%`,top:`${cap.y*100}%`,width:`${cap.width*100}%`,transform:`translate(-50%,-50%) rotate(${cap.rotation}deg)`}} onPointerDown={pointerDown} onPointerMove={pointerMove} onPointerUp={pointerUp} onPointerCancel={pointerUp} onKeyDown={e=>{const arrows={ArrowLeft:['x',-.01],ArrowRight:['x',.01],ArrowUp:['y',-.01],ArrowDown:['y',.01]};if(arrows[e.key]){e.preventDefault();tweakCap(...arrows[e.key]);}}}>
+     {/* Cap visual is already rendered into the canvas so preview and export match. */}
      <i className="cgrad-handle top-left"/><i className="cgrad-handle top-right"/><i className="cgrad-handle bottom-left"/><i className="cgrad-handle bottom-right"/>
     </div>}
-   </>:<button type="button" className="cgrad-stage-placeholder" onClick={selectFile} disabled={processing}><span className="cgrad-stage-icon"><ImagePlus size={35}/></span><strong>Make it yours.</strong><span>Upload one clear photo. We automatically remove the background and place you on WOMATE’s graduation backdrop.</span><span className="cgrad-stage-cta">Choose my photo <Plus size={16}/></span></button>}
+   </>:<button type="button" className="cgrad-stage-placeholder" onClick={selectFile} disabled={processing}><span className="cgrad-stage-icon"><ImagePlus size={35}/></span><strong>Make it yours.</strong><span>Upload a clear photo. Its original background is removed, then your portrait sits on white with refined WOMATE teal-and-gold corner decorations.</span><span className="cgrad-stage-cta">Choose my photo <Plus size={16}/></span></button>}
    {processing&&<div className="cgrad-processing" aria-live="polite"><Sparkles size={20}/><span>Removing your background on this device…</span></div>}
   </div>
   {assetError&&<p className="cgrad-status" role="alert">The updated graduation cap asset has not been installed yet.</p>}
-  {frameError&&<p className="cgrad-status" role="alert">The WOMATE teal corner overlay is missing. Check the page-frame.webp asset.</p>}
+  {frameError&&<p className="cgrad-status" role="alert">The refined WOMATE teal portrait frame did not load. Check portrait-frame-v6.webp.</p>}
+  {photoLoaded&&<div className="cgrad-guide-toggle"><span>Preview and download use the same finished artwork.</span><button type="button" onClick={()=>setShowGuides(v=>!v)}>{showGuides?'Hide cap guides':'Show cap guides'}</button></div>}
   {photoLoaded&&<div className="cgrad-editor-stack">
    <div className="cgrad-control-card">
     <div className="cgrad-control-head"><strong>Photo</strong><span>Your own background is removed automatically.</span></div>
