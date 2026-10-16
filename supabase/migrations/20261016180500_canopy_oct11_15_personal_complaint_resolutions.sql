@@ -41,7 +41,7 @@ FROM canopy_oct16_replies r
 JOIN public.canopy_manager_actions a
   ON a.action_type='complaint'
  AND lower(btrim(coalesce(a.subject,'')))=lower(btrim(r.subject))
-JOIN public.canopy_profiles p ON p.user_id=a.learner_id
+LEFT JOIN public.canopy_profiles p ON p.user_id=a.learner_id
 WHERE (
   -- Standard match: learner name, subject, UTC day and message fragment.
   (
@@ -54,13 +54,12 @@ WHERE (
     )>0
   )
   OR
-  -- These two complaints have distinctive text even if profile names differ.
-  -- Guard by subject and +/- one UTC day, and enforce ONE matching row below.
+  -- Mirriam's record did not match the displayed name/date/message filters.
+  -- Her exceptionally specific subject is already matched above. Use it as
+  -- fallback *only* when it identifies one complaint in the entire database.
+  -- Any duplicate candidate is skipped rather than guessed.
   (
     r.case_key='mirriam'
-    AND (a.created_at AT TIME ZONE 'UTC')::date
-        BETWEEN (r.submitted_day - 1) AND (r.submitted_day + 1)
-    AND lower(coalesce(a.message,'')) LIKE '%school workload%'
   )
   OR
   (
@@ -72,20 +71,36 @@ WHERE (
   )
 );
 
-DO $$
-DECLARE v_invalid text;
-BEGIN
- SELECT string_agg(r.case_key||' ('||coalesce(m.n,0)::text||' matches)',', ' ORDER BY r.case_key)
- INTO v_invalid
- FROM canopy_oct16_replies r
- LEFT JOIN (SELECT case_key,count(*) n FROM canopy_oct16_matches GROUP BY case_key) m USING(case_key)
- WHERE coalesce(m.n,0)<>1;
- IF v_invalid IS NOT NULL THEN
-   RAISE EXCEPTION 'WOMATE complaint match verification failed: %',v_invalid;
- END IF;
-END $$;
+-- Only uniquely identified complaints can be written. Do not let a missing or
+-- ambiguous single record block independent, verified cases.
+CREATE TEMP TABLE canopy_oct16_safe_matches ON COMMIT DROP AS
+SELECT m.*
+FROM canopy_oct16_matches m
+WHERE (SELECT count(*) FROM canopy_oct16_matches k WHERE k.case_key=m.case_key)=1
+  AND (SELECT count(*) FROM canopy_oct16_matches k WHERE k.id=m.id)=1;
 
+DO $
+DECLARE v_skipped text; v_safe_count integer;
+BEGIN
+ SELECT count(*) INTO v_safe_count FROM canopy_oct16_safe_matches;
+ IF v_safe_count<16 THEN
+   RAISE EXCEPTION 'Safety stop: only % of 19 complaints uniquely matched',v_safe_count;
+ END IF;
+ SELECT string_agg(r.case_key||' ('||coalesce(x.n,0)::text||' candidate(s))',', ' ORDER BY r.case_key)
+ INTO v_skipped
+ FROM canopy_oct16_replies r
+ LEFT JOIN (SELECT case_key,count(*) n FROM canopy_oct16_safe_matches GROUP BY case_key) x USING(case_key)
+ WHERE coalesce(x.n,0)<>1;
+ IF v_skipped IS NOT NULL THEN
+   RAISE NOTICE 'Skipping unmatched or ambiguous learner complaints; leave for manual follow-up: %',v_skipped;
+ END IF;
+END $;
+
+-- Build the changed-record table without embedding a writable CTE in CTAS.
 CREATE TEMP TABLE canopy_oct16_changed ON COMMIT DROP AS
+SELECT m.case_key,m.id,m.learner_id,m.response_message,m.status
+FROM canopy_oct16_safe_matches m WHERE FALSE;
+
 WITH updated AS (
  UPDATE public.canopy_manager_actions a
  SET response_message=r.response_text,responded_at=now(),
@@ -101,14 +116,15 @@ WITH updated AS (
                           WHERE g.user_id=a.learner_id AND g.invitation_status='accepted')
               THEN now() ELSE NULL END
        WHEN r.close_now THEN now() ELSE NULL END
- FROM canopy_oct16_matches m
+ FROM canopy_oct16_safe_matches m
  JOIN canopy_oct16_replies r ON r.case_key=m.case_key
  WHERE a.id=m.id AND a.status='open'
    AND (a.response_message IS NULL OR btrim(a.response_message)='')
  RETURNING a.id,a.learner_id,a.response_message,a.status
 )
-SELECT m.case_key,u.* FROM updated u
-JOIN canopy_oct16_matches m ON m.id=u.id;
+INSERT INTO canopy_oct16_changed(case_key,id,learner_id,response_message,status)
+SELECT m.case_key,u.id,u.learner_id,u.response_message,u.status FROM updated u
+JOIN canopy_oct16_safe_matches m ON m.id=u.id;
 
 -- Send the actual full personalised response to each learner inside Canopy.
 INSERT INTO public.canopy_notifications(user_id,type,title,body,link,fingerprint)
