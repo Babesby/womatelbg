@@ -10,7 +10,7 @@ const START_CAP={x:.50,y:.22,width:.72,rotation:0};
 const START_PHOTO={x:.5,y:.49,scale:1};
 const SAMPLE=[{id:'tester-preview',display_name:'WOMATE Graduate',reflection:'The journey taught me to trust my voice and take meaningful climate action.',created_at:'2026-10-29T12:00:00Z'}];
 const MEDIAPIPE_WASM='/assets/canopy/mediapipe/wasm';
-const SEGMENTER_MODEL='https://storage.googleapis.com/mediapipe-models/image_segmenter/selfie_segmenter/float16/latest/selfie_segmenter.tflite';
+const SEGMENTER_MODEL='/assets/canopy/mediapipe/selfie_segmenter.tflite';
 
 const clamp=(n,min,max)=>Math.min(max,Math.max(min,n));
 const fmt=n=>String(n).padStart(2,'0');
@@ -33,7 +33,7 @@ async function getSegmenter(){
     baseOptions:{modelAssetPath:SEGMENTER_MODEL,delegate:'CPU'},
     runningMode:'IMAGE',
     outputConfidenceMasks:true,
-    outputCategoryMask:false
+    outputCategoryMask:true
    });
   })().catch(err=>{segmenterPromise=null;throw err});
  }
@@ -66,19 +66,40 @@ function cropCanvasToSubject(canvas,pad=20){
 }
 
 async function buildCutoutFromPhoto(img){
+ // Keep decoding and mask compositing under control on large phone photos.
+ // Processing is local; this resized canvas is not uploaded anywhere.
+ const naturalW=img.naturalWidth||img.width,naturalH=img.naturalHeight||img.height;
+ const scale=Math.min(1,1600/Math.max(naturalW,naturalH));
+ const source=document.createElement('canvas');
+ source.width=Math.max(1,Math.round(naturalW*scale));
+ source.height=Math.max(1,Math.round(naturalH*scale));
+ const sourceCtx=source.getContext('2d');
+ if(!sourceCtx)throw new Error('Your browser could not open the photo canvas.');
+ sourceCtx.drawImage(img,0,0,source.width,source.height);
+
  const segmenter=await getSegmenter();
- // In the selfie segmentation model, channel 0 is background and 1 is person.
- // Request *confidence masks*: a category mask has integer class IDs, not floats.
- const result=segmenter.segment(img);
- let maskValues,mw,mh;
+ const result=segmenter.segment(source);
+ let maskValues,mw,mh,categoryData,usesCategories=false;
  try{
-  const mask=result?.confidenceMasks?.[1];
-  if(!mask||typeof mask.getAsFloat32Array!=='function')
-   throw new Error('The person mask was not returned. Please retry with a clear portrait.');
-  mw=mask.width;mh=mask.height;
-  maskValues=mask.getAsFloat32Array().slice();
+  const confidenceMasks=result?.confidenceMasks||[];
+  // Depending on model metadata, the selfie model may return ONE foreground
+  // confidence mask rather than separate background and foreground masks.
+  const mask=confidenceMasks.length>1?confidenceMasks[1]:confidenceMasks[0];
+  if(mask&&typeof mask.getAsFloat32Array==='function'){
+   mw=mask.width;mh=mask.height;
+   maskValues=mask.getAsFloat32Array().slice();
+  }else if(result?.categoryMask?.getAsUint8Array){
+   const cat=result.categoryMask;
+   mw=cat.width;mh=cat.height;
+   categoryData=cat.getAsUint8Array().slice();
+   usesCategories=true;
+  }else{
+   throw new Error('The person mask could not be read.');
+  }
  }finally{result?.close?.();}
- const width=img.naturalWidth||img.width,height=img.naturalHeight||img.height;
+ if(!mw||!mh||!maskValues&&!categoryData||mw*mh!==(maskValues||categoryData).length)
+  throw new Error('The AI mask was incomplete. Try another photo.');
+ const width=source.width,height=source.height;
  const maskCanvas=document.createElement('canvas');
  maskCanvas.width=mw;maskCanvas.height=mh;
  const mctx=maskCanvas.getContext('2d');
@@ -86,7 +107,7 @@ async function buildCutoutFromPhoto(img){
  const imageData=mctx.createImageData(mw,mh);
  for(let i=0;i<maskValues.length;i++){
   const p=i*4;
-  const confidence=clamp((maskValues[i]-0.08)/0.76,0,1);
+  const confidence=usesCategories?(categoryData[i]===1?1:0):clamp((maskValues[i]-0.08)/0.76,0,1);
   const a=Math.round(confidence*255);
   imageData.data[p]=255;imageData.data[p+1]=255;imageData.data[p+2]=255;imageData.data[p+3]=a;
  }
@@ -97,7 +118,7 @@ async function buildCutoutFromPhoto(img){
  if(!cctx)throw new Error('Photo canvas could not be created.');
  cctx.drawImage(maskCanvas,0,0,width,height);
  cctx.globalCompositeOperation='source-in';
- cctx.drawImage(img,0,0,width,height);
+ cctx.drawImage(source,0,0,width,height);
  cctx.globalCompositeOperation='source-over';
  return cropCanvasToSubject(cutout,24);
 }
@@ -216,7 +237,9 @@ function PortraitStudio({graduateName}){
     setPerson({...START_PHOTO});setCap({...START_CAP});setPhotoLoaded(true);
     setNotice('Background removed. Use Photo controls to center yourself, then adjust the cap.');
    }catch(err){
-    setNotice('Background removal could not finish. Check your connection and try again with a clear photo. Your original background will not be used.');
+    console.error('[WOMATE Canopy] Local background removal error:',err);
+    const detail=String(err?.message||'Unknown browser processing error').replace(/https?:\\/\\/[^\\s]+/g,'external resource').slice(0,160);
+    setNotice('Background removal failed: '+detail+'. Try once more or use a smaller JPG. Your original background will not be used.');
     setPhotoLoaded(false);
    }finally{setProcessing(false);}
   };
