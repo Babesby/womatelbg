@@ -79,7 +79,7 @@ FROM canopy_oct16_matches m
 WHERE (SELECT count(*) FROM canopy_oct16_matches k WHERE k.case_key=m.case_key)=1
   AND (SELECT count(*) FROM canopy_oct16_matches k WHERE k.id=m.id)=1;
 
-DO $
+DO $$
 DECLARE v_skipped text; v_safe_count integer;
 BEGIN
  SELECT count(*) INTO v_safe_count FROM canopy_oct16_safe_matches;
@@ -94,7 +94,7 @@ BEGIN
  IF v_skipped IS NOT NULL THEN
    RAISE NOTICE 'Skipping unmatched or ambiguous learner complaints; leave for manual follow-up: %',v_skipped;
  END IF;
-END $;
+END $$;
 
 -- Build the changed-record table without embedding a writable CTE in CTAS.
 CREATE TEMP TABLE canopy_oct16_changed ON COMMIT DROP AS
