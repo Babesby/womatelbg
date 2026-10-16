@@ -1,12 +1,12 @@
 import React,{useCallback,useEffect,useRef,useState} from 'react';
-import {Award,ChevronDown,Download,Heart,ImagePlus,LockKeyhole,Maximize2,Minus,Move,Play,Plus,RotateCcw,RotateCw,Send,ShieldCheck,Sparkles} from 'lucide-react';
+import {Award,ChevronDown,Download,Eye,EyeOff,Heart,ImagePlus,LockKeyhole,Maximize2,Minus,Move,Play,Plus,RotateCcw,RotateCw,Send,ShieldCheck,Sparkles} from 'lucide-react';
 import {getCertificates,getCanopyGraduationOverview,submitCanopyGraduationReflection} from './canopyApi';
 import './canopyGraduation.css';
 
 const ASSET='/assets/canopy/graduation/';
 const OPEN_AT=Date.UTC(2026,9,29,0,0,0);
 const SIZE={width:1080,height:1350};
-const START_CAP={x:.50,y:.25,width:.76,rotation:-4};
+const START_CAP={x:.50,y:.235,width:.70,rotation:0};
 const SAMPLE=[{id:'tester-preview',display_name:'WOMATE Graduate',reflection:'The journey taught me to trust my voice and take meaningful climate action.',created_at:'2026-10-29T12:00:00Z'}];
 const clamp=(n,min,max)=>Math.min(max,Math.max(min,n));
 const fmt=n=>String(n).padStart(2,'0');
@@ -84,7 +84,7 @@ function PortraitStudio({graduateName}){
  const photoRef=useRef(null),capRef=useRef(null);
  const [photoLoaded,setPhotoLoaded]=useState(false),[capLoaded,setCapLoaded]=useState(false);
  const [cap,setCap]=useState(START_CAP),[activeTool,setActiveTool]=useState('move'),[notice,setNotice]=useState('');
- const [exporting,setExporting]=useState(false);
+ const [exporting,setExporting]=useState(false),[showGuides,setShowGuides]=useState(true);
  const [assetError,setAssetError]=useState(false);
  const cleanPhoto=useCallback(()=>{if(objectUrlRef.current){URL.revokeObjectURL(objectUrlRef.current);objectUrlRef.current=null}},[]);
  useEffect(()=>()=>{cleanPhoto()},[cleanPhoto]);
@@ -105,7 +105,7 @@ function PortraitStudio({graduateName}){
   cleanPhoto();const url=URL.createObjectURL(file);objectUrlRef.current=url;
   const img=new Image();img.onload=()=>{
    if(objectUrlRef.current!==url)return;
-   photoRef.current=img;setCap({...START_CAP});setPhotoLoaded(true);
+   photoRef.current=img;setCap({...START_CAP});setShowGuides(true);setPhotoLoaded(true);
    setNotice('Photo ready. Drag the cap onto your head, or adjust its size and tilt.');
   };img.onerror=()=>{setNotice('This picture could not be opened. Try JPG, PNG or WebP.');setPhotoLoaded(false);cleanPhoto()};img.src=url;
   e.target.value='';
@@ -147,10 +147,12 @@ function PortraitStudio({graduateName}){
  const exportPortrait=async()=>{
   if(!photoRef.current){selectFile();return}
   if(!capRef.current){setNotice('Graduation cap is still loading. Please try again.');return}
-  setExporting(true);setNotice('');
-  const temp=document.createElement('canvas');drawImageCard(temp,photoRef.current,capRef.current,cap,graduateName,true);
+  // The positioning box is DOM-only; the PNG is drawn separately without any guides.
+  setShowGuides(false);setExporting(true);setNotice('');
+  const cleanExportCanvas=document.createElement('canvas');
+  drawImageCard(cleanExportCanvas,photoRef.current,capRef.current,cap,graduateName,true);
   try{
-   const blob=await new Promise(resolve=>temp.toBlob(resolve,'image/png'));
+   const blob=await new Promise(resolve=>cleanExportCanvas.toBlob(resolve,'image/png'));
    if(!blob)throw new Error('Unable to export portrait');
    const url=URL.createObjectURL(blob);const anchor=document.createElement('a');anchor.href=url;anchor.download='WOMATE-Cohort-2-Graduate.png';document.body.appendChild(anchor);anchor.click();anchor.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
    setNotice('Your graduation portrait has been saved!');
@@ -161,7 +163,7 @@ function PortraitStudio({graduateName}){
   <input ref={fileRef} type="file" accept="image/*" className="cgrad-file" onChange={onFile} aria-label="Upload a photo for your graduation portrait"/>
   <div className="cgrad-stage" ref={stageRef}>
    {photoLoaded?<><canvas ref={canvasRef} width={SIZE.width} height={SIZE.height} aria-label="Graduation portrait preview without cap"/>
-    {capLoaded&&<div role="img" aria-label="Drag to position the WOMATE graduation cap on your head" tabIndex={0} className="cgrad-cap-overlay" style={{left:`${cap.x*100}%`,top:`${cap.y*100}%`,width:`${cap.width*100}%`,transform:`translate(-50%,-50%) rotate(${cap.rotation}deg)`}} onPointerDown={pointerDown} onPointerMove={pointerMove} onPointerUp={pointerUp} onPointerCancel={pointerUp} onKeyDown={e=>{const arrows={ArrowLeft:['x',-.01],ArrowRight:['x',.01],ArrowUp:['y',-.01],ArrowDown:['y',.01]};if(arrows[e.key]){e.preventDefault();tweak(...arrows[e.key])}}}>
+    {capLoaded&&<div role="img" aria-label="Drag to position the WOMATE graduation cap on your head" tabIndex={0} className={`cgrad-cap-overlay${showGuides?'':' is-clean'}`} style={{left:`${cap.x*100}%`,top:`${cap.y*100}%`,width:`${cap.width*100}%`,transform:`translate(-50%,-50%) rotate(${cap.rotation}deg)`}} onPointerDown={pointerDown} onPointerMove={pointerMove} onPointerUp={pointerUp} onPointerCancel={pointerUp} onKeyDown={e=>{const arrows={ArrowLeft:['x',-.01],ArrowRight:['x',.01],ArrowUp:['y',-.01],ArrowDown:['y',.01]};if(arrows[e.key]){e.preventDefault();tweak(...arrows[e.key])}}}>
      <img src={`${ASSET}womate-cap.webp`} alt="" draggable="false"/><i className="cgrad-handle top-left"/><i className="cgrad-handle top-right"/><i className="cgrad-handle bottom-left"/><i className="cgrad-handle bottom-right"/>
     </div>}
    </>:<button type="button" className="cgrad-stage-placeholder" onClick={selectFile}><span className="cgrad-stage-icon"><ImagePlus size={35}/></span><strong>Make it yours.</strong><span>Add your favourite photo and try on the WOMATE graduation cap.</span><span className="cgrad-stage-cta">Choose my photo <Plus size={16}/></span></button>}
@@ -174,10 +176,12 @@ function PortraitStudio({graduateName}){
    <button type="button" className={activeTool==='rotate'?'on':''} onClick={()=>setActiveTool('rotate')}><RotateCw size={20}/> Rotate</button>
    <button type="button" onClick={()=>{setCap({...START_CAP});setActiveTool('move')}}><RotateCcw size={20}/> Reset</button>
    <button type="button" onClick={fit}><Sparkles size={20}/> Fit cap</button>
+   <button type="button" className={showGuides?'':'on'} aria-pressed={!showGuides} onClick={()=>setShowGuides(v=>!v)}>{showGuides?<EyeOff size={20}/>:<Eye size={20}/>} {showGuides?'Hide guides':'Show guides'}</button>
   </div>
   {activeTool==='size'&&<label className="cgrad-range">Size <input aria-label="Graduation cap size" type="range" min="30" max="135" step="1" value={Math.round(cap.width*100)} onChange={e=>setCap(v=>({...v,width:Number(e.target.value)/100}))}/><output>{Math.round(cap.width*100)}%</output></label>}
   {(activeTool==='tilt'||activeTool==='rotate')&&<label className="cgrad-range">{activeTool==='tilt'?'Tilt':'Rotate'} <button type="button" aria-label="Turn left" onClick={()=>tweak('rotation',-2)}><Minus size={16}/></button><input aria-label="Graduation cap rotation" type="range" min="-50" max="50" step="1" value={cap.rotation} onChange={e=>setCap(v=>({...v,rotation:Number(e.target.value)}))}/><button type="button" aria-label="Turn right" onClick={()=>tweak('rotation',2)}><Plus size={16}/></button><output>{cap.rotation}°</output></label>}
   </>}
+  {photoLoaded&&<p className="cgrad-editor-hint">Guides help you position the cap. They never appear in your downloaded portrait.</p>}
   <button type="button" className="cgrad-download" disabled={!photoLoaded||!capLoaded||exporting} onClick={exportPortrait}><Download size={20}/>{exporting?'Preparing your portrait…':'Download my graduation portrait'}</button>
   <p className="cgrad-local-hint"><ShieldCheck size={14}/> Your photo stays on this device.</p>
   {notice&&<p role="status" className="cgrad-status">{notice}</p>}
