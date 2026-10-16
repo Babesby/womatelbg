@@ -6,12 +6,12 @@
     "prebuild": "node scripts/audit-form-privacy.cjs && node scripts/copy-canopy-mediapipe.cjs"
   },
   "dependencies": {
+    "@mediapipe/tasks-vision": "0.10.21",
     "@vitejs/plugin-react": "latest",
     "lucide-react": "latest",
     "react": "latest",
     "react-dom": "latest",
     "react-helmet-async": "^3.0.0",
-    "vite": "latest",
-    "@mediapipe/tasks-vision": "0.10.21"
+    "vite": "latest"
   }
 }
