@@ -50,7 +50,8 @@ export async function fitGownToBody(photo){
   const width=clamp(span*2.10/VIEW.width,.62,1.70);
   const gownHeight=width*VIEW.width*1.5; // 1024 x 1536 source asset
   const shoulderCenterY=(left.y+right.y)/2;
-  const rotation=clamp(Math.atan2(right.y-left.y,right.x-left.x)*180/Math.PI,-12,12);
+  const [screenLeft,screenRight]=left.x<=right.x?[left,right]:[right,left];
+  const rotation=clamp(Math.atan2(screenRight.y-screenLeft.y,screenRight.x-screenLeft.x)*180/Math.PI,-12,12);
   return {
     x:clamp((left.x+right.x)/(2*VIEW.width),-.15,1.15),
     y:clamp((shoulderCenterY+.32*gownHeight)/VIEW.height,-.2,1.9),
