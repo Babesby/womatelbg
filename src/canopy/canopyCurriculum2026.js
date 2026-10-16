@@ -382,7 +382,7 @@ export const canopyModules2026 = [
         body:[
           'Climate leadership is not limited to elected office, senior job titles or international conferences. It can take the form of research, organising, entrepreneurship, technical work, public service, communication, education, community coordination and professional influence.',
           'Leadership begins with responsibility: understanding the issue, knowing the limits of your expertise, listening to affected people, acting consistently and being accountable for results.',
-          'WOMATE’s earlier teaching encouraged participants to organise local action, mobilise women and young people, engage decision-makers and use digital media to make women’s climate leadership visible. Canopy reframes these as leadership practices that can be developed deliberately.'
+          'You do not have to wait for a title or an invitation to lead. Start with an issue in your community, bring other women and young people into the conversation, speak to people who can make decisions and use digital platforms to share your work. Keep listening, learning and following through. That is how you build leadership through action.'
         ],
         keyIdea:'Climate leadership is demonstrated through informed action and accountability, not merely visibility.',
         check:{question:'Which best demonstrates climate leadership?',options:['Having “climate leader” in a biography.','Using evidence, convening others and following through on a useful climate action.','Attending the most events.'],answer:1,explanation:'Leadership is demonstrated through responsible action and follow-through.'},
@@ -391,8 +391,8 @@ export const canopyModules2026 = [
       {
         id:'05.2',title:'Finding your professional pathway',minutes:15,
         body:[
-          'Climate work cuts across sectors. Participants may contribute through policy, law, finance, agriculture, health, energy, technology, engineering, communications, research, data, education, entrepreneurship, conservation, urban planning, disaster risk reduction and many other fields.',
-          'A pathway does not require abandoning an existing profession. A lawyer can work on climate regulation; a designer on public communication; a health professional on heat and disease risks; a technologist on climate information; an entrepreneur on low-carbon or adaptation solutions.',
+          'You can make a difference on climate issues from the field you are already in. Whether you work in law, finance, farming, health, energy, technology, engineering, media, education, business, research or public service, look for the climate challenges your skills can help address. You do not need one particular degree or job title to begin.',
+          'You do not have to leave your profession to build a climate career. If you work in law, you might support better regulation. If you design, you can make climate information easier to understand. If you work in health, you can address heat or disease risks. Start by connecting your existing strengths to a problem that matters to you.',
           'The practical question is: what climate problem intersects with skills you already have or are willing to build?'
         ],
         keyIdea:'Climate is a field of problems across professions, not one narrow job category.',
@@ -403,7 +403,7 @@ export const canopyModules2026 = [
         id:'05.3',title:'Your evidence-based leadership story',minutes:14,
         body:[
           'A credible professional narrative connects what you care about, what you know, what you have done and what you are building next. It should be specific enough to be believable.',
-          'Instead of “I am passionate about climate change,” a participant can explain the problem she focuses on, the communities or systems involved, the skills she brings, one action or project she has completed and the next capability she wants to develop.',
+          'Instead of saying only “I am passionate about climate change,” tell people which issue you care about, who it affects, what you have done so far and what you want to learn next. A real example from your work will say more than a long list of interests.',
           'Digital visibility can support professional growth, but substance should come first. A LinkedIn post, portfolio item or campaign is strongest when it documents real learning, evidence or action.'
         ],
         keyIdea:'Professional visibility should document substance rather than substitute for it.',
@@ -413,9 +413,9 @@ export const canopyModules2026 = [
       {
         id:'05.4',title:'The 90-day Climate Action Note',minutes:16,
         body:[
-          'The Climate Action Note turns programme learning into a small, credible commitment. It should define one problem, the participant’s intended contribution, the people or institution involved, three practical actions, a simple timeline and evidence that would show progress.',
+          'Your Climate Action Note is a promise you can realistically act on. Choose one climate problem, describe what you will contribute, identify the people you need to work with and plan three steps you can take over 90 days. Decide now what evidence will show that you made progress.',
           'A useful 90-day plan is deliberately limited. It might involve a research brief, a community learning activity, an advocacy campaign, a professional portfolio project, a prototype, a local partnership or another feasible contribution.',
-          'Participants should also identify one risk or constraint and one support they need. This makes the plan more realistic and creates a basis for WOMATE’s 90-day follow-up.'
+          'Think about what could slow you down and what support would help you move forward. Include both in your plan so you can check your progress honestly during WOMATE’s 90-day follow-up.'
         ],
         keyIdea:'A small action completed and evaluated is stronger than an ambitious plan with no owner, timeline or evidence.',
         check:{question:'Which is the strongest 90-day objective?',options:['Solve climate change in Ghana.','By the end of 90 days, produce and present a two-page heat-risk brief to one local institution using verified evidence and community input.','Become a global climate leader.'],answer:1,explanation:'It is specific, feasible, time-bound and produces evidence of action.'},
@@ -424,7 +424,7 @@ export const canopyModules2026 = [
     ],
     caseStudy:{
       title:'From participation to climate leadership',
-      text:'Participants map one issue they now understand better, one capability they have strengthened, one network or institution they can engage, and one action they can complete within 90 days. This becomes the bridge from She Leads participation into WOMATE’s wider community.'
+      text:'Choose one climate issue you understand better now, one skill you have strengthened, someone you could work with and one action you can finish in the next 90 days. Use that plan to carry your She Leads experience into the work you want to do next.'
     },
     assignment:{
       paragraphPrompt:'Draft your one-page Climate Action Note: define the climate problem, why it matters, the contribution you can realistically make, who you need to engage, three actions for the next 90 days, one likely constraint, the support you need, and how you will know whether you made progress.',
