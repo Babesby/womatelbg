@@ -8,7 +8,6 @@ const OPEN_AT=Date.UTC(2026,9,29,0,0,0);
 const SIZE={width:1080,height:1350};
 const START_CAP={x:.50,y:.22,width:.72,rotation:0};
 const START_PHOTO={x:.5,y:.49,scale:1};
-const SAMPLE=[{id:'tester-preview',display_name:'WOMATE Graduate',reflection:'The journey taught me to trust my voice and take meaningful climate action.',created_at:'2026-10-29T12:00:00Z'}];
 const MEDIAPIPE_WASM='/assets/canopy/mediapipe/wasm';
 const SEGMENTER_MODEL='/assets/canopy/mediapipe/selfie_segmenter.tflite';
 
@@ -358,22 +357,38 @@ export default function CanopyGraduationPortal({viewer,tester=false}){
  const [now,setNow]=useState(Date.now());
  const [data,setData]=useState(null),[certs,setCerts]=useState([]),[error,setError]=useState(''),[busy,setBusy]=useState(false);
  const [reflection,setReflection]=useState(''),[displayName,setDisplayName]=useState(viewer?.profile?.full_name||'');
- const [showNote,setShowNote]=useState(false);
+ const [showNote,setShowNote]=useState(false),[reflectionSaved,setReflectionSaved]=useState('');
  const delta=Math.max(0,OPEN_AT-now),opened=now>=OPEN_AT;
  const unlocked=tester||Boolean(data?.can_enter&&opened);
  useEffect(()=>{const t=setInterval(()=>setNow(Date.now()),60000);return()=>clearInterval(t);},[]);
  useEffect(()=>{
-  if(tester){setData({can_enter:true,reflections:SAMPLE});setCerts([]);return;}
+  // Tester sees the same persisted, moderated Supabase feed as graduates.
+  // It is no longer a local, disposable mock note.
   let live=true;
-  async function load(){try{const [overview,items]=await Promise.all([getCanopyGraduationOverview(viewer.session),getCertificates(viewer.session)]);if(live){setData(overview);setCerts(items||[]);setError('');}}catch(e){if(live)setError(e.message||'Graduation information is temporarily unavailable.');}}
-  load();const timer=setInterval(load,30000);return()=>{live=false;clearInterval(timer);};
+  async function load(){
+   try{
+    const [overview,items]=await Promise.all([
+     getCanopyGraduationOverview(viewer.session),
+     tester?Promise.resolve([]):getCertificates(viewer.session)
+    ]);
+    if(live){setData(overview);setCerts(items||[]);setError('');}
+   }catch(e){if(live)setError(e.message||'Graduation information is temporarily unavailable.');}
+  }
+  load();
+  const timer=setInterval(load,30000);
+  return()=>{live=false;clearInterval(timer);};
  },[viewer?.session?.access_token,tester]);
  async function shareReflection(e){
-  e.preventDefault();if(!reflection.trim()||reflection.trim().length<30)return;
-  if(tester){setData(v=>({...v,reflections:[{id:'tester-message',display_name:displayName||'Graduate',reflection,created_at:new Date().toISOString()},...(v.reflections||[]).filter(x=>x.id!=='tester-message')]}));setReflection('');setShowNote(false);return;}
-  if(!unlocked)return;
-  setBusy(true);setError('');
-  try{await submitCanopyGraduationReflection(viewer.session,{displayName,reflection});const next=await getCanopyGraduationOverview(viewer.session);setData(next);setReflection('');setShowNote(false);}catch(e){setError(e.message);}finally{setBusy(false);}
+  e.preventDefault();if(!reflection.trim()||reflection.trim().length<30||!unlocked)return;
+  setBusy(true);setError('');setReflectionSaved('');
+  try{
+   // Only report success after Supabase confirms the write.
+   await submitCanopyGraduationReflection(viewer.session,{displayName,reflection});
+   const next=await getCanopyGraduationOverview(viewer.session);
+   setData(next);setReflection('');setShowNote(false);
+   setReflectionSaved('Your note is saved to the graduation wall and will remain after refresh. Eligible graduates can see it once graduation opens.');
+  }catch(e){setError(e.message||'Could not save your note. Please try again.');}
+  finally{setBusy(false);}
  }
  return <main className="cgrad-page">
   <div className="cgrad-decor cgrad-decor-ribbon" aria-hidden="true"/><div className="cgrad-decor cgrad-decor-confetti" aria-hidden="true"/><div className="cgrad-decor cgrad-decor-balloons" aria-hidden="true"/><div className="cgrad-decor cgrad-decor-stars" aria-hidden="true"/>
@@ -382,13 +397,14 @@ export default function CanopyGraduationPortal({viewer,tester=false}){
     <span className="cgrad-kicker">WOMATE · SHE LEADS · COHORT 2 · 2026</span>
     {unlocked?<><span className="cgrad-crown" aria-hidden="true">✦ ♡ ✦</span><h1>CONGRATULATIONS!</h1><p>YOU DID IT! <Heart size={15} fill="currentColor" aria-hidden="true"/></p></>:<><h1 className="cgrad-wait-title">Your moment is almost here.</h1><p>29 OCTOBER 2026 · GRADUATION DAY</p></>}
    </header>
-   {tester&&<div className="cgrad-test"><ShieldCheck size={18}/> TESTER PREVIEW · Photos stay local. Certificates and reflections are simulated.</div>}
+   {tester&&<div className="cgrad-test"><ShieldCheck size={18}/> TESTER PREVIEW · Photos stay local. Certificate links are simulated; graduation notes are saved to the shared wall.</div>}
    {error&&<p className="cgrad-error" role="alert">{error}</p>}
    {!unlocked?<section className="cgrad-gated"><LockKeyhole size={26}/><h2>{!opened?'The celebration opens on 29 October.':'Your graduation access is being verified.'}</h2>{!opened&&<div className="cgrad-countdown" role="timer"><div><strong>{Math.floor(delta/86400000)}</strong><span>Days</span></div><div><strong>{fmt(Math.floor(delta%86400000/3600000))}</strong><span>Hours</span></div><div><strong>{fmt(Math.floor(delta%3600000/60000))}</strong><span>Minutes</span></div></div>}<p>Official certificates and WOMATE graduation approval are required for learner access. If your status looks wrong, email <a href="mailto:womatead@gmail.com">WOMATE support</a>.</p></section>:<>
     <div className="cgrad-main-layout"><PortraitStudio graduateName={displayName}/><aside className="cgrad-aside"><GradVideo/><div className="cgrad-certificate"><Award size={22}/><div><strong>Your official certificate</strong>{tester?<span>Available here when issued to an eligible learner.</span>:certs.length?certs.map(c=><a key={c.id} href={c.drive_url} target="_blank" rel="noopener noreferrer">View certificate ↗</a>):<span>No certificate link is available yet.</span>}</div></div></aside></div>
-    <section className="cgrad-voices"><div className="cgrad-voices-head"><div><span className="cgrad-kicker">THE WOMEN BEHIND THE JOURNEY</span><h2>Our voices. Our next chapter.</h2></div><button type="button" onClick={()=>setShowNote(v=>!v)} aria-expanded={showNote}><Heart size={16}/> {showNote?'Close':'Leave your note'} <ChevronDown size={16}/></button></div>
+    <section className="cgrad-voices"><div className="cgrad-voices-head"><div><span className="cgrad-kicker">THE WOMEN BEHIND THE JOURNEY</span><h2>Our voices. Our next chapter.</h2></div><button type="button" onClick={()=>{setReflectionSaved('');setShowNote(v=>!v);}} aria-expanded={showNote}><Heart size={16}/> {showNote?'Close':'Leave your note'} <ChevronDown size={16}/></button></div>
+     {reflectionSaved&&<p className="cgrad-status" role="status">{reflectionSaved}</p>}
      {showNote&&<form className="cgrad-reflection-form" onSubmit={shareReflection}><label>Your name<input value={displayName} onChange={e=>setDisplayName(e.target.value)} minLength={2} maxLength={100} required/></label><label>Your reflection<textarea value={reflection} onChange={e=>setReflection(e.target.value)} minLength={30} maxLength={1200} required placeholder="What are you taking into your next chapter?"/></label><button type="submit" disabled={busy||reflection.trim().length<30}><Send size={16}/>{busy?'Sharing…':'Share my reflection'}</button></form>}
-     <div className="cgrad-reflection-list">{(data?.reflections||[]).length?(data.reflections||[]).slice(0,12).map(r=><blockquote key={r.id}><p>“{r.reflection}”</p><footer>{r.display_name}</footer></blockquote>):<p className="cgrad-no-reflections">Be the first to celebrate your journey with the class.</p>}</div>
+     <div className="cgrad-reflection-list">{(data?.reflections||[]).length?(data.reflections||[]).slice(0,100).map(r=><blockquote key={r.id}><p>“{r.reflection}”</p><footer>{r.display_name}</footer></blockquote>):<p className="cgrad-no-reflections">Be the first to celebrate your journey with the class.</p>}</div>
     </section>
    </>}
   </div>
