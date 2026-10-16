@@ -23,3 +23,21 @@
 .cgrad-editor-hint{margin:9px 0 0;color:#d4e8d8;font-size:.75rem;line-height:1.5;text-align:center}
 .cgrad-cap-overlay.is-clean{outline:none}
 @media(max-width:460px){.cgrad-tools{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}.cgrad-tools button{min-height:56px}}
+
+/* Optional graduation gown: painted below the cap and text on an isolated
+   canvas; this transparent hit area exists only for positioning, never export. */
+.cgrad-robe-choice{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:15px 0 11px;padding:12px 13px;border:1px solid rgba(198,255,82,.35);border-radius:13px;background:rgba(3,46,44,.79)}
+.cgrad-robe-choice>div{display:grid;gap:4px;min-width:0}
+.cgrad-robe-choice strong{font-size:.86rem;color:#fff}
+.cgrad-robe-choice span{font-size:.73rem;color:#c8dccf}
+.cgrad-robe-choice button{border:1px solid rgba(198,255,82,.7);background:rgba(198,255,82,.09);color:#c6ff52;font-weight:800;white-space:nowrap;border-radius:999px;padding:11px 15px;min-height:42px;cursor:pointer}
+.cgrad-robe-choice button.is-on{background:#c6ff52;color:#073b39}
+.cgrad-layer-choice{display:flex;flex-wrap:wrap;gap:8px;margin:9px 0}
+.cgrad-layer-choice button{border:1px solid rgba(198,255,82,.4);background:rgba(2,36,34,.85);color:#e3f5e9;border-radius:9px;padding:10px 13px;min-height:44px;font-weight:800;font-size:.8rem;cursor:pointer}
+.cgrad-layer-choice button.on{color:#073b39;background:#c6ff52}
+.cgrad-layer-choice button:disabled{opacity:.55;cursor:wait}
+.cgrad-gown-overlay{position:absolute;z-index:2;cursor:grab;touch-action:none;user-select:none;border:1px solid transparent}
+.cgrad-gown-overlay:active{cursor:grabbing}
+.cgrad-gown-overlay.is-guided{border:1px dashed rgba(198,255,82,.9);outline:1px solid rgba(5,45,45,.45)}
+.cgrad-gown-overlay:focus-visible{outline:2px solid #c6ff52;outline-offset:2px}
+@media(max-width:460px){.cgrad-robe-choice{gap:7px;padding:11px 10px}.cgrad-robe-choice strong{font-size:.77rem}.cgrad-robe-choice span{font-size:.68rem}.cgrad-robe-choice button{font-size:.74rem;padding:9px 10px}.cgrad-layer-choice button{flex:1;font-size:.72rem;padding:9px 6px}}
