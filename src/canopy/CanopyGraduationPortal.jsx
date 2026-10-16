@@ -133,23 +133,30 @@ function drawSubject(ctx,subject,settings,w,h){
  ctx.drawImage(subject,x,y,dw,dh);
 }
 
-function drawImageCard(canvas,bg,subject,cap,person,capSettings,name,withCap=true){
- if(!canvas||!bg||!subject)return;
+function drawImageCard(canvas,frame,subject,cap,person,capSettings,name,withCap=true){
+ if(!canvas||!frame||!subject)return;
  const ctx=canvas.getContext('2d');if(!ctx)return;
  const {width:w,height:h}=SIZE;
  if(canvas.width!==w)canvas.width=w;
  if(canvas.height!==h)canvas.height=h;
  ctx.clearRect(0,0,w,h);
- drawCover(ctx,bg,w,h);
+ // Graduation PORTRAIT: white studio backdrop, never the site-wide teal artwork.
+ ctx.fillStyle='#fff';ctx.fillRect(0,0,w,h);
  drawSubject(ctx,subject,person,w,h);
  if(withCap&&cap){
   const cw=capSettings.width*w,ch=cw*cap.height/cap.width;
   ctx.save();ctx.translate(capSettings.x*w,capSettings.y*h);ctx.rotate(capSettings.rotation*Math.PI/180);
   ctx.drawImage(cap,-cw/2,-ch/2,cw,ch);ctx.restore();
  }
- const shade=ctx.createLinearGradient(0,h*.63,0,h);
- shade.addColorStop(0,'rgba(1,29,28,0)');shade.addColorStop(.45,'rgba(1,29,28,.76)');shade.addColorStop(1,'rgba(1,29,28,.98)');
- ctx.fillStyle=shade;ctx.fillRect(0,h*.63,w,h*.37);
+ // The supplied transparent artwork is an OVERLAY, not an opaque backdrop.
+ // Place it over the portrait so its original teal/gold corners stay visible.
+ ctx.drawImage(frame,0,0,w,h);
+ // Reserve a dark teal footer for readable names without tinting the white center.
+ const shade=ctx.createLinearGradient(0,h*.70,0,h);
+ shade.addColorStop(0,'rgba(1,29,28,0)');
+ shade.addColorStop(.45,'rgba(1,29,28,.83)');
+ shade.addColorStop(1,'rgba(1,29,28,.99)');
+ ctx.fillStyle=shade;ctx.fillRect(0,h*.70,w,h*.30);
  ctx.textAlign='left';
  ctx.fillStyle='#c6ff52';ctx.font='800 32px Arial,sans-serif';ctx.fillText('WOMATE   /   SHE LEADS',70,h-242);
  ctx.fillStyle='#fff';
@@ -196,10 +203,10 @@ function GradVideo(){
 
 function PortraitStudio({graduateName}){
  const canvasRef=useRef(null),stageRef=useRef(null),fileRef=useRef(null),objectUrlRef=useRef(null),dragRef=useRef(null);
- const sourcePhotoRef=useRef(null),subjectRef=useRef(null),capRef=useRef(null),bgRef=useRef(null);
- const [photoLoaded,setPhotoLoaded]=useState(false),[capLoaded,setCapLoaded]=useState(false),[bgLoaded,setBgLoaded]=useState(false),[processing,setProcessing]=useState(false);
+ const sourcePhotoRef=useRef(null),subjectRef=useRef(null),capRef=useRef(null),frameRef=useRef(null);
+ const [photoLoaded,setPhotoLoaded]=useState(false),[capLoaded,setCapLoaded]=useState(false),[frameLoaded,setFrameLoaded]=useState(false),[processing,setProcessing]=useState(false);
  const [cap,setCap]=useState(START_CAP),[person,setPerson]=useState(START_PHOTO),[notice,setNotice]=useState('');
- const [exporting,setExporting]=useState(false),[assetError,setAssetError]=useState(false),[bgError,setBgError]=useState(false);
+ const [exporting,setExporting]=useState(false),[assetError,setAssetError]=useState(false),[frameError,setFrameError]=useState(false);
  const cleanPhoto=useCallback(()=>{if(objectUrlRef.current){URL.revokeObjectURL(objectUrlRef.current);objectUrlRef.current=null;} sourcePhotoRef.current=null;subjectRef.current=null;},[]);
  useEffect(()=>()=>{cleanPhoto()},[cleanPhoto]);
  useEffect(()=>{
@@ -208,13 +215,13 @@ function PortraitStudio({graduateName}){
   capImg.onload=()=>{if(mounted){capRef.current=capImg;setCapLoaded(true);setAssetError(false);}};
   capImg.onerror=()=>{if(mounted)setAssetError(true)};
   capImg.src=ASSET+'womate-cap.webp';
-  const bgImg=new Image();
-  bgImg.onload=()=>{if(mounted){bgRef.current=bgImg;setBgLoaded(true);setBgError(false);}};
-  bgImg.onerror=()=>{if(mounted)setBgError(true)};
-  bgImg.src=ASSET+'celebration-background.webp';
-  return()=>{mounted=false;capImg.onload=null;capImg.onerror=null;bgImg.onload=null;bgImg.onerror=null;};
+  const frameImg=new Image();
+  frameImg.onload=()=>{if(mounted){frameRef.current=frameImg;setFrameLoaded(true);setFrameError(false);}};
+  frameImg.onerror=()=>{if(mounted)setFrameError(true)};
+  frameImg.src=ASSET+'page-frame.webp';
+  return()=>{mounted=false;capImg.onload=null;capImg.onerror=null;frameImg.onload=null;frameImg.onerror=null;};
  },[]);
- useEffect(()=>{drawImageCard(canvasRef.current,bgRef.current,subjectRef.current,capRef.current,person,cap,graduateName,false);},[photoLoaded,capLoaded,bgLoaded,person,cap,graduateName]);
+ useEffect(()=>{drawImageCard(canvasRef.current,frameRef.current,subjectRef.current,capRef.current,person,cap,graduateName,false);},[photoLoaded,capLoaded,frameLoaded,person,cap,graduateName]);
  const selectFile=()=>fileRef.current?.click();
  const nudgePerson=(dx=0,dy=0)=>setPerson(v=>({...v,x:clamp(v.x+dx,.18,.82),y:clamp(v.y+dy,.18,.82)}));
  const setPhotoStandard=()=>setPerson({...START_PHOTO});
@@ -223,7 +230,7 @@ function PortraitStudio({graduateName}){
   if(!file)return;
   if(!file.type.startsWith('image/')){setNotice('Please choose an image file.');return;}
   if(file.size>12*1024*1024){setNotice('Please choose a photo smaller than 12 MB.');return;}
-  if(!bgLoaded){setNotice('The WOMATE background is still loading. Please try again in a moment.');return;}
+  if(!frameLoaded){setNotice('The WOMATE teal portrait decoration is still loading. Please try again.');return;}
   cleanPhoto();
   const url=URL.createObjectURL(file);objectUrlRef.current=url;
   const img=new Image();
@@ -285,10 +292,10 @@ function PortraitStudio({graduateName}){
  };
  const exportPortrait=async()=>{
   if(!subjectRef.current){selectFile();return;}
-  if(!bgRef.current||!capRef.current){setNotice('The background or cap is still loading. Please try again.');return;}
+  if(!frameRef.current||!capRef.current){setNotice('The teal portrait decoration or cap is still loading. Please try again.');return;}
   setExporting(true);setNotice('');
   const temp=document.createElement('canvas');
-  drawImageCard(temp,bgRef.current,subjectRef.current,capRef.current,person,cap,graduateName,true);
+  drawImageCard(temp,frameRef.current,subjectRef.current,capRef.current,person,cap,graduateName,true);
   try{
    const blob=await new Promise(resolve=>temp.toBlob(resolve,'image/png'));
    if(!blob)throw new Error('Unable to export portrait');
@@ -313,7 +320,7 @@ function PortraitStudio({graduateName}){
    {processing&&<div className="cgrad-processing" aria-live="polite"><Sparkles size={20}/><span>Removing your background on this device…</span></div>}
   </div>
   {assetError&&<p className="cgrad-status" role="alert">The updated graduation cap asset has not been installed yet.</p>}
-  {bgError&&<p className="cgrad-status" role="alert">The WOMATE graduation background asset has not been installed yet.</p>}
+  {frameError&&<p className="cgrad-status" role="alert">The WOMATE teal corner overlay is missing. Check the page-frame.webp asset.</p>}
   {photoLoaded&&<div className="cgrad-editor-stack">
    <div className="cgrad-control-card">
     <div className="cgrad-control-head"><strong>Photo</strong><span>Your own background is removed automatically.</span></div>
@@ -341,7 +348,7 @@ function PortraitStudio({graduateName}){
     <label className="cgrad-range">Rotate <button type="button" aria-label="Turn cap left" onClick={()=>tweakCap('rotation',-2)}><Minus size={16}/></button><input aria-label="Graduation cap rotation" type="range" min="-50" max="50" step="1" value={cap.rotation} onChange={e=>setCap(v=>({...v,rotation:Number(e.target.value)}))}/><button type="button" aria-label="Turn cap right" onClick={()=>tweakCap('rotation',2)}><Plus size={16}/></button><output>{cap.rotation}°</output></label>
    </div>
   </div>}
-  <button type="button" className="cgrad-download" disabled={!photoLoaded||!capLoaded||!bgLoaded||processing||exporting} onClick={exportPortrait}><Download size={20}/>{exporting?'Preparing your portrait…':'Download my graduation portrait'}</button>
+  <button type="button" className="cgrad-download" disabled={!photoLoaded||!capLoaded||!frameLoaded||processing||exporting} onClick={exportPortrait}><Download size={20}/>{exporting?'Preparing your portrait…':'Download my graduation portrait'}</button>
   <p className="cgrad-local-hint"><ShieldCheck size={14}/> Your photo stays on this device.</p>
   {notice&&<p role="status" className="cgrad-status">{notice}</p>}
  </section>;
