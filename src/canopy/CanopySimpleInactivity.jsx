@@ -1,0 +1,11 @@
+import React,{useEffect,useState} from 'react';
+import {getCanopySimpleInactivity2026,unenrollCanopySimple2026} from './canopyApi';
+import './canopyAdminClosing.css';
+export default function CanopySimpleInactivity({viewer}){
+ const [rows,setRows]=useState([]),[query,setQuery]=useState(''),[busy,setBusy]=useState(''),[error,setError]=useState(''),[notice,setNotice]=useState('');
+ async function load(){setBusy('load');setError('');try{const data=await getCanopySimpleInactivity2026(viewer.session);setRows(Array.isArray(data)?data:[])}catch(e){setError(e.message||'Unable to load inactivity list')}finally{setBusy('')}}
+ useEffect(()=>{load()},[viewer?.session?.access_token]);
+ async function unenroll(row){if(!window.confirm('Unenroll '+(row.full_name||row.email||'this learner')+' from Cohort 2?'))return;setBusy(row.user_id);setError('');try{await unenrollCanopySimple2026(viewer.session,row.user_id);setNotice((row.full_name||'Learner')+' unenrolled.');await load()}catch(e){setError(e.message||'Unenroll failed')}finally{setBusy('')}}
+ const visible=rows.filter(r=>(r.full_name+' '+r.email).toLowerCase().includes(query.toLowerCase()));
+ return <main className="cac-page"><header className="cac-head"><span className="canopyEyebrow">WOMATE · COHORT 2</span><h1>Inactive learners</h1><p>{rows.length} learners with no recorded lesson completion, attendance or assignment submission.</p></header><div className="cac-toolbar"><input type="search" aria-label="Find learner" placeholder="Search by name or email" value={query} onChange={e=>setQuery(e.target.value)}/><button type="button" onClick={load} disabled={Boolean(busy)}>Refresh</button></div>{error&&<p className="cac-error" role="alert">{error}</p>}{notice&&<p role="status">{notice}</p>}<div className="cac-list">{visible.map(r=><article key={r.user_id}><div><h2>{r.full_name||'Learner'}</h2><p>{r.email||''}</p></div><button type="button" disabled={Boolean(busy)} onClick={()=>unenroll(r)}>{busy===r.user_id?'Unenrolling…':'Unenroll'}</button></article>)}{!busy&&!visible.length&&<p>No matching learners.</p>}</div></main>;
+}
