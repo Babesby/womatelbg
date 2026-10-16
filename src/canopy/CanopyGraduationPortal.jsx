@@ -105,7 +105,7 @@ async function buildCutoutFromPhoto(img){
  const mctx=maskCanvas.getContext('2d');
  if(!mctx)throw new Error('Mask canvas could not be created.');
  const imageData=mctx.createImageData(mw,mh);
- for(let i=0;i<maskValues.length;i++){
+ for(let i=0;i<(usesCategories?categoryData.length:maskValues.length);i++){
   const p=i*4;
   const confidence=usesCategories?(categoryData[i]===1?1:0):clamp((maskValues[i]-0.08)/0.76,0,1);
   const a=Math.round(confidence*255);
