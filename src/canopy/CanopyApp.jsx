@@ -25,7 +25,7 @@ import{ArrowLeft,ArrowRight,BookOpen,Check,ChevronRight,ClipboardCheck,Clock,Fil
 import'./canopy.css';
 import{CANOPY_BRAND,modules,resources}from'./canopyData';
 import{climateDebateAssignment}from'./canopyClimateDebate';
-import{canopyConfigured,consumeAuthCallback,getStoredSession,getViewer,getProgress,getManagerSnapshot,markLesson,requestPasswordReset,resendConfirmation,saveQuiz,signIn,signOut,signUp,updatePassword,setLearnerEnrollmentStatus,createManagerAction,createBulkManagerAction,createCohortManagerAction,createCohortBulkManagerAction,updateManagerAction,reviewWeeklyAssignment,checkCanopyDriveAccess,getUnreadNotificationCount,getWeeklyAssignmentSubmissions,issueCanopyCertificate,signInWithGoogle,updateOwnCanopyProfile,getOwnCanopyDeletionRequest,requestOwnCanopyAccountDeletion,withdrawCanopyLearner,restoreCanopyLearnerEligibility,adminFeatureCanopySpotlight,updateCanopySpotlightDecision,toggleCanopySpotlightLove,updateCanopySpotlightMediaReview,uploadOwnCanopyProfilePhoto,removeOwnCanopyProfilePhoto,canopyProfilePhotoUrl,getCanopyTalentNetwork,saveCanopyTalentSettings,reconcileOwnCanopyProfilePhoto,getMyCanopyMissionCompletion,getAdminCohortCatalog,setAdminCohortMembership,getCanopyC2StatusIndex} from './canopyApi';
+import{canopyConfigured,consumeAuthCallback,getStoredSession,getViewer,getProgress,getManagerSnapshot,markLesson,requestPasswordReset,resendConfirmation,saveQuiz,signIn,signOut,signUp,updatePassword,setLearnerEnrollmentStatus,createManagerAction,createBulkManagerAction,createCohortManagerAction,createCohortBulkManagerAction,updateManagerAction,reviewWeeklyAssignment,checkCanopyDriveAccess,getUnreadNotificationCount,getWeeklyAssignmentSubmissions,issueCanopyCertificate,signInWithGoogle,updateOwnCanopyProfile,getOwnCanopyDeletionRequest,requestOwnCanopyAccountDeletion,withdrawCanopyLearner,restoreCanopyLearnerEligibility,adminFeatureCanopySpotlight,updateCanopySpotlightDecision,toggleCanopySpotlightLove,updateCanopySpotlightMediaReview,uploadOwnCanopyProfilePhoto,removeOwnCanopyProfilePhoto,canopyProfilePhotoUrl,getCanopyTalentNetwork,saveCanopyTalentSettings,reconcileOwnCanopyProfilePhoto,getMyCanopyMissionCompletion,getAdminCohortCatalog,setAdminCohortMembership,getCanopyC2StatusIndex,getCanopyAttendanceDashboard,getCanopyAdminCertificateSelectionCodes} from './canopyApi';
 import{applyCanopyTheme,getCanopyTheme}from'./canopyTheme';
 import{CanopyJourneyMap,CanopyThisWeek,CanopyLessonActivity,CanopyReflectionTimeline,CanopyModuleComplete,CanopySpotlight,CanopyPortfolioPage}from'./CanopyExperience';
 import{playCanopyCorrectSound,playCanopyErrorSound,primeCanopyFeedbackAudio}from'./canopyFeedbackAudio';
@@ -739,16 +739,89 @@ function ManagerOperations({snapshot,session,onReload,viewer,view='overview',coh
   {view==='reminders'&&<><ManagerActionForm form={{...form,action_type:'reminder'}} setForm={x=>setForm({...x,action_type:'reminder'})} learners={learners} busy={busy} onSubmit={sendAction} types={['reminder']} allowBulk={trueAdmin} audienceCounts={audienceCounts}/><ManagerActionList actions={filtered('reminder')} nameFor={nameFor} busy={busy} onResolve={resolve}/></>}
   {view==='complaints'&&<ManagerComplaintList actions={filtered('complaint')} nameFor={nameFor} busy={busy} session={session} onReload={onReload} setMsg={setMsg}/>}
   {view==='attendance'&&<CanopyAttendance viewer={viewer} cohortKey={cohortKey}/>} 
-  {view==='certificates'&&<ManagerCertificatePanel learners={learners} certificates={snapshot.certificates||[]} session={session} busy={busy} setBusy={setBusy} setMsg={setMsg} onReload={onReload}/>}
+  {view==='certificates'&&<ManagerCertificatePanel learners={learners} certificates={snapshot.certificates||[]} progress={snapshot.progress||[]} submissions={snapshot.submissions||[]} session={session} busy={busy} setBusy={setBusy} setMsg={setMsg} onReload={onReload} cohort={cohort}/>}
   {view==='reports'&&<section className="canopyOpsReport"><article><strong>{snapshot.progress.filter(x=>x.completed).length}</strong><span>completed lessons</span></article><article><strong>{new Set((snapshot.submissions||[]).map(x=>`${x.user_id}:${x.week_key}`)).size}</strong><span>weekly assignments</span></article><article><strong>{(snapshot.certificates||[]).length}</strong><span>certificates issued</span></article><article><strong>{filtered('complaint').filter(x=>x.status==='open').length}</strong><span>open complaints</span></article></section>}
  </main>
 }
-function ManagerCertificatePanel({learners,certificates,session,busy,setBusy,setMsg,onReload,cohort=null}){
- const[learnerId,setLearnerId]=useState('');const[driveUrl,setDriveUrl]=useState('');
- if(cohort&&cohort.cohort_key!==LEGACY_CANOPY_COHORT)return <section className="canopyOpsList"><div className="canopySectionHead"><span>COHORT CERTIFICATES</span><h2>{cohort.display_name}</h2><p>No certificate records are borrowed from Cohort 2. Certificate issuance activates when this cohort's participant curriculum and completion rules are switched on.</p></div>{certificates.length?certificates.map(c=><article key={c.id}><div><small>CERTIFICATE</small><h3>{c.title}</h3></div></article>):<p>No certificates issued for this cohort yet.</p>}</section>;
+function ManagerCertificatePanel({learners,certificates,progress=[],submissions=[],session,busy,setBusy,setMsg,onReload,cohort=null}){
+ const[learnerId,setLearnerId]=useState(''),[driveUrl,setDriveUrl]=useState('');
+ const[search,setSearch]=useState(''),[moduleFilter,setModuleFilter]=useState('all'),[lessonFilter,setLessonFilter]=useState('all'),[attendanceFilter,setAttendanceFilter]=useState('all'),[assignmentFilter,setAssignmentFilter]=useState('all'),[codeFilter,setCodeFilter]=useState('all');
+ const[selectedIds,setSelectedIds]=useState([]),[attendance,setAttendance]=useState(null),[codes,setCodes]=useState(null),[loadError,setLoadError]=useState(''),[loading,setLoading]=useState(false);
+ const legacy=!cohort||cohort.cohort_key===LEGACY_CANOPY_COHORT;
+ useEffect(()=>{setSelectedIds([]);setLearnerId('')},[cohort?.cohort_key]);
+ useEffect(()=>{
+  if(!legacy||!session?.access_token)return;
+  let live=true;setLoading(true);setLoadError('');
+  Promise.allSettled([getCanopyAttendanceDashboard(session),getCanopyAdminCertificateSelectionCodes(session)]).then(results=>{
+   if(!live)return;
+   if(results[0].status==='fulfilled')setAttendance(results[0].value);
+   else setLoadError('Live attendance could not be loaded. Attendance filters are unavailable.');
+   if(results[1].status==='fulfilled')setCodes(results[1].value);
+   else setLoadError(v=>(v?v+' ':'')+'Selection-code status could not be loaded.');
+  }).finally(()=>{if(live)setLoading(false)});
+  return()=>{live=false};
+ },[legacy,session?.access_token,cohort?.cohort_key]);
+ const lessonIds=useMemo(()=>new Map(modules.map(m=>['module-'+m.id,new Set(m.lessons.map(l=>l.id))])),[]);
+ const progressMap=useMemo(()=>{
+  const map=new Map();
+  for(const p of progress){if(!p.completed||!lessonIds.get('module-'+String(p.module_id||'').replace('module-','').padStart(2,'0'))&&!modules.some(m=>m.lessons.some(l=>l.id===p.lesson_id)))continue;
+   if(!map.has(p.user_id))map.set(p.user_id,new Set());map.get(p.user_id).add(p.lesson_id)}
+  return map;
+ },[progress,lessonIds]);
+ const submittedMap=useMemo(()=>{const map=new Map();for(const sub of submissions){if(!CANOPY_ASSIGNMENT_SCHEDULE.some(x=>x.weekKey===sub.week_key))continue;if(!map.has(sub.user_id))map.set(sub.user_id,new Set());map.get(sub.user_id).add(sub.week_key)}return map},[submissions]);
+ const attendanceMap=useMemo(()=>{const map=new Map();for(const row of attendance?.attendance||[]){if(!map.has(row.user_id))map.set(row.user_id,new Set());if(row.attended)map.get(row.user_id).add(row.module_id);else map.get(row.user_id).delete(row.module_id)}return map},[attendance]);
+ const codesMap=useMemo(()=>new Map((Array.isArray(codes)?codes:[]).map(x=>[x.user_id,x])),[codes]);
+ const totalLessons=modules.reduce((n,m)=>n+m.lessons.length,0);
+ const records=useMemo(()=>learners.map(p=>{
+  const completed=progressMap.get(p.user_id)||new Set();
+  const moduleCount=[...lessonIds.values()].filter(set=>[...set].every(id=>completed.has(id))).length;
+  const assignments=submittedMap.get(p.user_id)||new Set();
+  const liveCount=attendanceMap.get(p.user_id)?.size??0;
+  return {...p,lessons:completed.size,modules:moduleCount,assignments:assignments.size,climateNote:assignments.has('module-05'),attendance:liveCount,code:codesMap.get(p.user_id)||null,issued:certificates.some(c=>c.user_id===p.user_id)};
+ }),[learners,progressMap,lessonIds,submittedMap,attendanceMap,codesMap,certificates]);
+ const filtered=records.filter(p=>{
+  const q=search.trim().toLowerCase();
+  return (!q||[p.full_name,p.country].some(v=>String(v||'').toLowerCase().includes(q)))&&
+   (moduleFilter==='all'||p.modules===Number(moduleFilter))&&
+   (lessonFilter==='all'||p.lessons===Number(lessonFilter))&&
+   (attendanceFilter==='all'||attendance!==null&&p.attendance===Number(attendanceFilter))&&
+   (assignmentFilter==='all'||p.assignments===Number(assignmentFilter))&&
+   (codeFilter==='all'||codes!==null&&(codeFilter==='generated'?p.code?.generated:!p.code?.generated));
+ }).sort((a,b)=>b.modules-a.modules||b.lessons-a.lessons||String(a.full_name||'').localeCompare(String(b.full_name||'')));
+ const selected=records.find(x=>x.user_id===learnerId);
+ const visibleIds=new Set(filtered.map(p=>p.user_id));
+ const selectedVisible=selectedIds.filter(id=>visibleIds.has(id));
+ const toggle=id=>setSelectedIds(ids=>ids.includes(id)?ids.filter(x=>x!==id):[...ids,id]);
  const issue=async e=>{e.preventDefault();if(!learnerId||!driveUrl.trim())return;setBusy('certificate');setMsg('');try{await issueCanopyCertificate(session,{userId:learnerId,driveUrl});setMsg('Certificate issued. The learner has been notified in Canopy.');setLearnerId('');setDriveUrl('');await onReload?.()}catch(err){setMsg(err.message)}finally{setBusy('')}};
  const nameFor=id=>learners.find(p=>p.user_id===id)?.full_name||'Learner';
- return <div className="canopyCertificateAdmin"><form className="canopyOpsForm" onSubmit={issue}><div className="canopySectionHead"><span>ISSUE COMPLETION RECORD</span><h2>Certificate</h2><p>Issue only after WOMATE has confirmed completion eligibility, including attendance and required assignments.</p></div><div className="canopyOpsFormGrid"><label>Learner<select required value={learnerId} onChange={e=>setLearnerId(e.target.value)}><option value="">Select learner</option>{learners.map(p=><option key={p.user_id} value={p.user_id}>{p.full_name||'Unnamed learner'}{p.country?' · '+p.country:''}</option>)}</select></label><label className="wide">Viewable Google Drive certificate link<input required inputMode="url" value={driveUrl} onChange={e=>setDriveUrl(e.target.value)} placeholder="https://drive.google.com/…"/></label></div>{learnerId&&<CanopyEligibilitySummary viewer={{session}} userId={learnerId} compact/>}<button className="canopyPrimary" disabled={busy==='certificate'}>{busy==='certificate'?'Issuing…':'Issue certificate'} <Award size={16}/></button></form><section className="canopyOpsList">{certificates.length?certificates.map(c=><article key={c.id}><div><small>CERTIFICATE · {nameFor(c.user_id)}</small><h3>{c.title}</h3><p>Issued {new Date(c.issued_at).toLocaleString()}</p><a href={c.drive_url} target="_blank" rel="noreferrer">Open certificate <ArrowRight size={14}/></a></div><span className="canopyAccessStatus isActive">issued</span></article>):<p>No certificates issued yet.</p>}</section></div>
+ if(!legacy)return <section className="canopyOpsList"><div className="canopySectionHead"><span>COHORT CERTIFICATES</span><h2>{cohort.display_name}</h2><p>No certificate records are borrowed from Cohort 2. Certificate issuance activates when this cohort's participant curriculum and completion rules are switched on.</p></div>{certificates.length?certificates.map(c=><article key={c.id}><div><small>CERTIFICATE</small><h3>{c.title}</h3></div></article>):<p>No certificates issued for this cohort yet.</p>}</section>;
+ return <div className="canopyCertificateAdmin">
+  <section className="canopyOpsForm ccertAdminFilter">
+   <div className="canopySectionHead"><span>COHORT 2 COMPLETION DASHBOARD</span><h2>Find learners by progress</h2><p>Filter the full cohort, select matching learners together, then inspect the record before issuing an individual certificate. Filters do not change eligibility or issue certificates automatically.</p></div>
+   <div className="ccertAdminFilters">
+    <label>Search name or country<input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Find a learner"/></label>
+    <label>Modules completed<select value={moduleFilter} onChange={e=>setModuleFilter(e.target.value)}><option value="all">All modules</option>{Array.from({length:6},(_,i)=><option key={i} value={i}>{i} of 5</option>)}</select></label>
+    <label>Lessons completed<select value={lessonFilter} onChange={e=>setLessonFilter(e.target.value)}><option value="all">All lessons</option>{Array.from({length:totalLessons+1},(_,i)=><option key={i} value={i}>{i} of {totalLessons}{i===totalLessons?' · All':''}</option>)}</select></label>
+    <label>Live sessions attended<select value={attendanceFilter} onChange={e=>setAttendanceFilter(e.target.value)} disabled={attendance===null}><option value="all">{attendance===null?'Loading attendance…':'All attendance'}</option>{Array.from({length:6},(_,i)=><option key={i} value={i}>{i} of 5</option>)}</select></label>
+    <label>Assignments submitted<select value={assignmentFilter} onChange={e=>setAssignmentFilter(e.target.value)}><option value="all">All assignments</option>{Array.from({length:6},(_,i)=><option key={i} value={i}>{i} of 5</option>)}</select></label>
+    <label>Selection code<select value={codeFilter} onChange={e=>setCodeFilter(e.target.value)} disabled={codes===null}><option value="all">{codes===null?'Loading code status…':'All code statuses'}</option><option value="generated">Code generated</option><option value="none">No code generated</option></select></label>
+   </div>
+   {loadError&&<p role="status" className="canopyFormMsg">{loadError}</p>}
+   <div className="ccertAdminBar"><strong>{filtered.length} learners match</strong><span>{selectedIds.length} selected</span><button type="button" onClick={()=>{setSearch('');setModuleFilter('all');setLessonFilter('all');setAttendanceFilter('all');setAssignmentFilter('all');setCodeFilter('all')}}>Clear filters</button><button type="button" onClick={()=>setSelectedIds(ids=>[...new Set([...ids,...filtered.map(p=>p.user_id)])])} disabled={!filtered.length}>Select all shown</button><button type="button" onClick={()=>setSelectedIds(ids=>ids.filter(id=>!visibleIds.has(id)))} disabled={!selectedVisible.length}>Clear shown</button></div>
+   <div className="ccertAdminList">{filtered.map(p=><article key={p.user_id} className={learnerId===p.user_id?'is-current':''}>
+    <label className="ccertAdminCheck"><input type="checkbox" checked={selectedIds.includes(p.user_id)} onChange={()=>toggle(p.user_id)} aria-label={'Select '+(p.full_name||'learner')}/></label>
+    <div><strong>{p.full_name||'Unnamed learner'}</strong><small>{p.country||'Country not listed'} · {p.modules}/5 modules · {p.lessons}/{totalLessons} lessons · {p.assignments}/5 assignments · {attendance===null?'Attendance loading':p.attendance+'/5 live'}</small><small>{codes===null?'Selection-code status loading':p.code?.generated?'Selection code: '+p.code.status+(p.code.code_hint?' · ends '+p.code.code_hint:''):'No selection code'}{p.issued?' · Certificate issued':''}</small></div>
+    <button type="button" className="canopySecondary" onClick={()=>setLearnerId(p.user_id)}>View details</button>
+   </article>)}{!filtered.length&&<p>No learners match these filters.</p>}</div>
+   {selectedIds.length>0&&<div className="ccertAdminSelection"><strong>Selected shortlist ({selectedIds.length})</strong><span>{selectedIds.length} selected learners. Select View details on any row to review that learner; certificates still require the correct individual Google Drive file.</span><button type="button" onClick={()=>setSelectedIds([])}>Clear entire selection</button></div>}
+  </section>
+  <form className="canopyOpsForm" onSubmit={issue}><div className="canopySectionHead"><span>INDIVIDUAL CERTIFICATE REVIEW</span><h2>{selected?.full_name||'Select a learner above'}</h2><p>Review verified completion status and the selection-code record before issuing. This action requires a certificate link for this learner only.</p></div>
+   {selected&&<><div className="ccertAdminDetail"><div><small>LEARNING</small><strong>{selected.lessons}/{totalLessons} lessons</strong></div><div><small>MODULES</small><strong>{selected.modules}/5 completed</strong></div><div><small>ASSIGNMENTS</small><strong>{selected.assignments}/5 submitted</strong></div><div><small>CLIMATE ACTION NOTE</small><strong>{selected.climateNote?'Submitted':'Pending'}</strong></div><div><small>LIVE ATTENDANCE</small><strong>{attendance===null?'Not loaded':selected.attendance+'/5 sessions'}</strong></div><div><small>SELECTION CODE</small><strong>{codes===null?'Not loaded':selected.code?.generated?selected.code.status:'Not generated'}</strong>{selected.code?.code_hint&&<small>Ends {selected.code.code_hint}</small>}</div></div><CanopyEligibilitySummary viewer={{session}} userId={learnerId} compact/></>}
+   <div className="canopyOpsFormGrid"><label className="wide">Google Drive certificate link for this learner<input required inputMode="url" value={driveUrl} disabled={!selected} onChange={e=>setDriveUrl(e.target.value)} placeholder="https://drive.google.com/…"/></label></div>
+   <button className="canopyPrimary" disabled={!selected||busy==='certificate'}>{busy==='certificate'?'Issuing…':'Issue certificate for selected learner'} <Award size={16}/></button>
+  </form>
+  <section className="canopyOpsList">{certificates.length?certificates.map(c=><article key={c.id}><div><small>CERTIFICATE · {nameFor(c.user_id)}</small><h3>{c.title}</h3><p>Issued {new Date(c.issued_at).toLocaleString()}</p><a href={c.drive_url} target="_blank" rel="noreferrer">Open certificate <ArrowRight size={14}/></a></div><span className="canopyAccessStatus isActive">issued</span></article>):<p>No certificates issued yet.</p>}</section>
+ </div>;
 }
 function ManagerComplaintList({actions,nameFor,busy,session,onReload,setMsg}){
  const[drafts,setDrafts]=useState({});

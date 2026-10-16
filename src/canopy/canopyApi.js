@@ -626,3 +626,10 @@ export async function getCanopySimpleInactivity2026(session){const s=await refre
 export async function unenrollCanopySimple2026(session,userId){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_admin_c2_unenroll_simple',{token:s.access_token,method:'POST',body:{p_user:userId}})}
 
 export async function getCanopyC2StatusIndex(session){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_admin_c2_status_index',{token:s.access_token,method:'POST',body:{}})}
+
+/* WOMATE certificate review: status only, no actual selection code exposed. */
+export async function getCanopyAdminCertificateSelectionCodes(session){
+ const s=await refreshSession(session||getStoredSession());
+ if(!s?.access_token)throw new Error('Your Canopy session has expired. Sign in again.');
+ return rest('rpc/canopy_admin_certificate_selection_codes',{token:s.access_token,method:'POST',body:{}});
+}

@@ -3444,3 +3444,27 @@ html[data-canopy-theme="dark"] .cx-special-recognition-song>span{color:var(--can
 .canopySidebar nav button{flex:0 0 auto}
 .canopySideBottom{flex:0 0 auto}
 @media(max-width:900px){.canopySidebar{height:100dvh!important;max-height:100dvh!important}}
+
+/* Admin Certificates · completion filters and shortlist */
+.ccertAdminFilters{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.ccertAdminFilters label{display:grid;gap:5px;font-size:.81rem;font-weight:700}
+.ccertAdminFilters input,.ccertAdminFilters select{width:100%;min-width:0}
+.ccertAdminBar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:17px 0 10px}
+.ccertAdminBar strong{margin-right:auto}
+.ccertAdminBar button,.ccertAdminSelection button{border:1px solid #96bdb1;border-radius:9px;padding:9px 12px;background:transparent;color:inherit;cursor:pointer;font-weight:700}
+.ccertAdminBar button:disabled{opacity:.45;cursor:default}
+.ccertAdminList{display:grid;max-height:660px;overflow-y:auto;gap:8px}
+.ccertAdminList article{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:12px;padding:12px;border-radius:12px;border:1px solid rgba(70,115,103,.27);background:rgba(100,140,120,.045)}
+.ccertAdminList article.is-current{border-color:#3e947e}
+.ccertAdminList article>div{min-width:0;display:grid;gap:4px}
+.ccertAdminList article small{font-size:.74rem;line-height:1.4}
+.ccertAdminCheck{display:flex;align-items:center}
+.ccertAdminCheck input{width:18px;height:18px;accent-color:#0e6863}
+.ccertAdminSelection{display:flex;flex-wrap:wrap;align-items:center;gap:9px;margin-top:12px}
+.ccertAdminSelection span{flex:1 1 240px}
+.ccertAdminDetail{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:12px 0}
+.ccertAdminDetail>div{display:grid;gap:5px;padding:12px;border-radius:11px;border:1px solid rgba(70,115,103,.25)}
+.ccertAdminDetail small{font-size:.69rem}
+.ccertAdminDetail strong{font-size:.93rem}
+@media(max-width:850px){.ccertAdminFilters,.ccertAdminDetail{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:550px){.ccertAdminFilters,.ccertAdminDetail{grid-template-columns:1fr}.ccertAdminList article{grid-template-columns:auto minmax(0,1fr)}.ccertAdminList article>button{grid-column:2;justify-self:start}}
