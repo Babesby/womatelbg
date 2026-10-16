@@ -139,8 +139,14 @@ function drawImageCard(canvas,frame,subject,cap,person,capSettings,name,withCap=
  if(canvas.width!==w)canvas.width=w;
  if(canvas.height!==h)canvas.height=h;
  ctx.clearRect(0,0,w,h);
- // Graduation PORTRAIT: white studio backdrop, never the site-wide teal artwork.
- ctx.fillStyle='#fff';ctx.fillRect(0,0,w,h);
+ // Graduation PORTRAIT: rich WOMATE deep teal beneath the transparent corner artwork.
+ // Draw this directly on the export canvas so preview and PNG match exactly.
+ const base=ctx.createLinearGradient(0,0,0,h);
+ base.addColorStop(0,'#0d5954');base.addColorStop(.52,'#073b39');base.addColorStop(1,'#032c2b');
+ ctx.fillStyle=base;ctx.fillRect(0,0,w,h);
+ const light=ctx.createRadialGradient(w*.53,h*.30,w*.04,w*.53,h*.30,w*.77);
+ light.addColorStop(0,'rgba(55,149,129,.31)');light.addColorStop(.58,'rgba(19,95,86,.12)');light.addColorStop(1,'rgba(19,95,86,0)');
+ ctx.fillStyle=light;ctx.fillRect(0,0,w,h);
  drawSubject(ctx,subject,person,w,h);
  if(withCap&&cap){
   const cw=capSettings.width*w,ch=cw*cap.height/cap.width;
@@ -150,7 +156,7 @@ function drawImageCard(canvas,frame,subject,cap,person,capSettings,name,withCap=
  // The supplied transparent artwork is an OVERLAY, not an opaque backdrop.
  // Place it over the portrait so its original teal/gold corners stay visible.
  ctx.drawImage(frame,0,0,w,h);
- // Reserve a dark teal footer for readable names without tinting the white center.
+ // Reserve a dark teal footer for readable names while keeping the portrait vibrant.
  const shade=ctx.createLinearGradient(0,h*.70,0,h);
  shade.addColorStop(0,'rgba(1,29,28,0)');
  shade.addColorStop(.45,'rgba(1,29,28,.83)');
@@ -339,12 +345,12 @@ function PortraitStudio({graduateName}){
   <div className="cgrad-studio-head"><div><span className="cgrad-kicker">YOUR GRADUATION PORTRAIT</span><h2>Wear your moment.</h2></div><div className="cgrad-photo-actions"><button type="button" className="cgrad-upload" onClick={selectFile} disabled={processing}><ImagePlus size={18}/> {photoLoaded?'Replace photo':'Upload photo'}</button>{photoLoaded&&<button type="button" className="cgrad-clear-photo" onClick={clearPhoto} disabled={processing}><RotateCcw size={15}/> Clear photo</button>}</div></div>
   <input ref={fileRef} type="file" accept="image/*" className="cgrad-file" onChange={onFile} aria-label="Upload a photo for your graduation portrait"/>
   <div className="cgrad-stage" ref={stageRef}>
-   {photoLoaded?<><canvas key={photoVersion} ref={canvasRef} width={SIZE.width} height={SIZE.height} aria-label="Graduation portrait preview, with white background, teal graduation decorations and updated cap"/>
+   {photoLoaded?<><canvas key={photoVersion} ref={canvasRef} width={SIZE.width} height={SIZE.height} aria-label="Graduation portrait preview with deep teal background, transparent teal decorations and WOMATE cap"/>
     {capLoaded&&<div role="img" aria-label="Drag to position the WOMATE graduation cap on your head" tabIndex={0} className={`cgrad-cap-overlay${showGuides?'':' is-clean'}`} style={{left:`${cap.x*100}%`,top:`${cap.y*100}%`,width:`${cap.width*100}%`,transform:`translate(-50%,-50%) rotate(${cap.rotation}deg)`}} onPointerDown={pointerDown} onPointerMove={pointerMove} onPointerUp={pointerUp} onPointerCancel={pointerUp} onKeyDown={e=>{const arrows={ArrowLeft:['x',-.01],ArrowRight:['x',.01],ArrowUp:['y',-.01],ArrowDown:['y',.01]};if(arrows[e.key]){e.preventDefault();tweakCap(...arrows[e.key]);}}}>
      {/* Cap visual is already rendered into the canvas so preview and export match. */}
      <i className="cgrad-handle top-left"/><i className="cgrad-handle top-right"/><i className="cgrad-handle bottom-left"/><i className="cgrad-handle bottom-right"/>
     </div>}
-   </>:<button type="button" className="cgrad-stage-placeholder" onClick={selectFile} disabled={processing}><span className="cgrad-stage-icon"><ImagePlus size={35}/></span><strong>Make it yours.</strong><span>Upload a clear photo. Its original background is removed, then your portrait sits on white with refined WOMATE teal-and-gold corner decorations.</span><span className="cgrad-stage-cta">Choose my photo <Plus size={16}/></span></button>}
+   </>:<button type="button" className="cgrad-stage-placeholder" onClick={selectFile} disabled={processing}><span className="cgrad-stage-icon"><ImagePlus size={35}/></span><strong>Make it yours.</strong><span>Upload a clear photo. Its original background is removed, then your portrait sits on a deep teal WOMATE background with refined transparent teal-and-gold decorations.</span><span className="cgrad-stage-cta">Choose my photo <Plus size={16}/></span></button>}
    {processing&&<div className="cgrad-processing" aria-live="polite"><Sparkles size={20}/><span>Removing your background on this device…</span></div>}
   </div>
   {assetError&&<p className="cgrad-status" role="alert">The updated graduation cap asset has not been installed yet.</p>}
