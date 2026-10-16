@@ -624,3 +624,5 @@ export async function bulkMarkCanopyGraduated2026(session,userIds){const s=await
 
 export async function getCanopySimpleInactivity2026(session){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_admin_c2_simple_candidates',{token:s.access_token,method:'POST',body:{}})}
 export async function unenrollCanopySimple2026(session,userId){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_admin_c2_unenroll_simple',{token:s.access_token,method:'POST',body:{p_user:userId}})}
+
+export async function getCanopyC2StatusIndex(session){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_admin_c2_status_index',{token:s.access_token,method:'POST',body:{}})}
