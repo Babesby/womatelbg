@@ -33,19 +33,44 @@ INSERT INTO canopy_oct16_replies VALUES
   ('margret', 'Margret Akiru Lokitan', 'Mission progress check-in / challenge', '2026-10-11', 'I would like to know whether each member has to submit', true, 'Dear Margret, thank you for checking before submitting. Each active Mission lead must submit her own assigned stage report through Canopy > Missions. The group then submits one shared Google Drive or Docs evidence link for the overall team, rather than five separate final group submissions. The shared folder should contain the work actually completed and a factual contribution note naming who participated; do not list absent members as contributors. One active member may send the final shared folder once the required reports and evidence are ready, by 23 October at 11:59 PM GMT. Warm regards, WOMATE Team.'),
   ('jessica', 'Jessica Amma Boanuh', 'Mission progress check-in / challenge', '2026-10-11', 'we have started discussions but i''d like a breakdown', true, 'Dear Jessica, thank you for asking. The Five Leads Mission is one shared climate-action project carried out in five stages: 1. Observe locally, 2. Listen to people, 3. Map responsibility, 4. Take public action, and 5. Multiply the learning. Your Missions page shows which stage you lead. Your team agrees on one climate issue, each active member completes and submits her own stage report, and the team submits one shared evidence folder that records actual contributors. Use the private Canopy chat to coordinate and aim to submit the shared evidence by Friday, 23 October at 11:59 PM GMT. Warm regards, WOMATE Team.');
 
--- Verify each intended complaint exists exactly once, irrespective of its current status.
+-- Verify each intended complaint has exactly one unique match, irrespective of its current status.
 -- An unexpected database state stops this transaction rather than changing the wrong learner.
 CREATE TEMP TABLE canopy_oct16_matches ON COMMIT DROP AS
 SELECT r.case_key,a.id,a.learner_id,a.status,a.response_message
 FROM canopy_oct16_replies r
-JOIN public.canopy_profiles p
-  ON lower(regexp_replace(btrim(coalesce(p.full_name,'')),'[[:space:]]+',' ','g'))
-   = lower(regexp_replace(btrim(r.full_name),'[[:space:]]+',' ','g'))
-JOIN public.canopy_manager_actions a ON a.learner_id=p.user_id
- AND a.action_type='complaint'
+JOIN public.canopy_manager_actions a
+  ON a.action_type='complaint'
  AND lower(btrim(coalesce(a.subject,'')))=lower(btrim(r.subject))
- AND (a.created_at AT TIME ZONE 'UTC')::date=r.submitted_day
- AND strpos(lower(coalesce(a.message,'')),lower(r.message_fragment))>0;
+JOIN public.canopy_profiles p ON p.user_id=a.learner_id
+WHERE (
+  -- Standard match: learner name, subject, UTC day and message fragment.
+  (
+    lower(regexp_replace(btrim(coalesce(p.full_name,'')),'[[:space:]]+',' ','g'))
+       = lower(regexp_replace(btrim(r.full_name),'[[:space:]]+',' ','g'))
+    AND (a.created_at AT TIME ZONE 'UTC')::date=r.submitted_day
+    AND strpos(
+      replace(lower(coalesce(a.message,'')),chr(8217),chr(39)),
+      replace(lower(r.message_fragment),chr(8217),chr(39))
+    )>0
+  )
+  OR
+  -- These two complaints have distinctive text even if profile names differ.
+  -- Guard by subject and +/- one UTC day, and enforce ONE matching row below.
+  (
+    r.case_key='mirriam'
+    AND (a.created_at AT TIME ZONE 'UTC')::date
+        BETWEEN (r.submitted_day - 1) AND (r.submitted_day + 1)
+    AND lower(coalesce(a.message,'')) LIKE '%school workload%'
+  )
+  OR
+  (
+    r.case_key='oladeji'
+    AND (a.created_at AT TIME ZONE 'UTC')::date
+        BETWEEN (r.submitted_day - 1) AND (r.submitted_day + 1)
+    AND lower(coalesce(a.message,'')) LIKE '%fell asleep%'
+    AND lower(coalesce(a.message,'')) LIKE '%debate%'
+  )
+);
 
 DO $$
 DECLARE v_invalid text;
