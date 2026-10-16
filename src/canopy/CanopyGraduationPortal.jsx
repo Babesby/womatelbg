@@ -1,5 +1,5 @@
 import React,{useCallback,useEffect,useRef,useState} from 'react';
-import {Award,ChevronDown,Download,Heart,ImagePlus,LockKeyhole,Maximize2,Minus,Move,Play,Plus,RotateCcw,RotateCw,Send,ShieldCheck,Sparkles} from 'lucide-react';
+import {Award,Check,ChevronDown,Download,Heart,ImagePlus,LockKeyhole,Maximize2,Minus,Move,Play,Plus,RotateCcw,RotateCw,Send,ShieldCheck,Sparkles} from 'lucide-react';
 import {getCertificates,getCanopyGraduationOverview,submitCanopyGraduationReflection} from './canopyApi';
 import './canopyGraduation.css';
 
@@ -8,6 +8,7 @@ const OPEN_AT=Date.UTC(2026,9,29,0,0,0);
 const SIZE={width:1080,height:1350};
 const START_CAP={x:.50,y:.22,width:.72,rotation:0};
 const START_PHOTO={x:.5,y:.49,scale:1};
+const PORTRAIT_BACKGROUNDS=[{id:'white',label:'White'},{id:'deep-green',label:'Deep Green'},{id:'teal',label:'Teal'}];
 const MEDIAPIPE_WASM='/assets/canopy/mediapipe/wasm';
 const SEGMENTER_MODEL='/assets/canopy/mediapipe/selfie_segmenter.tflite';
 
@@ -132,21 +133,32 @@ function drawSubject(ctx,subject,settings,w,h){
  ctx.drawImage(subject,x,y,dw,dh);
 }
 
-function drawImageCard(canvas,frame,subject,cap,person,capSettings,name,withCap=true){
+function drawImageCard(canvas,frame,subject,cap,person,capSettings,name,withCap=true,background='deep-green'){
  if(!canvas||!frame||!subject)return;
  const ctx=canvas.getContext('2d');if(!ctx)return;
  const {width:w,height:h}=SIZE;
  if(canvas.width!==w)canvas.width=w;
  if(canvas.height!==h)canvas.height=h;
  ctx.clearRect(0,0,w,h);
- // Graduation PORTRAIT: rich WOMATE deep teal beneath the transparent corner artwork.
- // Draw this directly on the export canvas so preview and PNG match exactly.
- const base=ctx.createLinearGradient(0,0,0,h);
- base.addColorStop(0,'#0d5954');base.addColorStop(.52,'#073b39');base.addColorStop(1,'#032c2b');
- ctx.fillStyle=base;ctx.fillRect(0,0,w,h);
- const light=ctx.createRadialGradient(w*.53,h*.30,w*.04,w*.53,h*.30,w*.77);
- light.addColorStop(0,'rgba(55,149,129,.31)');light.addColorStop(.58,'rgba(19,95,86,.12)');light.addColorStop(1,'rgba(19,95,86,0)');
- ctx.fillStyle=light;ctx.fillRect(0,0,w,h);
+ // Apply the learner's background choice to the actual canvas, not merely CSS.
+ // This same compositor powers the live preview and the downloaded PNG.
+ if(background==='white'){
+  ctx.fillStyle='#fff';ctx.fillRect(0,0,w,h);
+ }else{
+  const isTeal=background==='teal';
+  const base=ctx.createLinearGradient(0,0,0,h);
+  if(isTeal){
+   base.addColorStop(0,'#168d85');base.addColorStop(.52,'#0e6863');base.addColorStop(1,'#064b48');
+  }else{
+   base.addColorStop(0,'#0d5954');base.addColorStop(.52,'#073b39');base.addColorStop(1,'#032c2b');
+  }
+  ctx.fillStyle=base;ctx.fillRect(0,0,w,h);
+  const light=ctx.createRadialGradient(w*.53,h*.30,w*.04,w*.53,h*.30,w*.77);
+  light.addColorStop(0,isTeal?'rgba(127,236,204,.25)':'rgba(55,149,129,.31)');
+  light.addColorStop(.58,isTeal?'rgba(63,173,154,.14)':'rgba(19,95,86,.12)');
+  light.addColorStop(1,'rgba(19,95,86,0)');
+  ctx.fillStyle=light;ctx.fillRect(0,0,w,h);
+ }
  drawSubject(ctx,subject,person,w,h);
  if(withCap&&cap){
   const cw=capSettings.width*w,ch=cw*cap.height/cap.width;
@@ -213,6 +225,7 @@ function PortraitStudio({graduateName}){
  const [cap,setCap]=useState(START_CAP),[person,setPerson]=useState(START_PHOTO),[notice,setNotice]=useState('');
  const [exporting,setExporting]=useState(false),[assetError,setAssetError]=useState(false),[frameError,setFrameError]=useState(false);
  const [photoVersion,setPhotoVersion]=useState(0),[showGuides,setShowGuides]=useState(true);
+ const [background,setBackground]=useState('deep-green');
  const uploadRequestRef=useRef(0); // WOMATE_GRAD_ALL_IN_ONE_V6
  const cleanPhoto=useCallback(()=>{if(objectUrlRef.current){URL.revokeObjectURL(objectUrlRef.current);objectUrlRef.current=null;} sourcePhotoRef.current=null;subjectRef.current=null;},[]);
  useEffect(()=>()=>{cleanPhoto()},[cleanPhoto]);
@@ -228,7 +241,7 @@ function PortraitStudio({graduateName}){
   frameImg.src=ASSET+'portrait-frame-v6.webp';
   return()=>{mounted=false;capImg.onload=null;capImg.onerror=null;frameImg.onload=null;frameImg.onerror=null;};
  },[]);
- useEffect(()=>{drawImageCard(canvasRef.current,frameRef.current,subjectRef.current,capRef.current,person,cap,graduateName,true);},[photoLoaded,capLoaded,frameLoaded,person,cap,graduateName,photoVersion]);
+ useEffect(()=>{drawImageCard(canvasRef.current,frameRef.current,subjectRef.current,capRef.current,person,cap,graduateName,true,background);},[photoLoaded,capLoaded,frameLoaded,person,cap,graduateName,photoVersion,background]);
  const selectFile=()=>{
   if(processing||!fileRef.current)return;
   fileRef.current.value='';
@@ -329,7 +342,7 @@ function PortraitStudio({graduateName}){
   if(!frameRef.current||!capRef.current){setNotice('The teal portrait decoration or cap is still loading. Please try again.');return;}
   setExporting(true);setNotice('');
   const temp=document.createElement('canvas');
-  drawImageCard(temp,frameRef.current,subjectRef.current,capRef.current,person,cap,graduateName,true);
+  drawImageCard(temp,frameRef.current,subjectRef.current,capRef.current,person,cap,graduateName,true,background);
   try{
    const blob=await new Promise(resolve=>temp.toBlob(resolve,'image/png'));
    if(!blob)throw new Error('Unable to export portrait');
@@ -344,13 +357,23 @@ function PortraitStudio({graduateName}){
  return <section className="cgrad-studio" aria-label="Create your graduation portrait">
   <div className="cgrad-studio-head"><div><span className="cgrad-kicker">YOUR GRADUATION PORTRAIT</span><h2>Wear your moment.</h2></div><div className="cgrad-photo-actions"><button type="button" className="cgrad-upload" onClick={selectFile} disabled={processing}><ImagePlus size={18}/> {photoLoaded?'Replace photo':'Upload photo'}</button>{photoLoaded&&<button type="button" className="cgrad-clear-photo" onClick={clearPhoto} disabled={processing}><RotateCcw size={15}/> Clear photo</button>}</div></div>
   <input ref={fileRef} type="file" accept="image/*" className="cgrad-file" onChange={onFile} aria-label="Upload a photo for your graduation portrait"/>
-  <div className="cgrad-stage" ref={stageRef}>
-   {photoLoaded?<><canvas key={photoVersion} ref={canvasRef} width={SIZE.width} height={SIZE.height} aria-label="Graduation portrait preview with deep teal background, transparent teal decorations and WOMATE cap"/>
+  <div className="cgrad-background-selector" role="group" aria-label="Choose your graduation portrait background">
+   <div className="cgrad-background-title"><strong>Choose your background</strong><span>Same portrait, three beautiful finishes.</span></div>
+   <div className="cgrad-background-choices">
+    {PORTRAIT_BACKGROUNDS.map(option=><button type="button" key={option.id} className={`cgrad-background-choice${background===option.id?' is-selected':''}`} aria-pressed={background===option.id} onClick={()=>setBackground(option.id)}>
+     <span className={`cgrad-background-swatch cgrad-background-swatch--${option.id}`} aria-hidden="true"/>
+     <span className="cgrad-background-name">{option.label}</span>
+     {background===option.id&&<Check size={15} aria-hidden="true"/>}
+    </button>)}
+   </div>
+  </div>
+  <div className="cgrad-stage" ref={stageRef} data-background={background}>
+   {photoLoaded?<><canvas key={photoVersion} ref={canvasRef} width={SIZE.width} height={SIZE.height} aria-label={`Graduation portrait preview with ${PORTRAIT_BACKGROUNDS.find(option=>option.id===background)?.label||"Deep Green"} background, transparent teal decorations and WOMATE cap`}/>
     {capLoaded&&<div role="img" aria-label="Drag to position the WOMATE graduation cap on your head" tabIndex={0} className={`cgrad-cap-overlay${showGuides?'':' is-clean'}`} style={{left:`${cap.x*100}%`,top:`${cap.y*100}%`,width:`${cap.width*100}%`,transform:`translate(-50%,-50%) rotate(${cap.rotation}deg)`}} onPointerDown={pointerDown} onPointerMove={pointerMove} onPointerUp={pointerUp} onPointerCancel={pointerUp} onKeyDown={e=>{const arrows={ArrowLeft:['x',-.01],ArrowRight:['x',.01],ArrowUp:['y',-.01],ArrowDown:['y',.01]};if(arrows[e.key]){e.preventDefault();tweakCap(...arrows[e.key]);}}}>
      {/* Cap visual is already rendered into the canvas so preview and export match. */}
      <i className="cgrad-handle top-left"/><i className="cgrad-handle top-right"/><i className="cgrad-handle bottom-left"/><i className="cgrad-handle bottom-right"/>
     </div>}
-   </>:<button type="button" className="cgrad-stage-placeholder" onClick={selectFile} disabled={processing}><span className="cgrad-stage-icon"><ImagePlus size={35}/></span><strong>Make it yours.</strong><span>Upload a clear photo. Its original background is removed, then your portrait sits on a deep teal WOMATE background with refined transparent teal-and-gold decorations.</span><span className="cgrad-stage-cta">Choose my photo <Plus size={16}/></span></button>}
+   </>:<button type="button" className="cgrad-stage-placeholder" onClick={selectFile} disabled={processing}><span className="cgrad-stage-icon"><ImagePlus size={35}/></span><strong>Make it yours.</strong><span>Upload a clear photo. Its original background is removed, then choose White, Deep Green or Teal, with refined transparent WOMATE graduation decorations.</span><span className="cgrad-stage-cta">Choose my photo <Plus size={16}/></span></button>}
    {processing&&<div className="cgrad-processing" aria-live="polite"><Sparkles size={20}/><span>Removing your background on this device…</span></div>}
   </div>
   {assetError&&<p className="cgrad-status" role="alert">The updated graduation cap asset has not been installed yet.</p>}

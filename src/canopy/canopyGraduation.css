@@ -55,3 +55,26 @@
 .cgrad-stage canvas{position:relative;z-index:1}
 .cgrad-cap-overlay{z-index:2}
 @media(max-width:520px){.cgrad-studio-head{align-items:flex-start;flex-wrap:wrap}.cgrad-photo-actions{justify-content:flex-start}.cgrad-clear-photo{min-height:39px;font-size:.74rem;padding:6px 9px}.cgrad-guide-toggle{align-items:flex-start;flex-wrap:wrap}}
+
+/* Graduation portrait background choices: CSS for empty stage, canvas for final PNG. */
+.cgrad-background-selector{width:min(100%,560px);margin:0 auto 13px;padding:13px;border:1px solid rgba(237,201,117,.27);border-radius:15px;background:rgba(0,26,26,.65);display:grid;gap:11px}
+.cgrad-background-title{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:4px 12px}
+.cgrad-background-title strong{font-size:.91rem;color:#fff;letter-spacing:.005em}
+.cgrad-background-title span{font-size:.74rem;color:#cfdfd6}
+.cgrad-background-choices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.cgrad-background-choice{min-width:0;display:flex;align-items:center;justify-content:center;gap:9px;padding:9px 8px;border:1px solid rgba(255,255,255,.18);border-radius:11px;background:rgba(255,255,255,.055);color:#f7f8ee;font:800 .78rem 'DM Sans',sans-serif;cursor:pointer;transition:border-color .18s ease,background .18s ease}
+.cgrad-background-choice:hover,.cgrad-background-choice:focus-visible{border-color:rgba(198,255,82,.7);background:rgba(198,255,82,.09)}
+.cgrad-background-choice.is-selected{border-color:#c6ff52;background:rgba(198,255,82,.13);box-shadow:inset 0 0 0 1px rgba(198,255,82,.3)}
+.cgrad-background-choice svg{color:#c6ff52;flex-shrink:0}
+.cgrad-background-name{white-space:nowrap}
+.cgrad-background-swatch{display:block;flex:0 0 23px;width:23px;height:23px;border-radius:50%;border:2px solid rgba(255,255,255,.67);box-shadow:0 1px 7px rgba(0,0,0,.23)}
+.cgrad-background-swatch--white{background:#fff}
+.cgrad-background-swatch--deep-green{background:linear-gradient(135deg,#0d5954,#032c2b)}
+.cgrad-background-swatch--teal{background:linear-gradient(135deg,#24aaa0,#0e6863)}
+.cgrad-stage[data-background="white"]{background:url('/assets/canopy/graduation/portrait-frame-v6.webp') center/100% 100% no-repeat,#fff!important}
+.cgrad-stage[data-background="deep-green"]{background:url('/assets/canopy/graduation/portrait-frame-v6.webp') center/100% 100% no-repeat,radial-gradient(circle at 53% 30%,#136760 0%,#073b39 55%,#032c2b 100%)!important}
+.cgrad-stage[data-background="teal"]{background:url('/assets/canopy/graduation/portrait-frame-v6.webp') center/100% 100% no-repeat,radial-gradient(circle at 53% 30%,#26a99d 0%,#0e6863 56%,#064b48 100%)!important}
+.cgrad-stage[data-background="white"] .cgrad-stage-placeholder{color:#073b39}
+.cgrad-stage[data-background="white"] .cgrad-stage-placeholder strong{color:#073b39}
+.cgrad-stage[data-background="white"] .cgrad-stage-placeholder>span:nth-child(3){color:#335b59}
+@media(max-width:440px){.cgrad-background-selector{padding:11px}.cgrad-background-choices{gap:5px}.cgrad-background-choice{gap:5px;padding:8px 4px;font-size:.68rem}.cgrad-background-swatch{flex-basis:19px;width:19px;height:19px}.cgrad-background-choice svg{width:12px;height:12px}}
