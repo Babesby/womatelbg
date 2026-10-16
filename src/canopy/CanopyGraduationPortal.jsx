@@ -9,8 +9,8 @@ const SIZE={width:1080,height:1350};
 const START_CAP={x:.50,y:.22,width:.72,rotation:0};
 const START_PHOTO={x:.5,y:.49,scale:1};
 const SAMPLE=[{id:'tester-preview',display_name:'WOMATE Graduate',reflection:'The journey taught me to trust my voice and take meaningful climate action.',created_at:'2026-10-29T12:00:00Z'}];
-const MEDIAPIPE_BASE='https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.22';
-const SEGMENTER_MODEL='https://storage.googleapis.com/mediapipe-models/image_segmenter/selfie_segmenter/float16/1/selfie_segmenter.tflite';
+const MEDIAPIPE_WASM='/assets/canopy/mediapipe/wasm';
+const SEGMENTER_MODEL='https://storage.googleapis.com/mediapipe-models/image_segmenter/selfie_segmenter/float16/latest/selfie_segmenter.tflite';
 
 const clamp=(n,min,max)=>Math.min(max,Math.max(min,n));
 const fmt=n=>String(n).padStart(2,'0');
@@ -25,13 +25,16 @@ function drawCover(ctx,img,w,h){
 async function getSegmenter(){
  if(!segmenterPromise){
   segmenterPromise=(async()=>{
-   const vision=await import(/* @vite-ignore */ `${MEDIAPIPE_BASE}/+esm`);
-   const fileset=await vision.FilesetResolver.forVisionTasks(`${MEDIAPIPE_BASE}/wasm`);
-   try{
-    return await vision.ImageSegmenter.createFromOptions(fileset,{baseOptions:{modelAssetPath:SEGMENTER_MODEL,delegate:'GPU'},runningMode:'IMAGE',outputCategoryMask:true});
-   }catch{
-    return await vision.ImageSegmenter.createFromOptions(fileset,{baseOptions:{modelAssetPath:SEGMENTER_MODEL,delegate:'CPU'},runningMode:'IMAGE',outputCategoryMask:true});
-   }
+   // This import is bundled by Vite instead of importing an unreliable CDN module.
+   // WASM is copied from the same pinned npm package during the production build.
+   const {FilesetResolver,ImageSegmenter}=await import('@mediapipe/tasks-vision');
+   const fileset=await FilesetResolver.forVisionTasks(MEDIAPIPE_WASM);
+   return ImageSegmenter.createFromOptions(fileset,{
+    baseOptions:{modelAssetPath:SEGMENTER_MODEL,delegate:'CPU'},
+    runningMode:'IMAGE',
+    outputConfidenceMasks:true,
+    outputCategoryMask:false
+   });
   })().catch(err=>{segmenterPromise=null;throw err});
  }
  return segmenterPromise;
@@ -64,12 +67,18 @@ function cropCanvasToSubject(canvas,pad=20){
 
 async function buildCutoutFromPhoto(img){
  const segmenter=await getSegmenter();
+ // In the selfie segmentation model, channel 0 is background and 1 is person.
+ // Request *confidence masks*: a category mask has integer class IDs, not floats.
  const result=segmenter.segment(img);
- const mask=result?.categoryMask;
- if(!mask||typeof mask.getAsFloat32Array!=='function')throw new Error('Background removal is not available for this photo yet.');
+ let maskValues,mw,mh;
+ try{
+  const mask=result?.confidenceMasks?.[1];
+  if(!mask||typeof mask.getAsFloat32Array!=='function')
+   throw new Error('The person mask was not returned. Please retry with a clear portrait.');
+  mw=mask.width;mh=mask.height;
+  maskValues=mask.getAsFloat32Array().slice();
+ }finally{result?.close?.();}
  const width=img.naturalWidth||img.width,height=img.naturalHeight||img.height;
- const maskValues=mask.getAsFloat32Array();
- const mw=mask.width||width,mh=mask.height||height;
  const maskCanvas=document.createElement('canvas');
  maskCanvas.width=mw;maskCanvas.height=mh;
  const mctx=maskCanvas.getContext('2d');
@@ -207,7 +216,7 @@ function PortraitStudio({graduateName}){
     setPerson({...START_PHOTO});setCap({...START_CAP});setPhotoLoaded(true);
     setNotice('Background removed. Use Photo controls to center yourself, then adjust the cap.');
    }catch(err){
-    setNotice(err?.message||'We could not remove the background from this photo. Try a clearer image with one person.');
+    setNotice('Background removal could not finish. Check your connection and try again with a clear photo. Your original background will not be used.');
     setPhotoLoaded(false);
    }finally{setProcessing(false);}
   };
