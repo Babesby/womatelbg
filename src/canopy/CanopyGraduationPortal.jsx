@@ -238,7 +238,7 @@ function PortraitStudio({graduateName}){
     setNotice('Background removed. Use Photo controls to center yourself, then adjust the cap.');
    }catch(err){
     console.error('[WOMATE Canopy] Local background removal error:',err);
-    const detail=String(err?.message||'Unknown browser processing error').replace(/https?:\\/\\/[^\\s]+/g,'external resource').slice(0,160);
+    const detail=String(err?.message||'Browser processing error').slice(0,160);
     setNotice('Background removal failed: '+detail+'. Try once more or use a smaller JPG. Your original background will not be used.');
     setPhotoLoaded(false);
    }finally{setProcessing(false);}
