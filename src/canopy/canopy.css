@@ -3437,3 +3437,10 @@ html[data-canopy-theme="dark"] .cx-special-recognition-song>span{color:var(--can
 
 /* WOMATE_COHORT2_POLICY_FOOTER */
 .canopyC2Policy{max-width:1120px;margin:40px auto 48px;width:calc(100% - 32px);padding:clamp(18px,3vw,30px);background:#fff;border:1px solid #d8e4da;border-radius:20px;color:#173f38}.canopyC2Policy h2{font-size:1.2rem;margin:0 0 14px}.canopyC2Policy p{line-height:1.65;font-size:.9rem;margin:10px 0;color:#51695d}.canopyC2Policy strong{color:#153f37}
+
+/* Scrollable Canopy navigation for large Admin menus, desktop and mobile. */
+.canopySidebar{min-height:0!important;max-height:100dvh;overflow:hidden!important}
+.canopySidebar nav{display:flex!important;flex-direction:column;flex:1 1 auto;min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#b5cbc1 transparent;padding-bottom:16px}
+.canopySidebar nav button{flex:0 0 auto}
+.canopySideBottom{flex:0 0 auto}
+@media(max-width:900px){.canopySidebar{height:100dvh!important;max-height:100dvh!important}}

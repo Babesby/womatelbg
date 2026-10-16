@@ -618,3 +618,6 @@ export async function restoreCanopyWithdrawn2026(session,userId,reason){const s=
 export async function getCanopyPurgeEligibility2026(session){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_admin_c2_auth_purge_preview',{token:s.access_token,method:'POST',body:{}})}
 export async function getCanopyComplaintCases2026(session){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_admin_c2_open_complaints',{token:s.access_token,method:'POST',body:{}})}
 export async function respondToCanopyComplaint2026(session,id,response,resolved=false){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_admin_c2_respond_complaint',{token:s.access_token,method:'POST',body:{p_id:id,p_response:response,p_resolved:Boolean(resolved)}})}
+
+/* Cohort 2 batch approval is server-enforced and limited to issued certificates. */
+export async function bulkMarkCanopyGraduated2026(session,userIds){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_admin_graduation_bulk_approve_2026',{token:s.access_token,method:'POST',body:{p_user_ids:userIds}})}
