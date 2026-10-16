@@ -2,6 +2,7 @@ import React,{useCallback,useEffect,useRef,useState} from 'react';
 import {Award,ChevronDown,Download,Eye,EyeOff,Heart,ImagePlus,LockKeyhole,Maximize2,Minus,Move,Play,Plus,RotateCcw,RotateCw,Send,ShieldCheck,Sparkles} from 'lucide-react';
 import {getCertificates,getCanopyGraduationOverview,submitCanopyGraduationReflection} from './canopyApi';
 import './canopyGraduation.css';
+import {GOWN_INITIAL,fitGownToBody} from './canopyGownFit';
 
 const ASSET='/assets/canopy/graduation/';
 const OPEN_AT=Date.UTC(2026,9,29,0,0,0);
@@ -16,7 +17,7 @@ function drawCover(ctx,img,w,h){
  const dw=img.width*scale,dh=img.height*scale;
  ctx.drawImage(img,(w-dw)/2,(h-dh)/2,dw,dh);
 }
-function drawImageCard(canvas,photo,cap,settings,name,withCap=true){
+function drawImageCard(canvas,photo,cap,settings,name,withCap=true,gownImage=null,gownSettings=null,withGown=false){
  if(!canvas||!photo)return;
  const ctx=canvas.getContext('2d');if(!ctx)return;
  const {width:w,height:h}=SIZE;
@@ -25,6 +26,13 @@ function drawImageCard(canvas,photo,cap,settings,name,withCap=true){
  ctx.clearRect(0,0,w,h);
  ctx.fillStyle='#073b39';ctx.fillRect(0,0,w,h);
  drawCover(ctx,photo,w,h);
+ // Gown is always painted below the cap and name, with no selection guides.
+ if(withGown&&gownImage&&gownSettings){
+  const gw=gownSettings.width*w,gh=gw*(gownImage.height/gownImage.width);
+  ctx.save();ctx.translate(gownSettings.x*w,gownSettings.y*h);
+  ctx.rotate(gownSettings.rotation*Math.PI/180);
+  ctx.drawImage(gownImage,-gw/2,-gh/2,gw,gh);ctx.restore();
+ }
  if(withCap&&cap){
   const cw=settings.width*w,ch=cw*cap.height/cap.width;
   ctx.save();ctx.translate(settings.x*w,settings.y*h);ctx.rotate(settings.rotation*Math.PI/180);
@@ -81,10 +89,13 @@ function GradVideo(){
 
 function PortraitStudio({graduateName}){
  const canvasRef=useRef(null),stageRef=useRef(null),fileRef=useRef(null),objectUrlRef=useRef(null),dragRef=useRef(null);
- const photoRef=useRef(null),capRef=useRef(null);
- const [photoLoaded,setPhotoLoaded]=useState(false),[capLoaded,setCapLoaded]=useState(false);
+ const photoRef=useRef(null),capRef=useRef(null),gownRef=useRef(null),fitRequestRef=useRef(0);
+ const [photoLoaded,setPhotoLoaded]=useState(false),[capLoaded,setCapLoaded]=useState(false),[gownLoaded,setGownLoaded]=useState(false);
  const [cap,setCap]=useState(START_CAP),[activeTool,setActiveTool]=useState('move'),[notice,setNotice]=useState('');
  const [exporting,setExporting]=useState(false),[showGuides,setShowGuides]=useState(true);
+ const [wearGown,setWearGown]=useState(false),[gown,setGown]=useState(GOWN_INITIAL);
+ const [activeLayer,setActiveLayer]=useState('cap'),[gownFitting,setGownFitting]=useState(false);
+ const [gownAssetError,setGownAssetError]=useState(false);
  const [assetError,setAssetError]=useState(false);
  const cleanPhoto=useCallback(()=>{if(objectUrlRef.current){URL.revokeObjectURL(objectUrlRef.current);objectUrlRef.current=null}},[]);
  useEffect(()=>()=>{cleanPhoto()},[cleanPhoto]);
@@ -94,7 +105,14 @@ function PortraitStudio({graduateName}){
   img.src=ASSET+'womate-cap.webp';
   return()=>{mounted=false;img.onload=null;img.onerror=null};
  },[]);
- useEffect(()=>{drawImageCard(canvasRef.current,photoRef.current,capRef.current,cap,graduateName,false)},[photoLoaded,capLoaded,cap,graduateName]);
+ useEffect(()=>{
+  let mounted=true;const img=new Image();
+  img.onload=()=>{if(mounted){gownRef.current=img;setGownLoaded(true);setGownAssetError(false)}};
+  img.onerror=()=>{if(mounted)setGownAssetError(true)};
+  img.src=ASSET+'womate-gown.webp';
+  return()=>{mounted=false;img.onload=null;img.onerror=null};
+ },[]);
+ useEffect(()=>{drawImageCard(canvasRef.current,photoRef.current,capRef.current,cap,graduateName,false,gownRef.current,gown,wearGown)},[photoLoaded,capLoaded,cap,graduateName,gownLoaded,gown,wearGown]);
  const selectFile=()=>fileRef.current?.click();
  const onFile=e=>{
   const file=e.target.files?.[0];if(!file)return;
@@ -105,22 +123,56 @@ function PortraitStudio({graduateName}){
   cleanPhoto();const url=URL.createObjectURL(file);objectUrlRef.current=url;
   const img=new Image();img.onload=()=>{
    if(objectUrlRef.current!==url)return;
-   photoRef.current=img;setCap({...START_CAP});setShowGuides(true);setPhotoLoaded(true);
-   setNotice('Photo ready. Drag the cap onto your head, or adjust its size and tilt.');
+   photoRef.current=img;setCap({...START_CAP});setGown({...GOWN_INITIAL});setShowGuides(true);setPhotoLoaded(true);
+   if(wearGown)void fitGown(img);
+   setNotice(wearGown?'Photo ready. Fitting your WOMATE gown…':'Photo ready. Move and resize your cap. Add a gown if you like.');
   };img.onerror=()=>{setNotice('This picture could not be opened. Try JPG, PNG or WebP.');setPhotoLoaded(false);cleanPhoto()};img.src=url;
   e.target.value='';
+ };
+ const fitGown=async(photo=photoRef.current)=>{
+  if(!photo)return;
+  const request=++fitRequestRef.current;
+  setGownFitting(true);setNotice('Finding your shoulders on this device. This may take a moment…');
+  try{
+   const fitted=await fitGownToBody(photo);
+   if(request!==fitRequestRef.current||photo!==photoRef.current)return;
+   setGown(fitted);setNotice('Gown fitted to your shoulders. You can move, resize or tilt it.');
+  }catch(err){
+   if(request!==fitRequestRef.current||photo!==photoRef.current)return;
+   setNotice((err?.message||'Automatic fitting is unavailable.')+' You can still drag and resize the gown.');
+  }finally{if(request===fitRequestRef.current)setGownFitting(false)}
+ };
+ const toggleGown=()=>{
+  if(!photoLoaded){selectFile();return}
+  if(wearGown){fitRequestRef.current++;setGownFitting(false);setWearGown(false);setActiveLayer('cap');setNotice('Gown removed from your portrait.');return}
+  setWearGown(true);setActiveLayer('gown');setActiveTool('move');
+  if(gownRef.current)void fitGown();
+  else setNotice('Loading your optional WOMATE gown…');
+ };
+ const gownPointerDown=e=>{
+  if(!wearGown||!gownLoaded)return;
+  e.preventDefault();e.currentTarget.setPointerCapture(e.pointerId);
+  dragRef.current={id:e.pointerId,px:e.clientX,py:e.clientY,starting:gown,layer:'gown'};
+  setActiveLayer('gown');setActiveTool('move');
+ };
+ const gownPointerMove=e=>{
+  const d=dragRef.current,rect=stageRef.current?.getBoundingClientRect();
+  if(!d||d.id!==e.pointerId||d.layer!=='gown'||!rect)return;
+  e.preventDefault();setGown(v=>({...v,x:clamp(d.starting.x+(e.clientX-d.px)/rect.width,-.6,1.6),y:clamp(d.starting.y+(e.clientY-d.py)/rect.height,-.4,2.2)}));
  };
  const pointerDown=e=>{
   if(!photoLoaded||!capLoaded)return;
   e.preventDefault();e.currentTarget.setPointerCapture(e.pointerId);
-  dragRef.current={id:e.pointerId,px:e.clientX,py:e.clientY,starting:cap};setActiveTool('move');
+  dragRef.current={id:e.pointerId,px:e.clientX,py:e.clientY,starting:cap,layer:'cap'};setActiveLayer('cap');setActiveTool('move');
  };
  const pointerMove=e=>{
-  const d=dragRef.current,rect=stageRef.current?.getBoundingClientRect();if(!d||d.id!==e.pointerId||!rect)return;
+  const d=dragRef.current,rect=stageRef.current?.getBoundingClientRect();if(!d||d.id!==e.pointerId||d.layer!=='cap'||!rect)return;
   e.preventDefault();setCap(v=>({...v,x:clamp(d.starting.x+(e.clientX-d.px)/rect.width,-.12,1.12),y:clamp(d.starting.y+(e.clientY-d.py)/rect.height,-.08,.85)}));
  };
  const pointerUp=e=>{if(dragRef.current?.id===e.pointerId)dragRef.current=null;};
- const tweak=(field,delta)=>setCap(v=>({...v,[field]:clamp(v[field]+delta,field==='width'?.3:field==='rotation'?-50:-.2,field==='width'?1.35:field==='rotation'?50:1.2)}));
+ const selected=activeLayer==='gown'&&wearGown?gown:cap;
+ const setSelected=activeLayer==='gown'&&wearGown?setGown:setCap;
+ const tweak=(field,delta)=>setSelected(v=>({...v,[field]:clamp(v[field]+delta,field==='width'?.3:field==='rotation'?-50:-.4,field==='width'?(activeLayer==='gown'?1.8:1.35):field==='rotation'?50:2.2)}));
  const fit=async()=>{
   const photo=photoRef.current;
   if(!photo){selectFile();return}
@@ -147,10 +199,11 @@ function PortraitStudio({graduateName}){
  const exportPortrait=async()=>{
   if(!photoRef.current){selectFile();return}
   if(!capRef.current){setNotice('Graduation cap is still loading. Please try again.');return}
+  if(wearGown&&!gownRef.current){setNotice('The gown has not loaded. Try again after the asset is ready.');return}
   // The positioning box is DOM-only; the PNG is drawn separately without any guides.
   setShowGuides(false);setExporting(true);setNotice('');
   const cleanExportCanvas=document.createElement('canvas');
-  drawImageCard(cleanExportCanvas,photoRef.current,capRef.current,cap,graduateName,true);
+  drawImageCard(cleanExportCanvas,photoRef.current,capRef.current,cap,graduateName,true,gownRef.current,gown,wearGown);
   try{
    const blob=await new Promise(resolve=>cleanExportCanvas.toBlob(resolve,'image/png'));
    if(!blob)throw new Error('Unable to export portrait');
@@ -163,26 +216,30 @@ function PortraitStudio({graduateName}){
   <input ref={fileRef} type="file" accept="image/*" className="cgrad-file" onChange={onFile} aria-label="Upload a photo for your graduation portrait"/>
   <div className="cgrad-stage" ref={stageRef}>
    {photoLoaded?<><canvas ref={canvasRef} width={SIZE.width} height={SIZE.height} aria-label="Graduation portrait preview without cap"/>
+    {wearGown&&gownLoaded&&<div tabIndex={0} role="img" aria-label="Adjust the WOMATE graduation gown position" className={`cgrad-gown-overlay${showGuides&&activeLayer==='gown'?' is-guided':''}`} style={{left:`${gown.x*100}%`,top:`${gown.y*100}%`,width:`${gown.width*100}%`,aspectRatio:'2 / 3',transform:`translate(-50%,-50%) rotate(${gown.rotation}deg)`,pointerEvents:activeLayer==='gown'?'auto':'none'}} onPointerDown={gownPointerDown} onPointerMove={gownPointerMove} onPointerUp={pointerUp} onPointerCancel={pointerUp} onKeyDown={e=>{const arrows={ArrowLeft:['x',-.01],ArrowRight:['x',.01],ArrowUp:['y',-.01],ArrowDown:['y',.01]};if(arrows[e.key]){e.preventDefault();tweak(...arrows[e.key])}}}/>}
     {capLoaded&&<div role="img" aria-label="Drag to position the WOMATE graduation cap on your head" tabIndex={0} className={`cgrad-cap-overlay${showGuides?'':' is-clean'}`} style={{left:`${cap.x*100}%`,top:`${cap.y*100}%`,width:`${cap.width*100}%`,transform:`translate(-50%,-50%) rotate(${cap.rotation}deg)`}} onPointerDown={pointerDown} onPointerMove={pointerMove} onPointerUp={pointerUp} onPointerCancel={pointerUp} onKeyDown={e=>{const arrows={ArrowLeft:['x',-.01],ArrowRight:['x',.01],ArrowUp:['y',-.01],ArrowDown:['y',.01]};if(arrows[e.key]){e.preventDefault();tweak(...arrows[e.key])}}}>
      <img src={`${ASSET}womate-cap.webp`} alt="" draggable="false"/><i className="cgrad-handle top-left"/><i className="cgrad-handle top-right"/><i className="cgrad-handle bottom-left"/><i className="cgrad-handle bottom-right"/>
     </div>}
    </>:<button type="button" className="cgrad-stage-placeholder" onClick={selectFile}><span className="cgrad-stage-icon"><ImagePlus size={35}/></span><strong>Make it yours.</strong><span>Add your favourite photo and try on the WOMATE graduation cap.</span><span className="cgrad-stage-cta">Choose my photo <Plus size={16}/></span></button>}
   </div>
   {assetError&&<p className="cgrad-status" role="alert">The graduation cap asset has not been installed yet. Add the supplied graduation assets to enable the cap overlay.</p>}
-  {photoLoaded&&<><div className="cgrad-tools" aria-label="Adjust graduation cap">
+  {gownAssetError&&<p className="cgrad-status" role="alert">WOMATE gown artwork is not yet installed. The gown option will work once womate-gown.webp is added.</p>}
+  {photoLoaded&&<div className="cgrad-robe-choice"><div><strong>Wear the WOMATE graduation gown?</strong><span>Optional. Your photo stays on your device.</span></div><button type="button" className={wearGown?'is-on':''} onClick={toggleGown} aria-pressed={wearGown}>{wearGown?'Remove gown':'Wear gown'}</button></div>}
+  {photoLoaded&&wearGown&&<div className="cgrad-layer-choice" aria-label="Choose what to adjust"><button type="button" className={activeLayer==='cap'?'on':''} onClick={()=>{setActiveLayer('cap');setActiveTool('move')}}>Adjust cap</button><button type="button" className={activeLayer==='gown'?'on':''} onClick={()=>{setActiveLayer('gown');setActiveTool('move')}}>Adjust gown</button><button type="button" onClick={()=>void fitGown()} disabled={gownFitting||!gownLoaded}>{gownFitting?'Fitting…':'Auto-fit gown'}</button></div>}
+  {photoLoaded&&<><div className="cgrad-tools" aria-label={`Adjust graduation ${activeLayer==='gown'&&wearGown?'gown':'cap'}`}>
    <button type="button" className={activeTool==='move'?'on':''} onClick={()=>{setActiveTool('move');setNotice('Drag the cap with your finger or mouse.')}}><Move size={20}/> Move</button>
    <button type="button" className={activeTool==='tilt'?'on':''} onClick={()=>setActiveTool('tilt')}><Maximize2 size={20}/> Tilt</button>
    <button type="button" className={activeTool==='size'?'on':''} onClick={()=>setActiveTool('size')}><Maximize2 size={20}/> Size</button>
    <button type="button" className={activeTool==='rotate'?'on':''} onClick={()=>setActiveTool('rotate')}><RotateCw size={20}/> Rotate</button>
-   <button type="button" onClick={()=>{setCap({...START_CAP});setActiveTool('move')}}><RotateCcw size={20}/> Reset</button>
-   <button type="button" onClick={fit}><Sparkles size={20}/> Fit cap</button>
+   <button type="button" onClick={()=>{setSelected(activeLayer==='gown'&&wearGown?{...GOWN_INITIAL}:{...START_CAP});setActiveTool('move')}}><RotateCcw size={20}/> Reset</button>
+   <button type="button" onClick={activeLayer==='gown'&&wearGown?()=>void fitGown():fit} disabled={gownFitting}><Sparkles size={20}/> {activeLayer==='gown'&&wearGown?'Fit gown':'Fit cap'}</button>
    <button type="button" className={showGuides?'':'on'} aria-pressed={!showGuides} onClick={()=>setShowGuides(v=>!v)}>{showGuides?<EyeOff size={20}/>:<Eye size={20}/>} {showGuides?'Hide guides':'Show guides'}</button>
   </div>
-  {activeTool==='size'&&<label className="cgrad-range">Size <input aria-label="Graduation cap size" type="range" min="30" max="135" step="1" value={Math.round(cap.width*100)} onChange={e=>setCap(v=>({...v,width:Number(e.target.value)/100}))}/><output>{Math.round(cap.width*100)}%</output></label>}
-  {(activeTool==='tilt'||activeTool==='rotate')&&<label className="cgrad-range">{activeTool==='tilt'?'Tilt':'Rotate'} <button type="button" aria-label="Turn left" onClick={()=>tweak('rotation',-2)}><Minus size={16}/></button><input aria-label="Graduation cap rotation" type="range" min="-50" max="50" step="1" value={cap.rotation} onChange={e=>setCap(v=>({...v,rotation:Number(e.target.value)}))}/><button type="button" aria-label="Turn right" onClick={()=>tweak('rotation',2)}><Plus size={16}/></button><output>{cap.rotation}°</output></label>}
+  {activeTool==='size'&&<label className="cgrad-range">Size <input aria-label="Graduation cap size" type="range" min="30" max={activeLayer==='gown'&&wearGown?180:135} step="1" value={Math.round(selected.width*100)} onChange={e=>setSelected(v=>({...v,width:Number(e.target.value)/100}))}/><output>{Math.round(selected.width*100)}%</output></label>}
+  {(activeTool==='tilt'||activeTool==='rotate')&&<label className="cgrad-range">{activeTool==='tilt'?'Tilt':'Rotate'} <button type="button" aria-label="Turn left" onClick={()=>tweak('rotation',-2)}><Minus size={16}/></button><input aria-label="Graduation cap rotation" type="range" min="-50" max="50" step="1" value={selected.rotation} onChange={e=>setSelected(v=>({...v,rotation:Number(e.target.value)}))}/><button type="button" aria-label="Turn right" onClick={()=>tweak('rotation',2)}><Plus size={16}/></button><output>{selected.rotation}°</output></label>}
   </>}
-  {photoLoaded&&<p className="cgrad-editor-hint">Guides help you position the cap. They never appear in your downloaded portrait.</p>}
-  <button type="button" className="cgrad-download" disabled={!photoLoaded||!capLoaded||exporting} onClick={exportPortrait}><Download size={20}/>{exporting?'Preparing your portrait…':'Download my graduation portrait'}</button>
+  {photoLoaded&&<p className="cgrad-editor-hint">Guides help position your cap and optional gown. They never appear in your downloaded portrait.</p>}
+  <button type="button" className="cgrad-download" disabled={!photoLoaded||!capLoaded||(wearGown&&!gownLoaded)||exporting} onClick={exportPortrait}><Download size={20}/>{exporting?'Preparing your portrait…':'Download my graduation portrait'}</button>
   <p className="cgrad-local-hint"><ShieldCheck size={14}/> Your photo stays on this device.</p>
   {notice&&<p role="status" className="cgrad-status">{notice}</p>}
  </section>;
