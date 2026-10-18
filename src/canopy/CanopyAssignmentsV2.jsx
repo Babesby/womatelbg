@@ -1,6 +1,6 @@
 import React,{useEffect,useState} from 'react';
 import {CANOPY_ASSIGNMENT_SCHEDULE,formatCanopyDate,openAssignments,speakerChallengeOpen} from './canopySchedule';
-import {getWeeklyAssignmentSubmissions,submitWeeklyAssignment,submitTesterWeeklyAssignment,submitAccommodatedOptionalEvidence,getPuzzleProgress,savePuzzleCompletion,getWeeklyAssignmentDrafts,saveWeeklyAssignmentDraft} from './canopyApi';
+import {getWeeklyAssignmentSubmissions,submitWeeklyAssignment,submitTesterWeeklyAssignment,submitAccommodatedOptionalEvidence,getPuzzleProgress,savePuzzleCompletion,getWeeklyAssignmentDrafts,saveWeeklyAssignmentDraft,getCanopyAssignmentServerClock} from './canopyApi';
 import {canopyModules2026} from './canopyCurriculum2026';
 import {climateDebateAssignment,isClimateDebateSocialUrl} from './canopyClimateDebate';
 import {playCanopyCorrectSound,playCanopyErrorSound} from './canopyFeedbackAudio';
@@ -235,6 +235,26 @@ export default function CanopyAssignmentsV2({viewer}){
   const[draftNotes,setDraftNotes]=useState({});
   const[message,setMessage]=useState('');
   const[now,setNow]=useState(()=>new Date());
+ const[serverClockOffset,setServerClockOffset]=useState(null);
+ useEffect(()=>{
+  let active=true;
+  const syncClock=async()=>{
+   try{
+    const started=Date.now();
+    const response=await getCanopyAssignmentServerClock(viewer.session);
+    const finished=Date.now();
+    const serverTime=Date.parse(response);
+    if(active&&Number.isFinite(serverTime)){
+     const offset=serverTime-Math.round((started+finished)/2);
+     setServerClockOffset(offset);
+     setNow(new Date(finished+offset));
+    }
+   }catch(error){console.warn('Could not synchronize assignment time:',error?.message||error)}
+  };
+  syncClock();
+  const timer=window.setInterval(syncClock,60000);
+  return()=>{active=false;window.clearInterval(timer)};
+ },[viewer?.session?.access_token]);
   const tester=String(viewer?.user?.email||'').trim().toLowerCase()==='p.viewmultimedia@gmail.com';
   const available=(tester?CANOPY_ASSIGNMENT_SCHEDULE:openAssignments(now)).filter(item=>{
     if(tester)return true;
@@ -303,7 +323,7 @@ export default function CanopyAssignmentsV2({viewer}){
     load();
     loadDrafts();
   },[viewer?.session?.access_token]);
-  useEffect(()=>{const timer=window.setInterval(()=>setNow(new Date()),60000);return()=>window.clearInterval(timer)},[]);
+  useEffect(()=>{const timer=window.setInterval(()=>setNow(new Date(Date.now()+(serverClockOffset||0))),15000);return()=>window.clearInterval(timer)},[serverClockOffset]);
 
   const moduleSubmissions=weekKey=>subs.filter(x=>x.week_key===weekKey);
   const latest=weekKey=>moduleSubmissions(weekKey).sort((a,b)=>
