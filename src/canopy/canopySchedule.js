@@ -70,6 +70,11 @@ export const CANOPY_ASSIGNMENT_SCHEDULE = [
     dueAt:'2026-10-25T23:59:59Z',
     resubmitUntil:'2026-10-28T23:59:59Z',
     puzzleTerms:['LEADERSHIP','NETWORK','CAREER','ACTION'],
+    liveUrl:'https://www.youtube.com/live/Cu38ypTemnE',
+    livePoster:'https://img.youtube.com/vi/Cu38ypTemnE/hqdefault.jpg',
+    liveHost:'Debbie Paul',
+    liveSpeaker:'Yvonne Otieno',
+    liveSpeakerRole:'Co-Founder and CEO of Miyonga',
     speakerPrompt:'Complete the final challenge announced by the expert during the Thursday live session and publish the required reflection or action post on LinkedIn or X/Twitter.'
   }
 ];
