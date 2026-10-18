@@ -633,3 +633,10 @@ export async function getCanopyAdminCertificateSelectionCodes(session){
  if(!s?.access_token)throw new Error('Your Canopy session has expired. Sign in again.');
  return rest('rpc/canopy_admin_certificate_selection_codes',{token:s.access_token,method:'POST',body:{}});
 }
+
+/* Authoritative UTC clock for browser assignment gates. */
+export async function getCanopyAssignmentServerClock(session){
+ const s=await refreshSession(session||getStoredSession());
+ if(!s?.access_token)throw new Error('Sign in to synchronize assignment time.');
+ return rest('rpc/canopy_assignment_server_clock',{token:s.access_token,method:'POST',body:{}});
+}
