@@ -4,6 +4,8 @@ import{Helmet,HelmetProvider}from'react-helmet-async';
 import { ArrowUpRight, Menu, X, ChevronRight, ChevronDown, ChevronLeft, Leaf, Users, Award, Microscope, Quote, Sparkles, ShieldCheck, Brain, MoveRight, Play, Heart, Radio, Globe2, BookOpen, Search, FileCheck, PenTool, Files, Target } from 'lucide-react';
 import'./style.css';
 const CanopyApp=React.lazy(()=>import('./canopy/CanopyApp.jsx'));
+const VerifyCertificate=React.lazy(()=>import('./verification/VerifyCertificate.jsx'));
+
 import PublicationsPage from './publications/PublicationsPage.jsx';
 import PublicTalentDiscovery from './talent/PublicTalentDiscovery.jsx';
 
@@ -1273,6 +1275,7 @@ function App(){
 let path=window.location.pathname.replace(/\/$/,'')||'/';
 let p=pages[path]||pages['/'];
 useEffect(()=>{window.scrollTo(0,0);},[]);
+if(path==='/verify')return <React.Suspense fallback={<div role='status'>Opening WOMATE verification…</div>}><VerifyCertificate/></React.Suspense>;
 if(path==='/canopy'||path.startsWith('/canopy/'))return <React.Suspense fallback={<main role='status' aria-live='polite' style={{minHeight:'65vh',display:'grid',placeItems:'center',color:'#0E4D4A'}}>Loading Canopy...</main>}><CanopyApp/></React.Suspense>;
 const publicTalent=path==='/talent'||path==='/talent-discovery'||path.startsWith('/talent/');
 return <>
