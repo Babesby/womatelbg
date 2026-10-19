@@ -2,7 +2,6 @@ import React,{useEffect,useMemo,useState}from'react';
 import{BadgeCheck,BriefcaseBusiness,Camera,CheckCircle2,Globe2,Handshake,Search,ShieldCheck,Sparkles,UsersRound}from'lucide-react';
 import{getCanopyTalentNetwork,saveCanopyTalentSettings,sendCanopyCollaborationRequest,respondCanopyCollaborationRequest,getCanopyExternalCollaborationRequests,getCanopyExternalCollaborationThread,respondCanopyExternalCollaborationRequest,sendCanopyExternalCollaborationMessage,getAdminCanopyTalentNetwork,setAdminCanopyTalentVisibility,canopyProfilePhotoUrl}from'./canopyApi';
 import'./canopyTalentNetwork.css';
-import'./canopyTalentPolish.css';
 
 const clean=v=>String(v||'').trim();
 const interestList=v=>Array.isArray(v)?v:[];
