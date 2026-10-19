@@ -198,23 +198,24 @@ function videoEmbedUrl(raw){
    const v=(u.pathname.match(/(?:video\/)?(\d+)/)||[])[1];
    if(v)return `https://player.vimeo.com/video/${v}`;
   }
+   if(host==='drive.google.com'){const fileId=(u.pathname.match(/^\/file\/d\/([A-Za-z0-9_-]+)\/(?:view|preview)?/)||[])[1];if(fileId)return `https://drive.google.com/file/d/${fileId}/preview`}
  }catch{}
  return'';
 }
 
 function GradVideo(){
  const [playing,setPlaying]=useState(false);
- const url=videoEmbedUrl(import.meta.env.VITE_CANOPY_GRADUATION_VIDEO_URL||'');
+ const url=videoEmbedUrl(import.meta.env.VITE_CANOPY_GRADUATION_VIDEO_URL||'https://drive.google.com/file/d/1HXAoemWlZukESwqE_pqLtQzY5vFVcQ-U/view');
  return <section className="cgrad-video" aria-label="Graduation video message">
   <div className="cgrad-video-art">
-   {url&&playing?<iframe src={url+(url.includes('?')?'&':'?')+'autoplay=1'} title="A message from the WOMATE team" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowFullScreen referrerPolicy="strict-origin-when-cross-origin"/>:<>
+   {url&&playing?<iframe src={url+(url.includes('?')?'&':'?')+'autoplay=1'} title="A congratulatory message from the WOMATE CEO" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowFullScreen referrerPolicy="strict-origin-when-cross-origin"/>:<>
     <img src={`${ASSET}womate-neon.webp`} alt="" className="cgrad-video-logo"/>
-    <div className="cgrad-video-caption">A message from WOMATE</div>
-    {url?<button type="button" className="cgrad-video-play" onClick={()=>setPlaying(true)} aria-label="Play WOMATE graduation message"><Play size={30} fill="currentColor"/></button>:<div className="cgrad-video-soon"><Play size={24}/><span>Our message is coming</span></div>}
+    <div className="cgrad-video-caption">A congratulatory message from our CEO</div>
+    {url?<button type="button" className="cgrad-video-play" onClick={()=>setPlaying(true)} aria-label="Play the CEO graduation congratulations video"><Play size={30} fill="currentColor"/></button>:<div className="cgrad-video-soon"><Play size={24}/><span>Our message is coming</span></div>}
    </>}
   </div>
-  <h2>A message from WOMATE <Heart size={17} aria-hidden="true"/></h2>
-  <p className="cgrad-script">Same girl. Bigger dreams.</p>
+  <h2>A message from our CEO <Heart size={17} aria-hidden="true"/></h2>
+  <p className="cgrad-script">A special message to celebrate your She Leads journey.</p>
  </section>;
 }
 
