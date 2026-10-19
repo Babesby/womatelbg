@@ -640,3 +640,15 @@ export async function getCanopyAssignmentServerClock(session){
  if(!s?.access_token)throw new Error('Sign in to synchronize assignment time.');
  return rest('rpc/canopy_assignment_server_clock',{token:s.access_token,method:'POST',body:{}});
 }
+
+/* Authorized WOMATE admin register; never exposed through the public verification endpoint. */
+export async function getCanopyCredentialCandidates(session){
+ const s=await refreshSession(session||getStoredSession());
+ if(!s?.access_token)throw new Error('Sign in again to view the graduation register.');
+ return rest('rpc/womate_admin_prospective_graduates_2026',{token:s.access_token,method:'POST',body:{}});
+}
+export async function updateCanopyCredentialStatus(session,code,status,reason){
+ const s=await refreshSession(session||getStoredSession());
+ if(!s?.access_token)throw new Error('Sign in again.');
+ return rest('rpc/womate_admin_change_credential_status',{token:s.access_token,method:'POST',body:{p_code:code,p_status:status,p_reason:reason||null}});
+}
