@@ -135,7 +135,7 @@ export function CanopyLiveCountdown({item}){
   const liveEnded=now>=speakerAt;
   const actionLabel=liveEnded?'Watch session / replay':countdown.ended?'Join live on YouTube':'Open YouTube session';
   return <section className={`cx-live ${item.livePoster?'has-poster':''} ${liveEnded?'is-complete':countdown.ended?'is-live':''}`}>
-    {item.livePoster&&<img className="cx-live-poster" src={item.livePoster} alt={`Module ${item.moduleId} live session flyer`} loading="lazy" onError={event=>{if(item.moduleId==='05'&&!event.currentTarget.dataset.fallback){event.currentTarget.dataset.fallback='true';event.currentTarget.src='https://img.youtube.com/vi/Cu38ypTemnE/hqdefault.jpg'}}}/>}
+    {item.livePoster&&<img className="cx-live-poster" src={item.livePoster} alt={`Module ${item.moduleId} live session flyer`} loading="lazy"/>}
     <div className="cx-live-body">
       <div className="cx-live-pulse" aria-hidden="true"><span/></div>
       <div className="cx-live-copy"><small>{liveEnded?'SESSION COMPLETE':countdown.ended?'LIVE SESSION · NOW':'NEXT LIVE SESSION'}</small><h3>Module {item.moduleId} · {item.title}</h3><p>Thu · 4 PM GMT{item.liveSpeaker?` · ${item.liveSpeaker}`:''}</p>{item.liveSpeakerRole&&<span className="cx-live-speaker-role">{item.liveSpeakerRole}</span>}</div>
