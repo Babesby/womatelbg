@@ -227,6 +227,7 @@ function PortraitStudio({graduateName}){
  const [exporting,setExporting]=useState(false),[assetError,setAssetError]=useState(false),[frameError,setFrameError]=useState(false);
  const [photoVersion,setPhotoVersion]=useState(0),[showGuides,setShowGuides]=useState(true);
  const [background,setBackground]=useState('deep-green');
+ const [withCap,setWithCap]=useState(false);
  const uploadRequestRef=useRef(0); // WOMATE_GRAD_ALL_IN_ONE_V6
  const cleanPhoto=useCallback(()=>{if(objectUrlRef.current){URL.revokeObjectURL(objectUrlRef.current);objectUrlRef.current=null;} sourcePhotoRef.current=null;subjectRef.current=null;},[]);
  useEffect(()=>()=>{cleanPhoto()},[cleanPhoto]);
@@ -242,7 +243,7 @@ function PortraitStudio({graduateName}){
   frameImg.src=ASSET+'portrait-frame-v6.webp';
   return()=>{mounted=false;capImg.onload=null;capImg.onerror=null;frameImg.onload=null;frameImg.onerror=null;};
  },[]);
- useEffect(()=>{drawImageCard(canvasRef.current,frameRef.current,subjectRef.current,capRef.current,person,cap,graduateName,true,background);},[photoLoaded,capLoaded,frameLoaded,person,cap,graduateName,photoVersion,background]);
+ useEffect(()=>{drawImageCard(canvasRef.current,frameRef.current,subjectRef.current,capRef.current,person,cap,graduateName,withCap,background);},[photoLoaded,capLoaded,frameLoaded,person,cap,graduateName,photoVersion,background,withCap]);
  const selectFile=()=>{
   if(processing||!fileRef.current)return;
   fileRef.current.value='';
@@ -284,7 +285,7 @@ function PortraitStudio({graduateName}){
     subjectRef.current=cutout;
     setPhotoVersion(v=>v+1); // force a fresh canvas after each successful upload
     setPhotoLoaded(true);
-    setNotice('New photo ready. Use the photo controls, then drag or fit your WOMATE cap.');
+    setNotice('Photo ready. The graduation cap is optional; choose your preferred portrait style.');
    }catch(err){
     if(request!==uploadRequestRef.current)return;
     console.error('[WOMATE graduation] Background removal failed',err);
@@ -303,7 +304,7 @@ function PortraitStudio({graduateName}){
   img.src=url;
  };
  const pointerDown=e=>{
-  if(!photoLoaded||!capLoaded)return;
+  if(!photoLoaded||!withCap||!capLoaded)return;
   e.preventDefault();e.currentTarget.setPointerCapture(e.pointerId);
   dragRef.current={id:e.pointerId,px:e.clientX,py:e.clientY,starting:cap};
  };
@@ -340,10 +341,10 @@ function PortraitStudio({graduateName}){
  };
  const exportPortrait=async()=>{
   if(!subjectRef.current){selectFile();return;}
-  if(!frameRef.current||!capRef.current){setNotice('The teal portrait decoration or cap is still loading. Please try again.');return;}
+  if(!frameRef.current||(withCap&&!capRef.current)){setNotice('The portrait decoration is still loading. Please try again.');return;}
   setExporting(true);setNotice('');
   const temp=document.createElement('canvas');
-  drawImageCard(temp,frameRef.current,subjectRef.current,capRef.current,person,cap,graduateName,true,background);
+  drawImageCard(temp,frameRef.current,subjectRef.current,capRef.current,person,cap,graduateName,withCap,background);
   try{
    const blob=await new Promise(resolve=>temp.toBlob(resolve,'image/png'));
    if(!blob)throw new Error('Unable to export portrait');
@@ -368,18 +369,25 @@ function PortraitStudio({graduateName}){
     </button>)}
    </div>
   </div>
+  <div className="cgrad-background-selector" role="group" aria-label="Choose whether to wear a graduation cap">
+   <div className="cgrad-background-title"><strong>Graduation cap</strong><span>Optional — your portrait, your choice.</span></div>
+   <div className="cgrad-background-choices" style={{gridTemplateColumns:'repeat(2,minmax(0,1fr))'}}>
+    <button type="button" className={`cgrad-background-choice${!withCap?' is-selected':''}`} aria-pressed={!withCap} onClick={()=>{setWithCap(false);setNotice('Your portrait will be downloaded without a cap.')}}>Without cap {!withCap&&<Check size={15} aria-hidden="true"/>}</button>
+    <button type="button" className={`cgrad-background-choice${withCap?' is-selected':''}`} aria-pressed={withCap} onClick={()=>{setWithCap(true);setNotice('Cap added. Adjust the placement and size below.')}}>With cap {withCap&&<Check size={15} aria-hidden="true"/>}</button>
+   </div>
+  </div>
   <div className="cgrad-stage" ref={stageRef} data-background={background}>
-   {photoLoaded?<><canvas key={photoVersion} ref={canvasRef} width={SIZE.width} height={SIZE.height} aria-label={`Graduation portrait preview with ${PORTRAIT_BACKGROUNDS.find(option=>option.id===background)?.label||"Deep Green"} background, transparent teal decorations and WOMATE cap`}/>
-    {capLoaded&&<div role="img" aria-label="Drag to position the WOMATE graduation cap on your head" tabIndex={0} className={`cgrad-cap-overlay${showGuides?'':' is-clean'}`} style={{left:`${cap.x*100}%`,top:`${cap.y*100}%`,width:`${cap.width*100}%`,transform:`translate(-50%,-50%) rotate(${cap.rotation}deg)`}} onPointerDown={pointerDown} onPointerMove={pointerMove} onPointerUp={pointerUp} onPointerCancel={pointerUp} onKeyDown={e=>{const arrows={ArrowLeft:['x',-.01],ArrowRight:['x',.01],ArrowUp:['y',-.01],ArrowDown:['y',.01]};if(arrows[e.key]){e.preventDefault();tweakCap(...arrows[e.key]);}}}>
+   {photoLoaded?<><canvas key={photoVersion} ref={canvasRef} width={SIZE.width} height={SIZE.height} aria-label={`Graduation portrait preview with ${PORTRAIT_BACKGROUNDS.find(option=>option.id===background)?.label||"Deep Green"} background, transparent teal decorations and ${withCap?"optional graduation cap":"no graduation cap"}`}/>
+    {withCap&&capLoaded&&<div role="img" aria-label="Drag to position the WOMATE graduation cap on your head" tabIndex={0} className={`cgrad-cap-overlay${showGuides?'':' is-clean'}`} style={{left:`${cap.x*100}%`,top:`${cap.y*100}%`,width:`${cap.width*100}%`,transform:`translate(-50%,-50%) rotate(${cap.rotation}deg)`}} onPointerDown={pointerDown} onPointerMove={pointerMove} onPointerUp={pointerUp} onPointerCancel={pointerUp} onKeyDown={e=>{const arrows={ArrowLeft:['x',-.01],ArrowRight:['x',.01],ArrowUp:['y',-.01],ArrowDown:['y',.01]};if(arrows[e.key]){e.preventDefault();tweakCap(...arrows[e.key]);}}}>
      {/* Cap visual is already rendered into the canvas so preview and export match. */}
      <i className="cgrad-handle top-left"/><i className="cgrad-handle top-right"/><i className="cgrad-handle bottom-left"/><i className="cgrad-handle bottom-right"/>
     </div>}
    </>:<button type="button" className="cgrad-stage-placeholder" onClick={selectFile} disabled={processing}><span className="cgrad-stage-icon"><ImagePlus size={35}/></span><strong>Make it yours.</strong><span>Upload a clear photo. Its original background is removed, then choose White, Deep Green or Teal, with refined transparent WOMATE graduation decorations.</span><span className="cgrad-stage-cta">Choose my photo <Plus size={16}/></span></button>}
    {processing&&<div className="cgrad-processing" aria-live="polite"><Sparkles size={20}/><span>Removing your background on this device…</span></div>}
   </div>
-  {assetError&&<p className="cgrad-status" role="alert">The updated graduation cap asset has not been installed yet.</p>}
+  {withCap&&assetError&&<p className="cgrad-status" role="alert">The updated graduation cap asset has not been installed yet.</p>}
   {frameError&&<p className="cgrad-status" role="alert">The refined WOMATE teal portrait frame did not load. Check portrait-frame-v6.webp.</p>}
-  {photoLoaded&&<div className="cgrad-guide-toggle"><span>Preview and download use the same finished artwork.</span><button type="button" onClick={()=>setShowGuides(v=>!v)}>{showGuides?'Hide cap guides':'Show cap guides'}</button></div>}
+  {photoLoaded&&withCap&&<div className="cgrad-guide-toggle"><span>Preview and download use the same finished artwork.</span><button type="button" onClick={()=>setShowGuides(v=>!v)}>{showGuides?'Hide cap guides':'Show cap guides'}</button></div>}
   {photoLoaded&&<div className="cgrad-editor-stack">
    <div className="cgrad-control-card">
     <div className="cgrad-control-head"><strong>Photo</strong><span>Your own background is removed automatically.</span></div>
@@ -393,7 +401,7 @@ function PortraitStudio({graduateName}){
     </div>
     <label className="cgrad-range">Zoom <button type="button" aria-label="Zoom out" onClick={()=>setPerson(v=>({...v,scale:clamp(v.scale-.04,.72,1.55)}))}><Minus size={16}/></button><input aria-label="Portrait zoom" type="range" min="72" max="155" step="1" value={Math.round(person.scale*100)} onChange={e=>setPerson(v=>({...v,scale:Number(e.target.value)/100}))}/><button type="button" aria-label="Zoom in" onClick={()=>setPerson(v=>({...v,scale:clamp(v.scale+.04,.72,1.55)}))}><Plus size={16}/></button><output>{Math.round(person.scale*100)}%</output></label>
    </div>
-   <div className="cgrad-control-card">
+   {withCap&&<div className="cgrad-control-card">
     <div className="cgrad-control-head"><strong>Cap</strong><span>Use Fit cap or drag it yourself.</span></div>
     <div className="cgrad-cap-grid">
      <button type="button" onClick={()=>tweakCap('y',-.02)}><Move size={18}/> Up</button>
@@ -405,9 +413,9 @@ function PortraitStudio({graduateName}){
     </div>
     <label className="cgrad-range">Size <button type="button" aria-label="Make cap smaller" onClick={()=>tweakCap('width',-.04)}><Minus size={16}/></button><input aria-label="Graduation cap size" type="range" min="28" max="130" step="1" value={Math.round(cap.width*100)} onChange={e=>setCap(v=>({...v,width:Number(e.target.value)/100}))}/><button type="button" aria-label="Make cap bigger" onClick={()=>tweakCap('width',.04)}><Plus size={16}/></button><output>{Math.round(cap.width*100)}%</output></label>
     <label className="cgrad-range">Rotate <button type="button" aria-label="Turn cap left" onClick={()=>tweakCap('rotation',-2)}><Minus size={16}/></button><input aria-label="Graduation cap rotation" type="range" min="-50" max="50" step="1" value={cap.rotation} onChange={e=>setCap(v=>({...v,rotation:Number(e.target.value)}))}/><button type="button" aria-label="Turn cap right" onClick={()=>tweakCap('rotation',2)}><Plus size={16}/></button><output>{cap.rotation}°</output></label>
-   </div>
+   </div>}
   </div>}
-  <button type="button" className="cgrad-download" disabled={!photoLoaded||!capLoaded||!frameLoaded||processing||exporting} onClick={exportPortrait}><Download size={20}/>{exporting?'Preparing your portrait…':'Download my graduation portrait'}</button>
+  <button type="button" className="cgrad-download" disabled={!photoLoaded||(withCap&&!capLoaded)||!frameLoaded||processing||exporting} onClick={exportPortrait}><Download size={20}/>{exporting?'Preparing your portrait…':'Download my graduation portrait'}</button>
   <p className="cgrad-local-hint"><ShieldCheck size={14}/> Your photo stays on this device.</p>
   {notice&&<p role="status" className="cgrad-status">{notice}</p>}
  </section>;
