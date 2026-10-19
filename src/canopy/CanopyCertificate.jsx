@@ -1,6 +1,6 @@
 import React,{useEffect,useMemo,useState} from 'react';
 import {Award,Check,Clock,FileCheck2,UsersRound} from 'lucide-react';
-import {getCertificates,getCanopyCertificateEligibility} from './canopyApi';
+import {getCertificates,getCanopyCertificateEligibility,getMyWomateCredentialIds} from './canopyApi';
 import {modules} from './canopyData';
 import {CANOPY_ASSIGNMENT_SCHEDULE} from './canopySchedule';
 
@@ -9,7 +9,8 @@ export default function CanopyCertificate({viewer,progress=[],submissions=[]}){
   const [loading,setLoading]=useState(true);
   const [error,setError]=useState('');
   const [eligibility,setEligibility]=useState(null);
-  useEffect(()=>{let live=true;setLoading(true);setError('');Promise.all([getCertificates(viewer?.session),getCanopyCertificateEligibility(viewer?.session)]).then(([x,e])=>{if(live){setItems(x||[]);setEligibility(e||null)}}).catch(err=>{if(live)setError(err?.message||'Unable to load certificates.')}).finally(()=>{if(live)setLoading(false)});return()=>{live=false}},[viewer?.session?.access_token]);
+  const [credentials,setCredentials]=useState([]);
+  useEffect(()=>{let live=true;setLoading(true);setError('');Promise.all([getCertificates(viewer?.session),getCanopyCertificateEligibility(viewer?.session),getMyWomateCredentialIds(viewer?.session)]).then(([x,e,ids])=>{if(live){setItems(x||[]);setEligibility(e||null);setCredentials(Array.isArray(ids)?ids:[])}}).catch(err=>{if(live)setError(err?.message||'Unable to load certificates.')}).finally(()=>{if(live)setLoading(false)});return()=>{live=false}},[viewer?.session?.access_token]);
 
   const completion=useMemo(()=>{
     const done=new Set((progress||[]).filter(x=>x.completed).map(x=>x.lesson_id));
@@ -36,6 +37,6 @@ export default function CanopyCertificate({viewer,progress=[],submissions=[]}){
     {loading&&<div className="ccert-empty"><p>Loading your certificate records…</p></div>}
     {!loading&&error&&<div className="ccert-empty"><h2>Certificates could not be loaded.</h2><p>{error}</p></div>}
     {!loading&&!error&&!items.length&&<div className="ccert-empty"><h2>No certificate has been issued yet.</h2><p>Complete the learning requirements and allow WOMATE to verify attendance, satisfactory assignments and graduation participation. When your certificate is issued, the Google Drive file will appear here.</p></div>}
-    {!loading&&!error&&<div className="ccert-grid">{items.map(c=><article key={c.id}><small>{c.cohort_name||'She Leads · Cohort 2 · 2026'}</small><h2>{c.title||'She Leads Climate Mentorship 2026'}</h2><p>Issued {c.issued_at?new Date(c.issued_at).toLocaleDateString():'by WOMATE'}</p><a href={c.drive_url} target="_blank" rel="noopener noreferrer">View certificate →</a></article>)}</div>}
+    {!loading&&!error&&<div className="ccert-grid">{items.map(c=><article key={c.id}><small>{c.cohort_name||'She Leads · Cohort 2 · 2026'}</small><h2>{c.title||'She Leads Climate Mentorship 2026'}</h2><p>Issued {c.issued_at?new Date(c.issued_at).toLocaleDateString():'by WOMATE'}</p>{credentials.length>0&&<p><strong>Verification ID:</strong> {credentials[0].certificate_id} · {credentials[0].status} · <a href={'/verify?id='+encodeURIComponent(credentials[0].certificate_id)}>Verify on WOMATE →</a></p>}<a href={c.drive_url} target="_blank" rel="noopener noreferrer">View certificate →</a></article>)}</div>}
   </section>
 }

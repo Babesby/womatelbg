@@ -652,3 +652,9 @@ export async function updateCanopyCredentialStatus(session,code,status,reason){
  if(!s?.access_token)throw new Error('Sign in again.');
  return rest('rpc/womate_admin_change_credential_status',{token:s.access_token,method:'POST',body:{p_code:code,p_status:status,p_reason:reason||null}});
 }
+
+export async function getMyWomateCredentialIds(session){
+ const s=await refreshSession(session||getStoredSession());
+ if(!s?.access_token)throw new Error('Sign in to view your issued certificate.');
+ return rest('rpc/womate_my_certificate_credentials',{token:s.access_token,method:'POST',body:{}});
+}
