@@ -229,6 +229,8 @@ function WeeklyPuzzle({viewer,item,completed,onComplete}){
 
 export default function CanopyAssignmentsV2({viewer}){
   const[subs,setSubs]=useState([]);
+  const[submissionsLoaded,setSubmissionsLoaded]=useState(false);
+  const[submissionsError,setSubmissionsError]=useState(false);
   const[puzzles,setPuzzles]=useState([]);
   const[drafts,setDrafts]=useState({});
   const[busy,setBusy]=useState('');
@@ -270,11 +272,11 @@ export default function CanopyAssignmentsV2({viewer}){
       getWeeklyAssignmentSubmissions(viewer.session),
       getPuzzleProgress(viewer.session)
     ]);
-    setSubs(results[0].status==='fulfilled'?(results[0].value||[]):[]);
+    if(results[0].status==='fulfilled'){setSubs(Array.isArray(results[0].value)?results[0].value:[]);setSubmissionsLoaded(true);setSubmissionsError(false)}else{setSubmissionsError(true)}
     setPuzzles(results[1].status==='fulfilled'?(results[1].value||[]):[]);
     if(results[0].status==='rejected'){
       console.error('Canopy assignment submissions failed to load:',results[0].reason);
-      setMessage('Your assignments could not be refreshed. Please try again.');
+      setMessage('Could not verify your assignments. Your saved results are NOT lost. Please try Refresh submissions.');
     }
     if(results[1].status==='rejected')console.warn('Optional puzzle progress could not be loaded:',results[1].reason);
   }
@@ -528,6 +530,8 @@ export default function CanopyAssignmentsV2({viewer}){
   return <section className="ca-page">
     <div className="ca-head"><span className="ca-kicker">ASSIGNMENTS</span><h1>Weekly work.</h1><p>Save Parts 01–02 as you work. Part 03 opens after Thursday’s live session.</p><p><strong>FINAL LEADERSHIP GRACE:</strong> Monday 26 October, 06:00–18:00 GMT only. All five modules: missing submissions, requested revisions, or manual zero scores. One opportunity per affected module. NO EXTENSIONS.</p></div>
     {!available.length&&<div className="ca-empty"><h2>Your first assignment is not open yet.</h2><p>Module 01 opens Monday, 21 September 2026.</p></div>}
+    {submissionsError&&<div className="ca-feedback ca-revision" role="alert"><strong>We could not confirm your submission records. This does not mean your assignment is missing or scored zero.</strong><button type="button" onClick={load}>Refresh submissions</button></div>}
+    {!submissionsLoaded&&<div className="ca-feedback" role="status"><strong>Checking saved assignments with WOMATE…</strong><button type="button" onClick={load}>Retry check</button></div>}
     <div className="ca-stack">
       {available.map(item=>{
         const latestSub=latest(item.weekKey);
@@ -585,7 +589,7 @@ export default function CanopyAssignmentsV2({viewer}){
         const practicalActionLabel=curriculum?.assignment?.practicalActionLabel||'';
         const practicalLinkLabel=curriculum?.assignment?.practicalLinkLabel||'Practical task Google Drive / OneDrive link';
         const climateDebate=item.weekKey==='module-03'?climateDebateAssignment(viewer?.user?.id||viewer?.profile?.user_id):null;
-        const missedFirstSubmission=!sub&&!firstSubmissionOpen&&!graceStillAvailable;
+        const missedFirstSubmission=submissionsLoaded&&!sub&&!firstSubmissionOpen&&!graceStillAvailable;
         if(missedFirstSubmission)return <article className="ca-card ca-result-card ca-missed-result-card" key={item.weekKey}>
           <div className="ca-result-title"><small>MODULE {item.moduleId}</small><h2>{item.title}</h2><span className="ca-result-ready">Submission window closed</span></div>
           <div className="ca-result-score"><span>FINAL SCORE</span><strong>0/100</strong></div>

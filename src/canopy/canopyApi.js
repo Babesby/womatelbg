@@ -370,7 +370,7 @@ export async function refreshLearningAutomation(session){
 }
 export async function getWeeklyAssignmentSubmissions(session){
   const s=await refreshSession(session||getStoredSession());if(!s?.access_token)return[];
-  return rest(`canopy_assignment_submissions?select=*&user_id=eq.${s.user.id}&order=submitted_at.desc`,{token:s.access_token});
+  return rest('rpc/canopy_my_weekly_submissions_verified',{token:s.access_token,method:'POST',body:{}});
 }
 export async function getFeaturedSpotlights(session,limit=5){
   const s=await refreshSession(session||getStoredSession());if(!s?.access_token)return[];
