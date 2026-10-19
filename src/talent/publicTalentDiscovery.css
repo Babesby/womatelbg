@@ -172,3 +172,71 @@
     max-height:235px;
   }
 }
+
+
+/* Talent Discovery 2026-10-19: a single coherent, responsive editorial card system.
+   The verification state is short; mission names and specialties are never badges. */
+.pt-page{max-width:1440px}
+.pt-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(14px,1.8vw,24px);align-items:stretch}
+.pt-card.pt-card--refined{
+ display:flex;flex-direction:column;min-width:0;min-height:330px;
+ padding:clamp(18px,1.8vw,26px);gap:0;
+ border:1px solid #dce8e2;border-radius:22px;
+ box-shadow:0 2px 5px rgba(13,67,53,.025);
+ background:#fff;transition:border-color .2s ease,box-shadow .2s ease,transform .2s ease;
+}
+.pt-card--refined:hover{border-color:#a2c8b6;box-shadow:0 12px 30px rgba(10,62,50,.07);transform:translateY(-2px)}
+.pt-cardBody{display:grid;gap:17px;min-width:0}
+.pt-card--refined .pt-cardHead{display:grid;grid-template-columns:68px minmax(0,1fr);align-items:center;gap:15px;min-width:0}
+.pt-card--refined .pt-avatar{
+ width:68px;height:68px;flex:0 0 auto;border-radius:16px;
+ background:#e7f1ec;box-shadow:0 0 0 1px #e3eee8;
+ overflow:hidden;
+}
+.pt-card--refined .pt-avatar img{display:block;width:100%;height:100%;object-fit:cover;object-position:center 24%}
+.pt-cardIdentity{min-width:0}
+.pt-cardEyebrow{display:block;margin-bottom:5px;font-size:9px;letter-spacing:.12em;font-weight:800;color:#6f8a7e}
+.pt-card--refined h3{margin:0;font-size:clamp(18px,1.35vw,22px);line-height:1.19;letter-spacing:-.027em;color:#113c32;font-weight:760;overflow-wrap:anywhere;text-wrap:pretty}
+.pt-card--refined .pt-country{margin:6px 0 0;font-size:12px;line-height:1.35;font-weight:550;color:#627c70}
+.pt-card--refined .pt-headline{margin:0;min-height:3.9em;color:#3b5c50;font-size:14px;line-height:1.55;font-weight:430;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.pt-card--refined .pt-badges{display:flex;flex-wrap:wrap;align-items:flex-start;gap:6px;max-width:100%;min-width:0}
+.pt-card--refined .pt-badges span{
+ display:inline-flex;align-items:center;max-width:100%;min-width:0;
+ padding:7px 10px;border-radius:10px;font-size:11px;line-height:1.25;
+ font-weight:720;white-space:normal;overflow-wrap:anywhere;
+ color:#365d4d;background:#eef5f0;
+}
+.pt-card--refined .pt-badges span svg{width:14px;height:14px;flex-shrink:0}
+.pt-card--refined .pt-badges .strong{color:#fff;background:#0e4d4a}
+.pt-missionDetail{display:grid;gap:4px;min-width:0;padding:11px 12px;border:1px solid #e7efeb;border-radius:12px;background:#fafcfb}
+.pt-missionDetail small{font-size:9px;letter-spacing:.09em;color:#719085;font-weight:850}
+.pt-missionDetail p{font-size:12px;line-height:1.45;color:#30584a;margin:0;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.pt-cardFoot{min-width:0;margin-top:auto;padding-top:17px;display:grid;gap:14px}
+.pt-card--refined .pt-tags{display:flex;align-content:flex-start;gap:6px;flex-wrap:wrap;min-height:27px;min-width:0}
+.pt-card--refined .pt-tags span{padding:6px 9px;max-width:100%;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;border-radius:9px;background:#f2f6f3;color:#516c60;font-size:10px;line-height:1.45;font-weight:680}
+.pt-card--refined .pt-tags .pt-extra{background:transparent;border:1px solid #dce7df;color:#4c6b5d}
+.pt-card--refined .pt-link{
+ width:100%;min-height:46px;box-sizing:border-box;display:flex;justify-content:space-between;
+ padding:0 15px;gap:14px;border:1px solid #caddd2;border-radius:12px;
+ background:#f5faf6;color:#104e3f;font-size:13px;font-weight:800;
+ line-height:1;box-shadow:none;
+}
+.pt-card--refined .pt-link:hover{background:#eaf5ec;border-color:#a4c5af}
+.pt-card--refined .pt-link:focus-visible{outline:3px solid #93c5a5;outline-offset:3px}
+.pt-card--refined .pt-link svg{flex-shrink:0}
+@media(min-width:901px) and (max-width:1100px){.pt-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:900px){.pt-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:650px){
+ .pt-grid{grid-template-columns:minmax(0,1fr);gap:13px}
+ .pt-card.pt-card--refined{min-height:0;padding:18px;border-radius:18px}
+ .pt-card--refined .pt-cardHead{grid-template-columns:62px minmax(0,1fr);gap:13px}
+ .pt-card--refined .pt-avatar{width:62px;height:62px;border-radius:15px}
+ .pt-card--refined h3{font-size:18px}
+ .pt-card--refined .pt-headline{min-height:0}
+ .pt-cardBody{gap:14px}
+ .pt-cardFoot{padding-top:16px;gap:13px}
+}
+@media(prefers-reduced-motion:reduce){.pt-card.pt-card--refined{transition:none}.pt-card--refined:hover{transform:none}}
+/* Profile detail follows the same rounded-square visual language. */
+.pt-profilePhoto{border-radius:18px}
+.pt-profileCard .pt-badges span{border-radius:10px;white-space:normal;overflow-wrap:anywhere;max-width:100%}
