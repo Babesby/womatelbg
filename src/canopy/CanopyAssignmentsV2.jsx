@@ -764,8 +764,7 @@ export default function CanopyAssignmentsV2({viewer}){
 
             {manualRevision&&!tester&&
               <small>
-                {Math.max(0,3-count)} revision attempt
-                {3-count===1?'':'s'} remaining.
+                You only need to revise {requestedParts.map(p=>p==='paragraph'?'the paragraph':p==='practical'?'the practical evidence link':'the speaker link').join(' and ')}. Your other submitted work is retained automatically. {Math.max(0,3-count)} additional submission attempt{3-count===1?'':'s'} available.
               </small>
             }
 
