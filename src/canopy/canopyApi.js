@@ -658,3 +658,16 @@ export async function getMyWomateCredentialIds(session){
  if(!s?.access_token)throw new Error('Sign in to view your issued certificate.');
  return rest('rpc/womate_my_certificate_credentials',{token:s.access_token,method:'POST',body:{}});
 }
+
+
+/** She Leads 2026 graduation feedback: confirmation is not independently verified Google Form receipt. */
+export async function getMyGraduationFeedback2026(session){
+ const s=await refreshSession(session||getStoredSession());
+ if(!s?.access_token)throw new Error('Sign in again to see your graduation feedback step.');
+ return rest('rpc/canopy_my_graduation_feedback_2026',{token:s.access_token,method:'POST',body:{}});
+}
+export async function confirmMyGraduationFeedback2026(session){
+ const s=await refreshSession(session||getStoredSession());
+ if(!s?.access_token)throw new Error('Sign in again to confirm your feedback.');
+ return rest('rpc/canopy_confirm_graduation_feedback_2026',{token:s.access_token,method:'POST',body:{p_submitted:true}});
+}
