@@ -671,3 +671,9 @@ export async function confirmMyGraduationFeedback2026(session){
  if(!s?.access_token)throw new Error('Sign in again to confirm your feedback.');
  return rest('rpc/canopy_confirm_graduation_feedback_2026',{token:s.access_token,method:'POST',body:{p_submitted:true}});
 }
+
+export async function getCanopyTesterFeedback2026Status(session){
+ const s=await refreshSession(session||getStoredSession());
+ if(!s?.access_token)throw new Error('Sign in as the Canopy tester.');
+ return rest('rpc/canopy_tester_feedback_2026_status',{token:s.access_token,method:'POST',body:{}});
+}
