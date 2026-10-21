@@ -950,7 +950,9 @@ const manager=canManageCanopy(viewer);const operational=isCanopyOperationsStaff(
  const testerPreviewKey=tester&&typeof sessionStorage!=='undefined'?sessionStorage.getItem('womate_canopy_tester_cohort'):null;
  const testerCohortKey=isPost2026RuntimeCohort(testerPreviewKey)?testerPreviewKey:null;
  const active=tester||viewer.enrollments?.some(e=>e.status==='active')||Boolean(activeRuntimeCohort);let content;
- if(testerCohortKey&&!['/canopy/test/cohort-preview','/canopy/test/cohort-workspace','/canopy/profile'].includes(path)){
+ if(tester&&path==='/canopy/test/feedback-2026'){
+   content=<main className="canopyDashboard"><h1>2026 Feedback · Tester preview</h1><p>The live learner popup opens on 28 October; this private route previews it now.</p><GraduationFeedback2026 session={viewer.session} tester/></main>;
+  } else if(testerCohortKey&&!['/canopy/test/cohort-preview','/canopy/test/cohort-workspace','/canopy/profile'].includes(path)){
   content=<CanopyCohortParticipantRuntime viewer={viewer} cohortKey={testerCohortKey} path={path} tester/>;
  } else if(activeRuntimeCohort&&!['/canopy/profile','/canopy/notifications','/canopy/help'].includes(path)){
   content=<CanopyCohortParticipantRuntime viewer={viewer} cohortKey={activeRuntimeCohort.cohort_key} path={path}/>;
