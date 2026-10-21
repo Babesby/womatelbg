@@ -22,7 +22,8 @@ export default function CanopyCertificate({viewer,progress=[],submissions=[]}){
     return {lessonDone:done.size,totalLessons,submitted,finalNote};
   },[progress,submissions]);
 
-  const issued=items.length>0;
+  const releaseOpen=Date.now()>=Date.parse('2026-10-29T00:00:00Z');
+  const issued=releaseOpen&&items.length>0;
   return <section className="ccert-page">
     <span className="ccert-kicker">CERTIFICATES</span><h1>Your completion journey.</h1><p className="ccert-lead">See what Canopy can verify now and what WOMATE confirms separately before certificate issue.</p>
 
@@ -33,10 +34,11 @@ export default function CanopyCertificate({viewer,progress=[],submissions=[]}){
       <article className={Number(eligibility?.attendance_count||0)>=5?'is-done':'is-admin'}><div>{Number(eligibility?.attendance_count||0)>=5?<Check/>:<UsersRound/>}</div><small>LIVE ATTENDANCE</small><h2>{eligibility?.attendance_count||0}/5 sessions</h2><p>Thursday live-session attendance recorded by WOMATE. Graduation participation is verified separately.</p></article>
     </section>
 
+    {!releaseOpen&&<div className="ccert-empty"><h2>Certificates open on 29 October 2026.</h2><p>WOMATE will release official certificate links on graduation day.</p></div>}
     {issued&&<div className="ccert-ready"><Award/><div><small>COMPLETION RECORD ISSUED</small><h2>Your certificate is ready.</h2><p>Use the official WOMATE-issued file below.</p></div></div>}
     {loading&&<div className="ccert-empty"><p>Loading your certificate records…</p></div>}
     {!loading&&error&&<div className="ccert-empty"><h2>Certificates could not be loaded.</h2><p>{error}</p></div>}
-    {!loading&&!error&&!items.length&&<div className="ccert-empty"><h2>No certificate has been issued yet.</h2><p>Complete the learning requirements and allow WOMATE to verify attendance, satisfactory assignments and graduation participation. When your certificate is issued, the Google Drive file will appear here.</p></div>}
-    {!loading&&!error&&<div className="ccert-grid">{items.map(c=><article key={c.id}><small>{c.cohort_name||'She Leads · Cohort 2 · 2026'}</small><h2>{c.title||'She Leads Climate Mentorship 2026'}</h2><p>Issued {c.issued_at?new Date(c.issued_at).toLocaleDateString():'by WOMATE'}</p>{credentials.length>0&&<p><strong>Verification ID:</strong> {credentials[0].certificate_id} · {credentials[0].status} · <a href={'/verify?id='+encodeURIComponent(credentials[0].certificate_id)}>Verify on WOMATE →</a></p>}<a href={c.drive_url} target="_blank" rel="noopener noreferrer">View certificate →</a></article>)}</div>}
+    {releaseOpen&&!loading&&!error&&!items.length&&<div className="ccert-empty"><h2>No certificate has been issued yet.</h2><p>Complete the learning requirements and allow WOMATE to verify attendance, satisfactory assignments and graduation participation. When your certificate is issued, the Google Drive file will appear here.</p></div>}
+    {releaseOpen&&!loading&&!error&&<div className="ccert-grid">{items.map(c=><article key={c.id}><small>{c.cohort_name||'She Leads · Cohort 2 · 2026'}</small><h2>{c.title||'She Leads Climate Mentorship 2026'}</h2><p>Issued {c.issued_at?new Date(c.issued_at).toLocaleDateString():'by WOMATE'}</p>{credentials.length>0&&<p><strong>Verification ID:</strong> {credentials[0].certificate_id} · {credentials[0].status} · <a href={'/verify?id='+encodeURIComponent(credentials[0].certificate_id)}>Verify on WOMATE →</a></p>}<a href={c.drive_url} target="_blank" rel="noopener noreferrer">View certificate →</a></article>)}</div>}
   </section>
 }
