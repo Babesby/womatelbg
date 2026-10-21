@@ -192,8 +192,7 @@ function GraduationFeedback2026({session}){
    <div className="cfeed-count">01 / 01 · REQUIRED FEEDBACK</div>
    <h2 id="cfeed-heading">Before we celebrate, we want to hear from you.</h2>
    <p>Your feedback helps WOMATE improve the learning experience for future cohorts. Please complete the programme feedback form before graduation on 29 October.</p>
-   <div className="cfeed-actions"><button type="button" className="cfeed-primary" onClick={()=>setShowForm(true)}>Fill the feedback form <ArrowRight size={16}/></button><a href="https://forms.gle/7pj68kYGBHPnm5mY8" target="_blank" rel="noopener noreferrer">Open form in a new tab ↗</a></div>
-   {showForm&&<div className="cfeed-embed"><iframe title="WOMATE She Leads 2026 mandatory graduation feedback" src="https://docs.google.com/forms/d/e/7pj68kYGBHPnm5mY8/viewform?embedded=true" loading="lazy">Loading the feedback form…</iframe><p>If the form does not load here, use the link above to complete it directly.</p></div>}
+   <div className="cfeed-actions"><a className="cfeed-primary" href="https://forms.gle/7pj68kYGBHPnm5mY8" target="_blank" rel="noopener noreferrer">Fill the feedback form <ArrowRight size={16}/></a></div>
    <label className="cfeed-check"><input type="checkbox" checked={agreed} onChange={e=>setAgreed(e.target.checked)}/><span>I confirm that I have submitted the WOMATE feedback Google Form. I understand that checking this box without submitting the form is not completion.</span></label>
    <button type="button" className="cfeed-confirm" disabled={!agreed||checking} onClick={confirm}>{checking?'Saving confirmation…':'I have submitted the feedback form'}</button>
    {error&&<p className="cfeed-error" role="alert">{error}</p>}
