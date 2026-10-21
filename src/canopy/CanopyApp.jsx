@@ -177,28 +177,12 @@ function LearnerShell({viewer,progress,children,onReload}){
  return <div className="canopyApp"><CourseNav open={open} setOpen={setOpen} viewer={viewer}/><div className="canopyMain"><header className="canopyAppTop"><button className="canopyMenu" onClick={()=>setOpen(true)} aria-label="Open navigation"><Menu/></button>{!staff&&<button type="button" className="canopyMobileProfileAvatar" onClick={()=>go('/canopy/profile')} aria-label="Open profile and settings" title="Profile & settings">{initials}</button>}<div className={staff?'canopyTopIdentity':'canopyTopIdentity canopyLearnerIdentity'}>{staff&&<span>WOMATE · CANOPY OPERATIONS</span>}{staff?<><b>{name}</b>{viewer?.staffAccess?.role&&<small className="canopyTopRole">{teamRoleLabel(viewer.staffAccess.role)}</small>}</>:<button type="button" className="canopyProfileTrigger" onClick={()=>go('/canopy/profile')} title="Open profile settings"><UserRound size={18}/><span><small>PROFILE</small><b>{name}</b></span></button>}</div><button className="canopyTopNotification" aria-label={unread?`${unread} unread notification${unread===1?'':'s'}`:'Notifications'} onClick={()=>go('/canopy/notifications')}><Bell size={18}/>{unread>0&&<span className="canopyNotificationBadge">{unread>99?'99+':unread}</span>}</button><button className="canopySignout" onClick={async()=>{await signOut();go('/canopy/login')}}><LogOut size={17}/><span>Sign out</span></button></header>{children}{!manager&&!staff&&!isPost2026RuntimeCohort(viewer?.activeCohort?.cohort_key)&&route()==='/canopy/assignments'&&<section className="canopyC2Policy" aria-label="WOMATE Participation and Assessment Policy"><h2>WOMATE Participation &amp; Assessment Policy</h2><p><strong>Assignment deadlines:</strong> Once the applicable 24-hour or 48-hour grace period has expired, individual extensions are not available. Any platform-wide correction must be approved and applied fairly to all affected learners.</p><p><strong>Mission participation:</strong> Learners must not delay their contributions because of inactive teammates. Each participant should submit an individual report explaining their work.</p><p><strong>Evidence:</strong> Every individual mission contribution must include appropriate supporting evidence. Submission alone does not guarantee approval.</p><p><strong>Assessment:</strong> WOMATE reserves the right to request revisions or reject contributions that do not meet the published requirements.</p><p><strong>Accountability:</strong> Every participant is responsible for their learning, attendance, assignments and mission activities.</p></section>}</div></div>
 }
 
-function GraduationFeedback2026({session}){
- const [state,setState]=useState(null),[error,setError]=useState(''),[checking,setChecking]=useState(false),[agreed,setAgreed]=useState(false),[showForm,setShowForm]=useState(false);
+function GraduationFeedback2026({session,tester=false}){
+ const[state,setState]=useState(null),[error,setError]=useState(''),[checking,setChecking]=useState(false);
  useEffect(()=>{let live=true;getMyGraduationFeedback2026(session).then(d=>{if(live)setState(d)}).catch(e=>{if(live)setError(e.message)});return()=>{live=false}},[session?.access_token]);
- async function confirm(){
-  if(!agreed||checking)return;
-  setChecking(true);setError('');
-  try{const next=await confirmMyGraduationFeedback2026(session);setState(next)}catch(e){setError(e.message)}finally{setChecking(false)}
- }
- if(!state?.applies||!state?.open||state?.confirmed)return null;
- return <div className="cfeed-backdrop"><section className="cfeed-modal" role="dialog" aria-modal="true" aria-labelledby="cfeed-heading">
-  <div className="cfeed-head"><small>WOMATE · SHE LEADS CLIMATE 2026</small><span>28 OCTOBER · PRE-GRADUATION</span></div>
-  <div className="cfeed-body">
-   <div className="cfeed-count">01 / 01 · REQUIRED FEEDBACK</div>
-   <h2 id="cfeed-heading">Before we celebrate, we want to hear from you.</h2>
-   <p>Your feedback helps WOMATE improve the learning experience for future cohorts. Please complete the programme feedback form before graduation on 29 October.</p>
-   <div className="cfeed-actions"><a className="cfeed-primary" href="https://forms.gle/7pj68kYGBHPnm5mY8" target="_blank" rel="noopener noreferrer">Fill the feedback form <ArrowRight size={16}/></a></div>
-   <label className="cfeed-check"><input type="checkbox" checked={agreed} onChange={e=>setAgreed(e.target.checked)}/><span>I confirm that I have submitted the WOMATE feedback Google Form. I understand that checking this box without submitting the form is not completion.</span></label>
-   <button type="button" className="cfeed-confirm" disabled={!agreed||checking} onClick={confirm}>{checking?'Saving confirmation…':'I have submitted the feedback form'}</button>
-   {error&&<p className="cfeed-error" role="alert">{error}</p>}
-   <p className="cfeed-note">This mandatory reminder remains until you confirm submission. Your confirmation is recorded in Canopy; WOMATE may reconcile it against Google Forms responses.</p>
-  </div>
- </section></div>
+ async function check(){setChecking(true);setError('');try{setState(await getMyGraduationFeedback2026(session))}catch(e){setError(e.message)}finally{setChecking(false)}}
+ if(!tester&&(!state?.applies||!state?.open||state?.verified))return null;
+ return <div className="cfeed-backdrop"><section className="cfeed-modal" role="dialog" aria-modal="true" aria-labelledby="cfeed-heading"><div className="cfeed-head"><small>WOMATE · SHE LEADS CLIMATE 2026</small><span>{tester?'TESTER PREVIEW':'28 OCTOBER · PRE-GRADUATION'}</span></div><div className="cfeed-body"><div className="cfeed-count">01 / 01 · REQUIRED FEEDBACK</div><h2 id="cfeed-heading">Before we celebrate, we want to hear from you.</h2><p>Complete the programme evaluation form before graduation. WOMATE will check your actual response rather than asking you to confirm it yourself.</p><div className="cfeed-actions"><a className="cfeed-primary" href="https://forms.gle/7pj68kYGBHPnm5mY8" target="_blank" rel="noopener noreferrer">Fill the feedback form <ArrowRight size={16}/></a></div>{tester&&<p className="cfeed-note">Tester-only preview, available before 28 October. Testing does not mark feedback complete or alter graduate records.</p>}<button type="button" className="cfeed-confirm" disabled={checking} onClick={check}>{checking?'Checking…':'Check verified submission'}</button>{state?.verified&&<p className="cfeed-note">Verified form response found. This requirement will not display again for the learner.</p>}{error&&<p className="cfeed-error" role="alert">{error}</p>}<p className="cfeed-note">If your response has not yet been matched, the requirement stays visible. Enter your Canopy full name and nationality accurately. Do not submit repeated responses while verification is pending.</p></div></section></div>
 }
 function Dashboard({viewer,progress,submissions=[]}){
  const done=new Set(progress.filter(x=>x.completed).map(x=>x.lesson_id));
@@ -219,7 +203,7 @@ function TesterDashboard({viewer,progress}){
  const completed=done.size,pct=Math.round(completed/totalLessons*100);
  let next=null;
  for(const m of modules){for(const l of m.lessons){if(!done.has(l.id)){next={m,l};break}}if(next)break}
- return <main className="canopyDashboard canopyTesterDashboard">
+ return <><GraduationFeedback2026 session={viewer.session} tester/><main className="canopyDashboard canopyTesterDashboard">
   <section className="canopyWelcome canopyTesterWelcome"><div><span className="canopyEyebrow">CANOPY TESTER</span><h1>Everything is open for testing.</h1><p>This account bypasses cohort dates only for WOMATE testing. Participant and admin access rules stay unchanged.</p></div><div className="canopyProgressRing" style={{'--p':`${pct*3.6}deg`}}><div><strong>{pct}%</strong><span>complete</span></div></div></section>
   <section className="canopyTesterStatus">
    <article><Lock size={18}/><div><small>MODULE ACCESS</small><strong>All 5 modules open</strong></div></article>
@@ -231,7 +215,7 @@ function TesterDashboard({viewer,progress}){
    <article><small>COURSE</small><h3>Full curriculum</h3><p>No module date locks apply to this tester account.</p><button onClick={()=>go('/canopy/course/she-leads')}>Open all modules <ArrowRight size={15}/></button></article>
    <article><small>ASSIGNMENTS</small><h3>Immediate grading sandbox</h3><p>Submit any module assignment and receive its automated test result immediately.</p><button onClick={()=>go('/canopy/assignments')}>Test assignments <ArrowRight size={15}/></button></article>
   </section>
- </main>
+ </main></>
 }
 
 
