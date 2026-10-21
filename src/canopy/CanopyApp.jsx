@@ -1,4 +1,6 @@
 import React,{lazy,Suspense,useEffect,useMemo,useState}from'react';
+import {getMyGraduationFeedback2026,confirmMyGraduationFeedback2026} from './canopyApi';
+import './canopyGraduationFeedback.css';
 import {Helmet}from'react-helmet-async';
 import CanopyAssignmentsV2 from './CanopyAssignmentsV2';
 import CanopyCanvas from './CanopyCanvas';
@@ -175,6 +177,30 @@ function LearnerShell({viewer,progress,children,onReload}){
  return <div className="canopyApp"><CourseNav open={open} setOpen={setOpen} viewer={viewer}/><div className="canopyMain"><header className="canopyAppTop"><button className="canopyMenu" onClick={()=>setOpen(true)} aria-label="Open navigation"><Menu/></button>{!staff&&<button type="button" className="canopyMobileProfileAvatar" onClick={()=>go('/canopy/profile')} aria-label="Open profile and settings" title="Profile & settings">{initials}</button>}<div className={staff?'canopyTopIdentity':'canopyTopIdentity canopyLearnerIdentity'}>{staff&&<span>WOMATE · CANOPY OPERATIONS</span>}{staff?<><b>{name}</b>{viewer?.staffAccess?.role&&<small className="canopyTopRole">{teamRoleLabel(viewer.staffAccess.role)}</small>}</>:<button type="button" className="canopyProfileTrigger" onClick={()=>go('/canopy/profile')} title="Open profile settings"><UserRound size={18}/><span><small>PROFILE</small><b>{name}</b></span></button>}</div><button className="canopyTopNotification" aria-label={unread?`${unread} unread notification${unread===1?'':'s'}`:'Notifications'} onClick={()=>go('/canopy/notifications')}><Bell size={18}/>{unread>0&&<span className="canopyNotificationBadge">{unread>99?'99+':unread}</span>}</button><button className="canopySignout" onClick={async()=>{await signOut();go('/canopy/login')}}><LogOut size={17}/><span>Sign out</span></button></header>{children}{!manager&&!staff&&!isPost2026RuntimeCohort(viewer?.activeCohort?.cohort_key)&&route()==='/canopy/assignments'&&<section className="canopyC2Policy" aria-label="WOMATE Participation and Assessment Policy"><h2>WOMATE Participation &amp; Assessment Policy</h2><p><strong>Assignment deadlines:</strong> Once the applicable 24-hour or 48-hour grace period has expired, individual extensions are not available. Any platform-wide correction must be approved and applied fairly to all affected learners.</p><p><strong>Mission participation:</strong> Learners must not delay their contributions because of inactive teammates. Each participant should submit an individual report explaining their work.</p><p><strong>Evidence:</strong> Every individual mission contribution must include appropriate supporting evidence. Submission alone does not guarantee approval.</p><p><strong>Assessment:</strong> WOMATE reserves the right to request revisions or reject contributions that do not meet the published requirements.</p><p><strong>Accountability:</strong> Every participant is responsible for their learning, attendance, assignments and mission activities.</p></section>}</div></div>
 }
 
+function GraduationFeedback2026({session}){
+ const [state,setState]=useState(null),[error,setError]=useState(''),[checking,setChecking]=useState(false),[agreed,setAgreed]=useState(false),[showForm,setShowForm]=useState(false);
+ useEffect(()=>{let live=true;getMyGraduationFeedback2026(session).then(d=>{if(live)setState(d)}).catch(e=>{if(live)setError(e.message)});return()=>{live=false}},[session?.access_token]);
+ async function confirm(){
+  if(!agreed||checking)return;
+  setChecking(true);setError('');
+  try{const next=await confirmMyGraduationFeedback2026(session);setState(next)}catch(e){setError(e.message)}finally{setChecking(false)}
+ }
+ if(!state?.applies||!state?.open||state?.confirmed)return null;
+ return <div className="cfeed-backdrop"><section className="cfeed-modal" role="dialog" aria-modal="true" aria-labelledby="cfeed-heading">
+  <div className="cfeed-head"><small>WOMATE · SHE LEADS CLIMATE 2026</small><span>28 OCTOBER · PRE-GRADUATION</span></div>
+  <div className="cfeed-body">
+   <div className="cfeed-count">01 / 01 · REQUIRED FEEDBACK</div>
+   <h2 id="cfeed-heading">Before we celebrate, we want to hear from you.</h2>
+   <p>Your feedback helps WOMATE improve the learning experience for future cohorts. Please complete the programme feedback form before graduation on 29 October.</p>
+   <div className="cfeed-actions"><button type="button" className="cfeed-primary" onClick={()=>setShowForm(true)}>Fill the feedback form <ArrowRight size={16}/></button><a href="https://forms.gle/7pj68kYGBHPnm5mY8" target="_blank" rel="noopener noreferrer">Open form in a new tab ↗</a></div>
+   {showForm&&<div className="cfeed-embed"><iframe title="WOMATE She Leads 2026 mandatory graduation feedback" src="https://docs.google.com/forms/d/e/7pj68kYGBHPnm5mY8/viewform?embedded=true" loading="lazy">Loading the feedback form…</iframe><p>If the form does not load here, use the link above to complete it directly.</p></div>}
+   <label className="cfeed-check"><input type="checkbox" checked={agreed} onChange={e=>setAgreed(e.target.checked)}/><span>I confirm that I have submitted the WOMATE feedback Google Form. I understand that checking this box without submitting the form is not completion.</span></label>
+   <button type="button" className="cfeed-confirm" disabled={!agreed||checking} onClick={confirm}>{checking?'Saving confirmation…':'I have submitted the feedback form'}</button>
+   {error&&<p className="cfeed-error" role="alert">{error}</p>}
+   <p className="cfeed-note">This mandatory reminder remains until you confirm submission. Your confirmation is recorded in Canopy; WOMATE may reconcile it against Google Forms responses.</p>
+  </div>
+ </section></div>
+}
 function Dashboard({viewer,progress,submissions=[]}){
  const done=new Set(progress.filter(x=>x.completed).map(x=>x.lesson_id));
  const completed=done.size,pct=Math.round(completed/totalLessons*100);
@@ -183,9 +209,9 @@ function Dashboard({viewer,progress,submissions=[]}){
  useEffect(()=>{let live=true;getMyCanopyMissionCompletion(viewer.session).then(x=>{if(live&&x?.status==='completed')setMissionCompletion(x)}).catch(()=>{});return()=>{live=false}},[viewer?.session?.access_token]);
  let next=null;
  for(const m of modules){if(!canopyModuleIsOpen(m))continue;for(const l of m.lessons){if(!done.has(l.id)){next={m,l};break}}if(next)break}
- return <main className="canopyDashboard cx-dashboard"><section className="canopyWelcome cx-welcome"><div><span className="canopyEyebrow">MY CANOPY</span><h1>Welcome back.</h1><p>{enrolled?'Continue where you left off.':`Learning access opens ${CANOPY_ACCESS_DATE}.`}</p></div><div className="canopyProgressRing" style={{'--p':`${pct*3.6}deg`}}><div><strong>{pct}%</strong><span>complete</span></div></div></section>
+ return <><GraduationFeedback2026 session={viewer.session}/><main className="canopyDashboard cx-dashboard"><section className="canopyWelcome cx-welcome"><div><span className="canopyEyebrow">MY CANOPY</span><h1>Welcome back.</h1><p>{enrolled?'Continue where you left off.':`Learning access opens ${CANOPY_ACCESS_DATE}.`}</p></div><div className="canopyProgressRing" style={{'--p':`${pct*3.6}deg`}}><div><strong>{pct}%</strong><span>complete</span></div></div></section>
  {missionCompletion&&<section className="cx-mission-celebration"><div><small>MISSION COMPLETED ✅</small><h2>WOMATE verified your Cross-country Climate Mission contribution.</h2><p>Your Impact Profile has been updated. This recognition can strengthen your eligibility for selected WOMATE opportunities, funding calls and Talent Discovery approval.</p><div className="cx-mission-celebration-tags"><span>Individual Mission Completed</span>{missionCompletion.final_team_completed&&<span>Final Mission team completed</span>}</div></div><div className="cx-mission-celebration-actions"><button className="canopyPrimary" onClick={()=>go('/canopy/portfolio')}>View my Impact Profile <ArrowRight size={15}/></button><button className="canopySecondary" onClick={()=>go('/canopy/talent')}>Talent Discovery</button></div></section>}
- {!enrolled?<section className="canopyLockedState"><Lock/><div><h2>Awaiting cohort enrolment</h2><p>Selected participants can be activated by WOMATE from {CANOPY_ACCESS_DATE}.</p></div></section>:<><CanopyThisWeek progress={progress} submissions={submissions} next={next}/><section className="canopyDashStrip"><div className="canopyDashProgress"><small>YOUR PROGRESS</small><strong>{completed} of {totalLessons} lessons complete</strong><div className="canopyLine"><span style={{width:`${pct}%`}}/></div></div><div className="canopyDashActions"><button className="canopyPrimary" onClick={()=>go(next?`/canopy/course/she-leads/${next.m.id}/${next.l.id}`:'/canopy/course/she-leads')}>{next?'Continue learning':'Open course'} <ArrowRight size={15}/></button></div></section><CanopyJourneyMap progress={progress} compact/><CanopySpotlight session={viewer.session}/></>}</main>
+ {!enrolled?<section className="canopyLockedState"><Lock/><div><h2>Awaiting cohort enrolment</h2><p>Selected participants can be activated by WOMATE from {CANOPY_ACCESS_DATE}.</p></div></section>:<><CanopyThisWeek progress={progress} submissions={submissions} next={next}/><section className="canopyDashStrip"><div className="canopyDashProgress"><small>YOUR PROGRESS</small><strong>{completed} of {totalLessons} lessons complete</strong><div className="canopyLine"><span style={{width:`${pct}%`}}/></div></div><div className="canopyDashActions"><button className="canopyPrimary" onClick={()=>go(next?`/canopy/course/she-leads/${next.m.id}/${next.l.id}`:'/canopy/course/she-leads')}>{next?'Continue learning':'Open course'} <ArrowRight size={15}/></button></div></section><CanopyJourneyMap progress={progress} compact/><CanopySpotlight session={viewer.session}/></>}</main></>
 }
 
 
