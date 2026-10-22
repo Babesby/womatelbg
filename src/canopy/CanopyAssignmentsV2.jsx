@@ -44,6 +44,17 @@ function isPracticalFileUrl(value){
   }catch{return false}
 }
 
+function isSpeakerDriveUrl(value){
+  try{
+    const url=new URL(String(value||'').trim());
+    if(url.protocol!=='https:'||url.hostname.toLowerCase()!=='drive.google.com'||url.username||url.password)return false;
+    const path=url.pathname;
+    return /^\/file\/d\/[A-Za-z0-9_-]+(?:\/(?:view|preview|edit))?\/?$/.test(path)
+      || /^\/drive\/(?:u\/\d+\/)?folders\/[A-Za-z0-9_-]+\/?$/.test(path)
+      || (path==='/open'&&/^[A-Za-z0-9_-]+$/.test(url.searchParams.get('id')||''));
+  }catch{return false}
+}
+
 function revisionParts(submission){
   const feedback=String(submission?.manual_feedback||submission?.final_feedback||'');
   const selected=feedback.match(/\[CANOPY_REVISION:([a-z,]+)\]/i)?.[1]?.toLowerCase()||'all';
@@ -363,7 +374,7 @@ export default function CanopyAssignmentsV2({viewer}){
 
     const canvasReady=isPracticalFileUrl(d?.canvas_link);
 
-    const linkedinReady=!!speakerOpen && (item?.weekKey==='module-03'?isClimateDebateSocialUrl(d?.linkedin_link):isSpeakerSocialUrl(d?.linkedin_link));
+    const linkedinReady=!!speakerOpen && (item?.weekKey==='module-03'?isClimateDebateSocialUrl(d?.linkedin_link):item?.weekKey==='module-05'?isSpeakerDriveUrl(d?.linkedin_link):isSpeakerSocialUrl(d?.linkedin_link));
 
     const completed=[
       paragraphReady,
@@ -484,7 +495,7 @@ export default function CanopyAssignmentsV2({viewer}){
       setMessage('The speaker challenge is not open yet.');
       return;
     }
-    if(requiredParts.includes('speaker')){const speakerLinkOk=item.weekKey==='module-03'?isClimateDebateSocialUrl(linkedin):isSpeakerSocialUrl(linkedin);if(!speakerLinkOk){setMessage(item.weekKey==='module-03'?'Paste the public link to your Climate Debate post on LinkedIn, X/Twitter, Instagram, Facebook, Threads, TikTok, YouTube or Bluesky.':'Paste a valid LinkedIn or X/Twitter speaker-post link.');return;}}
+    if(requiredParts.includes('speaker')){const speakerLinkOk=item.weekKey==='module-03'?isClimateDebateSocialUrl(linkedin):item.weekKey==='module-05'?isSpeakerDriveUrl(linkedin):isSpeakerSocialUrl(linkedin);if(!speakerLinkOk){setMessage(item.weekKey==='module-03'?'Paste the public link to your Climate Debate post on LinkedIn, X/Twitter, Instagram, Facebook, Threads, TikTok, YouTube or Bluesky.':item.weekKey==='module-05'?'Only one viewable Google Drive link containing screenshots of your four-part response posted in the WOMATE General WhatsApp group is accepted. LinkedIn, X/Twitter and other social post links are not accepted.':'Paste a valid LinkedIn or X/Twitter speaker-post link.');return;}}
 
     setBusy(item.weekKey);setMessage('');
     try{
@@ -611,7 +622,7 @@ export default function CanopyAssignmentsV2({viewer}){
           <div className="ca-threefold">
             <div><b>01</b><h3>Paragraph response</h3><p>{paragraphPrompt}</p></div>
             <div className="ca-practical-brief"><b>02</b><small className="ca-challenge-tag">PRACTICAL</small><h3>{practicalTitle}</h3><p>{practicalBrief}</p>{item.moduleId==='01'&&<ModuleOneCanvasGuide/>}{practicalInstructions&&<details className="ca-instructions"><summary>How to submit</summary><p>{practicalInstructions}</p></details>}{practicalHref&&<a href={practicalHref}>{practicalActionLabel||'Open tool →'}</a>}<PracticalExample assignment={curriculum?.assignment}/></div>
-            <div className={item.weekKey==='module-03'?'ca-debate-summary':''}><b>03</b><h3>{item.weekKey==='module-03'?'The Climate Debate':'Speaker challenge'}</h3>{speakerOpen?item.weekKey==='module-03'?<><span className={'ca-debate-position is-'+climateDebate.position.toLowerCase()}>{climateDebate.position}</span><p className="ca-debate-motion">“{climateDebate.motion.motion}”</p><p>{climateDebate.caseText}</p><small>Your motion and position are assigned to your account and will stay the same.</small></>:<><p>{item.speakerPrompt}</p><p>Submit your LinkedIn or X/Twitter post link.</p></>:<p>Opens after Thursday’s live session.</p>}</div>
+            <div className={item.weekKey==='module-03'?'ca-debate-summary':''}><b>03</b><h3>{item.weekKey==='module-03'?'The Climate Debate':'Speaker challenge'}</h3>{speakerOpen?item.weekKey==='module-03'?<><span className={'ca-debate-position is-'+climateDebate.position.toLowerCase()}>{climateDebate.position}</span><p className="ca-debate-motion">“{climateDebate.motion.motion}”</p><p>{climateDebate.caseText}</p><small>Your motion and position are assigned to your account and will stay the same.</small></>:<><p>{item.speakerPrompt}</p><p>{item.weekKey==='module-05'?'Post all four parts in the WOMATE General WhatsApp group, screenshot your message, and submit one viewable Google Drive link. Public posting is optional.':'Submit your LinkedIn or X/Twitter post link.'}</p></>:<p>Opens after Thursday’s live session.</p>}</div>
           </div>
           {sub&&<div className="ca-status">
             <div><span>Latest submission</span><strong>{new Date(sub.submitted_at).toLocaleString()}</strong></div>
@@ -717,7 +728,25 @@ export default function CanopyAssignmentsV2({viewer}){
             </label>}
 
             {speakerOpen&&requestedParts.includes('speaker')&&item.weekKey==='module-03'&&<section className="ca-climate-debate" aria-label="The Climate Debate speaker assignment"><header><div><small>SPEAKER ASSIGNMENT · MODULE 03</small><h3>The Climate Debate</h3><p>Create one digital advocacy graphic defending the position WOMATE assigned to you. Publish it on your chosen social platform and invite people into the conversation.</p></div><span className={'ca-debate-position is-'+climateDebate.position.toLowerCase()}>{climateDebate.position}</span></header><div className="ca-debate-assignment"><small>YOUR MOTION</small><strong>“{climateDebate.motion.motion}”</strong><p>{climateDebate.caseText}</p></div><div className="ca-debate-requirements"><h4>Your graphic must communicate</h4><div><span>01</span><p>Your position — <b>{climateDebate.position}</b></p></div><div><span>02</span><p>Your strongest argument</p></div><div><span>03</span><p>At least <b>2 credible pieces of evidence</b></p></div><div><span>04</span><p>One African or community-specific perspective</p></div><div><span>05</span><p>A clear takeaway or call to action</p></div></div><details className="ca-debate-framework"><summary>The 5-part Climate Argument</summary><ol><li><b>CLAIM</b><span>What is your position?</span></li><li><b>EVIDENCE</b><span>What credible evidence supports it?</span></li><li><b>CONTEXT</b><span>Why does this matter, particularly in an African/community context?</span></li><li><b>COUNTERARGUMENT</b><span>What would someone on the other side say?</span></li><li><b>ACTION</b><span>After reading your argument, what should your audience think, discuss or do?</span></li></ol></details><div className="ca-debate-social"><h4>Make the graphic visual — not a mini essay</h4><p>Lead with one compelling argument. Put the fuller evidence and context in your caption. Invite responses or discussion.</p><p><b>Tag:</b> WOMATE + the speaker · <b>Hashtag:</b> #WOMATEClimateDebate</p></div><label className="ca-debate-link">Published Climate Debate post link<input inputMode="url" value={d.linkedin_link||''} onChange={e=>setDrafts(x=>({...x,[item.weekKey]:{...d,linkedin_link:e.target.value}}))} placeholder="Paste the public link to your post"/><small>Accepted: LinkedIn, X/Twitter, Instagram, Facebook, Threads, TikTok, YouTube or Bluesky.</small></label></section>}
-            {speakerOpen&&requestedParts.includes('speaker')&&item.weekKey!=='module-03'&&<label>Speaker-task post link (LinkedIn or X/Twitter)<input inputMode="url" value={d.linkedin_link||''} onChange={e=>setDrafts(x=>({...x,[item.weekKey]:{...d,linkedin_link:e.target.value}}))} placeholder="https://linkedin.com/… or https://lnkd.in/…"/></label>}
+            {speakerOpen&&item.weekKey==='module-05'&&<section className="ca-climate-debate" aria-label="Module 05 speaker assignment by Yvonne Otieno">
+              <header><div><small>SPEAKER ASSIGNMENT · MODULE 05 · YVONNE OTIENO</small><h3>Community Climate Leadership Challenge</h3><p>Explore a real climate problem you can see in your community. Prepare a concise, one-page response covering all four parts below. Do not offer solutions before listening to affected people.</p></div></header>
+              <div className="ca-debate-requirements"><h4>Your four-part challenge</h4>
+                <div><span>01</span><p><b>Observe:</b> Choose one climate-related problem you have personally noticed in your community. Explain what is happening, where and who is affected.</p></div>
+                <div><span>02</span><p><b>Listen:</b> Speak with at least three people affected by the problem. Summarise what each person says without offering solutions yet. Protect their privacy; do not share names or identifying details without permission.</p></div>
+                <div><span>03</span><p><b>Map influence:</b> Identify who contributes to the problem, who benefits, who regulates it and who could help address it. Be specific and fair.</p></div>
+                <div><span>04</span><p><b>Take action:</b> Choose one realistic action you can take in the next 30 days and identify one person you will invite to help you.</p></div>
+              </div>
+              <div className="ca-debate-social"><h4>How to participate and submit</h4>
+                <p><b>1. WhatsApp:</b> Type your four-part response directly in the WOMATE She Leads General WhatsApp group so fellow learners can benefit from your experience.</p>
+                <p><b>2. Screenshots:</b> Capture clear screenshot(s) showing your own answers as posted in the group.</p>
+                <p><b>3. Google Drive:</b> Upload the screenshot(s) to Google Drive, share the file or folder as “Anyone with the link → Viewer”, and copy one accessible Drive link.</p>
+                <p><b>4. Canopy:</b> Paste that Google Drive link under Speaker Assignment below.</p>
+                <p><b>Mandatory:</b> Only a Google Drive link containing screenshots of your answers posted in the WOMATE General WhatsApp group will be accepted. A direct WhatsApp message, plain text, LinkedIn link or other social-media URL does not replace this evidence.</p>
+                <p>Sharing your reflections publicly is optional. You may tag WOMATE and <a href="https://www.linkedin.com/in/yvonneotieno/" target="_blank" rel="noopener noreferrer">speaker Yvonne Otieno</a> if you choose; it is not required for grading.</p>
+              </div>
+              {requestedParts.includes('speaker')&&<label className="ca-debate-link">Speaker Assignment · Google Drive screenshots link<input inputMode="url" value={d.linkedin_link||''} onChange={e=>setDrafts(x=>({...x,[item.weekKey]:{...d,linkedin_link:e.target.value}}))} placeholder="https://drive.google.com/file/d/… or https://drive.google.com/drive/folders/…"/><small>One shareable Google Drive file or folder link only. Ensure your screenshots show the answers posted in WhatsApp.</small></label>}
+            </section>}
+            {speakerOpen&&requestedParts.includes('speaker')&&item.weekKey!=='module-03'&&item.weekKey!=='module-05'&&<label>Speaker-task post link (LinkedIn or X/Twitter)<input inputMode="url" value={d.linkedin_link||''} onChange={e=>setDrafts(x=>({...x,[item.weekKey]:{...d,linkedin_link:e.target.value}}))} placeholder="https://linkedin.com/… or https://lnkd.in/…"/></label>}
 
             <div className="ca-assignment-form-actions">
 

@@ -75,7 +75,7 @@ export const CANOPY_ASSIGNMENT_SCHEDULE = [
     liveHost:'Debbie Paul',
     liveSpeaker:'Yvonne Otieno',
     liveSpeakerRole:'Co-Founder and CEO of Miyonga',
-    speakerPrompt:'Complete the final challenge announced by the expert during the Thursday live session and publish the required reflection or action post on LinkedIn or X/Twitter.'
+    speakerPrompt:'Yvonne Otieno’s Community Climate Leadership Challenge: observe one local climate problem, listen to three affected people, map who influences the issue, and propose one feasible action for the next 30 days with a named collaborator. Post your four-part response in the WOMATE She Leads General WhatsApp group, screenshot your message, and submit one viewable Google Drive link in Canopy. Posting publicly is optional and is not accepted as assignment evidence.'
   }
 ];
 
