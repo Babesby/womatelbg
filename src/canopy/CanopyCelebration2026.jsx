@@ -1,5 +1,5 @@
-import React,{useEffect,useMemo,useState} from 'react';
-import {ArrowRight,BookOpen,Check,ChevronRight,Clock3,ExternalLink,FileCheck2,GraduationCap,Heart,Play,Sparkles,Star,Volume2} from 'lucide-react';
+import React,{useEffect,useMemo,useRef,useState} from 'react';
+import {ArrowRight,BookOpen,Check,ChevronRight,Clock3,ExternalLink,Heart,Play,Sparkles,Volume2} from 'lucide-react';
 import './canopyCelebration.css';
 
 export const CANOPY_C2_CELEBRATION_START='2026-10-26T00:00:00Z';
@@ -34,20 +34,43 @@ function countdownParts(now){
  const s=Math.floor(diff/1000);
  return {days:Math.floor(s/86400),hours:Math.floor(s%86400/3600),minutes:Math.floor(s%3600/60),seconds:s%60,ended:diff===0};
 }
-function CircularMeter({value,total,label,subtext,accent='lime',className=''}) {
+function useInViewCountUp(a,b){
+ const ref=useRef(null);
+ const [inView,setInView]=useState(false);
+ const [progress,setProgress]=useState(0);
+ useEffect(()=>{
+  if(!ref.current)return;
+  if(!('IntersectionObserver' in window)){setInView(true);return}
+  const observer=new IntersectionObserver(entries=>{if(entries.some(e=>e.isIntersecting)){setInView(true);observer.disconnect()}},{threshold:.15,rootMargin:'0px 0px -45px 0px'});
+  observer.observe(ref.current);
+  return()=>observer.disconnect();
+ },[]);
+ useEffect(()=>{
+  if(!inView)return;
+  let frame=0;
+  const reduce=window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
+  if(reduce){setProgress(1);return}
+  let start=0;
+  setProgress(0);
+  const tick=time=>{
+   if(!start)start=time;
+   const t=Math.min(1,(time-start)/1450);
+   setProgress(1-Math.pow(1-t,3));
+   if(t<1)frame=requestAnimationFrame(tick);
+  };
+  frame=requestAnimationFrame(tick);
+  return()=>cancelAnimationFrame(frame);
+ },[inView,a,b]);
+ return {ref,progress};
+}
+function CircularMeter({value,actual,total,label,subtext,accent='lime'}) {
  const pct=total?Math.min(100,Math.max(0,value/total*100)):0;
- return <div className={'cce-meter '+className} role="img" aria-label={label+': '+value+' of '+total}>
+ return <div className="cce-meter" role="img" aria-label={label+': '+actual+' of '+total}>
   <div className={'cce-meter-art cce-'+accent} style={{'--cce-angle':pct*3.6+'deg'}}>
-   <div className="cce-meter-core"><strong>{value}<span>/{total}</span></strong><small>{Math.round(pct)}% complete</small></div>
+   <div className="cce-meter-core"><strong>{Math.round(value)}<span>/{total}</span></strong><small>{Math.round(pct)}% complete</small></div>
   </div>
   <div className="cce-meter-caption"><b>{label}</b><span>{subtext}</span></div>
  </div>;
-}
-function NumberCard({icon:Icon,number,total,title,small}) {
- return <article className="cce-stat-card">
-  <div className="cce-stat-icon"><Icon size={18}/></div>
-  <div><strong>{number}<span> / {total}</span></strong><b>{title}</b><small>{small}</small></div>
- </article>;
 }
 
 export default function CanopyCelebration({viewer,progress=[],submissions=[],tester=false,onNavigate}){
@@ -74,7 +97,9 @@ export default function CanopyCelebration({viewer,progress=[],submissions=[],tes
  });
  const go=path=>typeof onNavigate==='function'&&onNavigate(path);
  const incomplete=totalLessons<20;
- const initials=String(firstName).slice(0,1).toUpperCase();
+ const {ref:statsRef,progress:reveal}=useInViewCountUp(totalLessons,totalAssignments);
+ const animatedLessons=totalLessons*reveal;
+ const animatedAssignments=totalAssignments*reveal;
  return <main className="canopyDashboard cce-root">
   {tester&&<section className="cce-tester-controls" aria-label="Celebration visual preview controls">
    <div><span className="cce-preview-tag">TESTER ONLY · DESIGN PREVIEW</span><p>Simulate different countries and progress levels. These controls do not change learner records.</p></div>
@@ -86,43 +111,38 @@ export default function CanopyCelebration({viewer,progress=[],submissions=[],tes
    <button type="button" className="cce-preview-back" onClick={()=>go('/canopy/classroom')}>Back to tester home <ArrowRight size={14}/></button>
   </section>}
   <section className={'cce-hero '+(celebrating?'cce-cheering':'')}>
-    <div className="cce-glow cce-glow-one" aria-hidden="true"/><div className="cce-glow cce-glow-two" aria-hidden="true"/>
-    <div className="cce-orbit cce-orbit-one" aria-hidden="true"/><div className="cce-orbit cce-orbit-two" aria-hidden="true"/>
+    <img className="cce-ribbon" src="/assets/canopy/graduation/satin-ribbon.webp" alt="" aria-hidden="true" loading="eager"/>
+    <img className="cce-hero-confetti" src="/assets/canopy/graduation/confetti.webp" alt="" aria-hidden="true" loading="lazy"/>
     <div className="cce-hero-inner">
-      <div className="cce-hero-kicker"><span className="cce-sparkle"><Sparkles size={15}/></span> WOMATE · SHE LEADS CLIMATE · COHORT 2 / 2026</div>
-      <div className="cce-hero-heading"><span className="cce-local-cheer">{greeting.cheer}</span><h1>Your next chapter<br/><em>starts here.</em></h1></div>
+      <div className="cce-hero-kicker">WOMATE · SHE LEADS CLIMATE · COHORT 2 / 2026</div>
+      <div className="cce-hero-heading"><h1 className="cce-local-cheer">{greeting.cheer}</h1><div className="cce-hero-subtitle">Look at how far you have come.</div></div>
       <p className="cce-hero-lede">Look how far you've come, {firstName}. Five powerful modules, new perspectives, and a community of women ready to make change. You've earned this moment of celebration.</p>
       <div className="cce-hero-actions">
-        <button className="cce-primary" type="button" onClick={()=>setCelebrating(true)}><Star size={17} fill="currentColor"/> Celebrate this moment</button>
+        <button className="cce-primary" type="button" onClick={()=>setCelebrating(true)}>Celebrate this moment <Heart size={16}/></button>
         <button className="cce-secondary" type="button" onClick={()=>go('/canopy/progress')}>My learning journey <ArrowRight size={16}/></button>
       </div>
       <p className="cce-cheer-foot"><Heart size={13}/> Progress is worth celebrating. Every next step still matters.</p>
     </div>
-    <div className="cce-hero-symbol" aria-hidden="true"><span>W</span><i>★</i></div>
-    {celebrating&&<div className="cce-confetti" aria-hidden="true">{Array.from({length:24},(_,i)=><i key={i} style={{'--i':i,'--delay':(i%5)*0.07+'s'}}/>)}</div>}
+    {celebrating&&<div className="cce-confetti" aria-hidden="true"><img src="/assets/canopy/graduation/confetti.webp" alt=""/></div>}
   </section>
   <section className="cce-overview" aria-label="Your actual learning progress">
    <div className="cce-section-heading"><div><span>01 / YOUR JOURNEY IN NUMBERS</span><h2>A little progress. A lot of possibility.</h2></div><button type="button" onClick={()=>go('/canopy/progress')}>Full progress <ArrowRight size={15}/></button></div>
-   <div className="cce-performance">
+   <div className="cce-performance" ref={statsRef}>
     <div className="cce-performance-rings">
-     <CircularMeter value={totalLessons} total={20} label="Lessons completed" subtext={incomplete?'Keep going. Your 20/20 is within reach.':'Every lesson completed. Beautiful work!'}/>
-     <CircularMeter value={totalAssignments} total={5} label="Modules submitted" subtext="At least one recorded assignment submission per module." accent="teal"/>
-    </div>
-    <div className="cce-performance-list">
-     <NumberCard icon={BookOpen} number={totalLessons} total={20} title="Lessons completed" small="Across five climate leadership modules"/>
-     <NumberCard icon={FileCheck2} number={totalAssignments} total={5} title="Assignments submitted" small="Submissions recorded, not grading approvals"/>
-     <NumberCard icon={GraduationCap} number={5} total={5} title="Modules delivered" small="The entire programme curriculum is now available"/>
+     <CircularMeter value={animatedLessons} actual={totalLessons} total={20} label="Lessons completed" subtext={incomplete?'Your next lesson is waiting.':'Every lesson completed. Beautiful work!'}/>
+     <CircularMeter value={animatedAssignments} actual={totalAssignments} total={5} label="Assignments submitted" subtext="Submitted modules, not grading decisions." accent="teal"/>
     </div>
    </div>
+   <div className="cce-track-heading"><span>YOUR LEARNING JOURNEY</span><b>Five steps toward leadership</b></div>
    <div className="cce-module-track" aria-label="Your lesson completion by module">
      {MODULE_LABELS.map((label,i)=><button key={label} type="button" className="cce-module" onClick={()=>go('/canopy/course/she-leads')} title={'Open Module '+(i+1)}>
        <span className="cce-module-top"><span>{String(i+1).padStart(2,'0')}</span><b>{lessonsByModule[i]===LESSONS_PER_MODULE?<Check size={15}/>:lessonsByModule[i]+' / 4'}</b></span>
-       <strong>{label}</strong><span className="cce-mini-bar"><i style={{width:(lessonsByModule[i]/4*100)+'%'}}/></span>
+       <strong>{label}</strong><span className="cce-mini-bar"><i style={{width:(lessonsByModule[i]/4*100*reveal)+'%'}}/></span>
      </button>)}
    </div>
    {incomplete?<div className="cce-action-note"><span className="cce-action-icon"><BookOpen size={20}/></span><p><b>Your story is still unfolding.</b> You have {20-totalLessons} lesson{20-totalLessons===1?'':'s'} left. Complete each one, mark it done and reach 20/20 to stay on track.</p><button type="button" onClick={()=>go('/canopy/course/she-leads')}>Finish my lessons <ArrowRight size={16}/></button></div>:<div className="cce-action-note is-complete"><span className="cce-action-icon"><Check size={20}/></span><p><b>20 out of 20. Every lesson.</b> This is a milestone to be proud of. Keep building on what you've learned.</p><button type="button" onClick={()=>go('/canopy/portfolio')}>My impact profile <ArrowRight size={16}/></button></div>}
   </section>
-  <section className="cce-countdown" aria-label="Countdown to graduation day">
+  <section className="cce-countdown" aria-label="Countdown to graduation day"><img className="cce-countdown-balloons" src="/assets/canopy/graduation/balloons.webp" alt="" aria-hidden="true" loading="lazy"/>
    <div className="cce-countdown-copy"><span><Clock3 size={16}/> THE NEXT CHAPTER</span><h2>{until.ended?'Graduation day is here.':'The countdown is on.'}</h2><p>{until.ended?'29 October 2026 has arrived. WOMATE will share official graduation and certificate instructions according to the programme process.':'29 October 2026 · The day we celebrate a community of women choosing to lead.'}</p></div>
    <div className="cce-ticker" role="timer" aria-live="off">{[['DAYS',until.days],['HOURS',until.hours],['MINUTES',until.minutes],['SECONDS',until.seconds]].map(([label,value])=><div key={label}><strong>{String(value).padStart(2,'0')}</strong><span>{label}</span></div>)}</div>
   </section>
