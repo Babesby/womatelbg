@@ -8,6 +8,7 @@ import CanopyNotifications from './CanopyNotifications';
 import CanopyCertificate from './CanopyCertificate';
 import CanopyCredentialAdmin from './CanopyCredentialAdmin';
 import CanopyGraduationPortal from './CanopyGraduationPortal';
+import CanopyCelebration from './CanopyCelebration2026';
 import CanopyAdminClosing from './CanopyAdminClosing';
 import CanopyAttendance from './CanopyAttendance';
 import CanopyEligibilitySummary from './CanopyEligibilitySummary';
@@ -189,23 +190,27 @@ function Dashboard({viewer,progress,submissions=[]}){
  const done=new Set(progress.filter(x=>x.completed).map(x=>x.lesson_id));
  const completed=done.size,pct=Math.round(completed/totalLessons*100);
  const enrolled=viewer.enrollments?.some(e=>e.status==='active');
+ const[dashboardClock,setDashboardClock]=useState(()=>Date.now());
+ useEffect(()=>{const id=window.setInterval(()=>setDashboardClock(Date.now()),60000);return()=>window.clearInterval(id)},[]);
  const[missionCompletion,setMissionCompletion]=useState(null);
  useEffect(()=>{let live=true;getMyCanopyMissionCompletion(viewer.session).then(x=>{if(live&&x?.status==='completed')setMissionCompletion(x)}).catch(()=>{});return()=>{live=false}},[viewer?.session?.access_token]);
  let next=null;
  for(const m of modules){if(!canopyModuleIsOpen(m))continue;for(const l of m.lessons){if(!done.has(l.id)){next={m,l};break}}if(next)break}
+ if(enrolled&&dashboardClock>new Date(CANOPY_ASSIGNMENT_SCHEDULE.find(x=>x.weekKey==='module-05').dueAt).getTime())return <><GraduationFeedback2026 session={viewer.session}/><CanopyCelebration viewer={viewer} progress={progress} submissions={submissions} onNavigate={go}/></>;
  return <><GraduationFeedback2026 session={viewer.session}/><main className="canopyDashboard cx-dashboard"><section className="canopyWelcome cx-welcome"><div><span className="canopyEyebrow">MY CANOPY</span><h1>Welcome back.</h1><p>{enrolled?'Continue where you left off.':`Learning access opens ${CANOPY_ACCESS_DATE}.`}</p></div><div className="canopyProgressRing" style={{'--p':`${pct*3.6}deg`}}><div><strong>{pct}%</strong><span>complete</span></div></div></section>
  {missionCompletion&&<section className="cx-mission-celebration"><div><small>MISSION COMPLETED ✅</small><h2>WOMATE verified your Cross-country Climate Mission contribution.</h2><p>Your Impact Profile has been updated. This recognition can strengthen your eligibility for selected WOMATE opportunities, funding calls and Talent Discovery approval.</p><div className="cx-mission-celebration-tags"><span>Individual Mission Completed</span>{missionCompletion.final_team_completed&&<span>Final Mission team completed</span>}</div></div><div className="cx-mission-celebration-actions"><button className="canopyPrimary" onClick={()=>go('/canopy/portfolio')}>View my Impact Profile <ArrowRight size={15}/></button><button className="canopySecondary" onClick={()=>go('/canopy/talent')}>Talent Discovery</button></div></section>}
  {!enrolled?<section className="canopyLockedState"><Lock/><div><h2>Awaiting cohort enrolment</h2><p>Selected participants can be activated by WOMATE from {CANOPY_ACCESS_DATE}.</p></div></section>:<><CanopyThisWeek progress={progress} submissions={submissions} next={next}/><section className="canopyDashStrip"><div className="canopyDashProgress"><small>YOUR PROGRESS</small><strong>{completed} of {totalLessons} lessons complete</strong><div className="canopyLine"><span style={{width:`${pct}%`}}/></div></div><div className="canopyDashActions"><button className="canopyPrimary" onClick={()=>go(next?`/canopy/course/she-leads/${next.m.id}/${next.l.id}`:'/canopy/course/she-leads')}>{next?'Continue learning':'Open course'} <ArrowRight size={15}/></button></div></section><CanopyJourneyMap progress={progress} compact/><CanopySpotlight session={viewer.session}/></>}</main></>
 }
 
 
-function TesterDashboard({viewer,progress}){
+function TesterDashboard({viewer,progress,submissions=[]}){
  const done=new Set(progress.filter(x=>x.completed).map(x=>x.lesson_id));
  const completed=done.size,pct=Math.round(completed/totalLessons*100);
  let next=null;
  for(const m of modules){for(const l of m.lessons){if(!done.has(l.id)){next={m,l};break}}if(next)break}
  return <><GraduationFeedback2026 session={viewer.session} tester/><main className="canopyDashboard canopyTesterDashboard">
   <section className="canopyWelcome canopyTesterWelcome"><div><span className="canopyEyebrow">CANOPY TESTER</span><h1>Everything is open for testing.</h1><p>This account bypasses cohort dates only for WOMATE testing. Participant and admin access rules stay unchanged.</p></div><div className="canopyProgressRing" style={{'--p':`${pct*3.6}deg`}}><div><strong>{pct}%</strong><span>complete</span></div></div></section>
+  <section className="canopyContinue" style={{marginTop:18,marginBottom:18,background:'linear-gradient(110deg,#073b39,#145f51)',color:'#fff',borderRadius:18}}><div><span style={{color:'#c6ff52'}}>NEW · 2026 CELEBRATION DESIGN PREVIEW</span><h2 style={{color:'#fff'}}>See the after-deadline homepage now.</h2><p style={{color:'#d9eee7'}}>Interactive countdown, real progress, country greetings and Beyoncé soundtrack. Tester only; this does not change learner records.</p></div><button className="canopyPrimary" onClick={()=>go('/canopy/test/celebration-2026')}>Preview celebration <ArrowRight size={16}/></button></section>
   <section className="canopyTesterStatus">
    <article><Lock size={18}/><div><small>MODULE ACCESS</small><strong>All 5 modules open</strong></div></article>
    <article><FileText size={18}/><div><small>ASSIGNMENTS</small><strong>All assignments open</strong></div></article>
@@ -951,7 +956,9 @@ const manager=canManageCanopy(viewer);const operational=isCanopyOperationsStaff(
  const testerPreviewKey=tester&&typeof sessionStorage!=='undefined'?sessionStorage.getItem('womate_canopy_tester_cohort'):null;
  const testerCohortKey=isPost2026RuntimeCohort(testerPreviewKey)?testerPreviewKey:null;
  const active=tester||viewer.enrollments?.some(e=>e.status==='active')||Boolean(activeRuntimeCohort);let content;
- if(tester&&path==='/canopy/test/feedback-2026'){
+ if(tester&&path==='/canopy/test/celebration-2026'){
+   content=<CanopyCelebration viewer={viewer} progress={progress} submissions={submissions} tester onNavigate={go}/>;
+ } else if(tester&&path==='/canopy/test/feedback-2026'){
    content=<main className="canopyDashboard"><h1>2026 Feedback · Tester verification</h1><p>Your submitted Google Form has been matched to the tester account. The required popup is now dismissed and stays dismissed after refresh, just as it will for a verified learner.</p><p>This is tester-only verification; no learner completion or certificate record was changed.</p><a href="/canopy/classroom">Return to Canopy classroom</a><GraduationFeedback2026 session={viewer.session} tester/></main>;
   } else if(testerCohortKey&&!['/canopy/test/cohort-preview','/canopy/test/cohort-workspace','/canopy/profile'].includes(path)){
   content=<CanopyCohortParticipantRuntime viewer={viewer} cohortKey={testerCohortKey} path={path} tester/>;
@@ -973,7 +980,7 @@ const manager=canManageCanopy(viewer);const operational=isCanopyOperationsStaff(
  else if(manager&&path==='/canopy/manage/talent')content=<CanopyTalentAdmin viewer={viewer} cohortKey={selectedAdminCohort?.cohort_key||LEGACY_CANOPY_COHORT} cohort={selectedAdminCohort}/>;
  else if(manager&&path.startsWith('/canopy/manage')){const sub=path.split('/').pop();const view=path==='/canopy/manage'?'overview':sub;content=view==='selection-codes'?<CanopySelectionCodes session={viewer.session} cohort={selectedAdminCohort}/>:<ManagerOperations snapshot={scopedAdminSnapshot} session={viewer.session} onReload={async()=>{await load();await loadAdminCohorts?.()}} viewer={viewer} cohort={selectedAdminCohort} view={view}/>}
  else if(operational&&['/canopy/operations','/canopy/coordinator','/canopy/fellow'].includes(path))content=<CanopyStaffDashboard viewer={viewer} access={viewer.staffAccess} data={staffDashboard} onReload={async()=>{try{setStaffDashboard(await getStaffDashboard(viewer.session))}catch(err){console.error(err)}}}/>;
- else if(path==='/canopy/classroom')content=tester?<TesterDashboard viewer={viewer} progress={progress}/>:<Dashboard viewer={viewer} progress={progress} submissions={submissions}/>;
+ else if(path==='/canopy/classroom')content=tester?<TesterDashboard viewer={viewer} progress={progress} submissions={submissions}/>:<Dashboard viewer={viewer} progress={progress} submissions={submissions}/>;
  else if(!active&&!['/canopy/profile','/canopy/notifications','/canopy/help','/canopy/certificate'].includes(path))content=<Dashboard viewer={viewer} progress={progress} submissions={submissions}/>;
  else if(path==='/canopy/course/she-leads')content=<CourseOverview progress={progress} tester={tester}/>;
  else if(path==='/canopy/canvas')content=<CanopyCanvas viewer={viewer}/>;
@@ -990,7 +997,7 @@ const manager=canManageCanopy(viewer);const operational=isCanopyOperationsStaff(
  else if(path==='/canopy/talent')content=<CanopyTalentNetwork viewer={viewer}/>;
  else if(path==='/canopy/resources')content=<Resources/>;
  else if(path==='/canopy/profile')content=<Profile viewer={viewer} onReload={load}/>;
- else{const match=path.match(/^\/canopy\/course\/she-leads\/([^/]+)\/([^/]+)$/);if(match){const[,moduleId,last]=match;content=last==='quiz'?<Quiz moduleId={moduleId} session={viewer.session} reload={load} tester={tester}/>:<Lesson moduleId={moduleId} lessonId={last} progress={progress} session={viewer.session} reload={load} tester={tester}/>}else content=tester?<TesterDashboard viewer={viewer} progress={progress}/>:<Dashboard viewer={viewer} progress={progress} submissions={submissions}/>}
+ else{const match=path.match(/^\/canopy\/course\/she-leads\/([^/]+)\/([^/]+)$/);if(match){const[,moduleId,last]=match;content=last==='quiz'?<Quiz moduleId={moduleId} session={viewer.session} reload={load} tester={tester}/>:<Lesson moduleId={moduleId} lessonId={last} progress={progress} session={viewer.session} reload={load} tester={tester}/>}else content=tester?<TesterDashboard viewer={viewer} progress={progress} submissions={submissions}/>:<Dashboard viewer={viewer} progress={progress} submissions={submissions}/>}
  if(viewer?.profile?.role==='admin'&&path.startsWith('/canopy/manage')){
   const selected=selectedAdminCohort;
   const empty=selected&&Number(selected.member_count||0)===0;
