@@ -10,6 +10,11 @@ const ASSIGNMENT_KEYS=['module-01','module-02','module-03','module-04','module-0
 const MODULE_LABELS=['Understand','Empathise','Influence','Advocate','Lead'];
 const LOCAL_CHEERS=[
  {countries:['ghana'],cheer:'Ayekoo!',locale:'Ghana'},
+ {countries:['nigeria'],cheer:'Ẹ kú oríire!',locale:'Yorùbá · Nigeria'},
+ {countries:['botswana'],cheer:'O dirile sentle!',locale:'Setswana · Botswana'},
+ {countries:['uganda'],cheer:'Gyebale ko!',locale:'Luganda · Uganda'},
+ {countries:['ethiopia'],cheer:'እንኳን ደስ አለሽ!',locale:'Amharic · Ethiopia'},
+ {countries:['rwanda'],cheer:'Wakoze neza!',locale:'Kinyarwanda · Rwanda'},
  {countries:['kenya','tanzania'],cheer:'Hongera!',locale:'East Africa'},
  {countries:['zimbabwe'],cheer:'Makorokoto!',locale:'Zimbabwe'},
  {countries:['south africa'],cheer:'Halala!',locale:'South Africa'},
@@ -74,7 +79,7 @@ export default function CanopyCelebration({viewer,progress=[],submissions=[],tes
   {tester&&<section className="cce-tester-controls" aria-label="Celebration visual preview controls">
    <div><span className="cce-preview-tag">TESTER ONLY · DESIGN PREVIEW</span><p>Simulate different countries and progress levels. These controls do not change learner records.</p></div>
    <label>Greeting country<select value={sampleCountry} onChange={e=>setSampleCountry(e.target.value)}>
-    <option value="">Your profile / English fallback</option><option>Ghana</option><option>Kenya</option><option>Zimbabwe</option><option>South Africa</option><option>Malawi</option><option>Morocco</option><option>Nigeria</option>
+    <option value="">Your profile / English fallback</option><option>Ghana</option><option>Nigeria</option><option>Kenya</option><option>Botswana</option><option>Uganda</option><option>Ethiopia</option><option>Rwanda</option><option>Zimbabwe</option><option>South Africa</option><option>Malawi</option><option>Morocco</option>
    </select></label>
    <label>Lessons<select value={sampleLessons} onChange={e=>setSampleLessons(e.target.value)}><option value="actual">Actual progress</option><option value="4">4 / 20</option><option value="12">12 / 20</option><option value="16">16 / 20</option><option value="20">20 / 20</option></select></label>
    <label>Assignments<select value={sampleAssignments} onChange={e=>setSampleAssignments(e.target.value)}><option value="actual">Actual submissions</option><option value="1">1 / 5</option><option value="3">3 / 5</option><option value="5">5 / 5</option></select></label>
