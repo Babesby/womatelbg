@@ -9,7 +9,7 @@ const STANDARD=[
   {n:4,title:'Take public action',brief:'Create or carry out one responsible action that makes the issue visible.'},
   {n:5,title:'Multiply the learning',brief:'Share what the group learned and bring at least one more person into action.'}
 ];
-const deadline='Friday, 23 October 2026 at 11:59 PM GMT';
+const deadline='Monday, 26 October 2026 at 11:59 PM GMT';
 
 function go(path){window.history.pushState({},'',path);window.dispatchEvent(new PopStateEvent('popstate'));window.scrollTo({top:0,behavior:'smooth'})}
 function statusText(v){return String(v||'').replaceAll('_',' ')}
