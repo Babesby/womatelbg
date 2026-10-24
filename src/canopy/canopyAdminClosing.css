@@ -7,7 +7,7 @@
 
 /* Cohort 2 administrator enrolment / withdrawal workflow */
 .cac-enrolment-tabs{display:flex;gap:10px;margin:22px 0 16px;flex-wrap:wrap}
-.cac-enrolment-tabs button{display:inline-flex;align-items:center;gap:12px;justify-content:center;min-height:48px;padding:11px 17px;border:1px solid #cedfd5;border-radius:13px;background:#fff;color:#174e42;font:700 14px inherit;cursor:pointer;transition:background .2s,border-color .2s}
+.cac-enrolment-tabs button{display:inline-flex;align-items:center;gap:12px;justify-content:center;min-height:48px;padding:11px 17px;border:1px solid #cedfd5;border-radius:13px;background:#fff;color:#174e42;font-weight:700;font-size:14px;font-family:inherit;cursor:pointer;transition:background .2s,border-color .2s}
 .cac-enrolment-tabs button strong{font-size:12px;font-weight:800;padding:4px 8px;border-radius:30px;background:#edf4ef;color:#346554}
 .cac-enrolment-tabs button.is-active{background:#0e4d4a;border-color:#0e4d4a;color:#fff}
 .cac-enrolment-tabs button.is-active strong{background:#c6ff52;color:#123b31}
