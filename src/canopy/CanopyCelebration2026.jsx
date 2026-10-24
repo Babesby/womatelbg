@@ -1,6 +1,7 @@
 import React,{useEffect,useMemo,useRef,useState} from 'react';
 import {ArrowRight,BookOpen,Check,ChevronRight,Clock3,ExternalLink,Heart,Play,Sparkles,Volume2} from 'lucide-react';
 import './canopyCelebration.css';
+import {getCanopyMyC2GradeSummary} from './canopyApi';
 
 export const CANOPY_C2_CELEBRATION_START='2026-10-26T00:00:00Z';
 const GRADUATION_DAY='2026-10-29T00:00:00Z';
@@ -80,6 +81,14 @@ export default function CanopyCelebration({viewer,progress=[],submissions=[],tes
  const [sampleLessons,setSampleLessons]=useState('actual');
  const [sampleAssignments,setSampleAssignments]=useState('actual');
  const [celebrating,setCelebrating]=useState(false);
+ const [grades,setGrades]=useState(null);
+ const [sampleGrade,setSampleGrade]=useState('actual');
+ useEffect(()=>{let cancelled=false;getCanopyMyC2GradeSummary(viewer?.session).then(x=>{if(!cancelled)setGrades(x)}).catch(()=>{if(!cancelled)setGrades(null)});return()=>{cancelled=true}},[viewer?.session?.access_token]);
+ const demoGrade=tester&&sampleGrade!=='actual';
+ const earned=demoGrade?Number(sampleGrade):Number(grades?.earned||0);
+ const gradedCount=demoGrade?5:Number(grades?.graded_modules||0);
+ const finalized=demoGrade||Boolean(grades?.finalized);
+ const tier=finalized?(earned===500?'ruby':earned>=480?'emerald':earned>=450?'diamond':earned>=430?'gold':'silver'):null;
  useEffect(()=>{const timer=window.setInterval(()=>setNow(Date.now()),1000);return()=>window.clearInterval(timer)},[]);
  useEffect(()=>{if(!celebrating)return;const timer=window.setTimeout(()=>setCelebrating(false),2600);return()=>window.clearTimeout(timer)},[celebrating]);
  const validLessons=useMemo(()=>new Set(progress.filter(r=>r.completed&&/^0[1-5]\.[1-4]$/.test(String(r.lesson_id||''))&&r.module_id===String(r.lesson_id).split('.')[0]).map(r=>r.lesson_id)),[progress]);
@@ -108,6 +117,7 @@ export default function CanopyCelebration({viewer,progress=[],submissions=[],tes
    </select></label>
    <label>Lessons<select value={sampleLessons} onChange={e=>setSampleLessons(e.target.value)}><option value="actual">Actual progress</option><option value="4">4 / 20</option><option value="12">12 / 20</option><option value="16">16 / 20</option><option value="20">20 / 20</option></select></label>
    <label>Assignments<select value={sampleAssignments} onChange={e=>setSampleAssignments(e.target.value)}><option value="actual">Actual submissions</option><option value="1">1 / 5</option><option value="3">3 / 5</option><option value="5">5 / 5</option></select></label>
+   <label>Achievement preview<select value={sampleGrade} onChange={e=>setSampleGrade(e.target.value)}><option value="actual">Actual graded scores</option><option value="500">Ruby · 500</option><option value="490">Emerald · 490</option><option value="465">Diamond · 465</option><option value="440">Gold · 440</option><option value="410">Silver · 410</option></select></label>
    <button type="button" className="cce-preview-back" onClick={()=>go('/canopy/classroom')}>Back to tester home <ArrowRight size={14}/></button>
   </section>}
   <section className={'cce-hero '+(celebrating?'cce-cheering':'')}>
@@ -131,6 +141,13 @@ export default function CanopyCelebration({viewer,progress=[],submissions=[],tes
     <div className="cce-performance-rings">
      <CircularMeter value={animatedLessons} actual={totalLessons} total={20} label="Lessons completed" subtext={incomplete?'Your next lesson is waiting.':'Every lesson completed. Beautiful work!'}/>
      <CircularMeter value={animatedAssignments} actual={totalAssignments} total={5} label="Assignments submitted" subtext="Submitted modules, not grading decisions." accent="teal"/>
+    </div>
+    <div className="cce-grade-strip" aria-label="Five module achievement score">
+      <div className="cce-grade-info"><span>YOUR GRADED ACHIEVEMENT</span><strong>{earned}<small> / 500 points</small></strong><p>{finalized?'All five modules graded · Your earned achievement':gradedCount+' of 5 module scores finalised · Badge pending final review'}</p></div>
+      <div className="cce-grade-meter"><span style={{width:Math.min(100,Math.max(0,earned/5))+'%'}}/></div>
+      <div className={'cce-grade-award '+(tier?'is-'+tier:'is-pending')}>
+        {tier?<><span className="cce-grade-medallion" aria-hidden="true">{tier==='ruby'?'◆':tier==='emerald'?'❖':tier==='diamond'?'◇':tier==='gold'?'✦':'✧'}</span><div><strong>{tier.toUpperCase()}</strong><small>{tier==='ruby'?'Perfect 500 · Distinction': 'WOMATE achievement award'}</small></div></>:<><span className="cce-grade-medallion" aria-hidden="true">✧</span><div><strong>Badge awaiting grades</strong><small>Earned after all 5 final scores</small></div></>}
+      </div>
     </div>
    </div>
    <div className="cce-track-heading"><span>YOUR LEARNING JOURNEY</span><b>Five steps toward leadership</b></div>
