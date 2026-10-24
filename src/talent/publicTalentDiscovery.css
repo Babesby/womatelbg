@@ -240,3 +240,6 @@
 /* Profile detail follows the same rounded-square visual language. */
 .pt-profilePhoto{border-radius:18px}
 .pt-profileCard .pt-badges span{border-radius:10px;white-space:normal;overflow-wrap:anywhere;max-width:100%}
+
+
+.pt-achievement-mark{display:flex;align-items:center;gap:10px;margin:16px 0;padding:12px 14px;border:1px solid #d6dfd7;border-radius:13px;background:linear-gradient(120deg,#073b39,#10534a);color:#e6f2ed}.pt-achievement-mark>span{font-size:28px;line-height:1;color:#dce6e2}.pt-achievement-mark strong{font-size:12px;letter-spacing:.1em}.pt-achievement-mark small{margin-left:auto;font-size:12px;font-weight:700;white-space:nowrap}.pt-achievement-mark.is-ruby>span{color:#fa6279}.pt-achievement-mark.is-emerald>span{color:#67e1b5}.pt-achievement-mark.is-diamond>span{color:#f0f5ff}.pt-achievement-mark.is-gold>span{color:#ffd179}.pt-achievement-mark.is-silver>span{color:#d0dbe3}
