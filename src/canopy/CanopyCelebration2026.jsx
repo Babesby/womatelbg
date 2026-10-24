@@ -146,7 +146,7 @@ export default function CanopyCelebration({viewer,progress=[],submissions=[],tes
       <div className="cce-grade-info"><span>YOUR GRADED ACHIEVEMENT</span><strong>{earned}<small> / 500 points</small></strong><p>{finalized?'All five modules graded · Your earned achievement':gradedCount+' of 5 module scores finalised · Badge pending final review'}</p></div>
       <div className="cce-grade-meter"><span style={{width:Math.min(100,Math.max(0,earned/5))+'%'}}/></div>
       <div className={'cce-grade-award '+(tier?'is-'+tier:'is-pending')}>
-        {tier?<><span className="cce-grade-medallion" role="img" aria-label={'WOMATE '+tier+' ornamental medallion'}></span><div><strong>{tier.toUpperCase()} AWARD</strong><small>{tier==='ruby'?'Perfect 500 · Distinction':'Verified WOMATE achievement · '+earned+'/500'}</small></div></>:<div className="cce-grade-pending"><strong>Badge awaiting final grades</strong><small>Earned after all 5 module scores are finalised.</small></div>}
+        {tier?<><span className="cce-grade-medallion" role="img" aria-label={'WOMATE '+tier+' ornamental medallion'}></span><div><strong>{tier.toUpperCase()} BADGE</strong><small>{tier==='ruby'?'Perfect 500 · Distinction':'Verified WOMATE achievement · '+earned+'/500'}</small></div></>:<div className="cce-grade-pending"><strong>Badge awaiting final grades</strong><small>Earned after all 5 module scores are finalised.</small></div>}
       </div>
     </div>
    </div>
