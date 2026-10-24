@@ -679,3 +679,5 @@ export async function getCanopyTesterFeedback2026Status(session){
  if(!s?.access_token)throw new Error('Sign in as the Canopy tester.');
  return rest('rpc/canopy_tester_feedback_2026_status',{token:s.access_token,method:'POST',body:{}});
 }
+
+export async function getCanopyMyC2GradeSummary(session){const s=await refreshSession(session||getStoredSession());if(!s?.access_token)throw new Error('Sign in to view grades');return rest('rpc/womate_my_c2_grade_summary',{token:s.access_token,method:'POST',body:{}})}
