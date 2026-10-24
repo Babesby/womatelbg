@@ -3,3 +3,39 @@
 .cac-toolbar select{min-height:42px;border:1px solid #cfddd7;border-radius:10px;background:#fff;color:#17382b;padding:8px 12px;max-width:100%}
 .cac-list>article>input[type=checkbox]{flex:0 0 18px;width:18px;height:18px;align-self:center;accent-color:#0e4d4a}
 .cac-toolbar{flex-wrap:wrap!important}
+
+
+/* Cohort 2 administrator enrolment / withdrawal workflow */
+.cac-enrolment-tabs{display:flex;gap:10px;margin:22px 0 16px;flex-wrap:wrap}
+.cac-enrolment-tabs button{display:inline-flex;align-items:center;gap:12px;justify-content:center;min-height:48px;padding:11px 17px;border:1px solid #cedfd5;border-radius:13px;background:#fff;color:#174e42;font:700 14px inherit;cursor:pointer;transition:background .2s,border-color .2s}
+.cac-enrolment-tabs button strong{font-size:12px;font-weight:800;padding:4px 8px;border-radius:30px;background:#edf4ef;color:#346554}
+.cac-enrolment-tabs button.is-active{background:#0e4d4a;border-color:#0e4d4a;color:#fff}
+.cac-enrolment-tabs button.is-active strong{background:#c6ff52;color:#123b31}
+.cac-enrolment-tabs button:focus-visible,.cac-restore-actions button:focus-visible{outline:3px solid #7db9aa;outline-offset:2px}
+.cac-enrolment-description{font-size:13px;color:#526d62;line-height:1.6;margin-bottom:18px}
+.cac-enrolment-description p{margin:0}
+.cac-enrolment-description strong{color:#1e5145}
+.cac-enrolment-row{align-items:center}
+.cac-enrolment-info{min-width:0;flex:1}
+.cac-enrolment-info h2{font-size:15px;line-height:1.4;margin:0 0 5px;color:#19473c}
+.cac-enrolment-info p{font-size:12px;overflow-wrap:anywhere;line-height:1.6}
+.cac-enrolment-info small{display:block;font-size:11px;line-height:1.5}
+.cac-enrolment-info small strong{font-weight:800;color:#144b3f}
+.cac-enrolment-success{margin:14px 0;padding:13px 15px;border-left:3px solid #3d926f;border-radius:9px;background:#eff7ed;color:#1a5a42;line-height:1.5;font-size:13px}
+.cac-restore-area{width:min(100%,330px);flex:0 1 330px;display:flex;justify-content:flex-end}
+.cac-restore-form{width:100%;display:grid;gap:10px}
+.cac-restore-form label{font-size:12px;font-weight:750;color:#285a4c}
+.cac-restore-form textarea{width:100%;min-height:75px;resize:vertical;padding:10px 12px;border:1px solid #b9d4c7;border-radius:9px;background:#fff;font:inherit;font-size:12px;color:#214d42;line-height:1.5}
+.cac-restore-actions{display:flex;flex-wrap:wrap;gap:8px}
+.cac-enrolment .cac-restore-actions .cac-secondary-action{background:#edf4f0;color:#285e4d}
+.cac-enrolment-empty{padding:20px;border:1px dashed #bdcfc7;border-radius:12px;background:#fbfdfb;color:#5b786a}
+@media(max-width:650px){
+ .cac-enrolment-tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+ .cac-enrolment-tabs button{font-size:12px;min-width:0;gap:7px;padding:10px 8px}
+ .cac-enrolment-tabs button strong{font-size:11px}
+ .cac-enrolment-row{align-items:stretch}
+ .cac-restore-area{width:100%;flex:1}
+ .cac-restore-area>button{width:100%;justify-content:center}
+ .cac-restore-actions{display:grid;grid-template-columns:1fr 1fr}
+ .cac-enrolment-row>button{width:100%;justify-content:center}
+}
