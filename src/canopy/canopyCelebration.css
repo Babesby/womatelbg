@@ -251,3 +251,22 @@ html[data-canopy-theme="dark"] .cce-track-heading>b{color:#9bb6a8}
 html[data-canopy-theme="dark"] .cce-grade-strip{background:linear-gradient(115deg,#173e37,#1c463b);border-color:#315d50}html[data-canopy-theme="dark"] .cce-grade-info>strong{color:#fff}html[data-canopy-theme="dark"] .cce-grade-info>p{color:#c3d6cc}
 @media(max-width:640px){.cce-grade-strip{grid-template-columns:1fr;gap:17px;padding:20px 18px;margin-bottom:25px}.cce-grade-meter{grid-column:1}.cce-grade-award{grid-column:1;grid-row:auto;min-height:82px}.cce-grade-info>strong{font-size:43px}}
 @media(prefers-reduced-motion:reduce){.cce-grade-meter span{transition:none}}
+
+
+/* Authentic uploaded WOMATE medallions — ruby, emerald, diamond, gold, silver (in that order). */
+.cce-grade-award .cce-grade-medallion{
+ display:block;flex:0 0 clamp(72px,8vw,94px);width:clamp(72px,8vw,94px);height:clamp(72px,8vw,94px);
+ border:0;border-radius:0;box-shadow:none;font-size:0;
+ background-image:url('/assets/canopy/awards/womate-medallions.avif');
+ background-repeat:no-repeat;background-size:500% 100%;background-position:0% center;
+ filter:drop-shadow(0 8px 8px rgba(0,0,0,.15));
+}
+.cce-grade-award.is-ruby .cce-grade-medallion{background-position:0% center}
+.cce-grade-award.is-emerald .cce-grade-medallion{background-position:25% center}
+.cce-grade-award.is-diamond .cce-grade-medallion{background-position:50% center}
+.cce-grade-award.is-gold .cce-grade-medallion{background-position:75% center}
+.cce-grade-award.is-silver .cce-grade-medallion{background-position:100% center}
+.cce-grade-award:has(.cce-grade-medallion){padding:12px 16px;min-height:112px}
+.cce-grade-award .cce-grade-pending{padding:6px 0}
+.cce-grade-award.is-ruby strong,.cce-grade-award.is-emerald strong,.cce-grade-award.is-diamond strong,.cce-grade-award.is-gold strong,.cce-grade-award.is-silver strong{color:#fff}
+@media(max-width:640px){.cce-grade-award .cce-grade-medallion{width:80px;height:80px;flex-basis:80px}.cce-grade-award{gap:14px}}
