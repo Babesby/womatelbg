@@ -205,7 +205,7 @@ export async function saveQuiz(session,moduleId,score,total){
 }
 export async function getManagerSnapshot(session){
   const s=await refreshSession(session||getStoredSession());if(!s?.access_token)return null;
-  try{await rest('rpc/canopy_refresh_learning_automation',{token:s.access_token,method:'POST',body:{}})}catch{}
+  // Loading the Admin dashboard must not rerun assessment automation.
   const [profiles,enrollments,progress,submissions,actions,certificates]=await Promise.all([
     restAll('canopy_profiles?select=user_id,full_name,country,role&order=full_name.asc',{token:s.access_token}),
     restAll('canopy_enrollments?select=*&order=created_at.asc',{token:s.access_token}),
@@ -215,12 +215,23 @@ export async function getManagerSnapshot(session){
     restAll('canopy_certificates?select=*&order=issued_at.desc',{token:s.access_token})
   ]);
   const testerIds=new Set((profiles||[]).filter(p=>p.role==='tester').map(p=>p.user_id));
-  let withdrawals=[];
-  try{const rows=await rest('rpc/canopy_admin_list_withdrawals',{token:s.access_token,method:'POST',body:{}});withdrawals=Array.isArray(rows)?rows:[]}catch{}
-  let spotlight={nominations:[],weekly:[],recognition_assets:[],media_queue:[]};
-  try{const data=await rest('rpc/canopy_admin_spotlight_dashboard',{token:s.access_token,method:'POST',body:{}});if(data&&typeof data==='object')spotlight=data}catch{}
-  try{const assets=await rest('rpc/canopy_admin_spotlight_recognition_assets',{token:s.access_token,method:'POST',body:{p_module_id:null}});spotlight={...spotlight,recognition_assets:Array.isArray(assets)?assets:[]}}catch{}
-  try{const media=await rest('rpc/canopy_admin_spotlight_media_queue',{token:s.access_token,method:'POST',body:{p_module_id:null}});spotlight={...spotlight,media_queue:Array.isArray(media)?media:[]}}catch{}
+  // Optional panels fetch concurrently, rather than serially blocking access or submissions.
+  const extra=await Promise.allSettled([
+    rest('rpc/canopy_admin_list_withdrawals',{token:s.access_token,method:'POST',body:{}}),
+    rest('rpc/canopy_admin_spotlight_dashboard',{token:s.access_token,method:'POST',body:{}}),
+    rest('rpc/canopy_admin_spotlight_recognition_assets',{token:s.access_token,method:'POST',body:{p_module_id:null}}),
+    rest('rpc/canopy_admin_spotlight_media_queue',{token:s.access_token,method:'POST',body:{p_module_id:null}})
+  ]);
+  const optionalValue=index=>extra[index]?.status==='fulfilled'?extra[index].value:null;
+  const withdrawals=Array.isArray(optionalValue(0))?optionalValue(0):[];
+  const spotlightBase=optionalValue(1);
+  const spotlight={
+    ...(spotlightBase&&typeof spotlightBase==='object'?spotlightBase:{}),
+    nominations:Array.isArray(spotlightBase?.nominations)?spotlightBase.nominations:[],
+    weekly:Array.isArray(spotlightBase?.weekly)?spotlightBase.weekly:[],
+    recognition_assets:Array.isArray(optionalValue(2))?optionalValue(2):[],
+    media_queue:Array.isArray(optionalValue(3))?optionalValue(3):[]
+  };
   return {
     profiles:dedupeRows(profiles).filter(p=>!testerIds.has(p.user_id)),
     enrollments:dedupeRows(enrollments).filter(x=>!testerIds.has(x.user_id)),
