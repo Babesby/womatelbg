@@ -71,6 +71,30 @@ export default function PublicationsPage(){
  const queue=reviewItems.filter(p=>(reviewFilter==='all'||p.status===reviewFilter)&&`${p.title} ${p.name} ${p.email}`.toLowerCase().includes(reviewSearch.toLowerCase()));
  return <main className="wpub"><section className="wpubHero"><div className="wpubEyebrow">WOMATE / PUBLICATIONS</div><div className="wpubHeroLayout"><div><h1>Ideas worth<br/><em>sharing.</em></h1><p>Research, perspectives and practical knowledge advancing women's leadership, climate action and inclusive development.</p><div className="wpubHeroActions"><button className="wpubLime" onClick={()=>{setFormOpen(true);setSuccess(false);setNotice('')}}>Submit your work <ArrowUpRight size={17}/></button><a href="#wpubLibrary">Explore publications <ChevronDown size={16}/></a></div></div><div className="wpubHeroVisual" aria-hidden="true"><img src="/assets/img/womate-publications-hero.webp" alt=""/></div></div></section>
  <section id="wpubLibrary" className="wpubLibrary"><div className="wpubSectionTop"><div><span>THE LIBRARY</span><h2>Published perspectives.</h2><p>Explore work reviewed and published by WOMATE.</p></div><div className="wpubTools"><label className="wpubSearch"><Search size={17}/><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search publications" aria-label="Search publications"/></label><select aria-label="Publication category" value={kind} onChange={e=>setKind(e.target.value)}><option>All</option>{LIBRARY_TYPES.map(t=><option key={t}>{t}</option>)}</select></div></div>
+
+ <article className="wpubFeaturedResearch" aria-labelledby="wok-research-heading">
+  <div className="wpubFeaturedIntro">
+   <div className="wpubFeaturedBrand"><img src="/assets/img/logo.svg" alt="WOMATE — Women in Climate" loading="lazy"/><span>FIELD RESEARCH · WoK ACTION · EASTERN REGION, GHANA</span></div>
+   <div className="wpubFeaturedTag">Featured WOMATE research · 2026 baseline study</div>
+   <h3 id="wok-research-heading">When climate awareness doesn't reach community action.</h3>
+   <p>What 400 respondents in Akuapem North Municipality and Okere District reveal about farming livelihoods, knowledge of local adaptation initiatives and access to opportunities to participate.</p>
+   <div className="wpubFeaturedActions">
+    <a className="wpubFeaturedPrimary" href="https://drive.google.com/file/d/1KLLoSF7I8VRTPkbBlbcdAipmG7pHRLrG/view" target="_blank" rel="noopener noreferrer">Read the research report <ArrowUpRight size={17}/></a>
+    <a className="wpubFeaturedSecondary" href="https://docs.google.com/document/d/1famDNcAmvweJz1aj8Zu2ghYnrmgp3W8J/edit" target="_blank" rel="noopener noreferrer">Supporting findings <FileText size={16}/></a>
+   </div>
+  </div>
+  <div className="wpubFeaturedEvidence">
+   <div className="wpubFeaturedStats">
+    <div><strong>400</strong><span>Survey respondents</span></div>
+    <div><strong>93%</strong><span>Reported awareness of climate change</span></div>
+    <div><strong>75%</strong><span>Reported farming as primary occupation</span></div>
+    <div><strong>14.8%</strong><span>Knew of local adaptation programmes</span></div>
+   </div>
+   <div className="wpubFeaturedParticipation"><b>26 of 400</b><span>reported having participated in a climate adaptation project (6.5% of the full sample).</span></div>
+   <p className="wpubFeaturedMethod"><strong>Reading the data responsibly:</strong> The participation item has substantial missing responses (324 of 400). The 6.5% figure is the recorded 'yes' count divided by all 400 respondents; it is not the participation rate among respondents who answered that item. Findings describe this Eastern Region sample, not Ghana as a whole.</p>
+  </div>
+ </article>
+
  {loading?<div className="wpubEmpty">Loading publications…</div>:shown.length?<div className="wpubGrid">{shown.map(p=><article key={p.id} className="wpubCard"><div className="wpubCardMeta"><span>{p.kind}</span><time>{niceDate(p.published_at)}</time></div><div className="wpubDocIcon"><BookOpen size={28}/></div><h3>{p.title}</h3><p className="wpubCardSummary">{p.summary}</p><div className="wpubCardFoot"><span>{p.name}{p.affiliation?` · ${p.affiliation}`:''}</span><button onClick={()=>setSelected(p)}>Explore <ArrowUpRight size={16}/></button></div></article>)}</div>:<div className="wpubEmpty"><FileText size={28}/><h3>{query||kind!=='All'?'No matching publications.':'Our publications library is taking shape.'}</h3><p>{query||kind!=='All'?'Try another search or category.':'Have work worth sharing? Submit it for editorial review.'}</p><button className="wpubOutline" onClick={()=>{setFormOpen(true);setSuccess(false)}}>Submit a publication</button></div>}
  <div className="wpubInvite"><div><span>CONTRIBUTE TO THE CONVERSATION</span><h2>Your research has a place here.</h2><p>We welcome original articles, case studies, policy perspectives and research from She Leads, The Circle and the wider community.</p></div><button className="wpubLime" onClick={()=>{setFormOpen(true);setSuccess(false);setNotice('')}}>Submit a publication <ArrowUpRight size={17}/></button></div>
  <div className="wpubAdminEntry"><button aria-label="Editorial access" title="Editorial access" onClick={()=>{setAdminOpen(true);setNotice('')}}><ChevronDown size={14}/> Editorial access</button></div></section>
