@@ -203,16 +203,28 @@ export async function saveQuiz(session,moduleId,score,total){
   const s=await refreshSession(session||getStoredSession());
   return rest('canopy_quiz_attempts',{token:s.access_token,method:'POST',prefer:'return=representation',body:{user_id:s.user.id,module_id:moduleId,score,total}});
 }
+// A transient timeout or gateway error should recover without requiring a browser refresh.
+async function managerRead(path,options){
+  try{return await restAll(path,options)}
+  catch(error){
+    const message=String(error?.message||error);
+    // Do not retry invalid sessions, denied access or pagination-integrity failures.
+    if(/(?:401|403|JWT|permission|unauthorized|forbidden|pagination|safety ceiling)/i.test(message))throw error;
+    await new Promise(resolve=>setTimeout(resolve,450));
+    return restAll(path,options);
+  }
+}
+
 export async function getManagerSnapshot(session){
   const s=await refreshSession(session||getStoredSession());if(!s?.access_token)return null;
   // Loading the Admin dashboard must not rerun assessment automation.
   const [profiles,enrollments,progress,submissions,actions,certificates]=await Promise.all([
-    restAll('canopy_profiles?select=user_id,full_name,country,role&order=full_name.asc',{token:s.access_token}),
-    restAll('canopy_enrollments?select=*&order=created_at.asc',{token:s.access_token}),
-    restAll('canopy_lesson_progress?select=*',{token:s.access_token}),
-    restAll('rpc/canopy_manager_weekly_submissions',{token:s.access_token,method:'POST',body:{},pageSize:500}),
-    restAll('canopy_manager_actions?select=*&order=created_at.desc',{token:s.access_token}),
-    restAll('canopy_certificates?select=*&order=issued_at.desc',{token:s.access_token})
+    managerRead('canopy_profiles?select=user_id,full_name,country,role&order=full_name.asc',{token:s.access_token}),
+    managerRead('canopy_enrollments?select=*&order=created_at.asc',{token:s.access_token}),
+    managerRead('canopy_lesson_progress?select=*',{token:s.access_token}),
+    managerRead('rpc/canopy_manager_weekly_submissions',{token:s.access_token,method:'POST',body:{},pageSize:500}),
+    managerRead('canopy_manager_actions?select=*&order=created_at.desc',{token:s.access_token}),
+    managerRead('canopy_certificates?select=*&order=issued_at.desc',{token:s.access_token})
   ]);
   const testerIds=new Set((profiles||[]).filter(p=>p.role==='tester').map(p=>p.user_id));
   // Optional panels fetch concurrently, rather than serially blocking access or submissions.
