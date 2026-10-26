@@ -20,3 +20,30 @@
 @media(max-width:570px){.wpub .wpubForm .wpubConsent{padding:13px 12px!important;column-gap:10px!important;grid-template-columns:19px minmax(0,1fr)!important}.wpub .wpubForm .wpubConsent span{font-size:12px!important;line-height:1.65!important;}}
 
 .wpubHeroVisual{position:relative;min-height:360px;display:flex;align-items:flex-end;justify-content:center;overflow:hidden;border-radius:28px;background:radial-gradient(circle at 48% 28%,rgba(198,255,82,.14),transparent 52%),linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,0));border:1px solid rgba(255,255,255,.12)}.wpubHeroVisual img{display:block;width:min(100%,460px);height:auto;max-height:520px;object-fit:contain;object-position:center bottom;filter:drop-shadow(0 26px 36px rgba(0,0,0,.22))}.wpubHeroLayout{grid-template-columns:minmax(0,1.05fr) minmax(300px,.95fr);align-items:end;gap:clamp(28px,6vw,86px)}@media(max-width:850px){.wpubHeroLayout{grid-template-columns:1fr}.wpubHeroVisual{min-height:300px;max-height:480px}.wpubHeroVisual img{width:min(92%,420px)}}@media(max-width:560px){.wpubHeroVisual{min-height:260px}.wpubHeroVisual img{width:min(100%,350px)}}
+
+
+/* WOMATE editorial research feature — same official logo used in the site header. */
+.wpubFeaturedResearch{display:grid;grid-template-columns:minmax(0,1.17fr) minmax(300px,.83fr);gap:clamp(25px,4vw,65px);align-items:stretch;margin:35px 0 44px;padding:clamp(24px,4.6vw,62px);background:#073b39;color:#f8fff9;border-radius:25px;box-shadow:0 22px 52px rgba(3,47,40,.13);overflow:hidden}
+.wpubFeaturedIntro{display:flex;flex-direction:column;align-items:start;min-width:0}
+.wpubFeaturedBrand{display:flex;align-items:center;flex-wrap:wrap;gap:19px;margin-bottom:33px}
+.wpubFeaturedBrand img{width:108px;height:65px;object-fit:contain;object-position:left center;background:#fff;border-radius:13px;padding:5px 10px;box-sizing:border-box}
+.wpubFeaturedBrand span{font-size:10px;line-height:1.5;font-weight:800;letter-spacing:.12em;color:#b7edb7;max-width:250px}
+.wpubFeaturedTag{font-size:11px;color:#c6ff52;font-weight:800;letter-spacing:.065em}
+.wpubFeaturedIntro h3{font-size:clamp(34px,4.1vw,58px);font-weight:800;max-width:650px;letter-spacing:-.055em;line-height:1.07;margin:17px 0 20px}
+.wpubFeaturedIntro>p{font-size:clamp(14px,1.25vw,17px);max-width:640px;line-height:1.7;color:#d2e9dc;margin:0}
+.wpubFeaturedActions{display:flex;flex-wrap:wrap;gap:10px;margin-top:auto;padding-top:38px}
+.wpubFeaturedActions a{display:inline-flex;align-items:center;justify-content:center;gap:9px;text-decoration:none;font-weight:800;font-size:12px;border-radius:99px;padding:13px 17px;min-height:46px;box-sizing:border-box}
+.wpubFeaturedPrimary{background:#c6ff52;color:#073b39}
+.wpubFeaturedSecondary{border:1px solid #90b5a6;color:#f8fff9}
+.wpubFeaturedEvidence{border:1px solid rgba(255,255,255,.17);border-radius:20px;background:linear-gradient(158deg,#17584f,#0a3937);padding:clamp(20px,2.8vw,32px);display:flex;flex-direction:column}
+.wpubFeaturedStats{display:grid;grid-template-columns:1fr 1fr;gap:21px 17px}
+.wpubFeaturedStats div{border-bottom:1px solid rgba(255,255,255,.18);padding:0 0 20px;min-width:0}
+.wpubFeaturedStats strong{display:block;color:#c6ff52;font-size:clamp(35px,3.6vw,54px);letter-spacing:-.05em;line-height:1.1}
+.wpubFeaturedStats span{display:block;color:#d5e9e1;font-size:12px;line-height:1.5;margin-top:6px}
+.wpubFeaturedParticipation{display:flex;flex-direction:column;gap:7px;margin:24px 0 15px}
+.wpubFeaturedParticipation b{font-size:22px;letter-spacing:-.03em}
+.wpubFeaturedParticipation span{color:#d4e8e1;font-size:12px;line-height:1.5}
+.wpubFeaturedMethod{color:#bad0c5;font-size:11px;line-height:1.65;margin:auto 0 0;border-top:1px solid rgba(255,255,255,.16);padding-top:17px}
+.wpubFeaturedMethod strong{color:#fff}
+@media(max-width:900px){.wpubFeaturedResearch{grid-template-columns:1fr;gap:30px}.wpubFeaturedActions{margin-top:0;padding-top:25px}}
+@media(max-width:580px){.wpubFeaturedResearch{padding:23px 18px;border-radius:17px}.wpubFeaturedIntro h3{font-size:36px}.wpubFeaturedBrand{margin-bottom:23px;gap:12px}.wpubFeaturedBrand img{width:86px;height:55px}.wpubFeaturedBrand span{font-size:9px}.wpubFeaturedStats strong{font-size:36px}.wpubFeaturedActions{width:100%}.wpubFeaturedActions a{width:100%}}
