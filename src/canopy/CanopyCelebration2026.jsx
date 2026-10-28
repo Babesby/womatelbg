@@ -135,6 +135,10 @@ export default function CanopyCelebration({viewer,progress=[],submissions=[],tes
     </div>
     {celebrating&&<div className="cce-confetti" aria-hidden="true"><img src="/assets/canopy/graduation/confetti.webp" alt=""/></div>}
   </section>
+  {!tester&&<section className="cce-feedback-invite" aria-label="Programme evaluation">
+   <div><strong>Help shape what comes next.</strong><span>Share your She Leads experience with WOMATE.</span></div>
+   <a href="https://forms.gle/7pj68kYGBHPnm5mY8" target="_blank" rel="noopener noreferrer">Share feedback <ExternalLink size={15}/></a>
+  </section>}
   <section className="cce-overview" aria-label="Your actual learning progress">
    <div className="cce-section-heading"><div><span>01 / YOUR JOURNEY IN NUMBERS</span><h2>A little progress. A lot of possibility.</h2></div><button type="button" onClick={()=>go('/canopy/progress')}>Full progress <ArrowRight size={15}/></button></div>
    <div className="cce-performance" ref={statsRef}>
