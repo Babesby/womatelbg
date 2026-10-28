@@ -270,3 +270,16 @@ html[data-canopy-theme="dark"] .cce-grade-strip{background:linear-gradient(115de
 .cce-grade-award .cce-grade-pending{padding:6px 0}
 .cce-grade-award.is-ruby strong,.cce-grade-award.is-emerald strong,.cce-grade-award.is-diamond strong,.cce-grade-award.is-gold strong,.cce-grade-award.is-silver strong{color:#fff}
 @media(max-width:640px){.cce-grade-award .cce-grade-medallion{width:80px;height:80px;flex-basis:80px}.cce-grade-award{gap:14px}}
+
+
+/* Optional programme evaluation link — never a blocking submission-status prompt. */
+.cce-feedback-invite{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;margin:16px 0 28px;padding:18px 22px;border:1px solid #d8e6dc;border-radius:16px;background:#f5f9f5}
+.cce-feedback-invite>div{display:flex;flex-direction:column;gap:3px;min-width:200px}
+.cce-feedback-invite strong{font-size:14px;color:#123e35;letter-spacing:-.01em}
+.cce-feedback-invite span{font-size:12px;color:#657f72;line-height:1.45}
+.cce-feedback-invite>a{display:inline-flex;align-items:center;justify-content:center;gap:8px;flex-shrink:0;padding:10px 17px;min-height:40px;border-radius:999px;background:#0e4d4a;color:#fff;font-size:12px;font-weight:800;text-decoration:none;transition:background .2s ease}
+.cce-feedback-invite>a:hover{background:#156b5e}
+@media(max-width:500px){.cce-feedback-invite{align-items:flex-start;padding:17px}.cce-feedback-invite>a{width:100%}}
+html[data-canopy-theme="dark"] .cce-feedback-invite{background:#173e37;border-color:#345e52}
+html[data-canopy-theme="dark"] .cce-feedback-invite strong{color:#e6f8ed}
+html[data-canopy-theme="dark"] .cce-feedback-invite span{color:#b5cfc2}
