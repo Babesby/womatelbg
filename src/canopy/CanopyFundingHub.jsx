@@ -1,11 +1,20 @@
 import React,{useEffect,useMemo,useState}from'react';
-import{Award,Banknote,BriefcaseBusiness,CalendarDays,CheckCircle2,ExternalLink,Globe2,MapPin,Search,Sparkles,UsersRound}from'lucide-react';
+import{BriefcaseBusiness,CalendarDays,CheckCircle2,Clapperboard,ExternalLink,Globe2,HandCoins,MapPin,Search,Trophy,UsersRound}from'lucide-react';
 import{getCanopyFundingFeed,submitCanopyFundingApplication,withdrawCanopyFundingApplication,getAdminCanopyFundingCalls,getAdminCanopyFundingApplications,saveAdminCanopyFundingCall,notifyAdminCanopyFundingCall,updateAdminCanopyFundingApplication,requestCanopyFundingSupport,reviewCanopyFundingSupport}from'./canopyApi';
 import'./canopyFundingHub.css';
 
 const TYPES=['all','microgrant','sponsored_challenge','paid_mission'];
 const STATUS_LABEL={submitted:'Submitted',shortlisted:'Shortlisted',selected:'Selected',not_selected:'Not selected',completed:'Completed',withdrawn:'Withdrawn'};
 const typeLabel=t=>({microgrant:'Microgrant',sponsored_challenge:'Sponsored challenge',paid_mission:'Paid mission'}[t]||'Funding call');
+
+function FundingMark({type,title}){
+ const Icon=type==='microgrant'?HandCoins:
+  type==='paid_mission'?BriefcaseBusiness:
+  /film|video|slingshot/i.test(String(title||''))?Clapperboard:Trophy;
+ const kind=['microgrant','paid_mission','sponsored_challenge'].includes(type)?type:'sponsored_challenge';
+ return <div className={'cf-icon cf-icon-'+kind} aria-hidden="true"><Icon size={19} strokeWidth={1.9}/></div>;
+}
+
 const dateLabel=d=>{if(!d)return'Open deadline';const x=new Date(d);return Number.isNaN(x.getTime())?'Open deadline':x.toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'})};
 const cleanUrl=v=>String(v||'').trim();
 
@@ -24,7 +33,7 @@ export default function CanopyFundingHub({viewer}){
   {Number(data.priority_points)>0&&<p className="cf-msg">Verified Talent Priority · {data.priority_points}/40 — recognised for eligible WOMATE-managed opportunities; external eligibility still applies.</p>}
   {msg&&<p className="cf-msg">{msg}</p>}
   <section className="cf-list">{rows.length?rows.map(c=>{const app=c.application;const editable=!app||['submitted','withdrawn'].includes(app.status);return <article key={c.id} className={c.featured?'featured':''}>
-    <div className="cf-call-head"><div className="cf-icon">{c.call_type==='microgrant'?<Award/>:c.call_type==='paid_mission'?<Banknote/>:<Sparkles/>}</div><div className="cf-title"><div className="cf-meta"><span>{typeLabel(c.call_type)}</span>{c.global?<span><Globe2/>Global</span>:c.country?<span><MapPin/>{c.country}</span>:null}<span><CalendarDays/>{dateLabel(c.deadline_at)}</span>{c.participation_mode&&<span><UsersRound/>{c.participation_mode}</span>}</div><h2>{c.title}</h2><h3>{c.sponsor}</h3></div>{c.amount_text&&<strong className="cf-amount">{c.amount_text}</strong>}</div>
+    <div className="cf-call-head"><FundingMark type={c.call_type} title={c.title}/><div className="cf-title"><div className="cf-meta"><span>{typeLabel(c.call_type)}</span>{c.global?<span><Globe2/>Global</span>:c.country?<span><MapPin/>{c.country}</span>:null}<span><CalendarDays/>{dateLabel(c.deadline_at)}</span>{c.participation_mode&&<span><UsersRound/>{c.participation_mode}</span>}</div><h2>{c.title}</h2><h3>{c.sponsor}</h3></div>{c.amount_text&&<strong className="cf-amount">{c.amount_text}</strong>}</div>
     <p className="cf-summary">{c.summary}</p><div className="cf-deliverable"><b>What to prepare</b><span>{c.deliverable}</span></div>
     {c.matched?<p className="cf-fit"><CheckCircle2/>{c.managed_by_womate?'Eligible for WOMATE consideration based on your Canopy record.':'Your Canopy record matches WOMATE’s preliminary criteria; verify the organiser’s age and other requirements before applying.'}</p>:<p className="cf-wait">Your current Canopy record does not meet this call's eligibility yet.</p>}
     {app&&<div className={'cf-status '+app.status}><b>{c.url&&!c.managed_by_womate?'WOMATE support · '+String(app.support_status||'requested').replaceAll('_',' '):(STATUS_LABEL[app.status]||app.status)}</b>{app.admin_remark&&<span>{app.admin_remark}</span>}{app.external_submitted_at&&<span>External submission recorded</span>}</div>}
