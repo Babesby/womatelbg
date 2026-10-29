@@ -18,6 +18,7 @@ export default function CanopyOpportunityBoard({viewer}){
   <header className="co-hero"><div><span>OPPORTUNITIES</span><h1>Use what you are building.</h1><p>Explore WOMATE-reviewed opportunities and decide what is worth pursuing.</p></div><div className="co-signal"><b>{(data.opportunities||[]).filter(x=>x.matched).length}</b><span>may fit your Canopy evidence</span></div></header>
   <section className="co-tools"><div className="co-tabs"><button className={tab==='for-you'?'on':''} onClick={()=>setTab('for-you')}>For you</button><button className={tab==='all'?'on':''} onClick={()=>setTab('all')}>All opportunities</button><button className={tab==='saved'?'on':''} onClick={()=>setTab('saved')}>Saved</button></div><div className="co-search"><Search/><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search title, organisation or place"/></div></section>
   <div className="co-filters">{TYPES.map(t=><button key={t} className={type===t?'on':''} onClick={()=>setType(t)}>{t==='all'?'All types':titleCase(t)}</button>)}</div>
+  {Number(data.priority_points)>0&&<p className="co-msg">Verified Talent Priority · {data.priority_points}/40. Your verified Mission work strengthens consideration for suitable WOMATE opportunities.</p>}
   {msg&&<p className="co-msg">{msg}</p>}
   <section className="co-list">{rows.length?rows.map(o=><article key={o.id} className={o.featured?'featured':''}>
     <div className="co-mark">{o.featured?<Star/>:<BriefcaseBusiness/>}</div>
