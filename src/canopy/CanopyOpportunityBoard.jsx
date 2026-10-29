@@ -1,10 +1,31 @@
 import React,{useEffect,useMemo,useState}from'react';
-import{Bookmark,BriefcaseBusiness,CalendarDays,CheckCircle2,ExternalLink,Globe2,MapPin,Plus,Search,Sparkles,Star,Trash2}from'lucide-react';
+import{Award,BookOpenCheck,Bookmark,BriefcaseBusiness,CalendarDays,CheckCircle2,ClipboardCheck,Compass,ExternalLink,Globe2,GraduationCap,HandCoins,HeartHandshake,Leaf,MapPin,Medal,Plus,Presentation,Search,Sparkles,Sprout,Star,Trash2}from'lucide-react';
 import{archiveAdminCanopyOpportunity,getAdminCanopyOpportunities,getCanopyOpportunityFeed,notifyAdminCanopyOpportunity,saveAdminCanopyOpportunity,toggleCanopyOpportunitySave,applyWomateOpportunity,getWomateOpportunityApplications,reviewWomateOpportunityApplication,setWomateOpportunityManaged}from'./canopyApi';
 import'./canopyOpportunityBoard.css';
 
 const TYPES=['all','job','internship','fellowship','grant','scholarship','consultancy','conference','volunteer','other'];
 const titleCase=s=>String(s||'').replaceAll('_',' ').replace(/\b\w/g,m=>m.toUpperCase());
+
+const OPPORTUNITY_ICONS={
+ job:BriefcaseBusiness,
+ internship:BookOpenCheck,
+ fellowship:Medal,
+ grant:HandCoins,
+ scholarship:GraduationCap,
+ consultancy:ClipboardCheck,
+ conference:Presentation,
+ volunteer:HeartHandshake,
+ other:Compass
+};
+function OpportunityMark({type,title,featured}){
+ const kind=OPPORTUNITY_ICONS[type]?type:'other';
+ const topic=String(title||'').toLowerCase();
+ const Icon=kind==='other'&&/agricultur|farm|food|seed/.test(topic)?Sprout:
+  kind==='other'&&/climate|conservation|environment/.test(topic)?Leaf:
+  OPPORTUNITY_ICONS[kind];
+ return <div className={'co-mark co-mark-'+kind} aria-hidden="true"><Icon size={19} strokeWidth={1.9}/>{featured&&<span className="co-mark-featured"><Star size={10} fill="currentColor"/></span>}</div>;
+}
+
 const deadline=d=>{if(!d)return'Open deadline';const dt=new Date(d);return Number.isNaN(dt.getTime())?'Open deadline':dt.toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'})};
 function reasons(o,data){const out=[];if(o.global)out.push('Open globally');else if(o.country&&data.country&&o.country.trim().toLowerCase()===data.country.trim().toLowerCase())out.push('Fits your country');if(Number(o.min_module_no||0)>0&&Number(data.completed_modules||0)>=Number(o.min_module_no))out.push('Your learning progress fits');if(o.requires_spotlight&&Number(data.spotlight_count||0)>0)out.push('Spotlight experience fits');if(o.requires_verified_mission&&data.verified_mission)out.push('Verified mission experience fits');return out.slice(0,3)}
 
@@ -23,7 +44,7 @@ export default function CanopyOpportunityBoard({viewer}){
   {Number(data.priority_points)>0&&<p className="co-msg">Verified Talent Priority · {data.priority_points}/40. Your verified Mission work strengthens consideration for suitable WOMATE opportunities.</p>}
   {msg&&<p className="co-msg">{msg}</p>}
   <section className="co-list">{rows.length?rows.map(o=><article key={o.id} className={o.featured?'featured':''}>
-    <div className="co-mark">{o.featured?<Star/>:<BriefcaseBusiness/>}</div>
+    <OpportunityMark type={o.opportunity_type} title={o.title} featured={o.featured}/>
     <div className="co-copy"><div className="co-meta"><span>{titleCase(o.opportunity_type)}</span>{o.global?<span><Globe2/>Global</span>:o.country?<span><MapPin/>{o.country}</span>:null}<span className={o.deadline_at?'co-deadline':'co-no-deadline'}><CalendarDays/>{o.deadline_at?'Deadline · '+deadline(o.deadline_at):'Closing date not set'}</span></div><h2>{o.title}</h2><h3>{o.organization}</h3><p>{o.summary}</p>{o.compensation&&<strong className="co-pay">{o.compensation}</strong>}{o.application&&<div className="co-app-status">WOMATE application · {o.application.status}{o.application.feedback&&<p>{o.application.feedback}</p>}</div>}{o.matched&&<div className="co-reasons">{reasons(o,data).map(r=><span key={r}><CheckCircle2/>{r}</span>)}</div>}</div>
     <div className="co-actions"><button aria-label={o.saved?'Remove saved opportunity':'Save opportunity'} className={o.saved?'saved':''} disabled={busy===o.id} onClick={()=>save(o)}><Bookmark/></button>{o.url&&!o.managed_by_womate&&<a href={o.url} target="_blank" rel="noreferrer">Official details <ExternalLink/></a>}{o.managed_by_womate&&o.matched&&<button className="co-apply-btn" disabled={busy===o.id||Boolean(o.application&&o.application.status!=='submitted')} onClick={()=>setApplyId(applyId===o.id?null:o.id)}>{o.application?'Edit application':'Apply to WOMATE'}</button>}</div>
   {applyId===o.id&&<div className="co-apply-form"><h3>Apply to WOMATE</h3><label>Why are you a strong candidate?<textarea value={draft.pitch} maxLength={1200} onChange={e=>setDraft({...draft,pitch:e.target.value})}/></label><label>What would you contribute?<textarea value={draft.plan} maxLength={1200} onChange={e=>setDraft({...draft,plan:e.target.value})}/></label><label>Evidence URL (optional)<input type="url" value={draft.evidence_url} onChange={e=>setDraft({...draft,evidence_url:e.target.value})}/></label><button className="co-apply-btn" disabled={busy===o.id} onClick={()=>apply(o)}>Submit application</button></div>}</article>):<div className="co-empty"><Sparkles/><h2>No opportunities here yet.</h2><p>Try another view or check again when WOMATE publishes more opportunities.</p></div>}</section>
