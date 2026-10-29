@@ -24,3 +24,39 @@ html[data-canopy-theme="dark"] .cf-icon{border-color:#3b5b50}
 .cf-apply label.cf-consent{display:flex;flex-direction:row;align-items:flex-start;gap:10px;max-width:100%;font-size:12px;font-weight:600;line-height:1.55;text-transform:none;letter-spacing:0;cursor:pointer}
 .cf-apply label.cf-consent input[type="checkbox"]{display:block;flex:0 0 18px;width:18px;height:18px;min-height:18px;padding:0;margin:1px 0 0;accent-color:#073b39;cursor:pointer}
 .cf-apply label.cf-consent span{display:block;flex:1 1 auto;min-width:0}
+
+
+/* Admin workbench: applications first; editorial lists instead of competing cards. */
+.cfa-workspace{max-width:1170px;margin:0 auto;padding:10px 0 50px;gap:18px}
+.cfa-workspace>header{padding-bottom:16px;border-bottom:1px solid var(--canopy-line)}
+.cfa-workspace-tabs{display:flex;gap:8px;flex-wrap:wrap;border-bottom:1px solid var(--canopy-line);padding:0 0 15px}
+.cfa-workspace-tabs button{display:inline-flex;align-items:center;gap:8px;padding:11px 17px;border:1px solid var(--canopy-line);border-radius:999px;background:transparent;color:var(--canopy-ink);font-size:12px;font-weight:750;cursor:pointer}
+.cfa-workspace-tabs button.active{background:#073b39;border-color:#073b39;color:#fff}
+.cfa-workspace-tabs button span{display:grid;place-items:center;min-width:21px;height:21px;padding:0 5px;border-radius:50px;background:#eef4ec;color:#0e4d4a;font-size:10px}
+.cfa-workspace-tabs button.active span{background:#c6ff52;color:#073b39}
+.cfa-workspace-tools{display:flex;align-items:end;justify-content:space-between;gap:14px;margin-top:4px}
+.cfa-workspace-tools label{display:grid;gap:7px;flex:1;max-width:430px;font-size:12px;font-weight:700;color:var(--canopy-muted)}
+.cfa-workspace-tools input{width:100%;border:1px solid var(--canopy-line);border-radius:999px;padding:12px 15px;font:inherit;background:transparent;color:var(--canopy-ink)}
+.cfa-workspace-tools button{border:1px solid var(--canopy-line);border-radius:999px;background:transparent;padding:11px 16px;color:var(--canopy-ink)}
+.cfa-workspace .cfa-form{width:100%;max-width:850px;position:static;margin:0 auto;grid-template-columns:1fr 1fr;padding:25px}
+.cfa-workspace .cfa-form h3,.cfa-workspace .cfa-form>label,.cfa-workspace .cfa-form>.cfa-checks,.cfa-workspace .cfa-form>.cfa-primary{grid-column:1/-1}
+.cfa-workspace .cfa-form label{font-size:12px;text-transform:none;letter-spacing:0;font-weight:700}
+.cfa-workspace .cfa-form input,.cfa-workspace .cfa-form select,.cfa-workspace .cfa-form textarea{padding:12px;font-size:13px}
+.cfa-workspace .cfa-form>.cfa-primary{justify-self:start;padding:13px 26px}
+.cfa-workspace .cfa-calls{margin-top:8px}.cfa-workspace .cfa-calls article{padding:21px 3px;align-items:center}
+.cfa-workspace .cfa-calls h3{font-size:17px;line-height:1.3;margin:6px 0}
+.cfa-workspace .cfa-calls b{display:inline-block;margin-top:9px;font-size:11px}
+.cfa-review{margin-top:18px;padding-top:24px}
+.cfa-review>header h3{font-size:22px}
+.cfa-review>article{display:grid;gap:11px;padding:23px 0}
+.cfa-review>article>div:first-child{align-items:center;flex-wrap:wrap}
+.cfa-review>article>div:first-child b{font-size:15px}
+.cfa-review>article p{font-size:13px;line-height:1.7;max-width:900px;margin:0}
+.cfa-feedback-editor{display:grid;gap:14px;border-top:1px solid var(--canopy-line);padding-top:19px}
+.cfa-feedback-editor label{display:grid;gap:8px;color:var(--canopy-ink);font-size:12px;font-weight:750}
+.cfa-feedback-editor textarea,.cfa-feedback-editor select,.cfa-feedback-editor input{width:100%;background:transparent;border:1px solid var(--canopy-line);color:var(--canopy-ink);border-radius:11px;padding:12px 14px;font-size:13px;font-family:inherit;resize:vertical}
+.cfa-feedback-editor textarea{min-height:125px}
+.cfa-review-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px;max-width:750px}
+.cfa-feedback-editor>.cfa-primary{justify-self:start;padding:13px 20px;border-radius:999px;cursor:pointer}
+.cfa-feedback-editor button:disabled{opacity:.55;cursor:not-allowed}
+@media(max-width:740px){.cfa-workspace-tabs{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}.cfa-workspace-tabs button{white-space:nowrap;flex-shrink:0}.cfa-workspace .cfa-form{grid-template-columns:1fr;padding:18px}.cfa-workspace .cfa-form>.cfa-two{grid-template-columns:1fr}.cfa-review-row{grid-template-columns:1fr}.cfa-workspace .cfa-calls article{display:grid;gap:15px}.cfa-actions{justify-content:start}.cfa-workspace-tools{align-items:stretch}.cfa-review>article>div:first-child{display:grid}}
