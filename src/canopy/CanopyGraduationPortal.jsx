@@ -1,6 +1,6 @@
 import React,{useCallback,useEffect,useRef,useState} from 'react';
-import {Award,Check,ChevronDown,Download,Heart,ImagePlus,LockKeyhole,Maximize2,Minus,Move,Play,Plus,RotateCcw,RotateCw,Send,ShieldCheck,Sparkles} from 'lucide-react';
-import {getCertificates,getCanopyGraduationOverview,submitCanopyGraduationReflection} from './canopyApi';
+import {Award,Check,ChevronDown,Download,Heart,ImagePlus,LockKeyhole,Maximize2,Minus,Move,Play,Plus,RotateCcw,RotateCw,Send,ShieldCheck,Sparkles,X,RefreshCw} from 'lucide-react';
+import {getCertificates,getCanopyGraduationOverview,submitCanopyGraduationReflection,getMyGraduationDanceSeen,markMyGraduationDanceSeen} from './canopyApi';
 import './canopyGraduation.css';
 
 const ASSET='/assets/canopy/graduation/';
@@ -421,13 +421,29 @@ function PortraitStudio({graduateName}){
  </section>;
 }
 
+const DANCE_VIDEO='BbOao2XdIMk';
+function GraduationDanceWelcome({onClose,tester=false}){
+ useEffect(()=>{const key=e=>{if(e.key==='Escape')onClose()};window.addEventListener('keydown',key);return()=>window.removeEventListener('keydown',key)},[onClose]);
+ return <div className="cgrad-dance-overlay" role="presentation" onMouseDown={e=>{if(e.target===e.currentTarget)onClose()}}>
+  <section className="cgrad-dance-dialog" role="dialog" aria-modal="true" aria-labelledby="cgrad-dance-title">
+   <div className="cgrad-dance-head"><div><span>{tester?'TESTER PREVIEW · REPLAY AVAILABLE':'SHE LEADS CLIMATE · COHORT 2'}</span><h2 id="cgrad-dance-title">You made it. Now dance! ✨</h2><p>A moment to celebrate everything you have achieved.</p></div><button type="button" onClick={onClose} aria-label="Close celebration video"><X size={20}/></button></div>
+   <div className="cgrad-dance-video"><iframe title="WOMATE graduation celebration dance" src={`https://www.youtube-nocookie.com/embed/${DANCE_VIDEO}?autoplay=1&mute=1&playsinline=1&rel=0`} allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowFullScreen referrerPolicy="strict-origin-when-cross-origin"/></div>
+   <div className="cgrad-dance-actions"><span>Tap the video to unmute.</span><button type="button" onClick={onClose}>Continue to graduation <Check size={16}/></button></div>
+  </section>
+ </div>;
+}
+
 export default function CanopyGraduationPortal({viewer,tester=false}){
  const [now,setNow]=useState(Date.now());
  const [data,setData]=useState(null),[certs,setCerts]=useState([]),[error,setError]=useState(''),[busy,setBusy]=useState(false);
  const [reflection,setReflection]=useState(''),[displayName,setDisplayName]=useState(viewer?.profile?.full_name||'');
  const [showNote,setShowNote]=useState(false),[reflectionSaved,setReflectionSaved]=useState('');
+ const [danceOpen,setDanceOpen]=useState(false),[danceChecked,setDanceChecked]=useState(false);
  const delta=Math.max(0,OPEN_AT-now),opened=now>=OPEN_AT;
  const unlocked=tester||Boolean(data?.can_enter&&opened);
+ const danceKey='womate_c2_graduation_dance_2026_'+(viewer?.user?.id||viewer?.profile?.user_id||'guest');
+ useEffect(()=>{if(!unlocked||tester||danceChecked)return;let alive=true;setDanceChecked(true);(async()=>{try{if(localStorage.getItem(danceKey)==='seen')return;const seen=await getMyGraduationDanceSeen(viewer.session);if(seen){localStorage.setItem(danceKey,'seen');return}await markMyGraduationDanceSeen(viewer.session);localStorage.setItem(danceKey,'seen');if(alive)setDanceOpen(true)}catch(e){console.warn('Graduation welcome acknowledgement unavailable',e)}})();return()=>{alive=false}},[unlocked,tester,danceChecked,danceKey,viewer?.session?.access_token]);
+
  useEffect(()=>{const t=setInterval(()=>setNow(Date.now()),60000);return()=>clearInterval(t);},[]);
  useEffect(()=>{
   // Tester sees the same persisted, moderated Supabase feed as graduates.
@@ -465,7 +481,7 @@ export default function CanopyGraduationPortal({viewer,tester=false}){
     <span className="cgrad-kicker">WOMATE · SHE LEADS · COHORT 2 · 2026</span>
     {unlocked?<><span className="cgrad-crown" aria-hidden="true">✦ ♡ ✦</span><h1>CONGRATULATIONS!</h1><p>YOU DID IT! <Heart size={15} fill="currentColor" aria-hidden="true"/></p></>:<><h1 className="cgrad-wait-title">Your moment is almost here.</h1><p>29 OCTOBER 2026 · GRADUATION DAY</p></>}
    </header>
-   {tester&&<div className="cgrad-test"><ShieldCheck size={18}/> TESTER PREVIEW · Photos stay local. Certificate links are simulated; graduation notes are saved to the shared wall.</div>}
+   {tester&&<div className="cgrad-test"><ShieldCheck size={18}/> TESTER PREVIEW · Photos stay local. Certificate links are simulated; graduation notes are saved to the shared wall. <button type="button" className="cgrad-dance-preview-btn" onClick={()=>setDanceOpen(true)}><RefreshCw size={15}/> Preview welcome dance</button></div>}
    {error&&<p className="cgrad-error" role="alert">{error}</p>}
    {!unlocked?<section className="cgrad-gated"><LockKeyhole size={26}/><h2>{!opened?'The celebration opens on 29 October.':'Your graduation access is being verified.'}</h2>{!opened&&<div className="cgrad-countdown" role="timer"><div><strong>{Math.floor(delta/86400000)}</strong><span>Days</span></div><div><strong>{fmt(Math.floor(delta%86400000/3600000))}</strong><span>Hours</span></div><div><strong>{fmt(Math.floor(delta%3600000/60000))}</strong><span>Minutes</span></div></div>}<p>Official certificates and WOMATE graduation approval are required for learner access. If your status looks wrong, email <a href="mailto:womatead@gmail.com">WOMATE support</a>.</p></section>:<>
     <div className="cgrad-main-layout"><PortraitStudio graduateName={displayName}/><aside className="cgrad-aside"><GradVideo/><div className="cgrad-certificate"><Award size={22}/><div><strong>Your official certificate</strong>{tester?<span>Available here when issued to an eligible learner.</span>:certs.length?certs.map(c=><a key={c.id} href={c.drive_url} target="_blank" rel="noopener noreferrer">View certificate ↗</a>):<span>No certificate link is available yet.</span>}</div></div></aside></div>
