@@ -7,7 +7,7 @@ import CanopyCanvas from './CanopyCanvas';
 import CanopyNotifications from './CanopyNotifications';
 import CanopyCertificate from './CanopyCertificate';
 import CanopyCredentialAdmin from './CanopyCredentialAdmin';
-import CanopyGraduationPortal,{CanopyGraduationDancePreview} from './CanopyGraduationPortal';
+import CanopyGraduationPortal from './CanopyGraduationPortal';
 import CanopyCelebration,{CANOPY_C2_CELEBRATION_START} from './CanopyCelebration2026';
 import CanopyAdminClosing from './CanopyAdminClosing';
 import CanopyAttendance from './CanopyAttendance';
@@ -149,7 +149,7 @@ const manager=canManageCanopy(viewer);
  if(viewer?.profile?.role==='admin')managerItems.push(['/canopy/manage/selection-codes','Selection codes',Award]);
  const staffRole=viewer?.staffAccess?.role;
  const staffItems=staffRole==='programme_operations'?[['/canopy/operations','Operations',ClipboardCheck],['/canopy/notifications','Notifications',Bell],['/canopy/profile','Profile',UserRound]]:staffRole==='module_coordinator'?[['/canopy/coordinator','My module',BookOpen],['/canopy/notifications','Notifications',Bell],['/canopy/profile','Profile',UserRound]]:staffRole==='learning_fellow'?[['/canopy/fellow','Learning experience',Sparkles],['/canopy/notifications','Notifications',Bell],['/canopy/profile','Profile',UserRound]]:learnerItems;
- const items=manager?managerItems:(tester?[...learnerItems,['/canopy/test/cohort-preview','2027 cohort preview',Globe2],['/canopy/test/mission-closed','Mission closed preview',ShieldCheck],['/canopy/test/graduation-dance','Graduation dance preview',PlayCircle]]:staffItems);
+ const items=manager?managerItems:(tester?[...learnerItems,['/canopy/test/cohort-preview','2027 cohort preview',Globe2],['/canopy/test/mission-closed','Mission closed preview',ShieldCheck]]:staffItems);
  const testerCohort=tester?sessionStorage.getItem('womate_canopy_tester_cohort')||'2026':null;
  return <aside className={'canopySidebar '+(open?'open':'')}>
   <div className="canopySideTop"><Brand compact/><button className="canopySideClose" onClick={()=>setOpen(false)}><X/></button></div>
@@ -212,7 +212,6 @@ function TesterDashboard({viewer,progress,submissions=[]}){
  return <><main className="canopyDashboard canopyTesterDashboard">
   <section className="canopyWelcome canopyTesterWelcome"><div><span className="canopyEyebrow">CANOPY TESTER</span><h1>Everything is open for testing.</h1><p>This account bypasses cohort dates only for WOMATE testing. Participant and admin access rules stay unchanged.</p></div><div className="canopyProgressRing" style={{'--p':`${pct*3.6}deg`}}><div><strong>{pct}%</strong><span>complete</span></div></div></section>
   <section className="canopyContinue" style={{marginTop:18,marginBottom:18,background:'linear-gradient(110deg,#073b39,#145f51)',color:'#fff',borderRadius:18}}><div><span style={{color:'#c6ff52'}}>NEW · 2026 CELEBRATION DESIGN PREVIEW</span><h2 style={{color:'#fff'}}>See the after-deadline homepage now.</h2><p style={{color:'#d9eee7'}}>Interactive countdown, real progress, country greetings and Beyoncé soundtrack. Tester only; this does not change learner records.</p></div><button className="canopyPrimary" onClick={()=>go('/canopy/test/celebration-2026')}>Preview celebration <ArrowRight size={16}/></button></section>
-  <section className="canopyContinue" style={{marginTop:18,marginBottom:18,background:'linear-gradient(110deg,#073b39,#145f51)',color:'#fff',borderRadius:18}}><div><span style={{color:'#c6ff52'}}>NEW · GRADUATION VIDEO PREVIEW</span><h2 style={{color:'#fff'}}>Watch the graduation welcome dance.</h2><p style={{color:'#d9eee7'}}>Opens the video popup for testing. Replay it without changing learner records.</p></div><button className="canopyPrimary" onClick={()=>go('/canopy/test/graduation-dance')}>Preview welcome video <PlayCircle size={16}/></button></section>
   <section className="canopyTesterStatus">
    <article><Lock size={18}/><div><small>MODULE ACCESS</small><strong>All 5 modules open</strong></div></article>
    <article><FileText size={18}/><div><small>ASSIGNMENTS</small><strong>All assignments open</strong></div></article>
@@ -968,15 +967,13 @@ const manager=canManageCanopy(viewer);const operational=isCanopyOperationsStaff(
  const testerPreviewKey=tester&&typeof sessionStorage!=='undefined'?sessionStorage.getItem('womate_canopy_tester_cohort'):null;
  const testerCohortKey=isPost2026RuntimeCohort(testerPreviewKey)?testerPreviewKey:null;
  const active=tester||viewer.enrollments?.some(e=>e.status==='active')||Boolean(activeRuntimeCohort);let content;
- if(tester&&path==='/canopy/test/graduation-dance'){
-    content=<CanopyGraduationDancePreview/>;
-  } else if(tester&&path==='/canopy/test/mission-closed'){
+ if(tester&&path==='/canopy/test/mission-closed'){
     content=<CanopyMissionClosedPreview/>;
   } else if(tester&&path==='/canopy/test/celebration-2026'){
    content=<CanopyCelebration viewer={viewer} progress={progress} submissions={submissions} tester onNavigate={go}/>;
  } else if(tester&&path==='/canopy/test/feedback-2026'){
    content=<main className="canopyDashboard"><h1>2026 Feedback · Tester verification</h1><p>Test-only feedback verification. Learner dashboards no longer display a mandatory feedback popup.</p><p>This is tester-only verification; no learner completion or certificate record was changed.</p><a href="/canopy/classroom">Return to Canopy classroom</a><GraduationFeedback2026 session={viewer.session} tester/></main>;
-  } else if(testerCohortKey&&!['/canopy/test/cohort-preview','/canopy/test/cohort-workspace','/canopy/profile'].includes(path)){
+  } else if(testerCohortKey&&!['/canopy/test/cohort-preview','/canopy/test/cohort-workspace','/canopy/profile','/canopy/graduation'].includes(path)){
   content=<CanopyCohortParticipantRuntime viewer={viewer} cohortKey={testerCohortKey} path={path} tester/>;
  } else if(activeRuntimeCohort&&!['/canopy/profile','/canopy/notifications','/canopy/help'].includes(path)){
   content=<CanopyCohortParticipantRuntime viewer={viewer} cohortKey={activeRuntimeCohort.cohort_key} path={path}/>;
