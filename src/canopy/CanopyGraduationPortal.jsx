@@ -1,4 +1,5 @@
 import React,{useCallback,useEffect,useRef,useState} from 'react';
+import {createPortal} from 'react-dom';
 import {Award,Check,ChevronDown,Download,Heart,ImagePlus,LockKeyhole,Maximize2,Minus,Move,Play,Plus,RotateCcw,RotateCw,Send,ShieldCheck,Sparkles,X,RefreshCw} from 'lucide-react';
 import {getCertificates,getCanopyGraduationOverview,submitCanopyGraduationReflection,getMyGraduationDanceSeen,markMyGraduationDanceSeen} from './canopyApi';
 import './canopyGraduation.css';
@@ -476,6 +477,7 @@ export default function CanopyGraduationPortal({viewer,tester=false}){
   finally{setBusy(false);}
  }
  return <main className="cgrad-page">
+  {danceOpen&&createPortal(<GraduationDanceWelcome tester={tester} onClose={()=>setDanceOpen(false)}/>,document.body)}
   <div className="cgrad-decor cgrad-decor-ribbon" aria-hidden="true"/><div className="cgrad-decor cgrad-decor-confetti" aria-hidden="true"/><div className="cgrad-decor cgrad-decor-balloons" aria-hidden="true"/><div className="cgrad-decor cgrad-decor-stars" aria-hidden="true"/>
   <div className="cgrad-content">
    <header className="cgrad-celebrate">
