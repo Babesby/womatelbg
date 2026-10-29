@@ -427,9 +427,9 @@ function GraduationDanceWelcome({onClose,tester=false}){
  useEffect(()=>{const key=e=>{if(e.key==='Escape')onClose()};window.addEventListener('keydown',key);return()=>window.removeEventListener('keydown',key)},[onClose]);
  return <div className="cgrad-dance-overlay" role="presentation" onMouseDown={e=>{if(e.target===e.currentTarget)onClose()}}>
   <section className="cgrad-dance-dialog" role="dialog" aria-modal="true" aria-labelledby="cgrad-dance-title">
-   <div className="cgrad-dance-head"><div><span>{tester?'TESTER PREVIEW · REPLAY AVAILABLE':'SHE LEADS CLIMATE · COHORT 2'}</span><h2 id="cgrad-dance-title">You made it. Now dance! ✨</h2><p>A moment to celebrate everything you have achieved.</p></div><button type="button" onClick={onClose} aria-label="Close celebration video"><X size={20}/></button></div>
+   <div className="cgrad-dance-head"><div><span>{tester?'TESTER PREVIEW · REPLAY AVAILABLE':'SHE LEADS CLIMATE · COHORT 2'}</span><h2 id="cgrad-dance-title">You made it. 💃🏽💃🏽🥳</h2><p>A moment to celebrate everything you have achieved.</p></div><button type="button" onClick={onClose} aria-label="Close celebration video"><X size={20}/></button></div>
    <div className="cgrad-dance-video"><iframe title="WOMATE graduation celebration dance" src={`https://www.youtube.com/embed/${DANCE_VIDEO}?autoplay=1&mute=0&playsinline=1&rel=0`} allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowFullScreen referrerPolicy="strict-origin-when-cross-origin"/></div>
-   <div className="cgrad-dance-actions"><span>Sound is enabled. If playback is blocked, tap Play. <a href={`https://www.youtube.com/shorts/${DANCE_VIDEO}`} target="_blank" rel="noopener noreferrer">Watch directly on YouTube</a> if the player is unavailable.</span><button type="button" onClick={onClose}>Continue to graduation <Check size={16}/></button></div>
+   <div className="cgrad-dance-actions"><button type="button" onClick={onClose}>Continue to graduation <Check size={16}/></button></div>
   </section>
  </div>;
 }
@@ -444,7 +444,7 @@ export default function CanopyGraduationPortal({viewer,tester=false}){
  const delta=Math.max(0,OPEN_AT-now),opened=now>=OPEN_AT;
  const unlocked=tester||Boolean(data?.can_enter&&opened);
  const danceKey='womate_c2_graduation_dance_2026_'+(viewer?.user?.id||viewer?.profile?.user_id||'guest');
- useEffect(()=>{if(!unlocked||tester||danceAttemptedRef.current)return;danceAttemptedRef.current=true;(async()=>{try{if(localStorage.getItem(danceKey)==='seen')return;const seen=await getMyGraduationDanceSeen(viewer.session);if(seen){localStorage.setItem(danceKey,'seen');return}await markMyGraduationDanceSeen(viewer.session);localStorage.setItem(danceKey,'seen');setDanceOpen(true)}catch(e){console.warn('Graduation welcome acknowledgement unavailable',e)}})()},[unlocked,tester,danceKey,viewer?.session?.access_token]);
+ useEffect(()=>{if(!unlocked||tester||danceAttemptedRef.current)return;danceAttemptedRef.current=true;(async()=>{try{if(localStorage.getItem(danceKey)==='seen')return;const seen=await getMyGraduationDanceSeen(viewer.session);if(seen){localStorage.setItem(danceKey,'seen');return}const claimed=await markMyGraduationDanceSeen(viewer.session);localStorage.setItem(danceKey,'seen');if(claimed)setDanceOpen(true)}catch(e){console.warn('Graduation welcome acknowledgement unavailable',e)}})()},[unlocked,tester,danceKey,viewer?.session?.access_token]);
 
  useEffect(()=>{const t=setInterval(()=>setNow(Date.now()),60000);return()=>clearInterval(t);},[]);
  useEffect(()=>{
