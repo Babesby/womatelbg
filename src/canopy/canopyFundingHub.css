@@ -19,3 +19,8 @@ html[data-canopy-theme="dark"] .cf-tabs{background:#173a34}html[data-canopy-them
 html[data-canopy-theme="dark"] .cf-icon{border-color:#3b5b50}
 
 .cf-empty .cf-reset{margin-top:13px;border:1px solid var(--canopy-line);background:transparent;color:var(--canopy);padding:10px 17px;border-radius:999px;font:800 12px/1.3 inherit;cursor:pointer}.cf-empty .cf-reset:hover{background:#edf5ef}.cf-amount-filter select{font-size:11px;font-weight:750;max-width:205px}
+
+/* Consent stays a single accessible horizontal checkbox-and-copy row. */
+.cf-apply label.cf-consent{display:flex;flex-direction:row;align-items:flex-start;gap:10px;max-width:100%;font-size:12px;font-weight:600;line-height:1.55;text-transform:none;letter-spacing:0;cursor:pointer}
+.cf-apply label.cf-consent input[type="checkbox"]{display:block;flex:0 0 18px;width:18px;height:18px;min-height:18px;padding:0;margin:1px 0 0;accent-color:#073b39;cursor:pointer}
+.cf-apply label.cf-consent span{display:block;flex:1 1 auto;min-width:0}
