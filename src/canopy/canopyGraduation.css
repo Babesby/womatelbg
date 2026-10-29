@@ -102,3 +102,10 @@
 .cgrad-certificate-item>a{display:inline-flex;margin-top:11px;font-size:13px;font-weight:700;overflow-wrap:anywhere}
 .cgrad-certificate-unavailable{font-size:13px;line-height:1.5}
 @media(max-width:700px){.cgrad-certificate-preview{height:330px}}
+
+.cgrad-main-layout-certificate{display:block;width:100%;max-width:1080px;margin-inline:auto}
+.cgrad-main-layout-certificate>.cgrad-aside{display:flex;flex-direction:column;width:100%;gap:22px;min-width:0}
+.cgrad-main-layout-certificate .cgrad-certificate{align-items:flex-start;width:100%;box-sizing:border-box}
+.cgrad-main-layout-certificate .cgrad-certificate-content{width:100%}
+.cgrad-main-layout-certificate .cgrad-certificate-preview{height:min(76vw,680px);min-height:360px}
+@media(max-width:640px){.cgrad-main-layout-certificate .cgrad-certificate-preview{height:60vw;min-height:240px}.cgrad-main-layout-certificate .cgrad-certificate{padding:15px}}
