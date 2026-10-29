@@ -6,3 +6,5 @@ html[data-canopy-theme="dark"] .cf-tabs{background:#173a34}html[data-canopy-them
 @media print{.cf-page,.cfa-page{display:none!important}}
 
 
+
+.cf-types select{border-radius:999px;border:1px solid var(--canopy-line);padding:9px 13px;background:transparent;color:var(--canopy-ink)}.cf-amount{border-radius:999px;background:#fff3c8;color:#795100;font-size:15px;padding:9px 14px}
