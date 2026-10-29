@@ -17,19 +17,38 @@ function FundingMark({type,title}){
 
 const dateLabel=d=>{if(!d)return'Open deadline';const x=new Date(d);return Number.isNaN(x.getTime())?'Open deadline':x.toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'})};
 const cleanUrl=v=>String(v||'').trim();
+const AMOUNT_BANDS=[
+ {value:'all',label:'Any amount',min:0,max:Infinity},
+ {value:'50',label:'US$50–99',min:50,max:100},
+ {value:'100',label:'US$100–499',min:100,max:500},
+ {value:'500',label:'US$500–999',min:500,max:1000},
+ {value:'1000',label:'US$1,000–4,999',min:1000,max:5000},
+ {value:'5000',label:'US$5,000–9,999',min:5000,max:10000},
+ {value:'10000',label:'US$10,000–49,999',min:10000,max:50000},
+ {value:'50000',label:'US$50,000–99,999',min:50000,max:100000},
+ {value:'100000',label:'US$100,000+',min:100000,max:Infinity}
+];
+// Only explicitly advertised US-dollar values can be placed in a USD bracket.
+// For a range, use the highest advertised amount, not all digits joined together.
+const advertisedUsdAmount=value=>{
+ const matches=[...String(value||'').matchAll(/(?:USD\s*\$?\s*|US\s*\$\s*|\$\s*)(\d[\d,]*(?:\.\d{1,2})?)/gi)];
+ if(!matches.length)return null;
+ const amounts=matches.map(m=>Number(m[1].replace(/,/g,''))).filter(Number.isFinite);
+ return amounts.length?Math.max(...amounts):null;
+};
 
 export default function CanopyFundingHub({viewer}){
- const[data,setData]=useState({calls:[]}),[tab,setTab]=useState('open'),[type,setType]=useState('all'),[query,setQuery]=useState(''),[minAmount,setMinAmount]=useState(0),[applyId,setApplyId]=useState(null),[form,setForm]=useState({pitch:'',plan:'',evidence_url:'',permission_to_submit:false}),[busy,setBusy]=useState(''),[msg,setMsg]=useState('');
+ const[data,setData]=useState({calls:[]}),[tab,setTab]=useState('open'),[type,setType]=useState('all'),[query,setQuery]=useState(''),[amountRange,setAmountRange]=useState('all'),[applyId,setApplyId]=useState(null),[form,setForm]=useState({pitch:'',plan:'',evidence_url:'',permission_to_submit:false}),[busy,setBusy]=useState(''),[msg,setMsg]=useState('');
  const load=async()=>{try{setData(await getCanopyFundingFeed(viewer.session)||{calls:[]});setMsg('')}catch(e){setMsg(e.message)}};
  useEffect(()=>{load()},[]);
- const rows=useMemo(()=>{let a=[...(data.calls||[])];if(tab==='open')a=a.filter(x=>!x.application||x.application.status==='withdrawn');if(tab==='mine')a=a.filter(x=>x.application);if(type!=='all')a=a.filter(x=>x.call_type===type);if(minAmount>0)a=a.filter(x=>Number(String(x.amount_text||'').replace(/[^0-9]/g,''))>=minAmount);const q=query.trim().toLowerCase();if(q)a=a.filter(x=>[x.title,x.sponsor,x.summary,x.country,x.amount_text].some(v=>String(v||'').toLowerCase().includes(q)));return a},[data,tab,type,query,minAmount]);
+ const rows=useMemo(()=>{let a=[...(data.calls||[])];if(tab==='open')a=a.filter(x=>!x.application||x.application.status==='withdrawn');if(tab==='mine')a=a.filter(x=>x.application);if(type!=='all')a=a.filter(x=>x.call_type===type);if(amountRange!=='all'){const band=AMOUNT_BANDS.find(b=>b.value===amountRange);a=a.filter(x=>{const amount=advertisedUsdAmount(x.amount_text);return amount!==null&&amount>=band.min&&amount<band.max})}const q=query.trim().toLowerCase();if(q)a=a.filter(x=>[x.title,x.sponsor,x.summary,x.country,x.amount_text].some(v=>String(v||'').toLowerCase().includes(q)));return a},[data,tab,type,query,amountRange]);
  const openApply=c=>{setApplyId(c.id);setForm({pitch:c.application?.pitch||'',plan:c.application?.plan||'',evidence_url:c.application?.evidence_url||'',permission_to_submit:c.application?.permission_to_submit||false});setMsg('')};
  const submit=async c=>{setBusy(c.id);try{if(c.url&&!c.managed_by_womate)await requestCanopyFundingSupport(viewer.session,c.id,form);else await submitCanopyFundingApplication(viewer.session,c.id,form);setApplyId(null);setForm({pitch:'',plan:'',evidence_url:''});await load();setMsg(c.url&&!c.managed_by_womate?'Review requested from WOMATE. No external submission has occurred.':'Application received by WOMATE.')}catch(e){setMsg(e.message)}finally{setBusy('')}};
  const withdraw=async c=>{if(!confirm('Withdraw this application?'))return;setBusy(c.id);try{await withdrawCanopyFundingApplication(viewer.session,c.id);await load();setMsg('Application withdrawn.')}catch(e){setMsg(e.message)}finally{setBusy('')}};
  return <main className="cf-page">
   <header className="cf-hero"><div><span>FUNDING + PAID WORK</span><h1>Put your climate capability to work.</h1><p>Apply for WOMATE-reviewed microgrants, sponsored challenges and paid climate missions.</p></div><div className="cf-hero-stat"><b>{(data.calls||[]).filter(x=>x.matched&&!x.application).length}</b><span>open calls may fit your Canopy record</span></div></header>
   <section className="cf-toolbar"><div className="cf-tabs"><button className={tab==='open'?'on':''} onClick={()=>setTab('open')}>Open calls</button><button className={tab==='mine'?'on':''} onClick={()=>setTab('mine')}>My applications</button></div><label className="cf-search"><Search/><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search funding or paid work"/></label></section>
-  <div className="cf-types"><label style={{display:"inline-flex",alignItems:"center",gap:8}}>Minimum advertised amount <select aria-label="Minimum advertised amount" value={minAmount} onChange={e=>setMinAmount(Number(e.target.value))}><option value={0}>Any amount</option><option value={50}>US$50+</option><option value={100}>US$100+</option><option value={500}>US$500+</option><option value={1000}>US$1,000+</option><option value={5000}>US$5,000+</option><option value={10000}>US$10,000+</option></select></label>{TYPES.map(t=><button key={t} className={type===t?'on':''} onClick={()=>setType(t)}>{t==='all'?'All':typeLabel(t)}</button>)}</div>
+  <div className="cf-types"><label className="cf-amount-filter" style={{display:"inline-flex",alignItems:"center",gap:8}}>Prize / funding range <select aria-label="Filter by advertised USD amount range" value={amountRange} onChange={e=>setAmountRange(e.target.value)}>{AMOUNT_BANDS.map(b=><option key={b.value} value={b.value}>{b.label}</option>)}</select></label>{TYPES.map(t=><button key={t} className={type===t?'on':''} onClick={()=>setType(t)}>{t==='all'?'All':typeLabel(t)}</button>)}</div>
   {Number(data.priority_points)>0&&<p className="cf-msg">Verified Talent Priority · {data.priority_points}/40 — recognised for eligible WOMATE-managed opportunities; external eligibility still applies.</p>}
   {msg&&<p className="cf-msg">{msg}</p>}
   <section className="cf-list">{rows.length?rows.map(c=>{const app=c.application;const editable=!app||['submitted','withdrawn'].includes(app.status);return <article key={c.id} className={c.featured?'featured':''}>
