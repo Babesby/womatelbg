@@ -7,3 +7,20 @@ html[data-canopy-theme="dark"] .co-tabs{background:#173a34}html[data-canopy-them
 
 
 .co-filters select{border:1px solid var(--canopy-line);border-radius:999px;padding:9px 15px;min-height:38px;background:transparent;color:var(--canopy-ink);font-size:11px;font-weight:750;flex-shrink:0}.co-apply-btn{background:var(--canopy);color:#fff;border:0;border-radius:999px;padding:11px 15px;cursor:pointer}.co-apply-form{grid-column:2/-1;display:grid;gap:10px;padding:18px;background:#f4f8f5;border-radius:12px}.co-apply-form label{display:grid;gap:5px}.co-apply-form input,.co-apply-form textarea{border:1px solid var(--canopy-line);padding:10px;border-radius:8px;font:inherit}.co-apply-form textarea{min-height:95px}@media(max-width:660px){.co-apply-form{grid-column:1/-1}}
+
+
+/* Opportunity category marks: different meaning, one calm editorial system. */
+.co-mark{position:relative;border:1px solid transparent;flex-shrink:0}
+.co-mark-job{background:#e7f3ef;color:#104b40;border-color:#d4e7dd}
+.co-mark-internship{background:#eaf0f7;color:#3e6684;border-color:#d9e5f0}
+.co-mark-fellowship{background:#f5f0e4;color:#836724;border-color:#e8ddc7}
+.co-mark-grant{background:#fff3d8;color:#8e6314;border-color:#f1e2b7}
+.co-mark-scholarship{background:#e9eff8;color:#4b6292;border-color:#d8e1f1}
+.co-mark-consultancy{background:#edf4f0;color:#476e61;border-color:#d9e8df}
+.co-mark-conference{background:#f5eef4;color:#8a597c;border-color:#e9dce6}
+.co-mark-volunteer{background:#faeee8;color:#985b45;border-color:#f0dfd5}
+.co-mark-other{background:#eef4ef;color:#3c6c57;border-color:#dce9df}
+.co-mark-featured{position:absolute;right:-4px;bottom:-4px;width:16px;height:16px;border-radius:50%;display:grid;place-items:center;color:#8b6215;background:#fff2c5;border:2px solid #fff}
+.co-mark-featured svg{width:9px;height:9px}
+html[data-canopy-theme="dark"] .co-mark{border-color:#3b5b50}
+@media(max-width:660px){.co-mark{width:38px;height:38px}}
