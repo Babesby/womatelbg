@@ -1,4 +1,5 @@
 import React,{useEffect,useMemo,useRef,useState} from 'react';
+import './canopyMissionClosed.css';
 import {Check,ExternalLink,FolderOpen,Globe2,MessageCircle,Send,ShieldCheck,UsersRound} from 'lucide-react';
 import {getCanopyMissionAdmin,getCanopyMissionAdminStats,getMyCanopyMissionCompletion,getMyCanopyMissionHub,respondCanopyMissionInvite,reviewCanopyMissionGroup,reviewCanopyMissionContributor,sendCanopyMissionMessage,submitCanopyMissionGroup,reviseCanopyMissionTeamEvidence,submitCanopyMissionReport,correctApprovedCanopyMissionReport,updateCanopyMissionGroup,submitLearnerComplaint,getLearnerComplaints} from './canopyApi';
 
@@ -138,7 +139,7 @@ export default function CanopyMissionHub({viewer}){
      <p>Your climate Mission contribution has been verified by WOMATE and recognised in your Impact Portfolio.</p>
      <div className="cm-closed-achievements"><span><Check size={16}/> Individual Mission · Verified</span>{groupVerified&&<span><Check size={16}/> Final Team Mission · Verified</span>}</div>
      <p className="cm-closed-opportunity">This achievement gives you a stronger advantage when being considered for WOMATE opportunities, funding and paid work. Selection remains subject to each opportunity's requirements.</p>
-     <div className="cm-closed-actions"><a href="/canopy/portfolio">View Impact Portfolio <ExternalLink size={16}/></a><button type="button" onClick={()=>window.print()}>Download / print recognition <ExternalLink size={16}/></button><a href="/canopy/talent">Talent Discovery <ExternalLink size={16}/></a></div>
+     <div className="cm-closed-actions"><a href="/canopy/portfolio">View Impact Portfolio <ExternalLink size={16}/></a><a href="/canopy/portfolio">Export / Save as PDF <ExternalLink size={16}/></a><a href="/canopy/talent">Talent Discovery <ExternalLink size={16}/></a></div>
     </>:<><h1>The Mission chapter is complete.</h1><p>Thank you for being part of She Leads Climate. Mission submissions are now closed, and WOMATE is finalising its verified contribution records.</p><a className="cm-closed-simple" href="/canopy/portfolio">View your Impact Portfolio <ExternalLink size={16}/></a></>}
    </section>
    {completed&&<section className="cm-closed-record"><span>YOUR VERIFIED ACHIEVEMENT</span><h2>{displayName}</h2><p>Official WOMATE Mission recognition · She Leads Climate 2026</p>{completion?.approved_at&&<small>Approved {new Date(completion.approved_at).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})}</small>}</section>}
