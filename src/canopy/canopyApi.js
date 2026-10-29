@@ -713,3 +713,5 @@ export async function getWomateOpportunityApplications(session,id){const s=await
 export async function reviewWomateOpportunityApplication(session,id,status,feedback='',privateNote=''){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_admin_review_womate_opportunity',{token:s.access_token,method:'POST',body:{p_application:id,p_status:status,p_feedback:feedback||null,p_private_note:privateNote||null}})}
 
 export async function setWomateOpportunityManaged(session,id,managed){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_admin_set_opportunity_management',{token:s.access_token,method:'POST',body:{p_opportunity:id,p_managed:Boolean(managed)}})}
+
+export async function getWomateOpportunityApplicationCounts(session){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_admin_opportunity_application_counts',{token:s.access_token,method:'POST',body:{}})}
