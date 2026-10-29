@@ -427,8 +427,8 @@ function GraduationDanceWelcome({onClose,tester=false}){
  return <div className="cgrad-dance-overlay" role="presentation" onMouseDown={e=>{if(e.target===e.currentTarget)onClose()}}>
   <section className="cgrad-dance-dialog" role="dialog" aria-modal="true" aria-labelledby="cgrad-dance-title">
    <div className="cgrad-dance-head"><div><span>{tester?'TESTER PREVIEW · REPLAY AVAILABLE':'SHE LEADS CLIMATE · COHORT 2'}</span><h2 id="cgrad-dance-title">You made it. Now dance! ✨</h2><p>A moment to celebrate everything you have achieved.</p></div><button type="button" onClick={onClose} aria-label="Close celebration video"><X size={20}/></button></div>
-   <div className="cgrad-dance-video"><iframe title="WOMATE graduation celebration dance" src={`https://www.youtube.com/embed/${DANCE_VIDEO}?autoplay=1&mute=1&playsinline=1&rel=0`} allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowFullScreen referrerPolicy="strict-origin-when-cross-origin"/></div>
-   <div className="cgrad-dance-actions"><span>Tap the video to unmute. <a href={`https://www.youtube.com/shorts/${DANCE_VIDEO}`} target="_blank" rel="noopener noreferrer">Watch directly on YouTube</a> if the player is unavailable.</span><button type="button" onClick={onClose}>Continue to graduation <Check size={16}/></button></div>
+   <div className="cgrad-dance-video"><iframe title="WOMATE graduation celebration dance" src={`https://www.youtube.com/embed/${DANCE_VIDEO}?autoplay=1&mute=0&playsinline=1&rel=0`} allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowFullScreen referrerPolicy="strict-origin-when-cross-origin"/></div>
+   <div className="cgrad-dance-actions"><span>Sound is enabled. If playback is blocked, tap Play. <a href={`https://www.youtube.com/shorts/${DANCE_VIDEO}`} target="_blank" rel="noopener noreferrer">Watch directly on YouTube</a> if the player is unavailable.</span><button type="button" onClick={onClose}>Continue to graduation <Check size={16}/></button></div>
   </section>
  </div>;
 }
@@ -438,7 +438,7 @@ export default function CanopyGraduationPortal({viewer,tester=false}){
  const [data,setData]=useState(null),[certs,setCerts]=useState([]),[error,setError]=useState(''),[busy,setBusy]=useState(false);
  const [reflection,setReflection]=useState(''),[displayName,setDisplayName]=useState(viewer?.profile?.full_name||'');
  const [showNote,setShowNote]=useState(false),[reflectionSaved,setReflectionSaved]=useState('');
- const [danceOpen,setDanceOpen]=useState(false);
+ const [danceOpen,setDanceOpen]=useState(Boolean(tester));
  const danceAttemptedRef=useRef(false);
  const delta=Math.max(0,OPEN_AT-now),opened=now>=OPEN_AT;
  const unlocked=tester||Boolean(data?.can_enter&&opened);
@@ -493,21 +493,5 @@ export default function CanopyGraduationPortal({viewer,tester=false}){
     </section>
    </>}
   </div>
- </main>;
-}
-
-// Canopy Tester-only preview: this component does not query graduation eligibility,
-// store learner video receipts, or change graduation/certificate records.
-export function CanopyGraduationDancePreview(){
- const[open,setOpen]=useState(true);
- return <main className="cgrad-page cgrad-dance-test-page">
-  <div className="cgrad-content cgrad-dance-test-content">
-   <span className="cgrad-kicker">CANOPY TESTER · GRADUATION 2026</span>
-   <h1>Graduation dance preview</h1>
-   <p>Preview the exact welcome graduates will see on their first eligible visit. You can replay it here as often as needed.</p>
-   <button type="button" className="cgrad-dance-preview-btn" onClick={()=>setOpen(true)}><RefreshCw size={16}/> Play celebration video</button>
-   <p className="cgrad-dance-test-note">Testing does not use or change any learner's one-time welcome record, certificate or graduation approval.</p>
-  </div>
-  {open&&<GraduationDanceWelcome tester onClose={()=>setOpen(false)}/>}
  </main>;
 }
