@@ -704,3 +704,6 @@ export async function getCanopyTesterFeedback2026Status(session){
 }
 
 export async function getCanopyMyC2GradeSummary(session){const s=await refreshSession(session||getStoredSession());if(!s?.access_token)throw new Error('Sign in to view grades');return rest('rpc/womate_my_c2_grade_summary',{token:s.access_token,method:'POST',body:{}})}
+
+export async function requestCanopyFundingSupport(session,callId,{pitch,plan,evidence_url,permission_to_submit}){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_request_funding_support',{token:s.access_token,method:'POST',body:{p_call:callId,p_pitch:pitch,p_plan:plan,p_evidence_url:String(evidence_url||'').trim()||null,p_permission_to_submit:Boolean(permission_to_submit)}})}
+export async function reviewCanopyFundingSupport(session,applicationId,status,feedback='',externalReference=''){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_admin_review_funding_support',{token:s.access_token,method:'POST',body:{p_application:applicationId,p_support_status:status,p_feedback:feedback||null,p_external_reference:externalReference||null}})}
