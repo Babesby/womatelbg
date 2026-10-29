@@ -14,6 +14,7 @@ import CanopyAttendance from './CanopyAttendance';
 import CanopyEligibilitySummary from './CanopyEligibilitySummary';
 import CanopyOpportunityBoard,{CanopyOpportunityAdmin} from './CanopyOpportunityBoard';
 import CanopyMissionHub,{CanopyMissionAdmin} from './CanopyMissionHub';
+import CanopyMissionClosedPreview from './CanopyMissionClosedPreview';
 import CanopyTalentNetwork,{CanopyTalentAdmin} from './CanopyTalentNetwork';
 import CanopyFundingHub,{CanopyFundingAdmin} from './CanopyFundingHub';
 import CanopySelectionCodes from './CanopySelectionCodes';
@@ -148,7 +149,7 @@ const manager=canManageCanopy(viewer);
  if(viewer?.profile?.role==='admin')managerItems.push(['/canopy/manage/selection-codes','Selection codes',Award]);
  const staffRole=viewer?.staffAccess?.role;
  const staffItems=staffRole==='programme_operations'?[['/canopy/operations','Operations',ClipboardCheck],['/canopy/notifications','Notifications',Bell],['/canopy/profile','Profile',UserRound]]:staffRole==='module_coordinator'?[['/canopy/coordinator','My module',BookOpen],['/canopy/notifications','Notifications',Bell],['/canopy/profile','Profile',UserRound]]:staffRole==='learning_fellow'?[['/canopy/fellow','Learning experience',Sparkles],['/canopy/notifications','Notifications',Bell],['/canopy/profile','Profile',UserRound]]:learnerItems;
- const items=manager?managerItems:(tester?[...learnerItems,['/canopy/test/cohort-preview','2027 cohort preview',Globe2]]:staffItems);
+ const items=manager?managerItems:(tester?[...learnerItems,['/canopy/test/cohort-preview','2027 cohort preview',Globe2],['/canopy/test/mission-closed','Mission closed preview',ShieldCheck]]:staffItems);
  const testerCohort=tester?sessionStorage.getItem('womate_canopy_tester_cohort')||'2026':null;
  return <aside className={'canopySidebar '+(open?'open':'')}>
   <div className="canopySideTop"><Brand compact/><button className="canopySideClose" onClick={()=>setOpen(false)}><X/></button></div>
@@ -966,7 +967,9 @@ const manager=canManageCanopy(viewer);const operational=isCanopyOperationsStaff(
  const testerPreviewKey=tester&&typeof sessionStorage!=='undefined'?sessionStorage.getItem('womate_canopy_tester_cohort'):null;
  const testerCohortKey=isPost2026RuntimeCohort(testerPreviewKey)?testerPreviewKey:null;
  const active=tester||viewer.enrollments?.some(e=>e.status==='active')||Boolean(activeRuntimeCohort);let content;
- if(tester&&path==='/canopy/test/celebration-2026'){
+ if(tester&&path==='/canopy/test/mission-closed'){
+    content=<CanopyMissionClosedPreview/>;
+  } else if(tester&&path==='/canopy/test/celebration-2026'){
    content=<CanopyCelebration viewer={viewer} progress={progress} submissions={submissions} tester onNavigate={go}/>;
  } else if(tester&&path==='/canopy/test/feedback-2026'){
    content=<main className="canopyDashboard"><h1>2026 Feedback · Tester verification</h1><p>Test-only feedback verification. Learner dashboards no longer display a mandatory feedback popup.</p><p>This is tester-only verification; no learner completion or certificate record was changed.</p><a href="/canopy/classroom">Return to Canopy classroom</a><GraduationFeedback2026 session={viewer.session} tester/></main>;

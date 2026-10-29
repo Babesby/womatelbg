@@ -445,7 +445,7 @@ export function CanopyPortfolioPage({viewer,submissions=[]}){
     let active=true;
     Promise.all([getMyCanopyMissionHub(),getMyCanopyMissionCompletion()]).then(([hub,completion])=>{
       if(!active)return;
-      if(completion?.status==='completed'){setMissionCompletion(completion);setMissionPortfolio(hub)}
+      if(completion?.status==='completed'||completion?.final_team_completed===true){setMissionCompletion(completion);setMissionPortfolio(hub)}
     }).catch(()=>{});
     return()=>{active=false};
   },[]);

@@ -127,7 +127,7 @@ export default function CanopyMissionHub({viewer}){
 
   // The programme is closed. Learner-facing Mission is now a read-only recognition page.
   if(!data)return <main className="cm-page cm-closed-page"><div className="cm-closed-loading">Loading your Mission record…</div></main>;
-  const completed=completion?.status==='completed';
+  const completed=completion?.status==='completed'||completion?.final_team_completed===true;
   const groupVerified=group?.status==='verified'||completion?.final_team_completed===true;
   const displayName=meaningfulMissionName(completion?.group_name)?completion.group_name:(meaningfulMissionName(group?.name)?group.name:'Cross-country Climate Mission');
   const firstName=String(viewer?.profile?.full_name||viewer?.user?.user_metadata?.full_name||'Fellow').trim().split(/\s+/)[0];
@@ -137,7 +137,7 @@ export default function CanopyMissionHub({viewer}){
     <div className="cm-closed-pill"><ShieldCheck size={15}/> Mission phase concluded</div>
     {completed?<><h1>Congratulations, {firstName}.</h1>
      <p>Your climate Mission contribution has been verified by WOMATE and recognised in your Impact Portfolio.</p>
-     <div className="cm-closed-achievements"><span><Check size={16}/> Individual Mission · Verified</span>{groupVerified&&<span><Check size={16}/> Final Team Mission · Verified</span>}</div>
+     <div className="cm-closed-achievements">{completion?.status==='completed'&&<span><Check size={16}/> Individual Mission · Verified</span>}{groupVerified&&<span><Check size={16}/> Final Team Mission · Verified</span>}</div>
      <p className="cm-closed-opportunity">This achievement gives you a stronger advantage when being considered for WOMATE opportunities, funding and paid work. Selection remains subject to each opportunity's requirements.</p>
      <div className="cm-closed-actions"><a href="/canopy/portfolio">View Impact Portfolio <ExternalLink size={16}/></a><a href="/canopy/portfolio">Export / Save as PDF <ExternalLink size={16}/></a><a href="/canopy/talent">Talent Discovery <ExternalLink size={16}/></a></div>
     </>:<><h1>The Mission chapter is complete.</h1><p>Thank you for being part of She Leads Climate. Mission submissions are now closed, and WOMATE is finalising its verified contribution records.</p><a className="cm-closed-simple" href="/canopy/portfolio">View your Impact Portfolio <ExternalLink size={16}/></a></>}
