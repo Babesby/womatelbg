@@ -17,3 +17,5 @@ html[data-canopy-theme="dark"] .cf-tabs{background:#173a34}html[data-canopy-them
 .cf-icon-paid_mission{background:#e7f3ed;color:#145445;border-color:#d1e8db}
 .cf-icon svg{width:19px;height:19px}
 html[data-canopy-theme="dark"] .cf-icon{border-color:#3b5b50}
+
+.cf-empty .cf-reset{margin-top:13px;border:1px solid var(--canopy-line);background:transparent;color:var(--canopy);padding:10px 17px;border-radius:999px;font:800 12px/1.3 inherit;cursor:pointer}.cf-empty .cf-reset:hover{background:#edf5ef}.cf-amount-filter select{font-size:11px;font-weight:750;max-width:205px}
