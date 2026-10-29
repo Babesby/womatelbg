@@ -1,0 +1,22 @@
+/* Closed 2026 Mission: a quiet, read-only recognition experience. */
+.cm-closed-page{max-width:1050px;margin:0 auto;padding:clamp(20px,4vw,48px) 16px 85px}
+.cm-closed-hero{position:relative;overflow:hidden;border-radius:26px;padding:clamp(32px,6vw,78px);color:#fff;background:radial-gradient(circle at 91% 12%,rgba(198,255,82,.13),transparent 40%),linear-gradient(125deg,#073b39,#0b514b)}
+.cm-closed-eyebrow{font-size:10px;letter-spacing:.14em;font-weight:750;color:#d5f1d9}
+.cm-closed-pill{display:flex;align-items:center;gap:7px;width:max-content;max-width:100%;margin:30px 0 12px;padding:8px 12px;border:1px solid rgba(198,255,82,.4);border-radius:999px;font-size:11px;color:#c6ff52}
+.cm-closed-hero h1{max-width:760px;margin:12px 0 17px;color:white;font-size:clamp(37px,5.5vw,68px);letter-spacing:-.055em;line-height:1.08}
+.cm-closed-hero p{max-width:650px;margin:0;color:#d6eae2;font-size:clamp(14px,1.5vw,17px);line-height:1.7}
+.cm-closed-achievements{display:flex;gap:10px;flex-wrap:wrap;margin:26px 0}
+.cm-closed-achievements span{display:inline-flex;align-items:center;gap:8px;padding:11px 14px;border-radius:999px;background:rgba(198,255,82,.1);border:1px solid rgba(198,255,82,.35);color:#d6ffad;font-size:12px;font-weight:750}
+.cm-closed-hero .cm-closed-opportunity{margin-top:20px;color:#f0f7e9}
+.cm-closed-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:31px}
+.cm-closed-actions a,.cm-closed-simple{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 19px;border-radius:999px;background:#c6ff52;color:#073b39;text-decoration:none;font-size:12px;font-weight:800}
+.cm-closed-actions a:not(:first-child){background:transparent;color:#fff;border:1px solid rgba(255,255,255,.35)}
+.cm-closed-simple{margin-top:30px}
+.cm-closed-record{margin-top:24px;padding:26px 30px;border-radius:19px;background:#f4f8f3;border:1px solid #d7e7db}
+.cm-closed-record>span{font-size:10px;color:#146e59;letter-spacing:.13em;font-weight:850}
+.cm-closed-record h2{margin:10px 0 5px;font-size:clamp(24px,3vw,38px);color:#103b34;letter-spacing:-.045em}
+.cm-closed-record p{margin:0;font-size:13px;color:#537266}
+.cm-closed-record small{display:block;margin-top:12px;color:#648275}
+.cm-closed-loading{padding:65px 25px;text-align:center;color:#476c5d}
+@media(max-width:570px){.cm-closed-page{padding:18px 12px 65px}.cm-closed-hero{padding:30px 23px;border-radius:20px}.cm-closed-pill{margin-top:24px}.cm-closed-actions{flex-direction:column}.cm-closed-actions a{width:100%}.cm-closed-record{padding:23px 20px}}
+@media print{.cm-closed-page{max-width:100%;padding:0}.cm-closed-hero,.cm-closed-record{print-color-adjust:exact;-webkit-print-color-adjust:exact}.cm-closed-actions{display:none}}
