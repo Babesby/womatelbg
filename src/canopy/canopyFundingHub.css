@@ -8,3 +8,12 @@ html[data-canopy-theme="dark"] .cf-tabs{background:#173a34}html[data-canopy-them
 
 
 .cf-types select{border-radius:999px;border:1px solid var(--canopy-line);padding:9px 13px;background:transparent;color:var(--canopy-ink)}.cf-amount{border-radius:999px;background:#fff3c8;color:#795100;font-size:15px;padding:9px 14px}
+
+
+/* Distinct funding and work marks, aligned with the editorial opportunity list. */
+.cf-icon{border:1px solid transparent;flex-shrink:0}
+.cf-icon-microgrant{background:#fff3d8;color:#886114;border-color:#eddeb7}
+.cf-icon-sponsored_challenge{background:#edf2f8;color:#456d8f;border-color:#dce5ee}
+.cf-icon-paid_mission{background:#e7f3ed;color:#145445;border-color:#d1e8db}
+.cf-icon svg{width:19px;height:19px}
+html[data-canopy-theme="dark"] .cf-icon{border-color:#3b5b50}
