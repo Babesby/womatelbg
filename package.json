@@ -13,6 +13,7 @@
     "react": "latest",
     "react-dom": "latest",
     "react-helmet-async": "^3.0.0",
-    "vite": "latest"
+    "vite": "latest",
+    "pdfjs-dist": "^4.10.38"
   }
 }
