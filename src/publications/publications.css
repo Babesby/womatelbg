@@ -90,3 +90,21 @@
 .wpubArticlePage .wpubPublicationNote{max-width:940px;margin:25px auto 50px}
 @media(max-width:900px){.wpub .wpubGrid{gap:0 25px}.wpub .wpubCardVisual{height:280px}.wpub .wpubCardVisual b{font-size:32px}}
 @media(max-width:670px){.wpub .wpubGrid{grid-template-columns:1fr}.wpub .wpubCard{padding:25px 0 32px}.wpub .wpubCardVisual{height:300px}.wpub .wpubCardVisual b{font-size:36px}.wpubArticlePage .wpubArticleBody>h1{font-size:clamp(35px,9vw,56px)}.wpubEditorialOverview{margin-top:35px}.wpubEditorialOverview p{line-height:1.9}.wpub .wpubSectionTop{align-items:start}}
+
+/* Publication polish: actual document spreads, never duplicate the title in a decorative cover. */
+.wpub .wpubCard .wflipCompact{margin:0 0 28px;padding:15px 11px;background:#e9ede5;border-radius:10px;overflow:hidden}
+.wpub .wpubCard .wflipCompact .wflipStage{gap:4px}
+.wpub .wpubCard .wflipCompact .wflipPdfBook{min-height:0;box-shadow:0 10px 30px #15383025}
+.wpub .wpubCard .wflipCompact .wflipArrow{width:30px;min-width:30px;height:53px;border-radius:20px}
+.wpub .wpubCard .wflipCompact .wflipBottom{margin:15px 4px 0;font-size:10px;flex-wrap:wrap}
+.wpub .wpubCard .wflipCompact .wflipLoading{min-height:235px}
+.wpub .wpubCard .wflipCompact .wflipLoading iframe{height:320px;min-height:280px}
+.wpubArticlePage .wpubLibrary{padding-top:clamp(95px,11vw,155px)!important}
+.wpubArticlePage .wpubArticleBack{margin:24px 0 52px!important;padding:6px 0;text-underline-offset:5px}
+.wpubTranscript{max-width:780px;margin:38px auto 0!important;padding:40px clamp(15px,3vw,40px)!important;background:#f9f8f2;border-radius:8px}
+.wpubTranscript p{display:block!important;font:400 clamp(16px,1.7vw,19px)/2 Georgia,serif!important;white-space:normal!important;color:#254b3d!important;letter-spacing:.003em;margin:0 0 2em!important;max-width:72ch}
+.wpubTranscript p:last-child{margin-bottom:0!important}
+.wpubReadMore>div{padding:15px 0 40px!important}
+.wpubReadMore>div>p{margin:0 0 16px!important;line-height:1.85}
+.wpub .wpubCard .wpubCardSummary{margin-top:12px;line-height:1.85}
+@media(max-width:700px){.wpub .wpubCard .wflipCompact .wflipStage{display:flex}.wpub .wpubCard .wflipCompact .wflipBook{display:grid}.wpub .wpubCard .wflipCompact .wflipBottom{display:flex}.wpubArticlePage .wpubLibrary{padding-top:100px!important}.wpubArticlePage .wpubArticleBack{margin-bottom:36px!important}.wpubTranscript{padding:25px 18px!important}}
