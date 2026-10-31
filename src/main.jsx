@@ -138,13 +138,22 @@ merch:'/assets/img/merch/13.png'
 };
 
 const DEFAULT_STATS=[];
+// Last database-verified snapshot is rendered immediately. Live records supersede it when available.
+const VERIFIED_IMPACT_SNAPSHOT={graduates:364,countries:25,learners:792,publications:2};
 function LiveImpactStats(){
- const [data,setData]=useState(null);
- useEffect(()=>{let live=true;const base=(import.meta.env.VITE_CANOPY_SUPABASE_URL||'').replace(/[/]+$/,'');if(!base)return;
- const load=async()=>{try{const r=await fetch(base+'/functions/v1/womate-homepage-stats');if(!r.ok)throw Error('Metrics unavailable');const next=await r.json();if(live&&Number.isFinite(next.graduates)&&Number.isFinite(next.countries))setData(next)}catch(e){console.warn('WOMATE impact statistics unavailable',e)}};
- load();const timer=setInterval(load,300000);return()=>{live=false;clearInterval(timer)};
+ const [data,setData]=useState(VERIFIED_IMPACT_SNAPSHOT);
+ useEffect(()=>{let live=true;
+ const base=(import.meta.env.VITE_CANOPY_SUPABASE_URL||'https://bwnwhsvssgponrzvwlpt.supabase.co').replace(/[/]+$/,'');
+ const load=async()=>{try{
+  const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),12000);
+  let r;try{r=await fetch(base+'/functions/v1/womate-homepage-stats',{method:'GET',headers:{Accept:'application/json'},signal:controller.signal})}finally{clearTimeout(timeout)}
+  if(!r.ok)throw Error('Metrics service returned '+r.status);
+  const next=await r.json();
+  if(live&&['graduates','countries','learners','publications'].every(k=>Number.isSafeInteger(next[k])&&next[k]>=0))setData(next);
+ }catch(e){console.warn('Using last verified WOMATE impact figures; refresh pending.',e)}};
+ load();const timer=setInterval(load,300000);
+ return()=>{live=false;clearInterval(timer)};
  },[]);
- if(!data)return <section className="statbar" aria-label="WOMATE verified impact"><span className="statLoading">Verified impact figures are being updated.</span></section>;
  const metrics=[{value:data.graduates,label:'verified graduates'},{value:data.countries,label:'graduate countries'},{value:data.learners,label:'Cohort 2 learners'},{value:data.publications,label:'approved publications'}];
  return <section className="statbar" aria-label="WOMATE verified impact">{metrics.map(m=><AnimatedStat key={m.label} {...m}/>)}</section>;
 }
