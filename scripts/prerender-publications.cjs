@@ -5,7 +5,7 @@
  */
 const fs=require('node:fs'),path=require('node:path');
 const root=path.resolve(__dirname,'..'),dist=path.join(root,'dist');
-const base=(process.env.VITE_CANOPY_SUPABASE_URL||process.env.CANOPY_SUPABASE_URL||'').replace(/\\/$/,'');
+const base=(process.env.VITE_CANOPY_SUPABASE_URL||process.env.CANOPY_SUPABASE_URL||'').replace(/[/]+$/,'');
 const key=process.env.VITE_CANOPY_SUPABASE_ANON_KEY||'';
 const esc=v=>String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 const valid=id=>/^[a-f0-9-]{36}$/i.test(String(id));
