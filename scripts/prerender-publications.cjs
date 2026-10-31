@@ -19,7 +19,7 @@ const res=await fetch(base+'/functions/v1/womate-publications',{method:'POST',he
 if(!res.ok)throw Error('Publications public endpoint returned HTTP '+res.status);
 const data=await res.json(),items=(data.items||[]).filter(x=>valid(x.id));
 const template=fs.readFileSync(path.join(dist,'index.html'),'utf8');
-for(const p of items){const canon='https://www.womate.org/publications/'+p.id;let html=template.replace(/<title>[^<]*<\/title>/,'<title>'+esc(p.title)+' | WOMATE Publications</title>').replace(/<meta[\s\S]*?name="description"[\s\S]*?\/>/,'<meta name="description" content="'+esc(String(p.summary||'').slice(0,155))+'">');
+for(const p of items){const canon='https://www.womate.org/publications/'+p.id;let html=template.replace(/<title>[^<]*<\/title>/,'<title>'+esc(p.title)+' | WOMATE Publications</title>').replace(/<meta[^>]*name="description"[^>]*>/,'<meta name="description" content="'+esc(String(p.summary||'').slice(0,155))+'">');
 html=html.replace('<div id="root"></div>','<div id="root">'+bodyMarkup(p)+'</div>');
 const schema=JSON.stringify({'@context':'https://schema.org','@type':'Article',headline:p.title,description:p.summary,author:{'@type':'Person',name:p.name},publisher:{'@type':'Organization',name:'WOMATE'},datePublished:p.published_at,url:canon}).replace(/</g,'\\u003c');
 html=insertMeta(html,'<link rel="canonical" href="'+canon+'"><meta property="og:type" content="article"><meta property="og:title" content="'+esc(p.title)+'"><meta property="og:url" content="'+canon+'"><script type="application/ld+json">'+schema+'</script>');
