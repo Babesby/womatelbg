@@ -53,8 +53,13 @@
   ],
   "rewrites": [
     {
+      "source": "/api/publication-pdf",
+      "destination": "/api/publication-pdf"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
-  ]
+  ],
+  "installCommand": "npm install --no-audit --no-fund"
 }
