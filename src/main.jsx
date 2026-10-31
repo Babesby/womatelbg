@@ -36,11 +36,11 @@ const pages={
 };
 
 const seo={
-'/':{title:'WOMATE | African Women Leading Climate Action',description:"WOMATE is an organization that equips African women with technology, training and community support to move from climate participation to climate leadership."},
-'/she-leads':{title:'She Leads Climate Mentorship | WOMATE',description:'She Leads equips young African women with climate knowledge, leadership skills and practical pathways to lead credible climate action.'},
+'/':{title:"WOMATE | Women's Climate Leadership & Mentorship in Africa",description:"WOMATE advances women's climate leadership across Africa through mentorship, practical climate action, research, advocacy and professional opportunities."},
+'/she-leads':{title:'Climate Mentorship for Women in Africa | WOMATE She Leads',description:'She Leads equips young African women with climate knowledge, leadership skills and practical pathways to lead credible climate action.'},
 '/wok-action':{title:'WoK Action | Women’s Climate Knowledge | WOMATE',description:"WoK Action documents, protects and activates women's local and indigenous climate knowledge for community resilience and adaptation."},
 '/circle':{title:'The WOMATE Circle | Climate Community for Women',description:'Join a professional climate community connecting African women to learning, opportunities, peer networks, visibility and long-term climate leadership.'},
-'/publications':{title:'Publications | WOMATE',description:'Read and contribute to WOMATE publications, climate research, policy briefs and evidence-led perspectives.'},
+'/publications':{title:'Climate Research, Leadership & Advocacy Publications | WOMATE',description:'Read original climate research, women-led climate action stories, community solutions, career perspectives and policy advocacy from WOMATE.'},
 '/research':{title:'Climate Research & Gender Intelligence | WOMATE',description:'WOMATE provides gender-responsive climate research, evidence, programme design, MEL and strategic intelligence for institutions working across Africa.'},
 '/resilient-minds':{title:'Resilient Minds | Climate, Wellbeing & Women | WOMATE',description:'Resilient Minds connects climate resilience with mental health, care, restoration and pathways to dignity for vulnerable young women.'},
 '/honours':{title:'Climate Honours | African Women Climate Leaders | WOMATE',description:"WOMATE Climate Honours documents, celebrates and connects women whose leadership is shaping Africa's climate future."},
@@ -1285,13 +1285,14 @@ const deepRepairStyles=`
 function DeepRepairStyles(){return <style>{deepRepairStyles}</style>}
 function App(){
 let path=window.location.pathname.replace(/\/$/,'')||'/';
-let p=pages[path]||pages['/'];
+let p=path.startsWith('/publications/')?pages['/publications']:(pages[path]||pages['/']);
 useEffect(()=>{window.scrollTo(0,0);},[]);
 if(path==='/verify')return <React.Suspense fallback={<div role='status'>Opening WOMATE verification…</div>}><VerifyCertificate/></React.Suspense>;
 if(path==='/canopy'||path.startsWith('/canopy/'))return <React.Suspense fallback={<main role='status' aria-live='polite' style={{minHeight:'65vh',display:'grid',placeItems:'center',color:'#0E4D4A'}}>Loading Canopy...</main>}><CanopyApp/></React.Suspense>;
 const publicTalent=path==='/talent'||path==='/talent-discovery'||path.startsWith('/talent/');
+const publicationDetail=path.startsWith('/publications/');
 return <>
-{!publicTalent&&<PageSEO path={path}/>}<UIPolish/><DeepRepairStyles/>
+{!publicTalent&&!publicationDetail&&<PageSEO path={path}/>}<UIPolish/><DeepRepairStyles/>
 <Header/>
 {publicTalent?<PublicTalentDiscovery/>:p.type==='home'?<Home/>:p.type==='she'?<SheLeads/>:p.type==='wok'?<WokAction/>:p.type==='research'?<ResearchPage/>:p.type==='publications'?<PublicationsPage/>:p.type==='circle'?<CirclePage/>:p.type==='minds'?<ResilientMinds/>:p.type==='honours'?<HonoursPage/>:p.type==='leadership'?<LeadershipPage/>:p.type==='volunteer'?<WomateerPage/>:p.type==='merch'?<MerchandisePage/>:p.type==='funding'?<FundingPage/>:p.type==='donate'?<DonationPage/>:p.type==='privacy'?<LegalPage kind="privacy"/>:p.type==='terms'?<LegalPage kind="terms"/>:<Standard p={p}/>}
 <Footer/>
