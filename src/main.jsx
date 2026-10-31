@@ -137,12 +137,17 @@ volunteer:'/assets/hero/womateer.png.svg',
 merch:'/assets/img/merch/13.png'
 };
 
-const stats=[
-{value:40,label:'graduates'},
-{value:15,label:'countries'},
-{value:18,label:'honourees',suffix:'+'},
-{value:1000,label:'lives reached',compact:true,suffix:'+'}
-];
+const DEFAULT_STATS=[];
+function LiveImpactStats(){
+ const [data,setData]=useState(null);
+ useEffect(()=>{let live=true;const base=(import.meta.env.VITE_CANOPY_SUPABASE_URL||'').replace(/\\/$/,'');if(!base)return;
+ const load=async()=>{try{const r=await fetch(base+'/functions/v1/womate-homepage-stats');if(!r.ok)throw Error('Metrics unavailable');const next=await r.json();if(live&&Number.isFinite(next.graduates)&&Number.isFinite(next.countries))setData(next)}catch(e){console.warn('WOMATE impact statistics unavailable',e)}};
+ load();const timer=setInterval(load,300000);return()=>{live=false;clearInterval(timer)};
+ },[]);
+ if(!data)return <section className="statbar" aria-label="WOMATE verified impact"><span className="statLoading">Verified impact figures are being updated.</span></section>;
+ const metrics=[{value:data.graduates,label:'verified graduates'},{value:data.countries,label:'graduate countries'},{value:data.learners,label:'Cohort 2 learners'},{value:data.publications,label:'approved publications'}];
+ return <section className="statbar" aria-label="WOMATE verified impact">{metrics.map(m=><AnimatedStat key={m.label} {...m}/>)}</section>;
+}
 function AnimatedStat({value,label,suffix='',compact=false}){const ref=useRef(null);const[count,setCount]=useState(0);const[started,setStarted]=useState(false);useEffect(()=>{const el=ref.current;if(!el)return;const observer=new IntersectionObserver(([entry])=>{if(entry.isIntersecting){setStarted(true);observer.disconnect()}},{threshold:.45});observer.observe(el);return()=>observer.disconnect()},[]);useEffect(()=>{if(!started)return;let frame;const duration=1350;const start=performance.now();const tick=now=>{const progress=Math.min(1,(now-start)/duration);const eased=1-Math.pow(1-progress,3);setCount(Math.round(value*eased));if(progress<1)frame=requestAnimationFrame(tick)};frame=requestAnimationFrame(tick);return()=>cancelAnimationFrame(frame)},[started,value]);let display=compact&&count>=1000?'1k':count.toLocaleString();return <div ref={ref} className="animatedStat"><strong>{display}{suffix}</strong><span>{label}</span></div>}
 const programs=[
 ['She Leads','Climate knowledge and leadership for young African women.','/she-leads',<Users size={22}/>,heroAssets?.she],
@@ -176,7 +181,7 @@ const testimonials=[
 function Voices(){const cards=[...testimonials,...testimonials];return <section className="voices voicesLive"><div className="voicesHead"><div><span className="voicesKicker">WORDS OF TRANSFORMATION</span><h3>Leadership sounds different when women are given room to own it.</h3></div><div className="voicesMeta"><strong>06</strong><span>voices from the<br/>WOMATE network</span></div></div><div className="voiceViewport"><div className="voiceTrack">{cards.map(([q,n,r,img],i)=><article className="voiceCard" key={i}><div className="voiceCardTop"><img src={img} alt={n+' · WOMATE She Leads alumna'} loading="lazy"/><Quote size={24}/></div><p>{q}</p><div className="voicePerson"><strong>{n}</strong><span>{r}</span></div></article>)}</div></div><div className="voiceHint"><span/> Hover to pause · alumni voices across Africa</div></section>}
 
 function Home(){const[reportOpen,setReportOpen]=useState(false);return <><Hero p={pages['/']} onExplore={()=>setReportOpen(true)}/><main id="content">
-<section className="statbar">{stats.map(s=><AnimatedStat key={s.label} {...s}/>)}</section>
+<LiveImpactStats/>
 <section className="manifesto"><div className="manifestoMark">W</div><div><h3>We don't believe in token inclusion. We believe in full leadership.</h3></div><div><p className="lead">WOMATE is an organization that equips African women with technology, training and community support to move from climate participation to climate leadership.</p><div className="pulseLine"><span/>Community · Storytelling · Capacity building · Advocacy</div></div></section>
 <section className="programGrid">{programs.map((p,i)=><Link to={p[2]} className={'program p'+i} key={p[0]}><img className="programArt" src={p[4]} alt="" aria-hidden="true" loading="lazy"/><div className="programShade"/><div className="programTop"><div className="ico">{p[3]}</div><span>0{i+1}</span></div><div className="programCopy"><h4>{p[0]}</h4><p>{p[1]}</p><ArrowUpRight className="go"/></div></Link>)}</section>
 <section className="impactScene"><div className="impactPhoto"><img src="/assets/img/wok-field-collage.png" alt="Women participating in WOMATE climate field work" loading="lazy"/><button className="play"><Play fill="currentColor" size={16}/> Field story</button><div className="impactBadge"><Leaf/><span><b>WoK Action</b>Living climate knowledge</span></div></div><div className="impactCopy"><h3>What women know about land, water and survival should not disappear between generations.</h3><p>WoK Action creates a living archive of women’s climate knowledge while supporting communities to translate that intelligence into resilience, enterprise and local adaptation.</p><Link to="/wok-action" className="textlink">Enter WoK Action <MoveRight/></Link></div></section>
