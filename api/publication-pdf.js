@@ -9,9 +9,10 @@ module.exports=async function handler(req,res){
  if(req.method!=='GET'){res.status(405).end();return}
  const file=DOCUMENTS[id];if(!file){res.status(404).end();return}
  try{
-  const upstream=await fetch('https://drive.google.com/uc?export=download&id='+encodeURIComponent(file),{redirect:'follow',headers:{'User-Agent':'Mozilla/5.0'}});
-  const type=upstream.headers.get('content-type')||'';
-  if(!upstream.ok||!type.includes('pdf')){res.status(502).json({error:'Original PDF could not be fetched. Open the linked Drive document instead.'});return}
+  let upstream=null;
+  const candidates=['https://drive.usercontent.google.com/download?id='+encodeURIComponent(file)+'&export=download&confirm=t','https://drive.google.com/uc?export=download&id='+encodeURIComponent(file)];
+  for(const url of candidates){const attempt=await fetch(url,{redirect:'follow',headers:{'User-Agent':'Mozilla/5.0'}});if(attempt.ok&&(attempt.headers.get('content-type')||'').includes('pdf')){upstream=attempt;break}}
+  if(!upstream){res.status(502).json({error:'Original PDF could not be fetched. Open the linked Drive document instead.'});return}
   const data=Buffer.from(await upstream.arrayBuffer());
   if(data.length>16*1024*1024||data.subarray(0,5).toString()!=='%PDF-'){res.status(502).end();return}
   res.setHeader('Content-Type','application/pdf');
