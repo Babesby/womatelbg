@@ -8,6 +8,7 @@ import CanopyNotifications from './CanopyNotifications';
 import CanopyCertificate from './CanopyCertificate';
 import CanopyCredentialAdmin from './CanopyCredentialAdmin';
 import CanopyGraduationPortal from './CanopyGraduationPortal';
+import CanopyAlumniCheckin from './CanopyAlumniCheckin';
 import CanopyCelebration,{CANOPY_C2_CELEBRATION_START} from './CanopyCelebration2026';
 import CanopyAdminClosing from './CanopyAdminClosing';
 import CanopyAttendance from './CanopyAttendance';
@@ -143,7 +144,7 @@ function ResetPassword(){const[p1,setP1]=useState('');const[p2,setP2]=useState('
 function CourseNav({open,setOpen,viewer}){
 const manager=canManageCanopy(viewer);
  const tester=isCanopyTester(viewer);
- const learnerItems=[['/canopy/classroom','Home',BookOpen],['/canopy/course/she-leads','Course',GraduationCap],['/canopy/assignments','Assignments',FileText],['/canopy/progress','Progress',ClipboardCheck],['/canopy/portfolio','Impact profile',BriefcaseBusiness],['/canopy/opportunities','Missions',Globe2],['/canopy/opportunity-board','Opportunities',TrendingUp],['/canopy/funding','Funding & paid work',Award],['/canopy/talent','Talent network',UsersRound],['/canopy/resources','Resources',Sparkles],['/canopy/canvas','CanopyCanvas',PenLine],['/canopy/notifications','Notifications',MessageSquare],['/canopy/help','Help',ShieldAlert],['/canopy/graduation','Graduation',GraduationCap],['/canopy/certificate','Certificates',Award]];
+ const learnerItems=[['/canopy/classroom','Home',BookOpen],['/canopy/course/she-leads','Course',GraduationCap],['/canopy/assignments','Assignments',FileText],['/canopy/progress','Progress',ClipboardCheck],['/canopy/portfolio','Impact profile',BriefcaseBusiness],['/canopy/opportunities','Missions',Globe2],['/canopy/opportunity-board','Opportunities',TrendingUp],['/canopy/funding','Funding & paid work',Award],['/canopy/talent','Talent network',UsersRound],['/canopy/resources','Resources',Sparkles],['/canopy/canvas','CanopyCanvas',PenLine],['/canopy/notifications','Notifications',MessageSquare],['/canopy/help','Help',ShieldAlert],['/canopy/graduation','Graduation',GraduationCap],['/canopy/alumni-checkin','Alumni check-in',Heart],['/canopy/certificate','Certificates',Award]];
  const legacyAdmin=['manager','admin'].includes(viewer?.profile?.role);
  const managerItems=[['/canopy/manage','Operations',ClipboardCheck],['/canopy/manage/access','Manage cohort',UsersRound],['/canopy/manage/reviews','Assess submissions',FileText],['/canopy/manage/communications','Warnings & feedback',MessageSquare],['/canopy/manage/reminders','Reminders',Bell],['/canopy/manage/complaints','Complaints',ShieldAlert],['/canopy/manage/attendance','Attendance',UsersRound],['/canopy/manage/certificates','Certificates',Award],['/canopy/manage/credentials','Graduate registry',ShieldCheck],['/canopy/manage/graduation-2026','Graduation 2026',GraduationCap],['/canopy/manage/inactivity-2026','Inactivity review',ShieldAlert],['/canopy/manage/reports','Reports',BarChart3],['/canopy/manage/opportunities','Opportunities',BriefcaseBusiness],['/canopy/manage/funding','Funding & paid work',Award],['/canopy/manage/talent','Talent network',UsersRound],['/canopy/manage/missions','Mission groups',Globe2],...((viewer?.staffAccess?.role==='programme_manager'||viewer?.profile?.role==='admin')?[[ '/canopy/manage/spotlight','Canopy Spotlight',Sparkles]]:[]),...(legacyAdmin?[[ '/canopy/manage/team-access','Team Access',UserRound]]:[])];
  if(viewer?.profile?.role==='admin')managerItems.push(['/canopy/manage/selection-codes','Selection codes',Award]);
@@ -1000,6 +1001,7 @@ const manager=canManageCanopy(viewer);const operational=isCanopyOperationsStaff(
  else if(path==='/canopy/notifications')content=<CanopyNotifications viewer={viewer}/>;
  else if(path==='/canopy/help')content=<Suspense fallback={<main className="canopyHelp"><div className="canopyHelpLazyState">Opening Help & complaints…</div></main>}><CanopyHelp viewer={viewer}/></Suspense>;
  else if(path==='/canopy/graduation')content=<CanopyGraduationPortal viewer={viewer} tester={tester}/>;
+ else if(path==='/canopy/alumni-checkin')content=<CanopyAlumniCheckin viewer={viewer}/>;
  else if(path==='/canopy/certificate')content=<CanopyCertificate viewer={viewer} progress={progress} submissions={submissions}/>;
  else if(path==='/canopy/assignments')content=<CanopyAssignmentsV2 viewer={viewer}/>;
  else if(path==='/canopy/progress')content=<Progress progress={progress} submissions={submissions}/>;
