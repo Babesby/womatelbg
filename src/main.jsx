@@ -140,7 +140,7 @@ merch:'/assets/img/merch/13.png'
 const DEFAULT_STATS=[];
 function LiveImpactStats(){
  const [data,setData]=useState(null);
- useEffect(()=>{let live=true;const base=(import.meta.env.VITE_CANOPY_SUPABASE_URL||'').replace(/\\/$/,'');if(!base)return;
+ useEffect(()=>{let live=true;const base=(import.meta.env.VITE_CANOPY_SUPABASE_URL||'').replace(/[/]+$/,'');if(!base)return;
  const load=async()=>{try{const r=await fetch(base+'/functions/v1/womate-homepage-stats');if(!r.ok)throw Error('Metrics unavailable');const next=await r.json();if(live&&Number.isFinite(next.graduates)&&Number.isFinite(next.countries))setData(next)}catch(e){console.warn('WOMATE impact statistics unavailable',e)}};
  load();const timer=setInterval(load,300000);return()=>{live=false;clearInterval(timer)};
  },[]);
