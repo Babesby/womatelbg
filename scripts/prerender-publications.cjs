@@ -65,12 +65,12 @@ function staticLandingPages(template){
 
 async function main(){
 if(!fs.existsSync(path.join(dist,'index.html')))throw Error('Vite output missing');
-if(!base){console.warn('[WOMATE SEO] Supabase URL missing; article pre-rendering skipped.');return}
+const template=fs.readFileSync(path.join(dist,'index.html'),'utf8');
+staticLandingPages(template);
+if(!base){console.warn('[WOMATE SEO] Supabase URL missing; dynamic article and profile generation skipped.');return}
 const res=await fetch(base+'/functions/v1/womate-publications',{method:'POST',headers:{'Content-Type':'application/json',...(key?{apikey:key}:{})},body:JSON.stringify({action:'list'}),signal:AbortSignal.timeout(15000)});
 if(!res.ok)throw Error('Publications public endpoint returned HTTP '+res.status);
 const data=await res.json(),items=(data.items||[]).filter(x=>valid(x.id));
-const template=fs.readFileSync(path.join(dist,'index.html'),'utf8');
-staticLandingPages(template);
 for(const p of items){const canon='https://www.womate.org/publications/'+p.id;let html=template.replace(/<title>[^<]*<\/title>/,'<title>'+esc(p.title)+' | WOMATE Publications</title>').replace(/<meta[^>]*name="description"[^>]*>/,'<meta name="description" content="'+esc(String(p.summary||'').slice(0,155))+'">');
 html=html.replace('<div id="root"></div>','<div id="root">'+bodyMarkup(p)+'</div>');
 const schema=JSON.stringify({'@context':'https://schema.org','@type':'Article',headline:p.title,description:p.summary,author:{'@type':'Person',name:p.name},publisher:{'@type':'Organization',name:'WOMATE'},datePublished:p.published_at,url:canon}).replace(/</g,'\\u003c');
