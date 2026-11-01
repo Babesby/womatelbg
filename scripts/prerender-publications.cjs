@@ -53,7 +53,7 @@ function staticLandingPages(template){
  ];
  for(const [route,title,description,h1] of pages){
   const canonical='https://www.womate.org'+(route==='/'?'':route);
-  let html=template.replace(/<title>[^<]*<\\/title>/,'<title>'+esc(title)+'</title>').replace(/<meta[^>]*name="description"[^>]*>/,'<meta name="description" content="'+esc(description)+'">');
+  let html=template.replace(/<title>[^<]*<\/title>/,'<title>'+esc(title)+'</title>').replace(/<meta[^>]*name="description"[^>]*>/,'<meta name="description" content="'+esc(description)+'">');
   html=html.replace('<div id="root"></div>','<div id="root"><main class="womate-seo-shell" style="font-family:system-ui,sans-serif;padding:7rem 5vw;color:#073b39"><h1>'+esc(h1)+'</h1><p>'+esc(description)+'</p><nav><a href="/she-leads">She Leads</a> · <a href="/talent-discovery">Talent Discovery</a> · <a href="/honours">Climate Honours</a> · <a href="/publications">Publications</a></nav></main></div>');
   const schema=JSON.stringify({'@context':'https://schema.org','@type':route==='/honours'?'WebPage':'WebPage',name:title,description,url:canonical,isPartOf:{'@type':'WebSite',name:'WOMATE',url:'https://www.womate.org/'}}).replace(/</g,'\\u003c');
   html=insertMeta(html,'<link rel="canonical" href="'+canonical+'"><meta property="og:url" content="'+canonical+'"><meta property="og:title" content="'+esc(title)+'"><meta property="og:description" content="'+esc(description)+'"><script type="application/ld+json">'+schema+'</script>');
