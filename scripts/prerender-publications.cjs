@@ -55,7 +55,7 @@ const dir=path.join(dist,'publications',p.id);fs.mkdirSync(dir,{recursive:true})
 }
 const talentUrls=await talentPages(template);
 const sitemap=path.join(dist,'sitemap.xml');let xml=fs.existsSync(sitemap)?fs.readFileSync(sitemap,'utf8'):'<?xml version="1.0"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"></urlset>';
-xml=xml.replace('</urlset>',items.map(x=>'  <url><loc>https://www.womate.org/publications/'+x.id+'</loc></url>').join('\n')+'\n</urlset>');
+xml=xml.replace('</urlset>',[...items.map(x=>'https://www.womate.org/publications/'+x.id),...talentUrls].map(u=>'  <url><loc>'+esc(u)+'</loc></url>').join('\n')+'\n</urlset>');
 fs.writeFileSync(sitemap,xml);
 console.log('[WOMATE SEO] Generated '+items.length+' approved articles and '+talentUrls.length+' opt-in public talent profiles with sitemap links.');
 }
