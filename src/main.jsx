@@ -139,7 +139,7 @@ merch:'/assets/img/merch/13.png'
 
 const DEFAULT_STATS=[];
 // Last database-verified snapshot is rendered immediately. Live records supersede it when available.
-const VERIFIED_IMPACT_SNAPSHOT={graduates:364,countries:25,learners:792,publications:2};
+const VERIFIED_IMPACT_SNAPSHOT={graduates:368,countries:32,learners:792,publications:2};
 function LiveImpactStats(){
  const [data,setData]=useState(VERIFIED_IMPACT_SNAPSHOT);
  useEffect(()=>{let live=true;
@@ -154,7 +154,7 @@ function LiveImpactStats(){
  load();const timer=setInterval(load,300000);
  return()=>{live=false;clearInterval(timer)};
  },[]);
- const metrics=[{value:data.graduates,label:'verified graduates'},{value:data.countries,label:'graduate countries'},{value:data.learners,label:'Cohort 2 learners'},{value:data.publications,label:'approved publications'}];
+ const metrics=[{value:data.graduates,label:'Graduates'},{value:data.countries,label:'Countries'},{value:data.learners,label:'Learners'},{value:data.publications,label:'Publications'}];
  return <section className="statbar" aria-label="WOMATE verified impact">{metrics.map(m=><AnimatedStat key={m.label} {...m}/>)}</section>;
 }
 function AnimatedStat({value,label,suffix='',compact=false}){const ref=useRef(null);const[count,setCount]=useState(0);const[started,setStarted]=useState(false);useEffect(()=>{const el=ref.current;if(!el)return;const observer=new IntersectionObserver(([entry])=>{if(entry.isIntersecting){setStarted(true);observer.disconnect()}},{threshold:.45});observer.observe(el);return()=>observer.disconnect()},[]);useEffect(()=>{if(!started)return;let frame;const duration=1350;const start=performance.now();const tick=now=>{const progress=Math.min(1,(now-start)/duration);const eased=1-Math.pow(1-progress,3);setCount(Math.round(value*eased));if(progress<1)frame=requestAnimationFrame(tick)};frame=requestAnimationFrame(tick);return()=>cancelAnimationFrame(frame)},[started,value]);let display=compact&&count>=1000?'1k':count.toLocaleString();return <div ref={ref} className="animatedStat"><strong>{display}{suffix}</strong><span>{label}</span></div>}
