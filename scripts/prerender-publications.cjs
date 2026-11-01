@@ -40,6 +40,29 @@ async function talentPages(template){
  return all.map(p=>'https://www.womate.org/talent/'+encodeURIComponent(p.slug));
 }
 
+
+function staticLandingPages(template){
+ const pages=[
+  ['/','WOMATE | Women’s Climate Leadership & Mentorship in Africa',"WOMATE advances women's climate leadership across Africa through mentorship, practical climate action, research and advocacy.",'Women leading climate action across Africa'],
+  ['/she-leads','Climate Mentorship for Women in Africa | WOMATE She Leads','Explore WOMATE She Leads climate mentorship, leadership development and professional opportunities for emerging African women.','Climate mentorship and leadership for women in Africa'],
+  ['/honours','Climate Honours Africa | Women Climate Leaders & Advocates | WOMATE','Meet women recognised through WOMATE Climate Honours for contributions to climate action, advocacy, sustainability and leadership across Africa.','Climate Honours: Celebrating women leading climate action'],
+  ['/talent-discovery','African Women Climate Leaders & Talent Directory | WOMATE','Discover public professional profiles of African women working in climate action, research, advocacy, sustainability and leadership.','Discover African women climate leaders'],
+  ['/publications','Climate Research, Leadership & Advocacy Publications | WOMATE','Explore WOMATE research, climate action reports, policy perspectives and original articles by women climate leaders.','Climate research and publications'],
+  ['/research','Climate Research and Evidence in Africa | WOMATE','Explore WOMATE research and evidence on climate adaptation, community leadership and women-led climate solutions.','Climate research informed by communities'],
+  ['/wok-action','Women’s Climate Knowledge and Community Action | WOMATE','WoK Action documents local climate knowledge and community-led adaptation across Africa.','Women’s local wisdom for climate action']
+ ];
+ for(const [route,title,description,h1] of pages){
+  const canonical='https://www.womate.org'+(route==='/'?'':route);
+  let html=template.replace(/<title>[^<]*<\\/title>/,'<title>'+esc(title)+'</title>').replace(/<meta[^>]*name="description"[^>]*>/,'<meta name="description" content="'+esc(description)+'">');
+  html=html.replace('<div id="root"></div>','<div id="root"><main class="womate-seo-shell" style="font-family:system-ui,sans-serif;padding:7rem 5vw;color:#073b39"><h1>'+esc(h1)+'</h1><p>'+esc(description)+'</p><nav><a href="/she-leads">She Leads</a> · <a href="/talent-discovery">Talent Discovery</a> · <a href="/honours">Climate Honours</a> · <a href="/publications">Publications</a></nav></main></div>');
+  const schema=JSON.stringify({'@context':'https://schema.org','@type':route==='/honours'?'WebPage':'WebPage',name:title,description,url:canonical,isPartOf:{'@type':'WebSite',name:'WOMATE',url:'https://www.womate.org/'}}).replace(/</g,'\\u003c');
+  html=insertMeta(html,'<link rel="canonical" href="'+canonical+'"><meta property="og:url" content="'+canonical+'"><meta property="og:title" content="'+esc(title)+'"><meta property="og:description" content="'+esc(description)+'"><script type="application/ld+json">'+schema+'</script>');
+  if(route==='/')fs.writeFileSync(path.join(dist,'index.html'),html);
+  else{const d=path.join(dist,route.slice(1));fs.mkdirSync(d,{recursive:true});fs.writeFileSync(path.join(d,'index.html'),html)}
+ }
+ return pages.length;
+}
+
 async function main(){
 if(!fs.existsSync(path.join(dist,'index.html')))throw Error('Vite output missing');
 if(!base){console.warn('[WOMATE SEO] Supabase URL missing; article pre-rendering skipped.');return}
@@ -47,6 +70,7 @@ const res=await fetch(base+'/functions/v1/womate-publications',{method:'POST',he
 if(!res.ok)throw Error('Publications public endpoint returned HTTP '+res.status);
 const data=await res.json(),items=(data.items||[]).filter(x=>valid(x.id));
 const template=fs.readFileSync(path.join(dist,'index.html'),'utf8');
+staticLandingPages(template);
 for(const p of items){const canon='https://www.womate.org/publications/'+p.id;let html=template.replace(/<title>[^<]*<\/title>/,'<title>'+esc(p.title)+' | WOMATE Publications</title>').replace(/<meta[^>]*name="description"[^>]*>/,'<meta name="description" content="'+esc(String(p.summary||'').slice(0,155))+'">');
 html=html.replace('<div id="root"></div>','<div id="root">'+bodyMarkup(p)+'</div>');
 const schema=JSON.stringify({'@context':'https://schema.org','@type':'Article',headline:p.title,description:p.summary,author:{'@type':'Person',name:p.name},publisher:{'@type':'Organization',name:'WOMATE'},datePublished:p.published_at,url:canon}).replace(/</g,'\\u003c');
