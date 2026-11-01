@@ -32,10 +32,10 @@ function TalentCard({x}){
 function SEO({profile,chat=false}){
  if(chat)return <Helmet><title>Private collaboration | WOMATE</title><meta name="robots" content="noindex,nofollow,noarchive"/><meta name="referrer" content="no-referrer"/></Helmet>;
  const directory=!profile;
- const title=directory?'Talent Discovery | WOMATE':`${profile.full_name} | WOMATE Talent Discovery`;
- const description=directory?'Discover WOMATE-approved women building credible climate action across Africa.':`${profile.full_name}, ${profile.country||'Africa'}. ${profile.headline||'WOMATE verified climate talent.'}`;
+ const title=directory?'African Women Climate Leaders & Talent Directory | WOMATE':`${profile.full_name} | ${clean(profile.headline)||'Climate Leader'} | WOMATE`;
+ const description=directory?'Discover African women climate leaders, researchers and professionals through the WOMATE talent network.':`${profile.full_name} · ${profile.country||'Africa'} · ${profile.headline||'Climate leadership professional'}. Discover climate interests and professional work.`.slice(0,160);
  const url=directory?'https://www.womate.org/talent-discovery':`https://www.womate.org/talent/${profile.slug}`;
- const schema=profile?{'@context':'https://schema.org','@type':'Person',name:profile.full_name,homeLocation:profile.country||undefined,jobTitle:profile.headline||undefined,url,image:publicTalentPhotoUrl(profile.avatar_path)||undefined,knowsAbout:interests(profile.climate_interests)}:{'@context':'https://schema.org','@type':'CollectionPage',name:'WOMATE Talent Discovery',url,description};
+ const schema=profile?{'@context':'https://schema.org','@type':'ProfilePage',url,mainEntity:{'@type':'Person',name:profile.full_name,homeLocation:profile.country?{'@type':'Place',name:profile.country}:undefined,description:profile.headline||undefined,url,image:publicTalentPhotoUrl(profile.avatar_path)||undefined,knowsAbout:interests(profile.climate_interests)}}:{'@context':'https://schema.org','@type':'CollectionPage',name:'WOMATE Talent Discovery',url,description};
  return <Helmet><title>{title}</title><meta name="description" content={description}/><link rel="canonical" href={url}/><meta property="og:title" content={title}/><meta property="og:description" content={description}/><meta property="og:url" content={url}/><meta property="og:type" content={profile?'profile':'website'}/>{profile?.avatar_path&&<meta property="og:image" content={publicTalentPhotoUrl(profile.avatar_path)}/>}<script type="application/ld+json">{JSON.stringify(schema)}</script></Helmet>
 }
 export default function PublicTalentDiscovery(){
