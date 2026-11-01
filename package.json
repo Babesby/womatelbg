@@ -4,7 +4,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "prebuild": "node scripts/audit-form-privacy.cjs && node scripts/copy-canopy-mediapipe.cjs",
-    "postbuild": "node scripts/prerender-publications.cjs"
+    "postbuild": "node scripts/prerender-publications.cjs",
+    "seo:indexnow": "node scripts/notify-indexnow.cjs"
   },
   "dependencies": {
     "@mediapipe/tasks-vision": "0.10.21",
