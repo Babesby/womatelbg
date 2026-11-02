@@ -37,7 +37,7 @@ function setInputValue(input,value){
 
 function safeText(el,value){el.textContent=value==null?'':String(value);}
 
-function mountDirectory(){
+export function mountSelectedDirectory(){
   if(document.querySelector('[data-womate-selected-directory]'))return true;
   const host=document.querySelector('main');
   if(!host)return false;
@@ -168,8 +168,3 @@ function mountDirectory(){
   return true;
 }
 
-if(!mountDirectory()){
-  const obs=new MutationObserver(()=>{if(mountDirectory())obs.disconnect()});
-  obs.observe(document.documentElement,{childList:true,subtree:true});
-  setTimeout(()=>obs.disconnect(),15000);
-}
