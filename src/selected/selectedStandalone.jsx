@@ -1,20 +1,17 @@
-import './selectedDirectory.js';
 import './selectedDirectory.css';
 import './selectedBrandEnhancements.js';
-﻿import React from 'react';
+import React,{useEffect} from 'react';
 import {createRoot} from 'react-dom/client';
 import SelectedCard from './SelectedCard';
+import {mountSelectedDirectory} from './selectedDirectory.js';
 
-const mount=document.getElementById('root');
-
-if(!mount){
-  throw new Error(
-    'WOMATE root element was not found.'
-  );
+function SelectedWithDirectory(){
+ useEffect(()=>{
+   const frame=requestAnimationFrame(()=>mountSelectedDirectory());
+   return()=>cancelAnimationFrame(frame);
+ },[]);
+ return <SelectedCard/>;
 }
-
-createRoot(mount).render(
-  <React.StrictMode>
-    <SelectedCard/>
-  </React.StrictMode>
-);
+const mount=document.getElementById('root');
+if(!mount)throw new Error('WOMATE root element was not found.');
+createRoot(mount).render(<React.StrictMode><SelectedWithDirectory/></React.StrictMode>);
