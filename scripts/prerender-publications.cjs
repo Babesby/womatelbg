@@ -37,6 +37,13 @@ async function talentPages(template){
   html=insertMeta(html,'<link rel="canonical" href="'+canonical+'"><meta property="og:type" content="profile"><meta property="og:title" content="'+esc(title)+'"><meta property="og:description" content="'+esc(description)+'"><meta property="og:url" content="'+canonical+'"><script type="application/ld+json">'+schema+'</script>');
   const dir=path.join(dist,'talent',p.slug);fs.mkdirSync(dir,{recursive:true});fs.writeFileSync(path.join(dir,'index.html'),html);
  }
+ const directoryFile=path.join(dist,'talent-discovery','index.html');
+ if(fs.existsSync(directoryFile)){
+  let content=fs.readFileSync(directoryFile,'utf8');
+  const links=all.map(p=>'<li><a href="/talent/'+encodeURIComponent(p.slug)+'">'+esc(p.full_name)+'</a> - '+esc(p.country||'Africa')+'</li>').join('');
+  content=content.replace('</main></div>','<section aria-label="WOMATE public talent profiles"><h2>Explore WOMATE climate leaders</h2><ul>'+links+'</ul></section></main></div>');
+  fs.writeFileSync(directoryFile,content);
+ }
  return all.map(p=>'https://www.womate.org/talent/'+encodeURIComponent(p.slug));
 }
 
