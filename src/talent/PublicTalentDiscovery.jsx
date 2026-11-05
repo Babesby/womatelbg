@@ -1,7 +1,7 @@
 import React,{useEffect,useState}from'react';
 import{Helmet}from'react-helmet-async';
 import{ArrowLeft,ArrowUpRight,BadgeCheck,Copy,Handshake,Search,ShieldCheck,Sparkles}from'lucide-react';
-import{getPublicTalentDirectory,getPublicTalentFilterOptions,getPublicTalentProfile,getPublicCollaborationThread,publicTalentPhotoUrl,sendPublicCollaborationMessage,submitPublicCollaborationRequest,getPublicC2Achievement,submitPublicCollaborationSafetyReport,submitPublicOrganisationReview}from'./publicTalentApi';
+import{getPublicTalentDirectory,getPublicTalentFilterOptions,getPublicTalentProfile,getPublicCollaborationThread,publicTalentPhotoUrl,sendPublicCollaborationMessage,submitPublicCollaborationRequest,getPublicC2Achievement,submitPublicCollaborationSafetyReport,submitPublicOrganisationReview,verifyPublicRequesterEmail,getPublicRequesterVerificationStatus}from'./publicTalentApi';
 import'./publicTalentDiscovery.css';
 
 const clean=v=>String(v||'').trim();
@@ -74,7 +74,7 @@ function ChatRoute({id}){
  const load=async()=>{if(!token)return;try{setThread(await getPublicCollaborationThread(id,token));setError('')}catch(e){setError(e.message)}};
  useEffect(()=>{if(!token)return;load();const timer=setInterval(()=>{if(document.visibilityState==='visible')load()},15000);return()=>clearInterval(timer)},[token,id]);
  const send=async()=>{const body=clean(chat);if(!body)return;setBusy(true);try{await sendPublicCollaborationMessage(id,token,body);setChat('');await load()}catch(e){setError(e.message)}finally{setBusy(false)}};
- return <main className="pt-page"><SEO chat/><a className="pt-back" href="/talent-discovery"><ArrowLeft size={16}/> Talent Discovery</a>{thread?<><Thread thread={thread} chat={chat} setChat={setChat} send={send} busy={busy}/><VisitorSafetyReport requestId={id} accessToken={token}/><VisitorOrganisationReview requestId={id} accessToken={token}/></>:<section className="pt-thread"><h1>Private collaboration</h1><p>This page is accessible only with the private conversation key created when the collaboration request was submitted.</p>{error&&<p className="pt-error">{error}</p>}</section>}</main>
+ return <main className="pt-page"><SEO chat/><a className="pt-back" href="/talent-discovery"><ArrowLeft size={16}/> Talent Discovery</a>{thread?<><Thread thread={thread} chat={chat} setChat={setChat} send={send} busy={busy}/><VisitorSafetyReport requestId={id} accessToken={token}/><VisitorOrganisationReview requestId={id} accessToken={token}/><VisitorEmailVerification requestId={id} accessToken={token}/></>:<section className="pt-thread"><h1>Private collaboration</h1><p>This page is accessible only with the private conversation key created when the collaboration request was submitted.</p>{error&&<p className="pt-error">{error}</p>}</section>}</main>
 }
 function Thread({thread,chat,setChat,send,busy,privateUrl,copy,copied}){
  const status=thread.status;
@@ -113,6 +113,28 @@ function VisitorOrganisationReview({requestId,accessToken}){
    <label>Public supporting reference (optional)<input type="url" value={proof} onChange={e=>setProof(e.target.value)} placeholder="https://organisation.example/about"/></label>
    <button type="button" className="pt-button" disabled={busy||!/^https:\/\//i.test(website.trim())} onClick={submit}>{busy?'Submitting…':'Send for review'}</button>
   </div>}
+  {notice&&<p role="status">{notice}</p>}
+ </section>
+}
+
+
+function VisitorEmailVerification({requestId,accessToken}){
+ const[verified,setVerified]=useState(null),[notice,setNotice]=useState(''),[busy,setBusy]=useState(false);
+ useEffect(()=>{let live=true;getPublicRequesterVerificationStatus(requestId,accessToken).then(x=>{if(live)setVerified(x)}).catch(()=>{});return()=>{live=false}},[requestId,accessToken]);
+ const verify=async()=>{setBusy(true);setNotice('');
+ try{
+   const raw=JSON.parse(localStorage.getItem('womate_canopy_session_v1')||'null');
+   if(!raw?.access_token)throw new Error('Sign in with your requester email in WOMATE Canopy first, then return to this private link.');
+   await verifyPublicRequesterEmail(requestId,accessToken,raw.access_token);
+   setVerified(await getPublicRequesterVerificationStatus(requestId,accessToken));
+   setNotice('Email ownership confirmed. This does not verify personal identity or organisation affiliation.');
+ }catch(e){setNotice(e.message)}finally{setBusy(false)}};
+ return <section className="pt-thread" style={{marginTop:24}}>
+  <span className="pt-kicker">REQUESTER TRUST</span><h2>Confirm ownership of your email address</h2>
+  <p>Sign in to <a href="/canopy/login">WOMATE Canopy</a> using the same confirmed email address as your collaboration request, then return to this private conversation link and select Verify. This confirms email ownership only.</p>
+  <p><strong>Email ownership:</strong> {verified?.email_verified?'Confirmed':'Not confirmed'}</p>
+  <p><strong>Organisation review:</strong> {verified?.organisation_review_status||'Not submitted'}</p>
+  {!verified?.email_verified&&<button type="button" className="pt-button secondary" disabled={busy} onClick={verify}>{busy?'Verifying…':'Verify email ownership'}</button>}
   {notice&&<p role="status">{notice}</p>}
  </section>
 }
