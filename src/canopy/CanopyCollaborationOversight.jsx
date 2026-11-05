@@ -1,5 +1,5 @@
 import React,{useEffect,useState} from 'react';
-import {getAdminCollaborationOverview,getAdminCollaborationSafetyQueue,reviewAdminCollaborationSafety,getAdminVisitorSafetyQueue,reviewAdminVisitorSafety,getAdminRequesterVerificationQueue,reviewAdminRequesterOrganisation,reportCollaborationSafety,recordCollaborationMilestone} from './canopyApi';
+import {getAdminCollaborationOverview,proposeAdminFacilitationTerms,getAdminCollaborationSafetyQueue,reviewAdminCollaborationSafety,getAdminVisitorSafetyQueue,reviewAdminVisitorSafety,getAdminRequesterVerificationQueue,reviewAdminRequesterOrganisation,reportCollaborationSafety,recordCollaborationMilestone} from './canopyApi';
 
 const safeText=value=>String(value||'').trim();
 const date=value=>value?new Date(value).toLocaleDateString(): '—';
@@ -41,13 +41,37 @@ export default function CanopyCollaborationOversight({session}){
  useEffect(()=>{loadOrganisations()},[session?.access_token]);
  const reviewOrganisation=async x=>{const next=organisationStatus[x.request_id]||x.status,note=(organisationNotes[x.request_id]||'').trim();if(!['reviewing','verified','rejected'].includes(next)||note.length<12){setOrganisationError('Select a decision and explain it in at least 12 characters.');return}
  try{await reviewAdminRequesterOrganisation(session,x.request_id,next,note);setOrganisationError('');await loadOrganisations()}catch(e){setOrganisationError(e.message)}};
+
+ const [agreementOpen,setAgreementOpen]=useState(''),[agreementDraft,setAgreementDraft]=useState({scope:'',value:'',currency:'GHS',rate:'5'}),[agreementInfo,setAgreementInfo]=useState('');
+ const propose=async requestId=>{setAgreementInfo('');
+  if(agreementDraft.scope.trim().length<20||!Number(agreementDraft.value)||Number(agreementDraft.value)<=0||Number(agreementDraft.rate)<0||Number(agreementDraft.rate)>15){setAgreementInfo('Provide scope (20+ characters), positive deal value and fee between 0% and 15%.');return}
+  try{await proposeAdminFacilitationTerms(session,requestId,agreementDraft.scope.trim(),agreementDraft.value,agreementDraft.currency,agreementDraft.rate);
+   setAgreementInfo('Proposal saved. Learner and requester must separately consent. No payment taken.');setAgreementOpen('');}
+  catch(e){setAgreementInfo(e.message)}
+ };
  const rows=(data?.rows||[]).filter(r=>(status==='all'||r.status===status)&&(!query||[r.learner,r.requester,r.organisation].some(s=>safeText(s).toLowerCase().includes(query.toLowerCase()))));
  return <section className="ct-directory" style={{marginBottom:32}}>
   <div className="ct-sectionHead"><div><small>PRIVACY-FIRST OVERSIGHT</small><h2>Collaborations and safety</h2><p>Request metadata only. Private messages and contact details are not shown.</p></div><button type="button" className="ghost" onClick={load} disabled={loading}>Refresh</button></div>
   {error?<p role="alert" className="ct-msg">Administrative overview unavailable: {error}</p>:<div>
-   <div className="ct-adminSummary"><span><b>{data?.total??'—'}</b> requests</span><span><b>{data?.unique_learners??'—'}</b> learners contacted</span><span><b>{data?.pending??'—'}</b> pending</span><span><b>{data?.accepted??'—'}</b> accepted</span><span><b>{data?.open_safety_cases??'—'}</b> flagged</span></div>
+   {agreementInfo&&<p role="status">{agreementInfo}</p>}<div className="ct-adminSummary"><span><b>{data?.total??'—'}</b> requests</span><span><b>{data?.unique_learners??'—'}</b> learners contacted</span><span><b>{data?.pending??'—'}</b> pending</span><span><b>{data?.accepted??'—'}</b> accepted</span><span><b>{data?.open_safety_cases??'—'}</b> flagged</span></div>
    <div className="ct-filterBar"><input aria-label="Search collaborations" placeholder="Search learner, requester, organisation" value={query} onChange={e=>setQuery(e.target.value)}/><select aria-label="Filter collaboration status" value={status} onChange={e=>setStatus(e.target.value)}><option value="all">All requests</option><option value="pending">Pending</option><option value="accepted">Accepted</option><option value="declined">Declined</option></select></div>
-   <div className="ct-adminRows">{rows.map(r=><article key={r.channel+':'+r.id}><div><b>{r.learner}</b><span>From {r.requester} · {r.organisation||r.channel} · {date(r.created_at)}</span><small>{r.channel==='public'?'Public visitor':'WOMATE member'} · {r.status} · {r.milestone}{r.flagged?' · Safety review required':''}</small></div></article>)}{!rows.length&&<div className="ct-empty">No collaborations match this view.</div>}</div>
+   <div className="ct-adminRows">{rows.map(r=><article key={r.channel+':'+r.id}>
+     <div><b>{r.learner}</b><span>From {r.requester} · {r.organisation||r.channel} · {date(r.created_at)}</span>
+     <small>{r.channel==='public'?'Public visitor':'WOMATE member'} · {r.status} · {r.milestone}{r.flagged?' · Safety review required':''}</small>
+     {r.channel==='public'&&<p style={{fontSize:12}}>Requester email: {r.email_verified?'Ownership confirmed':'Unconfirmed'} · Organisation: {r.organisation_review||'Not submitted'}</p>}
+     </div>
+     {r.channel==='public'&&r.status==='accepted'&&r.email_verified&&r.organisation_review==='verified'&&<div>
+      <button type="button" className="ghost" onClick={()=>{setAgreementOpen(v=>v===r.id?'':r.id);setAgreementInfo('')}}>Propose optional commercial terms</button>
+      {agreementOpen===r.id&&<div style={{display:'grid',gap:8,marginTop:8}}>
+        <p>Organisation-paid fee only. Both parties must agree; no automatic payment or deduction.</p>
+        <label>Project scope<textarea maxLength={1000} rows={3} value={agreementDraft.scope} onChange={e=>setAgreementDraft(v=>({...v,scope:e.target.value}))}/></label>
+        <label>Prospective deal value<input type="number" min="1" value={agreementDraft.value} onChange={e=>setAgreementDraft(v=>({...v,value:e.target.value}))}/></label>
+        <label>Currency<select value={agreementDraft.currency} onChange={e=>setAgreementDraft(v=>({...v,currency:e.target.value}))}>{['GHS','NGN','KES','ZAR','RWF','ZMW','USD'].map(v=><option key={v}>{v}</option>)}</select></label>
+        <label>Proposed fee (%)<input type="number" min="0" max="15" step="0.5" value={agreementDraft.rate} onChange={e=>setAgreementDraft(v=>({...v,rate:e.target.value}))}/></label>
+        <button type="button" onClick={()=>propose(r.id)}>Submit for two-party consent</button>
+      </div>}
+     </div>}
+    </article>)} {!rows.length&&<div className="ct-empty">No collaborations match this view.</div>}</div>
   </div>}
   <div style={{marginTop:24}}>
    <h3>Organisation evidence review</h3>
