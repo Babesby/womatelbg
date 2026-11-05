@@ -1,7 +1,7 @@
 import React,{useEffect,useState}from'react';
 import{Helmet}from'react-helmet-async';
 import{ArrowLeft,ArrowUpRight,BadgeCheck,Copy,Handshake,Search,ShieldCheck,Sparkles}from'lucide-react';
-import{getPublicTalentDirectory,getPublicTalentFilterOptions,getPublicTalentProfile,getPublicCollaborationThread,publicTalentPhotoUrl,sendPublicCollaborationMessage,submitPublicCollaborationRequest,getPublicC2Achievement,submitPublicCollaborationSafetyReport,submitPublicOrganisationReview,verifyPublicRequesterEmail,getPublicRequesterVerificationStatus}from'./publicTalentApi';
+import{getPublicTalentDirectory,getPublicTalentFilterOptions,getPublicTalentProfile,getPublicCollaborationThread,publicTalentPhotoUrl,sendPublicCollaborationMessage,submitPublicCollaborationRequest,getPublicC2Achievement,submitPublicCollaborationSafetyReport,submitPublicOrganisationReview,verifyPublicRequesterEmail,getPublicRequesterVerificationStatus,getPublicFacilitationTerms,decidePublicFacilitationTerms}from'./publicTalentApi';
 import'./publicTalentDiscovery.css';
 
 const clean=v=>String(v||'').trim();
@@ -74,7 +74,7 @@ function ChatRoute({id}){
  const load=async()=>{if(!token)return;try{setThread(await getPublicCollaborationThread(id,token));setError('')}catch(e){setError(e.message)}};
  useEffect(()=>{if(!token)return;load();const timer=setInterval(()=>{if(document.visibilityState==='visible')load()},15000);return()=>clearInterval(timer)},[token,id]);
  const send=async()=>{const body=clean(chat);if(!body)return;setBusy(true);try{await sendPublicCollaborationMessage(id,token,body);setChat('');await load()}catch(e){setError(e.message)}finally{setBusy(false)}};
- return <main className="pt-page"><SEO chat/><a className="pt-back" href="/talent-discovery"><ArrowLeft size={16}/> Talent Discovery</a>{thread?<><Thread thread={thread} chat={chat} setChat={setChat} send={send} busy={busy}/><VisitorSafetyReport requestId={id} accessToken={token}/><VisitorOrganisationReview requestId={id} accessToken={token}/><VisitorEmailVerification requestId={id} accessToken={token}/></>:<section className="pt-thread"><h1>Private collaboration</h1><p>This page is accessible only with the private conversation key created when the collaboration request was submitted.</p>{error&&<p className="pt-error">{error}</p>}</section>}</main>
+ return <main className="pt-page"><SEO chat/><a className="pt-back" href="/talent-discovery"><ArrowLeft size={16}/> Talent Discovery</a>{thread?<><Thread thread={thread} chat={chat} setChat={setChat} send={send} busy={busy}/><VisitorSafetyReport requestId={id} accessToken={token}/><VisitorOrganisationReview requestId={id} accessToken={token}/><VisitorEmailVerification requestId={id} accessToken={token}/><VisitorFacilitationTerms requestId={id} accessToken={token}/></>:<section className="pt-thread"><h1>Private collaboration</h1><p>This page is accessible only with the private conversation key created when the collaboration request was submitted.</p>{error&&<p className="pt-error">{error}</p>}</section>}</main>
 }
 function Thread({thread,chat,setChat,send,busy,privateUrl,copy,copied}){
  const status=thread.status;
@@ -136,5 +136,32 @@ function VisitorEmailVerification({requestId,accessToken}){
   <p><strong>Organisation review:</strong> {verified?.organisation_review_status||'Not submitted'}</p>
   {!verified?.email_verified&&<button type="button" className="pt-button secondary" disabled={busy} onClick={verify}>{busy?'Verifying…':'Verify email ownership'}</button>}
   {notice&&<p role="status">{notice}</p>}
+ </section>
+}
+
+
+function VisitorFacilitationTerms({requestId,accessToken}){
+ const [terms,setTerms]=useState(null),[message,setMessage]=useState(''),[busy,setBusy]=useState(false);
+ const reload=async()=>{try{const r=await getPublicFacilitationTerms(requestId,accessToken);setTerms(r?.id?r:null)}catch(e){setMessage(e.message)}};
+ useEffect(()=>{reload()},[requestId,accessToken]);
+ const decide=async accepted=>{setBusy(true);setMessage('');try{
+   const s=JSON.parse(localStorage.getItem('womate_canopy_session_v1')||'null');
+   if(!s?.access_token)throw new Error('Sign in to WOMATE Canopy with your confirmed requester email, then return to this private link.');
+   await decidePublicFacilitationTerms(requestId,accessToken,accepted,s.access_token);
+   await reload();setMessage(accepted?'Your agreement was recorded. This does not process payment.':'You declined these optional terms.');
+ }catch(e){setMessage(e.message)}finally{setBusy(false)}};
+ if(!terms)return null;
+ return <section className="pt-thread" style={{marginTop:24}}>
+   <span className="pt-kicker">OPTIONAL COMMERCIAL TERMS</span><h2>WOMATE-facilitated engagement</h2>
+   <p>Scope: {terms.scope}</p>
+   <p>Prospective engagement value: {terms.currency} {Number(terms.deal_value).toLocaleString()}</p>
+   <p>Proposed WOMATE facilitation fee: {terms.fee_rate}% paid by the commissioning requester organisation. The talent is not charged.</p>
+   <p><strong>Status:</strong> {terms.status}. No fee will be taken through this form. Existing unrelated collaborations remain free.</p>
+   {terms.status==='learner_accepted'&&<div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
+      <button type="button" className="pt-button" disabled={busy} onClick={()=>decide(true)}>I agree to these terms</button>
+      <button type="button" className="pt-button secondary" disabled={busy} onClick={()=>decide(false)}>Decline the terms</button>
+   </div>}
+   {terms.status==='proposed'&&<p>Awaiting talent's decision.</p>}
+   {message&&<p role="status">{message}</p>}
  </section>
 }
