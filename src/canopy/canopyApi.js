@@ -622,6 +622,10 @@ export async function getAdminCollaborationSafetyQueue(session){const s=await re
 export async function reviewAdminCollaborationSafety(session,id,status,note){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_admin_review_collaboration_safety',{token:s.access_token,method:'POST',body:{p_case:id,p_status:status,p_note:note}})}
 export async function getMyAcceptedCollaborationRequests(session){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_my_accepted_collaborations',{token:s.access_token,method:'POST',body:{}})}
 
+
+export async function proposeAdminFacilitationTerms(session,id,scope,value,currency,rate){const x=await refreshSession(session||getStoredSession());return rest('rpc/canopy_admin_propose_facilitation_terms',{token:x.access_token,method:'POST',body:{p_request:id,p_scope:scope,p_value:Number(value),p_currency:currency,p_rate:Number(rate)}})}
+export async function getMyFacilitationTerms(session){const x=await refreshSession(session||getStoredSession());return rest('rpc/canopy_my_facilitation_terms',{token:x.access_token,method:'POST',body:{}})}
+export async function decideMyFacilitationTerms(session,id,accept){const x=await refreshSession(session||getStoredSession());return rest('rpc/canopy_learner_decide_facilitation_terms',{token:x.access_token,method:'POST',body:{p_agreement:id,p_accept:Boolean(accept)}})}
 export async function getAdminRequesterVerificationQueue(session){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_admin_requester_verification_queue',{token:s.access_token,method:'POST',body:{}})}
 export async function reviewAdminRequesterOrganisation(session,id,status,note){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_admin_review_requester_organisation',{token:s.access_token,method:'POST',body:{p_request:id,p_status:status,p_note:note}})}
 export async function getAdminVisitorSafetyQueue(session){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_admin_visitor_safety_queue',{token:s.access_token,method:'POST',body:{}})}
