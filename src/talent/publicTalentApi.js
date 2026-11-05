@@ -19,3 +19,13 @@ export const getPublicCollaborationThread=(id,token)=>rpc('canopy_public_collabo
 export const sendPublicCollaborationMessage=(id,token,message)=>rpc('canopy_public_collaboration_send_message',{p_request:id,p_token:token,p_message:message});
 
 export const getPublicC2Achievement=slug=>rpc('womate_public_c2_achievement',{p_slug:slug});
+
+export const submitPublicCollaborationSafetyReport=(id,token,reason,description)=>rpc('canopy_visitor_report_collaboration',{p_request:id,p_token:token,p_reason:reason,p_description:description});
+
+export const submitPublicOrganisationReview=(id,token,website,proofUrl)=>rpc('canopy_visitor_submit_organisation_review',{p_request:id,p_token:token,p_website:website,p_proof_url:proofUrl||null});
+
+export const verifyPublicRequesterEmail=(id,token,accessToken)=>{if(!URL||!KEY)throw new Error('Talent Discovery is not configured.');return fetch(`${URL}/rest/v1/rpc/canopy_verify_collaboration_requester_email`,{method:'POST',headers:{apikey:KEY,Authorization:`Bearer ${accessToken}`,'Content-Type':'application/json'},body:JSON.stringify({p_request:id,p_token:token})}).then(async response=>{const raw=await response.text();let data;try{data=JSON.parse(raw)}catch{data=raw}if(!response.ok)throw new Error(data?.message||'Email verification failed');return data})};
+export const getPublicRequesterVerificationStatus=(id,token)=>rpc('canopy_public_collaboration_verification_status',{p_request:id,p_token:token});
+
+export const getPublicFacilitationTerms=(id,token)=>rpc('canopy_public_facilitation_terms',{p_request:id,p_token:token});
+export const decidePublicFacilitationTerms=(id,token,accept,accessToken)=>{if(!URL||!KEY)throw new Error('Talent Discovery is not configured.');return fetch(`${URL}/rest/v1/rpc/canopy_requester_decide_facilitation_terms`,{method:'POST',headers:{apikey:KEY,Authorization:`Bearer ${accessToken}`,'Content-Type':'application/json'},body:JSON.stringify({p_request:id,p_token:token,p_accept:Boolean(accept)})}).then(async response=>{const raw=await response.text();let data;try{data=JSON.parse(raw)}catch{data=raw}if(!response.ok)throw new Error(data?.message||'Facilitation response failed');return data})};

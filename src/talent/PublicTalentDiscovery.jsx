@@ -1,7 +1,7 @@
 import React,{useEffect,useState}from'react';
 import{Helmet}from'react-helmet-async';
 import{ArrowLeft,ArrowUpRight,BadgeCheck,Copy,Handshake,Search,ShieldCheck,Sparkles}from'lucide-react';
-import{getPublicTalentDirectory,getPublicTalentFilterOptions,getPublicTalentProfile,getPublicCollaborationThread,publicTalentPhotoUrl,sendPublicCollaborationMessage,submitPublicCollaborationRequest,getPublicC2Achievement}from'./publicTalentApi';
+import{getPublicTalentDirectory,getPublicTalentFilterOptions,getPublicTalentProfile,getPublicCollaborationThread,publicTalentPhotoUrl,sendPublicCollaborationMessage,submitPublicCollaborationRequest,getPublicC2Achievement,submitPublicCollaborationSafetyReport,submitPublicOrganisationReview,verifyPublicRequesterEmail,getPublicRequesterVerificationStatus,getPublicFacilitationTerms,decidePublicFacilitationTerms}from'./publicTalentApi';
 import'./publicTalentDiscovery.css';
 
 const clean=v=>String(v||'').trim();
@@ -74,9 +74,94 @@ function ChatRoute({id}){
  const load=async()=>{if(!token)return;try{setThread(await getPublicCollaborationThread(id,token));setError('')}catch(e){setError(e.message)}};
  useEffect(()=>{if(!token)return;load();const timer=setInterval(()=>{if(document.visibilityState==='visible')load()},15000);return()=>clearInterval(timer)},[token,id]);
  const send=async()=>{const body=clean(chat);if(!body)return;setBusy(true);try{await sendPublicCollaborationMessage(id,token,body);setChat('');await load()}catch(e){setError(e.message)}finally{setBusy(false)}};
- return <main className="pt-page"><SEO chat/><a className="pt-back" href="/talent-discovery"><ArrowLeft size={16}/> Talent Discovery</a>{thread?<Thread thread={thread} chat={chat} setChat={setChat} send={send} busy={busy}/>:<section className="pt-thread"><h1>Private collaboration</h1><p>This page is accessible only with the private conversation key created when the collaboration request was submitted.</p>{error&&<p className="pt-error">{error}</p>}</section>}</main>
+ return <main className="pt-page"><SEO chat/><a className="pt-back" href="/talent-discovery"><ArrowLeft size={16}/> Talent Discovery</a>{thread?<><Thread thread={thread} chat={chat} setChat={setChat} send={send} busy={busy}/><VisitorSafetyReport requestId={id} accessToken={token}/><VisitorOrganisationReview requestId={id} accessToken={token}/><VisitorEmailVerification requestId={id} accessToken={token}/><VisitorFacilitationTerms requestId={id} accessToken={token}/></>:<section className="pt-thread"><h1>Private collaboration</h1><p>This page is accessible only with the private conversation key created when the collaboration request was submitted.</p>{error&&<p className="pt-error">{error}</p>}</section>}</main>
 }
 function Thread({thread,chat,setChat,send,busy,privateUrl,copy,copied}){
  const status=thread.status;
  return <section className="pt-thread"><span className="pt-kicker">PRIVATE WOMATE COLLABORATION</span><h2>{status==='accepted'?'Request accepted':status==='declined'?'Request declined':status==='closed'?'Conversation closed':'Request received'}</h2><div className="pt-status">{status==='pending'?'Your request is waiting for a response.':status==='accepted'?'Your request was accepted. You can now chat privately here without either person publishing an email address.':status==='declined'?'The participant declined this collaboration request. No private participant contact details have been exposed.':'This collaboration conversation is closed.'}</div>{privateUrl&&<div className="pt-privateLink"><strong>Save your private conversation link</strong><span>You can use this link on another device. Anyone with this link can access this conversation, so keep it private.</span><code>{privateUrl}</code><button className="pt-button secondary" onClick={copy}><Copy size={15}/>{copied?'Copied':'Copy private link'}</button></div>}<div className="pt-messages">{(thread.messages||[]).map(m=><div key={m.id} className={`pt-message ${m.sender_kind}`}><div>{m.body}</div><small>{new Date(m.created_at).toLocaleString()}</small></div>)}</div>{status==='accepted'&&<div className="pt-chatComposer"><textarea maxLength="1200" value={chat} onChange={e=>setChat(e.target.value)} placeholder={`Message ${thread.recipient_name||'this participant'}`}/><button className="pt-button" onClick={send} disabled={busy||!clean(chat)}>{busy?'Sending...':'Send message'}</button></div>}</section>
+}
+
+
+function VisitorSafetyReport({requestId,accessToken}){
+ const [open,setOpen]=useState(false),[reason,setReason]=useState('scam'),[description,setDescription]=useState(''),[busy,setBusy]=useState(false),[notice,setNotice]=useState('');
+ const submit=async()=>{if(description.trim().length<10)return;setBusy(true);setNotice('');
+ try{await submitPublicCollaborationSafetyReport(requestId,accessToken,reason,description);setNotice('Your confidential concern has been sent to WOMATE for review.');setDescription('');setOpen(false)}
+ catch(e){setNotice(e.message)}finally{setBusy(false)}};
+ return <section className="pt-thread" style={{marginTop:24}}>
+  <span className="pt-kicker">YOUR SAFETY MATTERS</span><h2>Need WOMATE's help?</h2><p>If a collaboration seems suspicious or unsafe, you can report it confidentially. Only authorised WOMATE reviewers will see your report. Your full private conversation is not automatically shared.</p>
+  <button type="button" className="pt-button secondary" onClick={()=>setOpen(v=>!v)}>{open?'Close report form':'Report a concern'}</button>
+  {open&&<div style={{display:'grid',gap:12,marginTop:14}}>
+   <label>Type of concern<select value={reason} onChange={e=>setReason(e.target.value)}><option value="scam">Suspected scam</option><option value="harassment">Harassment</option><option value="impersonation">Impersonation</option><option value="payment_pressure">Payment pressure</option><option value="other">Other concern</option></select></label>
+   <label>Explain what happened<textarea rows={4} maxLength={1500} value={description} onChange={e=>setDescription(e.target.value)} placeholder="Please describe the concern. Do not share passwords or financial account details."/></label>
+   <button type="button" className="pt-button" disabled={busy||description.trim().length<10} onClick={submit}>{busy?'Submitting...':'Submit confidential report'}</button>
+  </div>}
+  {notice&&<p role="status">{notice}</p>}
+ </section>
+}
+
+
+function VisitorOrganisationReview({requestId,accessToken}){
+ const[open,setOpen]=useState(false),[website,setWebsite]=useState(''),[proof,setProof]=useState(''),[busy,setBusy]=useState(false),[notice,setNotice]=useState('');
+ const submit=async()=>{setBusy(true);setNotice('');try{await submitPublicOrganisationReview(requestId,accessToken,website.trim(),proof.trim());setNotice('Organisation information received for WOMATE review. This does not verify your identity or email address.');setOpen(false)}
+ catch(e){setNotice(e.message)}finally{setBusy(false)}};
+ return <section className="pt-thread" style={{marginTop:24}}>
+  <span className="pt-kicker">BUILD TRUST</span><h2>Submit organisation information</h2>
+  <p>Optionally provide your official organisation website and a supporting public reference. WOMATE can review the organisation information. Submission is not verification of your personal identity or email address.</p>
+  <button type="button" className="pt-button secondary" onClick={()=>setOpen(v=>!v)}>{open?'Close':'Submit organisation details'}</button>
+  {open&&<div style={{display:'grid',gap:12,marginTop:14}}>
+   <label>Official website (HTTPS)<input type="url" required value={website} onChange={e=>setWebsite(e.target.value)} placeholder="https://organisation.example"/></label>
+   <label>Public supporting reference (optional)<input type="url" value={proof} onChange={e=>setProof(e.target.value)} placeholder="https://organisation.example/about"/></label>
+   <button type="button" className="pt-button" disabled={busy||!/^https:\/\//i.test(website.trim())} onClick={submit}>{busy?'Submitting…':'Send for review'}</button>
+  </div>}
+  {notice&&<p role="status">{notice}</p>}
+ </section>
+}
+
+
+function VisitorEmailVerification({requestId,accessToken}){
+ const[verified,setVerified]=useState(null),[notice,setNotice]=useState(''),[busy,setBusy]=useState(false);
+ useEffect(()=>{let live=true;getPublicRequesterVerificationStatus(requestId,accessToken).then(x=>{if(live)setVerified(x)}).catch(()=>{});return()=>{live=false}},[requestId,accessToken]);
+ const verify=async()=>{setBusy(true);setNotice('');
+ try{
+   const raw=JSON.parse(localStorage.getItem('womate_canopy_session_v1')||'null');
+   if(!raw?.access_token)throw new Error('Sign in with your requester email in WOMATE Canopy first, then return to this private link.');
+   await verifyPublicRequesterEmail(requestId,accessToken,raw.access_token);
+   setVerified(await getPublicRequesterVerificationStatus(requestId,accessToken));
+   setNotice('Email ownership confirmed. This does not verify personal identity or organisation affiliation.');
+ }catch(e){setNotice(e.message)}finally{setBusy(false)}};
+ return <section className="pt-thread" style={{marginTop:24}}>
+  <span className="pt-kicker">REQUESTER TRUST</span><h2>Confirm ownership of your email address</h2>
+  <p>Sign in to <a href="/canopy/login">WOMATE Canopy</a> using the same confirmed email address as your collaboration request, then return to this private conversation link and select Verify. This confirms email ownership only.</p>
+  <p><strong>Email ownership:</strong> {verified?.email_verified?'Confirmed':'Not confirmed'}</p>
+  <p><strong>Organisation review:</strong> {verified?.organisation_review_status||'Not submitted'}</p>
+  {!verified?.email_verified&&<button type="button" className="pt-button secondary" disabled={busy} onClick={verify}>{busy?'Verifying…':'Verify email ownership'}</button>}
+  {notice&&<p role="status">{notice}</p>}
+ </section>
+}
+
+
+function VisitorFacilitationTerms({requestId,accessToken}){
+ const [terms,setTerms]=useState(null),[message,setMessage]=useState(''),[busy,setBusy]=useState(false);
+ const reload=async()=>{try{const r=await getPublicFacilitationTerms(requestId,accessToken);setTerms(r?.id?r:null)}catch(e){setMessage(e.message)}};
+ useEffect(()=>{reload()},[requestId,accessToken]);
+ const decide=async accepted=>{setBusy(true);setMessage('');try{
+   const s=JSON.parse(localStorage.getItem('womate_canopy_session_v1')||'null');
+   if(!s?.access_token)throw new Error('Sign in to WOMATE Canopy with your confirmed requester email, then return to this private link.');
+   await decidePublicFacilitationTerms(requestId,accessToken,accepted,s.access_token);
+   await reload();setMessage(accepted?'Your agreement was recorded. This does not process payment.':'You declined these optional terms.');
+ }catch(e){setMessage(e.message)}finally{setBusy(false)}};
+ if(!terms)return null;
+ return <section className="pt-thread" style={{marginTop:24}}>
+   <span className="pt-kicker">OPTIONAL COMMERCIAL TERMS</span><h2>WOMATE-facilitated engagement</h2>
+   <p>Scope: {terms.scope}</p>
+   <p>Prospective engagement value: {terms.currency} {Number(terms.deal_value).toLocaleString()}</p>
+   <p>Proposed WOMATE facilitation fee: {terms.fee_rate}% paid by the commissioning requester organisation. The talent is not charged.</p>
+   <p><strong>Status:</strong> {terms.status}. No fee will be taken through this form. Existing unrelated collaborations remain free.</p>
+   {terms.status==='learner_accepted'&&<div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
+      <button type="button" className="pt-button" disabled={busy} onClick={()=>decide(true)}>I agree to these terms</button>
+      <button type="button" className="pt-button secondary" disabled={busy} onClick={()=>decide(false)}>Decline the terms</button>
+   </div>}
+   {terms.status==='proposed'&&<p>Awaiting talent's decision.</p>}
+   {message&&<p role="status">{message}</p>}
+ </section>
 }
