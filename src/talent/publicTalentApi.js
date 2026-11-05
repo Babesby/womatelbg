@@ -19,3 +19,5 @@ export const getPublicCollaborationThread=(id,token)=>rpc('canopy_public_collabo
 export const sendPublicCollaborationMessage=(id,token,message)=>rpc('canopy_public_collaboration_send_message',{p_request:id,p_token:token,p_message:message});
 
 export const getPublicC2Achievement=slug=>rpc('womate_public_c2_achievement',{p_slug:slug});
+
+export const submitPublicCollaborationSafetyReport=(id,token,reason,description)=>rpc('canopy_visitor_report_collaboration',{p_request:id,p_token:token,p_reason:reason,p_description:description});
