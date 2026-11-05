@@ -21,3 +21,5 @@ export const sendPublicCollaborationMessage=(id,token,message)=>rpc('canopy_publ
 export const getPublicC2Achievement=slug=>rpc('womate_public_c2_achievement',{p_slug:slug});
 
 export const submitPublicCollaborationSafetyReport=(id,token,reason,description)=>rpc('canopy_visitor_report_collaboration',{p_request:id,p_token:token,p_reason:reason,p_description:description});
+
+export const submitPublicOrganisationReview=(id,token,website,proofUrl)=>rpc('canopy_visitor_submit_organisation_review',{p_request:id,p_token:token,p_website:website,p_proof_url:proofUrl||null});
