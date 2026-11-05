@@ -1,7 +1,7 @@
 import React,{useEffect,useState}from'react';
 import{Helmet}from'react-helmet-async';
 import{ArrowLeft,ArrowUpRight,BadgeCheck,Copy,Handshake,Search,ShieldCheck,Sparkles}from'lucide-react';
-import{getPublicTalentDirectory,getPublicTalentFilterOptions,getPublicTalentProfile,getPublicCollaborationThread,publicTalentPhotoUrl,sendPublicCollaborationMessage,submitPublicCollaborationRequest,getPublicC2Achievement,submitPublicCollaborationSafetyReport,submitPublicOrganisationReview,verifyPublicRequesterEmail,getPublicRequesterVerificationStatus,getPublicFacilitationTerms,decidePublicFacilitationTerms}from'./publicTalentApi';
+import{getPublicTalentDirectory,getPublicTalentFilterOptions,getPublicTalentProfile,getPublicCollaborationThread,publicTalentPhotoUrl,sendPublicCollaborationMessage,submitPublicCollaborationRequest,getPublicC2Achievement,submitPublicCollaborationSafetyReport,submitPublicOrganisationReview,verifyPublicRequesterEmail,getPublicRequesterVerificationStatus,getPublicFacilitationTerms,decidePublicFacilitationTerms,getPublicTalentInvoice,getPublicTalentCloseout,respondPublicTalentCloseout,startPublicTalentCheckout}from'./publicTalentApi';
 import'./publicTalentDiscovery.css';
 
 const clean=v=>String(v||'').trim();
@@ -74,7 +74,7 @@ function ChatRoute({id}){
  const load=async()=>{if(!token)return;try{setThread(await getPublicCollaborationThread(id,token));setError('')}catch(e){setError(e.message)}};
  useEffect(()=>{if(!token)return;load();const timer=setInterval(()=>{if(document.visibilityState==='visible')load()},15000);return()=>clearInterval(timer)},[token,id]);
  const send=async()=>{const body=clean(chat);if(!body)return;setBusy(true);try{await sendPublicCollaborationMessage(id,token,body);setChat('');await load()}catch(e){setError(e.message)}finally{setBusy(false)}};
- return <main className="pt-page"><SEO chat/><a className="pt-back" href="/talent-discovery"><ArrowLeft size={16}/> Talent Discovery</a>{thread?<><Thread thread={thread} chat={chat} setChat={setChat} send={send} busy={busy}/><VisitorSafetyReport requestId={id} accessToken={token}/><VisitorOrganisationReview requestId={id} accessToken={token}/><VisitorEmailVerification requestId={id} accessToken={token}/><VisitorFacilitationTerms requestId={id} accessToken={token}/></>:<section className="pt-thread"><h1>Private collaboration</h1><p>This page is accessible only with the private conversation key created when the collaboration request was submitted.</p>{error&&<p className="pt-error">{error}</p>}</section>}</main>
+ return <main className="pt-page"><SEO chat/><a className="pt-back" href="/talent-discovery"><ArrowLeft size={16}/> Talent Discovery</a>{thread?<><Thread thread={thread} chat={chat} setChat={setChat} send={send} busy={busy}/><VisitorSafetyReport requestId={id} accessToken={token}/><VisitorOrganisationReview requestId={id} accessToken={token}/><VisitorEmailVerification requestId={id} accessToken={token}/><VisitorFacilitationTerms requestId={id} accessToken={token}/><VisitorFinance requestId={id} accessToken={token}/></>:<section className="pt-thread"><h1>Private collaboration</h1><p>This page is accessible only with the private conversation key created when the collaboration request was submitted.</p>{error&&<p className="pt-error">{error}</p>}</section>}</main>
 }
 function Thread({thread,chat,setChat,send,busy,privateUrl,copy,copied}){
  const status=thread.status;
@@ -164,4 +164,41 @@ function VisitorFacilitationTerms({requestId,accessToken}){
    {terms.status==='proposed'&&<p>Awaiting talent's decision.</p>}
    {message&&<p role="status">{message}</p>}
  </section>
+}
+
+
+function VisitorFinance({requestId,accessToken}){
+ const[closeout,setCloseout]=useState(null),[invoice,setInvoice]=useState(null),[message,setMessage]=useState(''),[reason,setReason]=useState(''),[busy,setBusy]=useState(false);
+ const load=async()=>{try{const [c,i]=await Promise.all([getPublicTalentCloseout(requestId,accessToken),getPublicTalentInvoice(requestId,accessToken)]);setCloseout(c?.agreement_id?c:null);setInvoice(i?.id?i:null)}catch(e){setMessage(e.message)}};
+ useEffect(()=>{load()},[requestId,accessToken]);
+ const signedIn=()=>{try{return JSON.parse(localStorage.getItem('womate_canopy_session_v1')||'null')?.access_token||''}catch{return ''}};
+ const submit=async confirmed=>{setBusy(true);setMessage('');try{
+   const auth=signedIn();if(!auth)throw new Error('Sign in to Canopy with your confirmed requester email, then return to this private link.');
+   await respondPublicTalentCloseout(requestId,accessToken,confirmed,reason,auth);await load();
+   setMessage(confirmed?'Your completion confirmation has been recorded. WOMATE will review both parties’ responses.':'Your dispute has been recorded. Payment collection is paused.');
+ }catch(e){setMessage(e.message)}finally{setBusy(false)}};
+ const pay=async()=>{setBusy(true);setMessage('');try{const auth=signedIn();if(!auth)throw new Error('Sign in with your confirmed requester email before checkout.');
+ const result=await startPublicTalentCheckout(requestId,accessToken,auth);
+ if(!result?.checkout_url||!result.checkout_url.startsWith('https://checkout.paystack.com/'))throw new Error('No verified checkout link received.');
+ window.location.assign(result.checkout_url);
+ }catch(e){setMessage(e.message)}finally{setBusy(false)}};
+ if(!closeout&&!invoice)return null;
+ return <section className="pt-thread" style={{marginTop:24}}>
+  <span className="pt-kicker">COLLABORATION FINANCE</span><h2>Completion and WOMATE fee invoice</h2>
+  {closeout&&<div><p>Engagement status: <strong>{closeout.closeout}</strong>. Learner confirmation: {closeout.learner_confirmed?'Received':'Pending'}. Requester confirmation: {closeout.requester_confirmed?'Received':'Pending'}.</p>
+   {closeout.status==='agreed'&&closeout.closeout!=='disputed'&&!closeout.requester_confirmed&&!invoice&&<div style={{display:'grid',gap:9}}>
+    <button type="button" className="pt-button" disabled={busy} onClick={()=>submit(true)}>Confirm agreed work was delivered</button>
+    <label>Explain a delivery dispute<textarea rows={3} maxLength={1500} value={reason} onChange={e=>setReason(e.target.value)}/></label>
+    <button type="button" className="pt-button secondary" disabled={busy||reason.trim().length<12} onClick={()=>submit(false)}>Report a dispute</button>
+   </div>}
+  </div>}
+  {invoice&&<div>
+   <p><strong>{invoice.invoice_number}</strong> · {invoice.currency} {Number(invoice.amount).toLocaleString(undefined,{minimumFractionDigits:2})} · {invoice.status}</p>
+   <p>Due: {invoice.due_at?new Date(invoice.due_at).toLocaleDateString():'Not set'}. This is a WOMATE organisation-paid facilitation fee, not a deduction from the learner.</p>
+   {invoice.status==='paid'&&<p>Payment verified and recorded by WOMATE.</p>}
+   {['issued','pending_payment'].includes(invoice.status)&&<button type="button" className="pt-button" disabled={busy} onClick={pay}>Open secure payment checkout</button>}
+   <p style={{fontSize:12}}>If checkout is not activated for WOMATE, the payment button will show an unavailable message and no payment will be taken.</p>
+  </div>}
+  {message&&<p role="status">{message}</p>}
+ </section>;
 }
