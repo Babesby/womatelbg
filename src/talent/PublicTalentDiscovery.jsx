@@ -1,7 +1,7 @@
 import React,{useEffect,useState}from'react';
 import{Helmet}from'react-helmet-async';
 import{ArrowLeft,ArrowUpRight,BadgeCheck,Copy,Handshake,Search,ShieldCheck,Sparkles}from'lucide-react';
-import{getPublicTalentDirectory,getPublicTalentFilterOptions,getPublicTalentProfile,getPublicCollaborationThread,publicTalentPhotoUrl,sendPublicCollaborationMessage,submitPublicCollaborationRequest,getPublicC2Achievement,submitPublicCollaborationSafetyReport}from'./publicTalentApi';
+import{getPublicTalentDirectory,getPublicTalentFilterOptions,getPublicTalentProfile,getPublicCollaborationThread,publicTalentPhotoUrl,sendPublicCollaborationMessage,submitPublicCollaborationRequest,getPublicC2Achievement,submitPublicCollaborationSafetyReport,submitPublicOrganisationReview}from'./publicTalentApi';
 import'./publicTalentDiscovery.css';
 
 const clean=v=>String(v||'').trim();
@@ -74,7 +74,7 @@ function ChatRoute({id}){
  const load=async()=>{if(!token)return;try{setThread(await getPublicCollaborationThread(id,token));setError('')}catch(e){setError(e.message)}};
  useEffect(()=>{if(!token)return;load();const timer=setInterval(()=>{if(document.visibilityState==='visible')load()},15000);return()=>clearInterval(timer)},[token,id]);
  const send=async()=>{const body=clean(chat);if(!body)return;setBusy(true);try{await sendPublicCollaborationMessage(id,token,body);setChat('');await load()}catch(e){setError(e.message)}finally{setBusy(false)}};
- return <main className="pt-page"><SEO chat/><a className="pt-back" href="/talent-discovery"><ArrowLeft size={16}/> Talent Discovery</a>{thread?<><Thread thread={thread} chat={chat} setChat={setChat} send={send} busy={busy}/><VisitorSafetyReport requestId={id} accessToken={token}/></>:<section className="pt-thread"><h1>Private collaboration</h1><p>This page is accessible only with the private conversation key created when the collaboration request was submitted.</p>{error&&<p className="pt-error">{error}</p>}</section>}</main>
+ return <main className="pt-page"><SEO chat/><a className="pt-back" href="/talent-discovery"><ArrowLeft size={16}/> Talent Discovery</a>{thread?<><Thread thread={thread} chat={chat} setChat={setChat} send={send} busy={busy}/><VisitorSafetyReport requestId={id} accessToken={token}/><VisitorOrganisationReview requestId={id} accessToken={token}/></>:<section className="pt-thread"><h1>Private collaboration</h1><p>This page is accessible only with the private conversation key created when the collaboration request was submitted.</p>{error&&<p className="pt-error">{error}</p>}</section>}</main>
 }
 function Thread({thread,chat,setChat,send,busy,privateUrl,copy,copied}){
  const status=thread.status;
@@ -94,6 +94,24 @@ function VisitorSafetyReport({requestId,accessToken}){
    <label>Type of concern<select value={reason} onChange={e=>setReason(e.target.value)}><option value="scam">Suspected scam</option><option value="harassment">Harassment</option><option value="impersonation">Impersonation</option><option value="payment_pressure">Payment pressure</option><option value="other">Other concern</option></select></label>
    <label>Explain what happened<textarea rows={4} maxLength={1500} value={description} onChange={e=>setDescription(e.target.value)} placeholder="Please describe the concern. Do not share passwords or financial account details."/></label>
    <button type="button" className="pt-button" disabled={busy||description.trim().length<10} onClick={submit}>{busy?'Submitting...':'Submit confidential report'}</button>
+  </div>}
+  {notice&&<p role="status">{notice}</p>}
+ </section>
+}
+
+
+function VisitorOrganisationReview({requestId,accessToken}){
+ const[open,setOpen]=useState(false),[website,setWebsite]=useState(''),[proof,setProof]=useState(''),[busy,setBusy]=useState(false),[notice,setNotice]=useState('');
+ const submit=async()=>{setBusy(true);setNotice('');try{await submitPublicOrganisationReview(requestId,accessToken,website.trim(),proof.trim());setNotice('Organisation information received for WOMATE review. This does not verify your identity or email address.');setOpen(false)}
+ catch(e){setNotice(e.message)}finally{setBusy(false)}};
+ return <section className="pt-thread" style={{marginTop:24}}>
+  <span className="pt-kicker">BUILD TRUST</span><h2>Submit organisation information</h2>
+  <p>Optionally provide your official organisation website and a supporting public reference. WOMATE can review the organisation information. Submission is not verification of your personal identity or email address.</p>
+  <button type="button" className="pt-button secondary" onClick={()=>setOpen(v=>!v)}>{open?'Close':'Submit organisation details'}</button>
+  {open&&<div style={{display:'grid',gap:12,marginTop:14}}>
+   <label>Official website (HTTPS)<input type="url" required value={website} onChange={e=>setWebsite(e.target.value)} placeholder="https://organisation.example"/></label>
+   <label>Public supporting reference (optional)<input type="url" value={proof} onChange={e=>setProof(e.target.value)} placeholder="https://organisation.example/about"/></label>
+   <button type="button" className="pt-button" disabled={busy||!/^https:\/\//i.test(website.trim())} onClick={submit}>{busy?'Submitting…':'Send for review'}</button>
   </div>}
   {notice&&<p role="status">{notice}</p>}
  </section>
