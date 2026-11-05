@@ -29,3 +29,8 @@ export const getPublicRequesterVerificationStatus=(id,token)=>rpc('canopy_public
 
 export const getPublicFacilitationTerms=(id,token)=>rpc('canopy_public_facilitation_terms',{p_request:id,p_token:token});
 export const decidePublicFacilitationTerms=(id,token,accept,accessToken)=>{if(!URL||!KEY)throw new Error('Talent Discovery is not configured.');return fetch(`${URL}/rest/v1/rpc/canopy_requester_decide_facilitation_terms`,{method:'POST',headers:{apikey:KEY,Authorization:`Bearer ${accessToken}`,'Content-Type':'application/json'},body:JSON.stringify({p_request:id,p_token:token,p_accept:Boolean(accept)})}).then(async response=>{const raw=await response.text();let data;try{data=JSON.parse(raw)}catch{data=raw}if(!response.ok)throw new Error(data?.message||'Facilitation response failed');return data})};
+
+
+export const getPublicTalentInvoice=(id,token)=>rpc('canopy_finance_public_invoice',{p_request:id,p_token:token});
+export const getPublicTalentCloseout=(id,token)=>rpc('canopy_finance_public_closeout',{p_request:id,p_token:token});
+export const respondPublicTalentCloseout=(id,token,confirm,reason,accessToken)=>{if(!URL||!KEY)throw new Error('Talent Discovery is not configured.');return fetch(`${URL}/rest/v1/rpc/canopy_finance_requester_closeout`,{method:'POST',headers:{apikey:KEY,Authorization:`Bearer ${accessToken}`,'Content-Type':'application/json'},body:JSON.stringify({p_request:id,p_token:token,p_confirm:Boolean(confirm),p_reason:reason||null})}).then(async response=>{const raw=await response.text();let data;try{data=JSON.parse(raw)}catch{data=raw}if(!response.ok)throw new Error(data?.message||'Completion response failed');return data})};
