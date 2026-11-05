@@ -618,6 +618,8 @@ export async function getAdminCanopyTalentNetwork(session,cohortKey=COHORT2_KEY)
 export async function setAdminCanopyTalentVisibility(session,userId,discoverable,remark=''){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_admin_set_talent_visibility',{token:s.access_token,method:'POST',body:{p_user:userId,p_discoverable:Boolean(discoverable),p_remark:remark||null}})}
 
 
+export async function getAdminCollaborationSafetyQueue(session){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_admin_collaboration_safety_queue',{token:s.access_token,method:'POST',body:{}})}
+export async function reviewAdminCollaborationSafety(session,id,status,note){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_admin_review_collaboration_safety',{token:s.access_token,method:'POST',body:{p_case:id,p_status:status,p_note:note}})}
 export async function getAdminCollaborationOverview(session){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_admin_collaboration_overview',{token:s.access_token,method:'POST',body:{}})}
 export async function reportCollaborationSafety(session,channel,requestId,reason,description){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_report_collaboration_safety',{token:s.access_token,method:'POST',body:{p_channel:channel,p_request:requestId,p_reason:reason,p_description:description}})}
 export async function recordCollaborationMilestone(session,channel,requestId,milestone){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_record_collaboration_milestone',{token:s.access_token,method:'POST',body:{p_channel:channel,p_request:requestId,p_milestone:milestone}})}
