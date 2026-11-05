@@ -1,5 +1,5 @@
 import React,{useEffect,useState} from 'react';
-import {getAdminCollaborationOverview,reportCollaborationSafety,recordCollaborationMilestone} from './canopyApi';
+import {getAdminCollaborationOverview,getAdminCollaborationSafetyQueue,reviewAdminCollaborationSafety,reportCollaborationSafety,recordCollaborationMilestone} from './canopyApi';
 
 const safeText=value=>String(value||'').trim();
 const date=value=>value?new Date(value).toLocaleDateString(): '—';
@@ -26,6 +26,11 @@ export default function CanopyCollaborationOversight({session}){
  const [data,setData]=useState(null),[error,setError]=useState(''),[query,setQuery]=useState(''),[status,setStatus]=useState('all'),[loading,setLoading]=useState(false);
  const load=async()=>{setLoading(true);try{setData(await getAdminCollaborationOverview(session));setError('')}catch(e){setError(e.message)}finally{setLoading(false)}};
  useEffect(()=>{load()},[session?.access_token]);
+ const [cases,setCases]=useState([]),[caseStatus,setCaseStatus]=useState({}),[caseNotes,setCaseNotes]=useState({}),[reviewError,setReviewError]=useState('');
+ const loadCases=async()=>{try{const x=await getAdminCollaborationSafetyQueue(session);setCases(Array.isArray(x)?x:[])}catch(e){setReviewError(e.message)}};
+ const review=async item=>{const next=caseStatus[item.id]||'reviewing',note=(caseNotes[item.id]||'').trim();if(note.length<12){setReviewError('Enter at least 12 characters explaining the decision.');return}
+ try{await reviewAdminCollaborationSafety(session,item.id,next,note);setReviewError('');await loadCases();await load()}catch(e){setReviewError(e.message)}};
+ useEffect(()=>{loadCases()},[session?.access_token]);
  const rows=(data?.rows||[]).filter(r=>(status==='all'||r.status===status)&&(!query||[r.learner,r.requester,r.organisation].some(s=>safeText(s).toLowerCase().includes(query.toLowerCase()))));
  return <section className="ct-directory" style={{marginBottom:32}}>
   <div className="ct-sectionHead"><div><small>PRIVACY-FIRST OVERSIGHT</small><h2>Collaborations and safety</h2><p>Request metadata only. Private messages and contact details are not shown.</p></div><button type="button" className="ghost" onClick={load} disabled={loading}>Refresh</button></div>
@@ -34,5 +39,20 @@ export default function CanopyCollaborationOversight({session}){
    <div className="ct-filterBar"><input aria-label="Search collaborations" placeholder="Search learner, requester, organisation" value={query} onChange={e=>setQuery(e.target.value)}/><select aria-label="Filter collaboration status" value={status} onChange={e=>setStatus(e.target.value)}><option value="all">All requests</option><option value="pending">Pending</option><option value="accepted">Accepted</option><option value="declined">Declined</option></select></div>
    <div className="ct-adminRows">{rows.map(r=><article key={r.channel+':'+r.id}><div><b>{r.learner}</b><span>From {r.requester} · {r.organisation||r.channel} · {date(r.created_at)}</span><small>{r.channel==='public'?'Public visitor':'WOMATE member'} · {r.status} · {r.milestone}{r.flagged?' · Safety review required':''}</small></div></article>)}{!rows.length&&<div className="ct-empty">No collaborations match this view.</div>}</div>
   </div>}
+  <div style={{marginTop:24}}>
+   <h3>Confidential safety reviews</h3><p>Only learner-submitted reports are shown. Report descriptions are provided voluntarily, not copied from private conversations.</p>
+   {reviewError&&<p role="alert" className="ct-msg">{reviewError}</p>}
+   {cases.map(x=><article key={x.id} style={{border:'1px solid #d6e6dc',borderRadius:12,padding:16,marginBottom:12}}>
+    <strong>{x.learner} · {x.reason}</strong><p>{x.description}</p><small>{x.channel} request · {x.status} · {date(x.created_at)}</small>
+    <div style={{display:'flex',gap:8,flexWrap:'wrap',marginTop:10}}>
+     <select aria-label={'Case status for '+x.learner} value={caseStatus[x.id]||x.status} onChange={e=>setCaseStatus(s=>({...s,[x.id]:e.target.value}))}>
+      <option value="open">Open</option><option value="reviewing">Reviewing</option><option value="resolved">Resolved</option><option value="dismissed">Dismissed</option>
+     </select>
+     <input aria-label={'Review note for '+x.learner} placeholder="Reason for decision (12+ characters)" value={caseNotes[x.id]||''} onChange={e=>setCaseNotes(s=>({...s,[x.id]:e.target.value}))}/>
+     <button type="button" onClick={()=>review(x)} disabled={(caseNotes[x.id]||'').trim().length<12||!(caseStatus[x.id]||x.status)||((caseStatus[x.id]||x.status)==='open')}>Record review</button>
+    </div>
+   </article>)}
+   {!cases.length&&<p>No safety reports submitted yet.</p>}
+  </div>
  </section>
 }
