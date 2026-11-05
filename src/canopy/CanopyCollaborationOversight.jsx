@@ -1,5 +1,5 @@
 import React,{useEffect,useState} from 'react';
-import {getAdminCollaborationOverview,getAdminCollaborationSafetyQueue,reviewAdminCollaborationSafety,reportCollaborationSafety,recordCollaborationMilestone} from './canopyApi';
+import {getAdminCollaborationOverview,getAdminCollaborationSafetyQueue,reviewAdminCollaborationSafety,getAdminVisitorSafetyQueue,reviewAdminVisitorSafety,reportCollaborationSafety,recordCollaborationMilestone} from './canopyApi';
 
 const safeText=value=>String(value||'').trim();
 const date=value=>value?new Date(value).toLocaleDateString(): '—';
@@ -31,6 +31,11 @@ export default function CanopyCollaborationOversight({session}){
  const review=async item=>{const next=caseStatus[item.id]||'reviewing',note=(caseNotes[item.id]||'').trim();if(note.length<12){setReviewError('Enter at least 12 characters explaining the decision.');return}
  try{await reviewAdminCollaborationSafety(session,item.id,next,note);setReviewError('');await loadCases();await load()}catch(e){setReviewError(e.message)}};
  useEffect(()=>{loadCases()},[session?.access_token]);
+ const [visitorCases,setVisitorCases]=useState([]),[visitorNotes,setVisitorNotes]=useState({}),[visitorStatus,setVisitorStatus]=useState({}),[visitorError,setVisitorError]=useState('');
+ const loadVisitorCases=async()=>{try{const x=await getAdminVisitorSafetyQueue(session);setVisitorCases(Array.isArray(x)?x:[])}catch(e){setVisitorError(e.message)}};
+ useEffect(()=>{loadVisitorCases()},[session?.access_token]);
+ const reviewVisitor=async x=>{const note=(visitorNotes[x.id]||'').trim(),status=visitorStatus[x.id]||x.status;if(note.length<12||!['reviewing','resolved','dismissed'].includes(status)){setVisitorError('Select a review decision and enter 12 or more characters.');return}
+ try{await reviewAdminVisitorSafety(session,x.id,status,note);setVisitorError('');await loadVisitorCases()}catch(e){setVisitorError(e.message)}};
  const rows=(data?.rows||[]).filter(r=>(status==='all'||r.status===status)&&(!query||[r.learner,r.requester,r.organisation].some(s=>safeText(s).toLowerCase().includes(query.toLowerCase()))));
  return <section className="ct-directory" style={{marginBottom:32}}>
   <div className="ct-sectionHead"><div><small>PRIVACY-FIRST OVERSIGHT</small><h2>Collaborations and safety</h2><p>Request metadata only. Private messages and contact details are not shown.</p></div><button type="button" className="ghost" onClick={load} disabled={loading}>Refresh</button></div>
@@ -52,7 +57,22 @@ export default function CanopyCollaborationOversight({session}){
      <button type="button" onClick={()=>review(x)} disabled={(caseNotes[x.id]||'').trim().length<12||!(caseStatus[x.id]||x.status)||((caseStatus[x.id]||x.status)==='open')}>Record review</button>
     </div>
    </article>)}
-   {!cases.length&&<p>No safety reports submitted yet.</p>}
+   {!cases.length&&<p>No signed-in learner reports submitted yet.</p>}
+   <h3 style={{marginTop:24}}>External requester reports</h3>
+   <p>Confidential reports from visitors using their private request access. No automatic chat disclosure.</p>
+   {visitorError&&<p role="alert">{visitorError}</p>}
+   {visitorCases.map(x=><article key={x.id} style={{border:'1px solid #d6e6dc',padding:16,borderRadius:12,marginBottom:12}}>
+     <strong>{x.requester} → {x.learner}</strong>
+     <p>{x.reason}: {x.description}</p><small>{x.status} · {date(x.created_at)}</small>
+     <div style={{display:'flex',flexWrap:'wrap',gap:8,marginTop:10}}>
+       <select aria-label="Review visitor report" value={visitorStatus[x.id]||x.status} onChange={e=>setVisitorStatus(s=>({...s,[x.id]:e.target.value}))}>
+         <option value="open">Open</option><option value="reviewing">Reviewing</option><option value="resolved">Resolved</option><option value="dismissed">Dismissed</option>
+       </select>
+       <input aria-label="Visitor safety review note" placeholder="Decision rationale (12+ characters)" value={visitorNotes[x.id]||''} onChange={e=>setVisitorNotes(s=>({...s,[x.id]:e.target.value}))}/>
+       <button type="button" disabled={(visitorNotes[x.id]||'').trim().length<12||!['reviewing','resolved','dismissed'].includes(visitorStatus[x.id]||x.status)} onClick={()=>reviewVisitor(x)}>Record review</button>
+     </div>
+   </article>)}
+   {!visitorCases.length&&<p>No external requester reports submitted yet.</p>}
   </div>
  </section>
 }
