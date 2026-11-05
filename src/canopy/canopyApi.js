@@ -623,6 +623,7 @@ export async function reviewAdminCollaborationSafety(session,id,status,note){con
 export async function getMyAcceptedCollaborationRequests(session){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_my_accepted_collaborations',{token:s.access_token,method:'POST',body:{}})}
 
 
+export async function getAdminFacilitationAgreements(session){const x=await refreshSession(session||getStoredSession());return rest('rpc/canopy_admin_facilitation_agreements',{token:x.access_token,method:'POST',body:{}})}
 export async function proposeAdminFacilitationTerms(session,id,scope,value,currency,rate){const x=await refreshSession(session||getStoredSession());return rest('rpc/canopy_admin_propose_facilitation_terms',{token:x.access_token,method:'POST',body:{p_request:id,p_scope:scope,p_value:Number(value),p_currency:currency,p_rate:Number(rate)}})}
 export async function getMyFacilitationTerms(session){const x=await refreshSession(session||getStoredSession());return rest('rpc/canopy_my_facilitation_terms',{token:x.access_token,method:'POST',body:{}})}
 export async function decideMyFacilitationTerms(session,id,accept){const x=await refreshSession(session||getStoredSession());return rest('rpc/canopy_learner_decide_facilitation_terms',{token:x.access_token,method:'POST',body:{p_agreement:id,p_accept:Boolean(accept)}})}
