@@ -34,3 +34,12 @@ export const decidePublicFacilitationTerms=(id,token,accept,accessToken)=>{if(!U
 export const getPublicTalentInvoice=(id,token)=>rpc('canopy_finance_public_invoice',{p_request:id,p_token:token});
 export const getPublicTalentCloseout=(id,token)=>rpc('canopy_finance_public_closeout',{p_request:id,p_token:token});
 export const respondPublicTalentCloseout=(id,token,confirm,reason,accessToken)=>{if(!URL||!KEY)throw new Error('Talent Discovery is not configured.');return fetch(`${URL}/rest/v1/rpc/canopy_finance_requester_closeout`,{method:'POST',headers:{apikey:KEY,Authorization:`Bearer ${accessToken}`,'Content-Type':'application/json'},body:JSON.stringify({p_request:id,p_token:token,p_confirm:Boolean(confirm),p_reason:reason||null})}).then(async response=>{const raw=await response.text();let data;try{data=JSON.parse(raw)}catch{data=raw}if(!response.ok)throw new Error(data?.message||'Completion response failed');return data})};
+
+
+export const startPublicTalentCheckout=async(id,token,authToken)=>{
+ if(!URL||!KEY)throw new Error('Talent Discovery is not configured.');
+ const r=await fetch(URL+'/functions/v1/womate-talent-checkout',{method:'POST',headers:{apikey:KEY,Authorization:'Bearer '+authToken,'Content-Type':'application/json'},body:JSON.stringify({request_id:id,access_token:token})});
+ const data=await r.json().catch(()=>({}));
+ if(!r.ok)throw new Error(data?.error||'WOMATE secure checkout is unavailable');
+ return data;
+};
