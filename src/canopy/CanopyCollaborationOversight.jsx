@@ -1,4 +1,5 @@
 import React,{useEffect,useState} from 'react';
+import CanopyTalentFinance from './CanopyTalentFinance';
 import {getAdminCollaborationOverview,getAdminFacilitationAgreements,proposeAdminFacilitationTerms,getAdminCollaborationSafetyQueue,reviewAdminCollaborationSafety,getAdminVisitorSafetyQueue,reviewAdminVisitorSafety,getAdminRequesterVerificationQueue,reviewAdminRequesterOrganisation,reportCollaborationSafety,recordCollaborationMilestone} from './canopyApi';
 
 const safeText=value=>String(value||'').trim();
@@ -53,7 +54,7 @@ export default function CanopyCollaborationOversight({session}){
  const loadAgreements=async()=>{try{const a=await getAdminFacilitationAgreements(session);setAgreements(Array.isArray(a)?a:[])}catch(e){setAgreementError(e.message)}};
  useEffect(()=>{loadAgreements()},[session?.access_token]);
  const rows=(data?.rows||[]).filter(r=>(status==='all'||r.status===status)&&(!query||[r.learner,r.requester,r.organisation].some(s=>safeText(s).toLowerCase().includes(query.toLowerCase()))));
- return <section className="ct-directory" style={{marginBottom:32}}>
+ return <><CanopyTalentFinance session={session}/><section className="ct-directory" style={{marginBottom:32}}>
   <div className="ct-sectionHead"><div><small>PRIVACY-FIRST OVERSIGHT</small><h2>Collaborations and safety</h2><p>Request metadata only. Private messages and contact details are not shown.</p></div><button type="button" className="ghost" onClick={load} disabled={loading}>Refresh</button></div>
   {error?<p role="alert" className="ct-msg">Administrative overview unavailable: {error}</p>:<div>
    {agreementInfo&&<p role="status">{agreementInfo}</p>}<div className="ct-adminSummary"><span><b>{data?.total??'—'}</b> requests</span><span><b>{data?.unique_learners??'—'}</b> learners contacted</span><span><b>{data?.pending??'—'}</b> pending</span><span><b>{data?.accepted??'—'}</b> accepted</span><span><b>{data?.open_safety_cases??'—'}</b> flagged</span></div>
@@ -136,5 +137,5 @@ export default function CanopyCollaborationOversight({session}){
    </article>)}
    {!visitorCases.length&&<p>No external requester reports submitted yet.</p>}
   </div>
- </section>
+ </section></>
 }
