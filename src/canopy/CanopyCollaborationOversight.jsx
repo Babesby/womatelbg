@@ -1,5 +1,5 @@
 import React,{useEffect,useState} from 'react';
-import {getAdminCollaborationOverview,getAdminCollaborationSafetyQueue,reviewAdminCollaborationSafety,getAdminVisitorSafetyQueue,reviewAdminVisitorSafety,reportCollaborationSafety,recordCollaborationMilestone} from './canopyApi';
+import {getAdminCollaborationOverview,getAdminCollaborationSafetyQueue,reviewAdminCollaborationSafety,getAdminVisitorSafetyQueue,reviewAdminVisitorSafety,getAdminRequesterVerificationQueue,reviewAdminRequesterOrganisation,reportCollaborationSafety,recordCollaborationMilestone} from './canopyApi';
 
 const safeText=value=>String(value||'').trim();
 const date=value=>value?new Date(value).toLocaleDateString(): '—';
@@ -36,6 +36,11 @@ export default function CanopyCollaborationOversight({session}){
  useEffect(()=>{loadVisitorCases()},[session?.access_token]);
  const reviewVisitor=async x=>{const note=(visitorNotes[x.id]||'').trim(),status=visitorStatus[x.id]||x.status;if(note.length<12||!['reviewing','resolved','dismissed'].includes(status)){setVisitorError('Select a review decision and enter 12 or more characters.');return}
  try{await reviewAdminVisitorSafety(session,x.id,status,note);setVisitorError('');await loadVisitorCases()}catch(e){setVisitorError(e.message)}};
+ const[organisations,setOrganisations]=useState([]),[organisationStatus,setOrganisationStatus]=useState({}),[organisationNotes,setOrganisationNotes]=useState({}),[organisationError,setOrganisationError]=useState('');
+ const loadOrganisations=async()=>{try{const x=await getAdminRequesterVerificationQueue(session);setOrganisations(Array.isArray(x)?x:[])}catch(e){setOrganisationError(e.message)}};
+ useEffect(()=>{loadOrganisations()},[session?.access_token]);
+ const reviewOrganisation=async x=>{const next=organisationStatus[x.request_id]||x.status,note=(organisationNotes[x.request_id]||'').trim();if(!['reviewing','verified','rejected'].includes(next)||note.length<12){setOrganisationError('Select a decision and explain it in at least 12 characters.');return}
+ try{await reviewAdminRequesterOrganisation(session,x.request_id,next,note);setOrganisationError('');await loadOrganisations()}catch(e){setOrganisationError(e.message)}};
  const rows=(data?.rows||[]).filter(r=>(status==='all'||r.status===status)&&(!query||[r.learner,r.requester,r.organisation].some(s=>safeText(s).toLowerCase().includes(query.toLowerCase()))));
  return <section className="ct-directory" style={{marginBottom:32}}>
   <div className="ct-sectionHead"><div><small>PRIVACY-FIRST OVERSIGHT</small><h2>Collaborations and safety</h2><p>Request metadata only. Private messages and contact details are not shown.</p></div><button type="button" className="ghost" onClick={load} disabled={loading}>Refresh</button></div>
@@ -44,6 +49,24 @@ export default function CanopyCollaborationOversight({session}){
    <div className="ct-filterBar"><input aria-label="Search collaborations" placeholder="Search learner, requester, organisation" value={query} onChange={e=>setQuery(e.target.value)}/><select aria-label="Filter collaboration status" value={status} onChange={e=>setStatus(e.target.value)}><option value="all">All requests</option><option value="pending">Pending</option><option value="accepted">Accepted</option><option value="declined">Declined</option></select></div>
    <div className="ct-adminRows">{rows.map(r=><article key={r.channel+':'+r.id}><div><b>{r.learner}</b><span>From {r.requester} · {r.organisation||r.channel} · {date(r.created_at)}</span><small>{r.channel==='public'?'Public visitor':'WOMATE member'} · {r.status} · {r.milestone}{r.flagged?' · Safety review required':''}</small></div></article>)}{!rows.length&&<div className="ct-empty">No collaborations match this view.</div>}</div>
   </div>}
+  <div style={{marginTop:24}}>
+   <h3>Organisation evidence review</h3>
+   <p>Review public organisation information submitted voluntarily. Marking an organisation reviewed does not verify its requester's personal identity or email ownership.</p>
+   {organisationError&&<p role="alert">{organisationError}</p>}
+   {organisations.map(x=><article key={x.request_id} style={{border:'1px solid #d6e6dc',padding:16,borderRadius:12,marginBottom:12}}>
+    <strong>{x.requester} · {x.organisation||'Organisation not given'}</strong><p>For {x.learner}</p>
+    <p><a href={x.website} target="_blank" rel="noopener noreferrer">Submitted website</a>{x.proof_url&&<> · <a href={x.proof_url} target="_blank" rel="noopener noreferrer">Supporting reference</a></>}</p>
+    <small>Status: {x.status} · {date(x.submitted_at)}</small>
+    <div style={{display:'flex',flexWrap:'wrap',gap:8,marginTop:10}}>
+      <select aria-label="Organisation review decision" value={organisationStatus[x.request_id]||x.status} onChange={e=>setOrganisationStatus(v=>({...v,[x.request_id]:e.target.value}))}>
+       <option value="submitted">Submitted</option><option value="reviewing">Reviewing</option><option value="verified">Organisation reviewed</option><option value="rejected">Rejected</option>
+      </select>
+      <input aria-label="Organisation review note" placeholder="Document verification rationale" value={organisationNotes[x.request_id]||''} onChange={e=>setOrganisationNotes(v=>({...v,[x.request_id]:e.target.value}))}/>
+      <button type="button" disabled={(organisationNotes[x.request_id]||'').trim().length<12||!['reviewing','verified','rejected'].includes(organisationStatus[x.request_id]||x.status)} onClick={()=>reviewOrganisation(x)}>Save review</button>
+    </div>
+   </article>)}
+   {!organisations.length&&<p>No organisation evidence submitted yet.</p>}
+  </div>
   <div style={{marginTop:24}}>
    <h3>Confidential safety reviews</h3><p>Only learner-submitted reports are shown. Report descriptions are provided voluntarily, not copied from private conversations.</p>
    {reviewError&&<p role="alert" className="ct-msg">{reviewError}</p>}
