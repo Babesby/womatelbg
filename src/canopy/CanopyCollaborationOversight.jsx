@@ -1,5 +1,5 @@
 import React,{useEffect,useState} from 'react';
-import {getAdminCollaborationOverview,proposeAdminFacilitationTerms,getAdminCollaborationSafetyQueue,reviewAdminCollaborationSafety,getAdminVisitorSafetyQueue,reviewAdminVisitorSafety,getAdminRequesterVerificationQueue,reviewAdminRequesterOrganisation,reportCollaborationSafety,recordCollaborationMilestone} from './canopyApi';
+import {getAdminCollaborationOverview,getAdminFacilitationAgreements,proposeAdminFacilitationTerms,getAdminCollaborationSafetyQueue,reviewAdminCollaborationSafety,getAdminVisitorSafetyQueue,reviewAdminVisitorSafety,getAdminRequesterVerificationQueue,reviewAdminRequesterOrganisation,reportCollaborationSafety,recordCollaborationMilestone} from './canopyApi';
 
 const safeText=value=>String(value||'').trim();
 const date=value=>value?new Date(value).toLocaleDateString(): '—';
@@ -49,6 +49,9 @@ export default function CanopyCollaborationOversight({session}){
    setAgreementInfo('Proposal saved. Learner and requester must separately consent. No payment taken.');setAgreementOpen('');}
   catch(e){setAgreementInfo(e.message)}
  };
+ const[agreements,setAgreements]=useState([]),[agreementError,setAgreementError]=useState('');
+ const loadAgreements=async()=>{try{const a=await getAdminFacilitationAgreements(session);setAgreements(Array.isArray(a)?a:[])}catch(e){setAgreementError(e.message)}};
+ useEffect(()=>{loadAgreements()},[session?.access_token]);
  const rows=(data?.rows||[]).filter(r=>(status==='all'||r.status===status)&&(!query||[r.learner,r.requester,r.organisation].some(s=>safeText(s).toLowerCase().includes(query.toLowerCase()))));
  return <section className="ct-directory" style={{marginBottom:32}}>
   <div className="ct-sectionHead"><div><small>PRIVACY-FIRST OVERSIGHT</small><h2>Collaborations and safety</h2><p>Request metadata only. Private messages and contact details are not shown.</p></div><button type="button" className="ghost" onClick={load} disabled={loading}>Refresh</button></div>
@@ -73,6 +76,18 @@ export default function CanopyCollaborationOversight({session}){
      </div>}
     </article>)} {!rows.length&&<div className="ct-empty">No collaborations match this view.</div>}</div>
   </div>}
+  <div style={{marginTop:24}}>
+   <h3>Prospective facilitation agreements</h3>
+   <p>Audit-only register of proposals and consent from both parties. No automatic charges or payments.</p>
+   {agreementError&&<p role="alert">{agreementError}</p>}
+   <button type="button" className="ghost" onClick={loadAgreements}>Refresh agreements</button>
+   {agreements.map(a=><article key={a.id} style={{padding:14,border:'1px solid #d6e6dc',borderRadius:12,marginTop:10}}>
+     <b>{a.learner} · {a.requester}</b>
+     <p>{a.scope}</p><small>{a.currency} {Number(a.deal_value).toLocaleString()} · {a.fee_rate}% prospective organisation-paid fee · {a.status}</small>
+     <p style={{fontSize:12}}>Learner consent: {a.learner_accepted_at?'Recorded':'Not recorded'} · Requester consent: {a.requester_accepted_at?'Recorded':'Not recorded'}</p>
+   </article>)}
+   {!agreements.length&&<p>No commercial terms have been proposed.</p>}
+  </div>
   <div style={{marginTop:24}}>
    <h3>Organisation evidence review</h3>
    <p>Review public organisation information submitted voluntarily. Marking an organisation reviewed does not verify its requester's personal identity or email ownership.</p>
