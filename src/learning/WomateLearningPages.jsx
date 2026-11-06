@@ -1,4 +1,5 @@
 import React,{useState} from 'react';
+import {Helmet} from 'react-helmet-async';
 import {ArrowUpRight,ArrowRight,BookOpen,CalendarDays,CheckCircle2,Clock3,Globe2,GraduationCap,Layers3,LockKeyhole,ShieldCheck,Sparkles,UsersRound} from 'lucide-react';
 import './WomateLearningPages.css';
 
@@ -25,7 +26,9 @@ function Cohorts(){
 export default function WomateLearningPages({path}){
  const slug=path.startsWith('/courses/')?path.slice('/courses/'.length):'';
  const course=catalogue.find(c=>c.slug===slug);
- if(path==='/she-leads/cohorts')return <Cohorts/>;
- if(course)return <Detail course={course}/>;
- return <Courses/>;
+ const cohortPage=path==='/she-leads/cohorts';
+ const title=cohortPage?'She Leads Cohorts: Africa & Asia | WOMATE':course?course.title+' | WOMATE Courses':'WOMATE Courses | Specialist Climate Learning';
+ const description=cohortPage?'Explore the current She Leads cohort and free 2027 programmes planned for Africa and Asia.':course?course.summary:'Explore upcoming WOMATE climate and leadership short courses. Specialist programmes are coming soon; enrolment is not open.';
+ const content=cohortPage?<Cohorts/>:course?<Detail course={course}/>:<Courses/>;
+ return <><Helmet><title>{title}</title><meta name="description" content={description}/><link rel="canonical" href={'https://www.womate.org'+(course||cohortPage?path:'/courses')}/><meta property="og:title" content={title}/><meta property="og:description" content={description}/><meta property="og:type" content="website"/><meta name="robots" content="index,follow"/></Helmet>{content}</>;
 }
