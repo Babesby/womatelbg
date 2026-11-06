@@ -738,3 +738,12 @@ export async function getWomateOpportunityApplicationCounts(session){const s=awa
 
 export async function getMyGraduationDanceSeen(session){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_my_graduation_dance_seen_2026',{token:s.access_token,method:'POST',body:{}})}
 export async function markMyGraduationDanceSeen(session){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_mark_graduation_dance_seen_2026',{token:s.access_token,method:'POST',body:{}})}
+
+export async function getAdminTalentFinanceLedger(session){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_finance_admin_ledger',{token:s.access_token,method:'POST',body:{}})}
+export async function getAdminTalentFinanceReporting(session,from=null,to=null){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_finance_admin_reporting',{token:s.access_token,method:'POST',body:{p_from:from,p_to:to}})}
+export async function getAdminTalentWeeklyReports(session){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_finance_admin_weekly_reports',{token:s.access_token,method:'POST',body:{}})}
+export async function confirmAdminTalentDealCompletion(session,agreementId){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_finance_admin_confirm_closeout',{token:s.access_token,method:'POST',body:{p_agreement:agreementId}})}
+export async function createAdminTalentFeeInvoice(session,agreementId,dueDays=14){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_finance_admin_create_invoice',{token:s.access_token,method:'POST',body:{p_agreement:agreementId,p_due_days:dueDays}})}
+export async function issueAdminTalentFeeInvoice(session,invoiceId){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_finance_admin_issue_invoice',{token:s.access_token,method:'POST',body:{p_invoice:invoiceId}})}
+export async function getMyTalentDealCloseouts(session){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_finance_my_closeouts',{token:s.access_token,method:'POST',body:{}})}
+export async function respondMyTalentDealCloseout(session,agreementId,confirm,reason=''){const s=await refreshSession(session||getStoredSession());return rest('rpc/canopy_finance_learner_closeout',{token:s.access_token,method:'POST',body:{p_agreement:agreementId,p_confirm:Boolean(confirm),p_reason:reason||null}})}

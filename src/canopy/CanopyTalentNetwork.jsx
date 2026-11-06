@@ -3,6 +3,7 @@ import{BadgeCheck,BriefcaseBusiness,Camera,CheckCircle2,Globe2,Handshake,Search,
 import{getCanopyTalentNetwork,getMyAcceptedCollaborationRequests,getMyFacilitationTerms,decideMyFacilitationTerms,closeExternalCollaboration,saveCanopyTalentSettings,sendCanopyCollaborationRequest,respondCanopyCollaborationRequest,getCanopyExternalCollaborationRequests,getCanopyExternalCollaborationThread,respondCanopyExternalCollaborationRequest,sendCanopyExternalCollaborationMessage,getAdminCanopyTalentNetwork,setAdminCanopyTalentVisibility,canopyProfilePhotoUrl}from'./canopyApi';
 import'./canopyTalentNetwork.css';
 import CanopyCollaborationOversight,{CollaborationControls} from './CanopyCollaborationOversight';
+import {CanopyTalentFinanceLearner} from './CanopyTalentFinance';
 
 const clean=v=>String(v||'').trim();
 const interestList=v=>Array.isArray(v)?v:[];
@@ -57,6 +58,7 @@ export default function CanopyTalentNetwork({viewer}){
   {(data.incoming||[]).length>0&&<section className="ct-requests"><div className="ct-sectionHead"><div><small>COLLABORATION REQUESTS</small><h2>People reaching out</h2></div></div>{data.incoming.map(r=><article key={r.id}><div><b>{r.requester_name}</b><span>{r.requester_country||'Canopy member'}</span><p>{r.message}</p></div><div><button disabled={busy===r.id} onClick={()=>respond(r.id,true)}>Accept</button><button className="ghost" disabled={busy===r.id} onClick={()=>respond(r.id,false)}>Decline</button><CollaborationControls session={viewer.session} channel="member" requestId={r.id} status={r.status}/></div></article>)}</section>}
 
 
+  <CanopyTalentFinanceLearner session={viewer.session}/>
   {feeTerms.length>0&&<section className="ct-requests">
    <div className="ct-sectionHead"><div><small>OPTIONAL COMMERCIAL AGREEMENTS</small><h2>Review proposed facilitation terms</h2><p>Networking, mentorship and volunteer collaboration remain free. Only agree if the terms match your understanding. No payments are processed here.</p></div></div>
    {feeTerms.map(t=><article key={t.id}><div><b>{t.scope}</b><p>Prospective project value: {t.currency} {Number(t.deal_value).toLocaleString()} · Proposed WOMATE fee: {t.fee_rate}% paid by the requester organisation</p><span>Status: {t.status}</span></div>
