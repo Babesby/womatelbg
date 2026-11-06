@@ -2,11 +2,11 @@ import React,{useEffect,useState} from 'react';
 import {getStoredSession,refreshSession} from './canopyApi';
 import {Globe2,ShieldCheck,Download} from 'lucide-react';
 
-const URL=(import.meta.env.VITE_CANOPY_SUPABASE_URL||'').replace(/\/$/,'');
+const API_URL=(import.meta.env.VITE_CANOPY_SUPABASE_URL||'').replace(/\/$/,'');
 const KEY=import.meta.env.VITE_CANOPY_SUPABASE_ANON_KEY||'';
 export default function CanopyAsiaInterestAdmin({viewer}){
  const [rows,setRows]=useState([]),[error,setError]=useState(''),[busy,setBusy]=useState(true),[q,setQ]=useState('');
- const load=async()=>{setBusy(true);try{const session=await refreshSession(viewer.session||getStoredSession());const r=await fetch(URL+'/rest/v1/rpc/womate_admin_asia_interest_2027',{method:'POST',headers:{apikey:KEY,Authorization:'Bearer '+session.access_token,'Content-Type':'application/json'},body:'{}'});const data=await r.json();if(!r.ok)throw Error(data.message||'Could not read responses');setRows(Array.isArray(data)?data:[]);setError('')}catch(e){setError(e.message)}finally{setBusy(false)}};
+ const load=async()=>{setBusy(true);try{const session=await refreshSession(viewer.session||getStoredSession());const r=await fetch(API_URL+'/rest/v1/rpc/womate_admin_asia_interest_2027',{method:'POST',headers:{apikey:KEY,Authorization:'Bearer '+session.access_token,'Content-Type':'application/json'},body:'{}'});const data=await r.json();if(!r.ok)throw Error(data.message||'Could not read responses');setRows(Array.isArray(data)?data:[]);setError('')}catch(e){setError(e.message)}finally{setBusy(false)}};
  useEffect(()=>{load()},[viewer?.session?.access_token]);
  const filtered=rows.filter(x=>[x.name,x.email,x.country,x.interest].join(' ').toLowerCase().includes(q.toLowerCase()));
  const csv=()=>{const headers=['Name','Email','Country','Interest','Date'];const cell=x=>'"'+String(x??'').replace(/"/g,'""').replace(/^[=+@\-\t\r]/,'\' $&')+'"';const data=[headers.join(','),...filtered.map(x=>[x.name,x.email,x.country,x.interest,x.submitted_at].map(cell).join(','))].join('\r\n');const blob=new Blob([data],{type:'text/csv;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='womate-asia-interest-2027.csv';a.click();URL.revokeObjectURL(a.href)};
