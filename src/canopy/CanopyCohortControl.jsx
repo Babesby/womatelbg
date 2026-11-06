@@ -28,9 +28,9 @@ function CohortCard({cohort,preview=false}){
 
 export function CanopyAdmin2027Portfolio({viewer}){
   const[data,setData]=useState([]);const[busy,setBusy]=useState(true);const[msg,setMsg]=useState('');
-  useEffect(()=>{let live=true;(async()=>{try{const rows=await getAdmin2027Portfolio(viewer?.session);if(live)setData(Array.isArray(rows)?rows:[])}catch(e){if(live)setMsg(e.message||'Unable to load the 2027 cohort portfolio.')}finally{if(live)setBusy(false)}})();return()=>{live=false}},[viewer?.session?.access_token]);
+  useEffect(()=>{let live=true;(async()=>{try{const rows=await getAdmin2027Portfolio(viewer?.session);if(live)setData(Array.isArray(rows)?rows.filter(c=>['she-leads-climate-c3-2027','she-leads-asia-c1-2027'].includes(c.cohort_key)):[])}catch(e){if(live)setMsg(e.message||'Unable to load the 2027 cohort portfolio.')}finally{if(live)setBusy(false)}})();return()=>{live=false}},[viewer?.session?.access_token]);
   return <main className="canopyManager canopy2027Portfolio">
-    <div className="canopyPageHead"><span className="canopyEyebrow">WOMATE · 2027 PORTFOLIO</span><h1>Three She Leads programmes. One Canopy.</h1><p>This control view is cohort-aware and does not change Cohort 2 records.</p></div>
+    <div className="canopyPageHead"><span className="canopyEyebrow">WOMATE · 2027 PORTFOLIO</span><h1>Two upcoming free cohorts. One Canopy.</h1><p>This control view is cohort-aware and does not change Cohort 2 records.</p></div>
     {msg&&<p className="canopyFormMsg error">{msg}</p>}
     {busy?<section className="canopy2027Loading">Loading 2027 portfolio…</section>:<section className="canopy2027Grid">{data.map(c=><CohortCard key={c.cohort_key} cohort={c}/>)}</section>}
     <section className="canopy2027RoutingNote"><CheckCircle2/><div><h2>Routing model</h2><p>Learners do not choose a cohort at sign-in. WOMATE assigns the cohort after selection. Canopy reads the authenticated account's active cohort membership and opens the correct cohort workspace.</p></div></section>
@@ -40,7 +40,7 @@ export function CanopyAdmin2027Portfolio({viewer}){
 export function CanopyTester2027Preview(){
   const params=new URLSearchParams(window.location.search);
   const chosen=params.get('cohort');
-  const rows=Object.values(SHE_LEADS_2027_PROGRAMMES);
+  const rows=Object.values(SHE_LEADS_2027_PROGRAMMES).filter(c=>['she-leads-climate-c3-2027','she-leads-asia-c1-2027'].includes(c.cohortKey));
   const active=useMemo(()=>rows.find(x=>x.cohortKey===chosen)||null,[chosen]);
   if(active)return <main className="canopyDashboard canopy2027Tester">
     <section className="canopyWelcome"><div><span className="canopyEyebrow">CANOPY TESTER · COHORT PREVIEW</span><h1>{active.name}</h1><p>Safe identity/routing preview. It does not enrol the tester or change any learner's cohort.</p></div></section>
