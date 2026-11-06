@@ -962,7 +962,7 @@ if(__womatePreviewPath||__womateStaffWorkspacePath||__womateLiveProgrammeManager
   />;
 }
 const manager=canManageCanopy(viewer);const operational=isCanopyOperationsStaff(viewer);const staffRole=viewer?.staffAccess?.role;const tester=isCanopyTester(viewer);const legacyAdmin=['manager','admin'].includes(viewer?.profile?.role);
- if(manager&&!path.startsWith('/canopy/manage')&&!['/canopy/profile','/canopy/notifications','/canopy/team-access'].includes(path)){go('/canopy/manage');return null}
+ if(manager&&!path.startsWith('/canopy/manage')&&!path.startsWith('/canopy/courses/')&&!['/canopy/profile','/canopy/notifications','/canopy/team-access'].includes(path)){go('/canopy/manage');return null}
  if(operational){const home=staffRole==='programme_operations'?'/canopy/operations':staffRole==='module_coordinator'?'/canopy/coordinator':'/canopy/fellow';if(![home,'/canopy/profile','/canopy/notifications','/canopy/team-access'].includes(path)){go(home);return null}}
  const selectedAdminCohort=viewer?.profile?.role==='admin'?(adminCohorts.find(x=>x.cohort_key===adminCohortKey)||adminCohorts.find(x=>x.cohort_key===LEGACY_CANOPY_COHORT)||adminCohorts[0]||null):null;
  const scopedAdminSnapshot=viewer?.profile?.role==='admin'?scopeAdminSnapshotByCohort(snapshot,selectedAdminCohort):snapshot;
@@ -996,6 +996,7 @@ const manager=canManageCanopy(viewer);const operational=isCanopyOperationsStaff(
  else if(manager&&path==='/canopy/manage/opportunities')content=<CanopyOpportunityAdmin viewer={viewer} cohortKey={selectedAdminCohort?.cohort_key||LEGACY_CANOPY_COHORT} cohort={selectedAdminCohort}/>;
  else if(manager&&path==='/canopy/manage/funding')content=<CanopyFundingAdmin viewer={viewer} cohortKey={selectedAdminCohort?.cohort_key||LEGACY_CANOPY_COHORT} cohort={selectedAdminCohort}/>;
  else if(manager&&path==='/canopy/manage/talent')content=<CanopyTalentAdmin viewer={viewer} cohortKey={selectedAdminCohort?.cohort_key||LEGACY_CANOPY_COHORT} cohort={selectedAdminCohort}/>;
+ else if(manager&&viewer?.profile?.role==='admin'&&path.startsWith('/canopy/courses/'))content=<CanopyCourses viewer={viewer} path={path}/>;
  else if(manager&&viewer?.profile?.role==='admin'&&path==='/canopy/manage/courses')content=<CanopyCourses viewer={viewer} path={path}/>;
  else if(manager&&viewer?.profile?.role==='admin'&&['she-leads-climate-c3-2027','she-leads-asia-c1-2027'].includes(selectedAdminCohort?.cohort_key)&&['/canopy/manage','/canopy/manage/access','/canopy/manage/reviews','/canopy/manage/attendance','/canopy/manage/certificates','/canopy/manage/reports'].includes(path))content=<Canopy2027AdminWorkspace viewer={viewer} cohort={selectedAdminCohort} view={path==='/canopy/manage'?'overview':path.split('/').pop()}/>;
  else if(manager&&path.startsWith('/canopy/manage')){const sub=path.split('/').pop();const view=path==='/canopy/manage'?'overview':sub;content=view==='selection-codes'?<CanopySelectionCodes session={viewer.session} cohort={selectedAdminCohort}/>:<ManagerOperations snapshot={scopedAdminSnapshot} session={viewer.session} onReload={async()=>{await load();await loadAdminCohorts?.()}} viewer={viewer} cohort={selectedAdminCohort} view={view}/>}
