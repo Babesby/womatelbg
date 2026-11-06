@@ -8,7 +8,7 @@ export default function CanopyCourseCertificateAdmin({viewer}){
  useEffect(()=>{load()},[viewer.session?.access_token]);
  const set=(setter,key,val)=>setter(v=>({...v,[key]:val}));
  const act=async fn=>{setBusy(true);try{await fn();await load();setError('Saved and recorded.')}catch(e){setError(e.message)}finally{setBusy(false)}};
- return <section className="wcl-form"><div><GraduationCap size={30}/><h2>Course certificates</h2><p>Separate from She Leads graduation. Issue only after every required course lesson and assessment is approved, verified enrolment is recorded, and WOMATE signs off.</p></div>
+ return <section className="wcl-form"><div><GraduationCap size={30}/><h2>Course certificates</h2><p>Each course has its own completion requirements. Issue only after every required course lesson and assessment is approved, verified enrolment is recorded, and WOMATE signs off.</p></div>
  {error&&<p role="status">{error}</p>}
  {items.map(item=>{
   const eligible=item.lessons_total>=3&&item.assessments_total>=1&&item.lessons_complete>=item.lessons_total&&item.assessments_approved>=item.assessments_total;
@@ -18,6 +18,6 @@ export default function CanopyCourseCertificateAdmin({viewer}){
   {item.certificate_approved&&!item.certificate_id&&<><label>Final certificate Google Drive URL<input value={urls[item.course_id+item.user_id]||''} onChange={e=>set(setUrls,item.course_id+item.user_id,e.target.value)} placeholder="https://drive.google.com/..."/></label><button disabled={busy||!/^https:\/\/(drive|docs)\.google\.com\//.test(urls[item.course_id+item.user_id]||'')} onClick={()=>act(()=>issueCourseCertificate(item.course_id,item.user_id,urls[item.course_id+item.user_id],viewer.session))}>Issue certificate</button></>}
   {item.certificate_id&&<p>Issued — verified certificate recorded in Canopy.</p>}</article>;
  })}
- {!items.length&&<div className="wcl-note"><ShieldCheck size={20}/><p>No eligible course learners yet. Registrations remain closed.</p></div>}
+ {!items.length&&<div className="wcl-note"><ShieldCheck size={20}/><p>No learners are ready for certification yet.</p></div>}
  </section>;
 }
