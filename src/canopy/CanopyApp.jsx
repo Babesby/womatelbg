@@ -32,7 +32,7 @@ import CanopyCourses from './CanopyCourses';
 import Canopy2027AdminWorkspace from './Canopy2027AdminWorkspace';
 import {CanopyAdminCohortBar,CanopyAdminCohortEmpty,CanopyAdminCohortSafeHold,LEGACY_CANOPY_COHORT} from './CanopyAdminCohortContext';
 import {isPost2026RuntimeCohort} from './canopyCohortRuntime2027';
-import{ArrowLeft,ArrowRight,BookOpen,Check,ChevronRight,ClipboardCheck,Clock,FileText,GraduationCap,Leaf,Lock,LogOut,Menu,PlayCircle,Sparkles,UserRound,X,BookMarked,UsersRound,PenLine,TrendingUp,Eye,EyeOff,MessageSquare,ShieldAlert,Award,BarChart3,Bell,Moon,Sun,Globe2,Mail,ShieldCheck,BriefcaseBusiness,Heart,Volume2,Square,Camera,Trash2} from 'lucide-react';
+import{ArrowLeft,ArrowRight,BookOpen,Check,ChevronRight,ClipboardCheck,Clock,FileText,GraduationCap,Leaf,Lock,LogOut,Menu,PlayCircle,Sparkles,UserRound,X,BookMarked,UsersRound,PenLine,TrendingUp,Eye,EyeOff,MessageSquare,ShieldAlert,Award,BarChart3,Bell,Moon,Sun,Globe2,Mail,ShieldCheck,BriefcaseBusiness,Handshake,Heart,Volume2,Square,Camera,Trash2} from 'lucide-react';
 import'./canopy.css';
 import{CANOPY_BRAND,modules,resources}from'./canopyData';
 import{climateDebateAssignment}from'./canopyClimateDebate';
