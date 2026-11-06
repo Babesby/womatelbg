@@ -3468,3 +3468,9 @@ html[data-canopy-theme="dark"] .cx-special-recognition-song>span{color:var(--can
 .ccertAdminDetail strong{font-size:.93rem}
 @media(max-width:850px){.ccertAdminFilters,.ccertAdminDetail{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:550px){.ccertAdminFilters,.ccertAdminDetail{grid-template-columns:1fr}.ccertAdminList article{grid-template-columns:auto minmax(0,1fr)}.ccertAdminList article>button{grid-column:2;justify-self:start}}
+
+/* WOMATE Admin: make operational sections discoverable without changing role permissions. */
+.canopySidebar .canopySidebarSectionTitle{font-size:10px;font-weight:850;letter-spacing:.15em;color:#66857a;padding:20px 13px 8px;margin-top:8px;border-top:1px solid #ebf1ee;text-transform:uppercase;line-height:1.4}
+.canopySidebar nav{overflow-y:auto;scrollbar-width:thin;min-height:0;padding-bottom:18px}
+.canopySidebar nav button{cursor:pointer}
+.canopySidebar nav button:focus-visible{outline:2px solid #2a8871;outline-offset:2px}
