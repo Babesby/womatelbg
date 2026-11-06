@@ -1,5 +1,6 @@
 import React from 'react';
 import Canopy2027DraftPreview from './Canopy2027DraftPreview';
+import Canopy2027Learning from './Canopy2027Learning';
 import {ArrowLeft,BookOpen,CalendarDays,CheckCircle2,CreditCard,FileText,Globe2,GraduationCap,LockKeyhole,Radio,ShieldCheck,Sparkles,UsersRound} from 'lucide-react';
 import {canopyPost2026Runtime,CANOPY_POST_2026_RUNTIMES} from './canopyCohortRuntime2027';
 
@@ -66,6 +67,7 @@ export default function CanopyCohortParticipantRuntime({viewer,cohortKey,path='/
   const runtime=canopyPost2026Runtime(cohortKey);
   if(!runtime)return null;
   const view=path.includes('/assignments')?'assignments':path.includes('/progress')?'progress':path.includes('/certificate')?'certificate':path.includes('/course')?'course':path.includes('/schedule')?'schedule':path.includes('/portfolio')?'portfolio':path==='/canopy/opportunities'?'missions':path.includes('/opportunity-board')?'opportunities':path.includes('/funding')?'funding':path.includes('/talent')?'talent':path.includes('/resources')?'resources':path.includes('/canvas')?'canvas':path.includes('/notifications')?'notifications':path.includes('/help')?'help':path.includes('/profile')?'profile':'overview';
+  if(cohortKey==='she-leads-climate-c3-2027'||cohortKey==='she-leads-asia-c1-2027')return <main className="canopyDashboard canopyCohortRuntime"><Canopy2027Learning viewer={viewer} cohortKey={cohortKey} section={view} tester={tester}/></main>;
   return <main className="canopyDashboard canopyCohortRuntime">
     {tester&&<button type="button" className="canopySecondary canopyRuntimeBack" onClick={()=>go('/canopy/test/cohort-preview')}><ArrowLeft/> Back to cohort previews</button>}
     <RuntimeHeader runtime={runtime} tester={tester}/>
