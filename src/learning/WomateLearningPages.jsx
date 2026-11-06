@@ -1,7 +1,7 @@
 import React,{useState} from 'react';
 import {Helmet} from 'react-helmet-async';
 import ExpertPublicCourses from './ExpertPublicCourses';
-import {ArrowUpRight,ArrowRight,BookOpen,CalendarDays,CheckCircle2,Clock3,Globe2,GraduationCap,Layers3,LockKeyhole,ShieldCheck,Sparkles,UsersRound} from 'lucide-react';
+import {ArrowUpRight,ArrowRight,BookOpen,CheckCircle2,Clock3,Globe2,ShieldCheck,Sparkles} from 'lucide-react';
 import './WomateLearningPages.css';
 
 const catalogue=[
