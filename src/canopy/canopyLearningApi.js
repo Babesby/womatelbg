@@ -30,3 +30,5 @@ export const getCohortAdminWorkspace=(cohort,s)=>rpc('canopy_27_admin_workspace'
 export const reviewCohortAssignment=(id,decision,score,feedback,s)=>rpc('canopy_27_admin_review_assignment',{p_id:id,p_decision:decision,p_score:Number(score),p_feedback:feedback},s);
 export const approveCohortCertificate=(cohort,user,approve,note,s)=>rpc('canopy_27_admin_approve_certificate',{p_cohort:cohort,p_user:user,p_approve:approve,p_note:note},s);
 export const issueCohortCertificate=(cohort,user,url,s)=>rpc('canopy_27_admin_issue_certificate',{p_cohort:cohort,p_user:user,p_url:url},s);
+
+export const setCohortAttendance=(cohort,user,module,attended,s)=>rpc('canopy_admin_set_cohort_attendance',{p_cohort_key:cohort,p_user_id:user,p_module_id:module,p_attended:Boolean(attended)},s);
