@@ -21,11 +21,11 @@ function InterestForm(){
 }
 
 const modules=[
- {n:'01',title:'Climate foundations & Asia’s changing risks',summary:'Build a grounded understanding of extreme heat, water insecurity, coastal risk and adaptation.',Icon:ThermometerSun,themes:['Extreme heat','Water insecurity','Coastal adaptation']},
- {n:'02',title:'Gender, justice & meaningful leadership',summary:'Explore whose needs and lived experiences shape climate decisions—and whose voices are missing.',Icon:Scale,themes:['Climate justice','Gendered impacts','Inclusive leadership']},
- {n:'03',title:'Local resilience, policy & green solutions',summary:'Connect regional evidence to climate-smart agriculture, lower-carbon food systems and coastal livelihoods.',Icon:Sprout,themes:['Climate-smart agriculture','Food systems','Policy pathways']},
- {n:'04',title:'Community practice & Africa–Asia exchange',summary:'Test respectful partnership, stakeholder mapping and a realistic local climate action.',Icon:Handshake,themes:['Stakeholder mapping','Africa–Asia exchange','Community action']},
- {n:'05',title:'Leadership pathways & your action plan',summary:'Translate everything you learn into a documented plan that you can carry beyond your final session.',Icon:Compass,themes:['Leadership pathways','Action planning','Next-step roadmap']}
+ {n:'01',label:'Climate risks',title:'Climate foundations & Asia’s changing risks',summary:'Build a grounded understanding of extreme heat, water insecurity, coastal risk and adaptation.',Icon:ThermometerSun,themes:['Extreme heat','Water insecurity','Coastal adaptation']},
+ {n:'02',label:'Justice & leadership',title:'Gender, justice & meaningful leadership',summary:'Explore whose needs and lived experiences shape climate decisions—and whose voices are missing.',Icon:Scale,themes:['Climate justice','Gendered impacts','Inclusive leadership']},
+ {n:'03',label:'Resilience & policy',title:'Local resilience, policy & green solutions',summary:'Connect regional evidence to climate-smart agriculture, lower-carbon food systems and coastal livelihoods.',Icon:Sprout,themes:['Climate-smart agriculture','Food systems','Policy pathways']},
+ {n:'04',label:'Community exchange',title:'Community practice & Africa–Asia exchange',summary:'Test respectful partnership, stakeholder mapping and a realistic local climate action.',Icon:Handshake,themes:['Stakeholder mapping','Africa–Asia exchange','Community action']},
+ {n:'05',label:'Leadership pathways',title:'Leadership pathways & your action plan',summary:'Translate everything you learn into a documented plan that you can carry beyond your final session.',Icon:Compass,themes:['Leadership pathways','Action planning','Next-step roadmap']}
 ];
 
 function AsiaLearningPillars(){
@@ -44,10 +44,10 @@ function AsiaLearningPillars(){
   </div>
   <div className="sia-pillarShell">
    <div className="sia-pillarGrid" aria-label="She Leads Asia learning pillars">
-    {modules.map(({n,title,Icon})=><button className="sia-pillarCard" type="button" key={n} onClick={()=>setActive(n)} aria-label={`Explore ${title}`}>
+    {modules.map(({n,label,title,Icon})=><button className="sia-pillarCard" type="button" key={n} onClick={()=>setActive(n)} aria-label={`Explore ${title}`}>
      <span className="sia-pillarNo">{n}</span>
      <span className="sia-pillarIcon"><Icon size={29}/></span>
-     <strong>{title}</strong>
+     <strong>{label}</strong>
      <span className="sia-pillarExplore">Explore</span>
     </button>)}
    </div>
