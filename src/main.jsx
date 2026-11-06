@@ -1326,6 +1326,9 @@ useEffect(()=>{
   try{url=new URL(anchor.href,window.location.href)}catch{return}
   if(url.origin!==window.location.origin)return;
 
+  // /selected has its own standalone boot path and must perform a real document navigation.
+  if((url.pathname.replace(/\/$/,'')||'/')==='/selected')return;
+
   e.preventDefault();
 
   const next=url.pathname+url.search+url.hash;
