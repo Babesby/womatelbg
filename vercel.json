@@ -1,6 +1,11 @@
 {
   "redirects": [
     {
+      "source": "/she-leads/cohorts",
+      "destination": "/she-leads",
+      "permanent": true
+    },
+    {
       "source": "/She-leads.html",
       "destination": "/she-leads",
       "permanent": true
