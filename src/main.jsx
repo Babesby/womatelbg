@@ -100,7 +100,7 @@ return <Helmet>
 }
 
 const nav=[['She Leads','/she-leads'],['WoK Action','/wok-action'],['Circle','/circle'],['Research','/research'],['Publications','/publications'],['Resilient Minds','/resilient-minds'],['Honours','/honours']];
-function Link({to,children,className=''}){return <a className={className} href={to}>{children}</a>}
+function Link({to,children,className='',onClick,...props}){return <a {...props} className={className} href={to} onClick={onClick}>{children}</a>}
 function Header(){
  const[open,setOpen]=useState(false);
  const close=()=>setOpen(false);
@@ -1302,9 +1302,61 @@ const deepRepairStyles=`
 `;
 function DeepRepairStyles(){return <style>{deepRepairStyles}</style>}
 function App(){
-let path=window.location.pathname.replace(/\/$/,'')||'/';
+const normalizePath=()=>window.location.pathname.replace(/\/$/,'')||'/';
+const[path,setPath]=useState(normalizePath);
+
+useEffect(()=>{
+ const syncRoute=()=>{
+  setPath(normalizePath());
+ };
+
+ const handlePopState=()=>syncRoute();
+
+ const handleInternalNavigation=e=>{
+  if(e.defaultPrevented||e.button!==0||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;
+  const anchor=e.target?.closest?.('a[href]');
+  if(!anchor||anchor.hasAttribute('download'))return;
+  const target=anchor.getAttribute('target');
+  if(target&&target!=='_self')return;
+
+  const href=anchor.getAttribute('href');
+  if(!href||href.startsWith('#')||href.startsWith('mailto:')||href.startsWith('tel:')||href.startsWith('javascript:'))return;
+
+  let url;
+  try{url=new URL(anchor.href,window.location.href)}catch{return}
+  if(url.origin!==window.location.origin)return;
+
+  e.preventDefault();
+
+  const next=url.pathname+url.search+url.hash;
+  const current=window.location.pathname+window.location.search+window.location.hash;
+  if(next!==current)window.history.pushState({},'',next);
+
+  setPath((url.pathname.replace(/\/$/,'')||'/'));
+
+  if(url.hash){
+   requestAnimationFrame(()=>{
+    const el=document.getElementById(decodeURIComponent(url.hash.slice(1)));
+    if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
+   });
+  }else{
+   window.scrollTo({top:0,left:0,behavior:'auto'});
+  }
+ };
+
+ window.addEventListener('popstate',handlePopState);
+ document.addEventListener('click',handleInternalNavigation);
+ return()=>{
+  window.removeEventListener('popstate',handlePopState);
+  document.removeEventListener('click',handleInternalNavigation);
+ };
+},[]);
+
+useEffect(()=>{
+ if(!window.location.hash)window.scrollTo({top:0,left:0,behavior:'auto'});
+},[path]);
+
 let p=path.startsWith('/publications/')?pages['/publications']:(pages[path]||pages['/']);
-useEffect(()=>{window.scrollTo(0,0);},[]);
 if(path==='/verify')return <React.Suspense fallback={<div role='status'>Opening WOMATE verification…</div>}><VerifyCertificate/></React.Suspense>;
 if(path==='/canopy'||path.startsWith('/canopy/'))return <React.Suspense fallback={<main role='status' aria-live='polite' style={{minHeight:'65vh',display:'grid',placeItems:'center',color:'#0E4D4A'}}>Loading Canopy...</main>}><CanopyApp/></React.Suspense>;
 const publicTalent=path==='/talent'||path==='/talent-discovery'||path.startsWith('/talent/');
