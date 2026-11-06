@@ -36,3 +36,5 @@ export const setCohortAttendance=(cohort,user,module,attended,s)=>rpc('canopy_ad
 export const getCourseCertificateQueue=(s)=>rpc('womate_course_admin_eligible_learners',{},s);
 export const approveCourseCertificate=(course,user,note,s)=>rpc('womate_course_admin_approve_certificate',{p_course:course,p_user:user,p_note:note},s);
 export const issueCourseCertificate=(course,user,url,s)=>rpc('womate_course_admin_issue_certificate',{p_course:course,p_user:user,p_url:url},s);
+
+export const saveExpertAssessment=(course,module,title,instructions,s)=>rpc('womate_course_expert_save_assessment',{p_course:course,p_module:Number(module),p_title:title,p_instructions:instructions},s);
