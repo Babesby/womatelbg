@@ -1,6 +1,48 @@
 {
   "routes": [
     {
+      "src": "^/womateer\\.html/?$",
+      "status": 308,
+      "headers": {
+        "Location": "/womateer"
+      }
+    },
+    {
+      "src": "^/circle\\.html/?$",
+      "status": 308,
+      "headers": {
+        "Location": "/circle"
+      }
+    },
+    {
+      "src": "^/(?:CH|ch)\\.html/?$",
+      "status": 308,
+      "headers": {
+        "Location": "/honours"
+      }
+    },
+    {
+      "src": "^/heal\\.html/?$",
+      "status": 308,
+      "headers": {
+        "Location": "/resilient-minds"
+      }
+    },
+    {
+      "src": "^/(?:Funding|funding)\\.html/?$",
+      "status": 308,
+      "headers": {
+        "Location": "/funding"
+      }
+    },
+    {
+      "src": "^/merch\\.html/?$",
+      "status": 308,
+      "headers": {
+        "Location": "/merchandise"
+      }
+    },
+    {
       "src": "^/talent/?$",
       "status": 308,
       "headers": {
