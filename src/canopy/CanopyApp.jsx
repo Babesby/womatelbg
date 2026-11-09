@@ -51,7 +51,7 @@ function isCanopyTester(viewer){return String(viewer?.user?.email||'').trim().to
 function canManageCanopy(viewer){return ['manager','admin'].includes(viewer?.profile?.role)||viewer?.staffAccess?.role==='programme_manager'}
 function isCanopyOperationsStaff(viewer){return ['programme_operations','module_coordinator','learning_fellow'].includes(viewer?.staffAccess?.role)}
 function isAnyCanopyStaff(viewer){return canManageCanopy(viewer)||isCanopyOperationsStaff(viewer)}
-function go(path){const current=window.location.pathname+window.location.search+window.location.hash;if(current!==path)window.history.pushState({},'',path);window.dispatchEvent(new CustomEvent('womate:navigate',{detail:{path}}));window.scrollTo({top:0,left:0,behavior:'auto'})}
+function go(path){const current=window.location.pathname+window.location.search+window.location.hash;if(current!==path)window.history.pushState({},'',path);queueMicrotask(()=>window.dispatchEvent(new CustomEvent('womate:navigate',{detail:{path}})));window.scrollTo({top:0,left:0,behavior:'auto'})}
 const totalLessons=modules.reduce((n,m)=>n+m.lessons.length,0);
 const canopyDisplayWeek=w=>String(w).replace(/Weeks?\s*1(?:–|–|-)2/i,'Week 1 & 2').replace(/Weeks?\s*5(?:–|–|-)6/i,'Week 5 & 6').replace(/Weeks?\s*7(?:–|–|-)8/i,'Week 7 & 8');
 
