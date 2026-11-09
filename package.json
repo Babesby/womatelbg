@@ -4,7 +4,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "prebuild": "node scripts/audit-form-privacy.cjs && node scripts/copy-canopy-mediapipe.cjs",
-    "postbuild": "node scripts/prerender-publications.cjs",
+    "postbuild": "node scripts/prerender-publications.cjs && node scripts/validate-seo-output.cjs && node scripts/notify-indexnow.cjs",
     "seo:indexnow": "node scripts/notify-indexnow.cjs"
   },
   "dependencies": {
