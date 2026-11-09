@@ -1,4 +1,5 @@
 import React,{useState,useEffect,useRef}from'react';
+import{flushSync}from'react-dom';
 import{createRoot}from'react-dom/client';
 import{Helmet,HelmetProvider}from'react-helmet-async';
 import { ArrowUpRight, Menu, X, ChevronRight, ChevronDown, ChevronLeft, Leaf, Users, Award, Microscope, Quote, Sparkles, ShieldCheck, Brain, MoveRight, Play, Heart, Radio, Globe2, BookOpen, Search, FileCheck, PenTool, Files, Target } from 'lucide-react';
@@ -1306,11 +1307,13 @@ const normalizePath=()=>window.location.pathname.replace(/\/$/,'')||'/';
 const[path,setPath]=useState(normalizePath);
 
 useEffect(()=>{
- const syncRoute=()=>{
-  setPath(normalizePath());
+ const commitRoute=nextPath=>{
+  const next=(nextPath||normalizePath()).replace(/\/$/,'')||'/';
+  flushSync(()=>setPath(current=>current===next?current:next));
  };
 
- const handlePopState=()=>syncRoute();
+ const handlePopState=()=>commitRoute();
+ const handleAppNavigate=e=>commitRoute(e?.detail?.path||normalizePath());
 
  const handleInternalNavigation=e=>{
   if(e.defaultPrevented||e.button!==0||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;
@@ -1326,8 +1329,9 @@ useEffect(()=>{
   try{url=new URL(anchor.href,window.location.href)}catch{return}
   if(url.origin!==window.location.origin)return;
 
+  const nextPath=(url.pathname.replace(/\/$/,'')||'/');
   // /selected has its own standalone boot path and must perform a real document navigation.
-  if((url.pathname.replace(/\/$/,'')||'/')==='/selected')return;
+  if(nextPath==='/selected')return;
 
   e.preventDefault();
 
@@ -1335,23 +1339,32 @@ useEffect(()=>{
   const current=window.location.pathname+window.location.search+window.location.hash;
   if(next!==current)window.history.pushState({},'',next);
 
-  setPath((url.pathname.replace(/\/$/,'')||'/'));
+  // Commit the destination during the click itself so the previous page never
+  // gets a paint cycle after the URL has already changed.
+  commitRoute(nextPath);
 
   if(url.hash){
-   requestAnimationFrame(()=>{
+   requestAnimationFrame(()=>requestAnimationFrame(()=>{
     const el=document.getElementById(decodeURIComponent(url.hash.slice(1)));
     if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
-   });
+   }));
   }else{
    window.scrollTo({top:0,left:0,behavior:'auto'});
   }
  };
 
+ const previousRestoration=window.history.scrollRestoration;
+ window.history.scrollRestoration='manual';
  window.addEventListener('popstate',handlePopState);
- document.addEventListener('click',handleInternalNavigation);
+ window.addEventListener('womate:navigate',handleAppNavigate);
+ // Capture-phase interception prevents the browser or a nested router from
+ // briefly rendering an intermediate route first.
+ document.addEventListener('click',handleInternalNavigation,true);
  return()=>{
+  window.history.scrollRestoration=previousRestoration;
   window.removeEventListener('popstate',handlePopState);
-  document.removeEventListener('click',handleInternalNavigation);
+  window.removeEventListener('womate:navigate',handleAppNavigate);
+  document.removeEventListener('click',handleInternalNavigation,true);
  };
 },[]);
 
@@ -1361,7 +1374,7 @@ useEffect(()=>{
 
 let p=path.startsWith('/publications/')?pages['/publications']:(pages[path]||pages['/']);
 if(path==='/verify')return <React.Suspense fallback={<div role='status'>Opening WOMATE verification…</div>}><VerifyCertificate/></React.Suspense>;
-if(path==='/canopy'||path.startsWith('/canopy/'))return <React.Suspense fallback={<main role='status' aria-live='polite' style={{minHeight:'65vh',display:'grid',placeItems:'center',color:'#0E4D4A'}}>Loading Canopy...</main>}><CanopyApp/></React.Suspense>;
+if(path==='/canopy'||path.startsWith('/canopy/'))return <React.Suspense fallback={<main role='status' aria-live='polite' style={{minHeight:'65vh',display:'grid',placeItems:'center',color:'#0E4D4A'}}>Loading Canopy...</main>}><CanopyApp path={path}/></React.Suspense>;
 const publicTalent=path==='/talent'||path==='/talent-discovery'||path.startsWith('/talent/');
 const publicLearning=path==='/courses'||path.startsWith('/courses/');
 const publicationDetail=path.startsWith('/publications/');
