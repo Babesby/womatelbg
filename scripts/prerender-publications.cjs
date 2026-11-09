@@ -94,6 +94,9 @@ function talentDescription(p){
 function talentBody(p,authored=[]){
  const topics=Array.isArray(p.climate_interests)?p.climate_interests.filter(Boolean):[];
  const awards=talentAwards(p);
+ const badge=p.badge?String(p.badge).charAt(0).toUpperCase()+String(p.badge).slice(1):'';
+ const focus=topics.length?topics.slice(0,5).join(', '):'climate leadership and community action';
+ const about=esc(p.full_name)+' is a WOMATE Talent Discovery professional based in '+esc(p.country||'Africa')+'. '+esc(p.headline||'Climate leadership professional')+'. Their recorded climate focus includes '+esc(focus)+'.'+(badge?' WOMATE has verified this profile at the '+esc(badge)+' badge tier.':'');
  const mission=p.mission_name?'<section><h2>Verified climate mission</h2><p>'+esc(p.mission_name)+'</p></section>':'';
  const topicsHtml=topics.length?'<section><h2>Climate focus</h2><ul>'+topics.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul></section>':'';
  const evidence=awards.length?'<section><h2>Verified WOMATE achievements</h2><ul>'+awards.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul></section>':'';
@@ -101,8 +104,9 @@ function talentBody(p,authored=[]){
  return '<main class="womate-seo-profile" style="font-family:system-ui,sans-serif;max-width:900px;margin:4rem auto;padding:0 24px;color:#073b39">'+
   '<nav aria-label="Breadcrumb"><a href="/">WOMATE</a> › <a href="/talent-discovery">Talent Discovery</a> › '+esc(p.full_name)+'</nav>'+
   '<article><header style="margin-top:42px"><img src="'+esc(publicPhoto(p.avatar_path))+'" alt="'+esc(p.full_name)+' profile photo" width="180" height="180" style="border-radius:24px;object-fit:cover"><p>WOMATE Talent Discovery · '+esc(p.country||'Africa')+'</p><h1>'+esc(p.full_name)+'</h1><p style="font-size:1.25rem;line-height:1.6">'+esc(p.headline||'Climate leadership professional')+'</p></header>'+
+  '<section><h2>Professional profile</h2><p style="line-height:1.8">'+about+'</p></section>'+
   topicsHtml+mission+evidence+pubs+
-  '<section><h2>Professional visibility</h2><p>This is a public WOMATE Talent Discovery profile for professional discovery, climate collaboration and verified programme achievement.</p></section>'+
+  '<section><h2>WOMATE Talent Discovery</h2><p>This public professional profile is published for climate-sector discovery, collaboration and verification of recorded WOMATE programme achievements.</p></section>'+
   '</article></main>';
 }
 function articleType(kind){
@@ -110,6 +114,12 @@ function articleType(kind){
  if(/research|paper|study/.test(k))return 'ScholarlyArticle';
  if(/report/.test(k))return 'Report';
  return 'Article';
+}
+function publicationAuthorSchema(p,authorProfile){
+ const name=String(p.name||'').trim();
+ const isWomate=/^womate(?:\s+research\s+team)?$/i.test(name)||/^womate\b/i.test(name);
+ if(isWomate)return {'@type':'Organization',name:name||'WOMATE',url:ORIGIN+'/'};
+ return {'@type':'Person',name:name||'Author',...(authorProfile?{url:ORIGIN+'/talent/'+authorProfile.slug}:{})};
 }
 function articleBody(p,authorProfile){
  const full=paragraphs(p.article_text);
@@ -311,9 +321,11 @@ async function main(){
    headline:p.title,
    description:p.summary||undefined,
    articleBody:p.article_text||undefined,
-   author:{'@type':'Person',name:p.name,...(authorProfile?{url:ORIGIN+'/talent/'+authorProfile.slug}: {})},
+   author:publicationAuthorSchema(p,authorProfile),
    publisher:{'@type':'Organization',name:'WOMATE',url:ORIGIN+'/',logo:{'@type':'ImageObject',url:ORIGIN+'/assets/img/logo.svg'}},
    datePublished:p.published_at||undefined,
+   dateModified:p.published_at||undefined,
+   wordCount:String(p.article_text||'').trim()?String(p.article_text).trim().split(/\s+/).length:undefined,
    mainEntityOfPage:canonical,
    url:canonical,
    breadcrumb:{
