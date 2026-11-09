@@ -4,7 +4,7 @@ import {getCourseWorkspace,readCourse,completeCourseLesson,submitCourseAssessmen
 import './CanopyCourses.css';
 import CanopyCourseCertificateAdmin from './CanopyCourseCertificateAdmin';
 
-const go=path=>{const current=window.location.pathname+window.location.search+window.location.hash;if(current!==path)window.history.pushState({},'',path);window.dispatchEvent(new CustomEvent('womate:navigate',{detail:{path}}));window.scrollTo({top:0,left:0,behavior:'auto'})};
+const go=path=>{const current=window.location.pathname+window.location.search+window.location.hash;if(current!==path)window.history.pushState({},'',path);queueMicrotask(()=>window.dispatchEvent(new CustomEvent('womate:navigate',{detail:{path}})));window.scrollTo({top:0,left:0,behavior:'auto'})};
 const Status=({text})=>text?<p className="wcl-status" role="status">{text}</p>:null;
 const urlSafe=url=>/^https:\/\/[^\s]+$/i.test(url||'');
 function CourseLibrary({viewer}){
