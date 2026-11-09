@@ -1,6 +1,20 @@
 {
   "routes": [
     {
+      "src": "^/www\\.facebook\\.com/?$",
+      "status": 308,
+      "headers": {
+        "Location": "https://www.facebook.com/"
+      }
+    },
+    {
+      "src": "^/www\\.facebook\\.com/(.*)$",
+      "status": 308,
+      "headers": {
+        "Location": "https://www.facebook.com/$1"
+      }
+    },
+    {
       "src": "^/www\\.linkedin\\.com/?$",
       "status": 308,
       "headers": {
