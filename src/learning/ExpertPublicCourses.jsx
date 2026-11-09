@@ -1,20 +1,40 @@
 import React,{useEffect,useState} from 'react';
 import {ArrowUpRight} from 'lucide-react';
+
+const CACHE_KEY='womate_public_expert_catalog_v1';
+let catalogCache=(()=>{
+ try{
+  const parsed=JSON.parse(sessionStorage.getItem(CACHE_KEY)||'null');
+  return Array.isArray(parsed)?parsed:null;
+ }catch{return null}
+})();
+let catalogRequest=null;
+
 const fetchCatalog=async()=>{
+ if(catalogCache)return catalogCache;
+ if(catalogRequest)return catalogRequest;
  const root=(import.meta.env.VITE_CANOPY_SUPABASE_URL||'').replace(/\/$/,'');
  const key=import.meta.env.VITE_CANOPY_SUPABASE_ANON_KEY||'';
  if(!root||!key)return [];
- const response=await fetch(root+'/rest/v1/rpc/womate_course_public_catalog',{method:'POST',headers:{apikey:key,Authorization:'Bearer '+key,'Content-Type':'application/json'},body:'{}'});
- if(!response.ok)return [];
- const values=await response.json();
- return Array.isArray(values)?values.filter(x=>x.category==='expert_masterclass'):[];
+ catalogRequest=fetch(root+'/rest/v1/rpc/womate_course_public_catalog',{method:'POST',headers:{apikey:key,Authorization:'Bearer '+key,'Content-Type':'application/json'},body:'{}'})
+  .then(async response=>{
+   if(!response.ok)return [];
+   const values=await response.json();
+   const rows=Array.isArray(values)?values.filter(x=>x.category==='expert_masterclass'):[];
+   catalogCache=rows;
+   try{sessionStorage.setItem(CACHE_KEY,JSON.stringify(rows))}catch{}
+   return rows;
+  })
+  .finally(()=>{catalogRequest=null});
+ return catalogRequest;
 };
 export default function ExpertPublicCourses({slug=null}){
- const [items,setItems]=useState([]),[loading,setLoading]=useState(true);
+ const [items,setItems]=useState(()=>catalogCache||[]),[loading,setLoading]=useState(()=>!catalogCache);
  useEffect(()=>{let live=true;fetchCatalog().then(rows=>{if(live)setItems(rows)}).catch(()=>{}).finally(()=>{if(live)setLoading(false)});return()=>{live=false}},[]);
  if(slug){
   const course=items.find(x=>x.slug===slug);
-  if(!course)return <section className="wl-section"><h1>{loading?'Opening masterclass…':'Course details will be available soon.'}</h1><a href="/courses">Explore courses</a></section>;
+  if(loading)return <div className="wl-wrap" aria-busy="true"/>;
+  if(!course)return <section className="wl-section"><h1>Course details will be available soon.</h1><a href="/courses">Explore courses</a></section>;
   return <div className="wl-wrap"><header className="wl-hero"><h1>{course.title}</h1><p>{course.summary}</p></header><section className="wl-section"><h2>{course.instructor||'WOMATE expert'}</h2><p>A focused masterclass designed to turn expertise into practical climate action.</p></section></div>;
  }
  if(!items.length)return null;
