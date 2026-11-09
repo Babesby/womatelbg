@@ -1,13 +1,29 @@
 import React,{useEffect,useState}from'react';
 import{Helmet}from'react-helmet-async';
 import{ArrowLeft,ArrowUpRight,BadgeCheck,Copy,Handshake,Search,ShieldCheck,Sparkles}from'lucide-react';
-import{getPublicTalentDirectory,getPublicTalentFilterOptions,getPublicTalentProfile,getPublicCollaborationThread,publicTalentPhotoUrl,sendPublicCollaborationMessage,submitPublicCollaborationRequest,getPublicC2Achievement,submitPublicCollaborationSafetyReport,submitPublicOrganisationReview,verifyPublicRequesterEmail,getPublicRequesterVerificationStatus,getPublicFacilitationTerms,decidePublicFacilitationTerms}from'./publicTalentApi';
+import{getPublicTalentDirectory,getPublicTalentFilterOptions,getPublicTalentProfile,getPublicCollaborationThread,publicTalentPhotoUrl,sendPublicCollaborationMessage,submitPublicCollaborationRequest,submitPublicCollaborationSafetyReport,submitPublicOrganisationReview,verifyPublicRequesterEmail,getPublicRequesterVerificationStatus,getPublicFacilitationTerms,decidePublicFacilitationTerms}from'./publicTalentApi';
 import'./publicTalentDiscovery.css';
 
 const clean=v=>String(v||'').trim();
 const interests=x=>Array.isArray(x)?x:[];
 const accessKey=id=>`womate_public_talent_chat:${id}`;
 const privateChatUrl=(id,token)=>`${window.location.origin}/talent/chat/${id}#${token}`;
+const BADGE_BANNERS={
+ ruby:'/assets/talent/badges/womate-verified-ruby.webp',
+ emerald:'/assets/talent/badges/womate-verified-emerald.webp',
+ diamond:'/assets/talent/badges/womate-verified-diamond.webp',
+ gold:'/assets/talent/badges/womate-verified-gold.webp',
+ silver:'/assets/talent/badges/womate-verified-silver.webp'
+};
+const badgeKey=x=>BADGE_BANNERS[String(x||'').toLowerCase()]?String(x).toLowerCase():'';
+const badgeBanner=x=>BADGE_BANNERS[badgeKey(x)]||'';
+const badgeTitle=x=>{const k=badgeKey(x);return k?k[0].toUpperCase()+k.slice(1):''};
+function VerifiedBanner({badge,name='',profile=false}){
+ const src=badgeBanner(badge);
+ if(!src)return <div className={profile?'pt-profileBanner pt-profileBanner--neutral':'pt-networkBanner pt-networkBanner--neutral'} aria-hidden="true"><span>WOMATE · TALENT DISCOVERY</span></div>;
+ return <div className={profile?'pt-profileBanner':'pt-networkBanner'}><img src={src} alt={name?badgeTitle(badge)+' WOMATE Verified banner for '+name:badgeTitle(badge)+' WOMATE Verified banner'} loading={profile?'eager':'lazy'}/></div>;
+}
+
 const PUB_BASE=(import.meta.env.VITE_CANOPY_SUPABASE_URL||'').replace(/\/$/,'');
 const PUB_KEY=import.meta.env.VITE_CANOPY_SUPABASE_ANON_KEY||'';
 const normName=v=>clean(v).toLowerCase().replace(/\s+/g,' ');
@@ -24,21 +40,26 @@ function Badges({x}){return <div className="pt-badges" aria-label="WOMATE verifi
 function AchievementMark({badge}){if(!badge?.badge)return null;return <div className={'pt-achievement-mark is-'+badge.badge}><span className="pt-achievement-medallion" role="img" aria-label={'WOMATE '+badge.badge+' ornamental achievement medallion'}/><div className="pt-achievement-copy"><strong>{String(badge.badge).toUpperCase()} BADGE</strong><small>{badge.earned} / 500 points</small></div></div>}
 function TalentCard({x}){
  const topics=interests(x.climate_interests).map(t=>clean(t)).filter(Boolean);
- const shown=topics.slice(0,3),extra=topics.length-shown.length;
- return <article className="pt-card pt-card--refined">
-  <div className="pt-cardBody">
-   <div className="pt-cardHead">
-    <div className="pt-avatar"><img src={publicTalentPhotoUrl(x.avatar_path)} alt={`${x.full_name} profile`} loading="lazy"/></div>
-    <div className="pt-cardIdentity"><small className="pt-cardEyebrow">WOMATE TALENT</small><h3>{x.full_name}</h3><p className="pt-country">{x.country||'Africa'}</p></div>
+ const shown=topics.slice(0,2),extra=topics.length-shown.length;
+ const badge=badgeKey(x.badge),badgeName=badgeTitle(badge);
+ return <article className={'pt-card pt-card--network'+(badge?' has-badge badge-'+badge:'')}>
+  <a className="pt-networkBannerLink" href={`/talent/${x.slug}`} aria-label={`View ${x.full_name}'s WOMATE profile`}><VerifiedBanner badge={badge} name={x.full_name}/></a>
+  <div className="pt-networkAvatarWrap"><a href={`/talent/${x.slug}`} className="pt-networkAvatar" aria-label={`${x.full_name} profile`}><img src={publicTalentPhotoUrl(x.avatar_path)} alt={`${x.full_name} profile`} loading="lazy"/></a></div>
+  <div className="pt-cardBody pt-networkBody">
+   <div className="pt-networkIdentity">
+    {badge?<span className="pt-verifiedTier">WOMATE VERIFIED · {badgeName.toUpperCase()}</span>:<span className="pt-verifiedTier neutral">WOMATE TALENT</span>}
+    <h3><a href={`/talent/${x.slug}`}>{x.full_name}</a>{badge&&<BadgeCheck size={17} aria-label="WOMATE verified"/>}</h3>
+    <p className="pt-country">{x.country||'Africa'}</p>
    </div>
-   <p className="pt-headline">{x.headline||'WOMATE Talent Discovery participant'}</p>
-   <Badges x={x}/>
-   {x.mission_completed&&x.mission_name&&<div className="pt-missionDetail"><small>VERIFIED MISSION</small><p title={x.mission_name}>{x.mission_name}</p></div>}
+   <p className="pt-headline">{x.headline||'Climate leadership professional'}</p>
+   <div className="pt-networkSignals">
+    {x.mission_completed&&<span><ShieldCheck size={13}/>Verified mission</span>}
+    {Number(x.spotlight_count)>0&&<span><Sparkles size={13}/>Canopy Spotlight</span>}
+    {x.collaboration_open&&<span className="open">Open to collaborate</span>}
+   </div>
+   {topics.length>0&&<div className="pt-tags" aria-label="Climate interests">{shown.map((topic,i)=><span key={topic+i} title={topic}>{topic}</span>)}{extra>0&&<span className="pt-extra" title={topics.slice(2).join(', ')}>+{extra}</span>}</div>}
   </div>
-  <div className="pt-cardFoot">
-   {topics.length>0&&<div className="pt-tags" aria-label="Climate interests">{shown.map((topic,i)=><span key={topic+i} title={topic}>{topic}</span>)}{extra>0&&<span className="pt-extra" title={topics.slice(3).join(', ')}>+{extra} more</span>}</div>}
-   <a className="pt-link" href={`/talent/${x.slug}`} aria-label={`View ${x.full_name}'s professional profile`}>View profile <ArrowUpRight size={17} aria-hidden="true"/></a>
-  </div>
+  <div className="pt-cardFoot pt-networkFoot"><a className="pt-link" href={`/talent/${x.slug}`} aria-label={`View ${x.full_name}'s professional profile`}>View profile <ArrowUpRight size={17} aria-hidden="true"/></a></div>
  </article>
 }
 function SEO({profile,publications=[],chat=false}){
@@ -47,7 +68,7 @@ function SEO({profile,publications=[],chat=false}){
  const title=directory?'African Women Climate Leaders & Talent Directory | WOMATE':`${profile.full_name} | ${clean(profile.headline)||'Climate Leader'} | WOMATE`;
  const description=directory?'Discover African women climate leaders, researchers and professionals through the WOMATE talent network.':`${profile.full_name} · ${profile.country||'Africa'} · ${profile.headline||'Climate leadership professional'}`.slice(0,158);
  const url=directory?'https://www.womate.org/talent-discovery':`https://www.womate.org/talent/${profile.slug}`;
- const awards=profile?[profile.mission_completed?'Verified climate mission completed':'',profile.all_modules_completed?'All She Leads learning modules completed':'',profile.final_team_completed?'Final Mission team':'',Number(profile.spotlight_count)>0?'WOMATE Canopy Spotlight':''].filter(Boolean):[];
+ const awards=profile?[profile.badge?badgeTitle(profile.badge)+' WOMATE Verified badge':'',profile.mission_completed?'Verified climate mission completed':'',profile.all_modules_completed?'All She Leads learning modules completed':'',profile.final_team_completed?'Final Mission team':'',Number(profile.spotlight_count)>0?'WOMATE Canopy Spotlight':''].filter(Boolean):[];
  const schema=profile?{'@context':'https://schema.org','@type':'ProfilePage',url,name:`${profile.full_name} | WOMATE Talent Discovery`,mainEntity:{'@type':'Person',name:profile.full_name,homeLocation:profile.country?{'@type':'Place',name:profile.country}:undefined,description:profile.headline||undefined,url,image:publicTalentPhotoUrl(profile.avatar_path)||undefined,knowsAbout:interests(profile.climate_interests),award:awards.length?awards:undefined,subjectOf:publications.map(p=>({'@type':'Article',headline:p.title,url:`https://www.womate.org/publications/${p.id}`}))}}:{'@context':'https://schema.org','@type':'CollectionPage',name:'WOMATE Talent Discovery',url,description};
  return <Helmet><title>{title}</title><meta name="description" content={description}/><meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1"/><link rel="canonical" href={url}/><meta property="og:title" content={title}/><meta property="og:description" content={description}/><meta property="og:url" content={url}/><meta property="og:type" content={profile?'profile':'website'}/>{profile?.avatar_path&&<meta property="og:image" content={publicTalentPhotoUrl(profile.avatar_path)}/>}<meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content={title}/><meta name="twitter:description" content={description}/><script type="application/ld+json">{JSON.stringify(schema)}</script></Helmet>
 }
@@ -68,8 +89,6 @@ function Directory(){
  return <main className="pt-page"><SEO/><section className="pt-hero pt-heroClean"><div className="pt-heroCopy"><h1>WOMATE TALENT DISCOVERY</h1><p>Meet WOMATE-approved climate talent whose profiles are backed by verified programme achievement and professional readiness.</p></div><div className="pt-heroVisual" aria-hidden="true"><img src="/assets/img/womate-talent-discovery-hero.webp" alt=""/></div></section><section className="pt-discoveryControls" aria-label="Talent Discovery filters"><div className="pt-searchWrap"><Search size={18}/><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search name, country, climate focus, Mission or headline"/></div><div className="pt-filterRow"><label><span>Country</span><select value={country} onChange={e=>setCountry(e.target.value)}><option value="">All countries</option>{(filterOptions.countries||[]).map(x=><option key={x} value={x}>{x}</option>)}</select></label><label><span>Verified achievement</span><select value={achievement} onChange={e=>setAchievement(e.target.value)}><option value="">All verified talent</option><option value="mission">Mission completed</option><option value="modules">All modules completed</option><option value="spotlight">Canopy Spotlight</option><option value="final">Final Mission team</option></select></label><label><span>Mission team</span><select value={missionGroupId} onChange={e=>setMissionGroupId(e.target.value)}><option value="">All Mission teams</option>{(filterOptions.missions||[]).map(x=><option key={x.id} value={x.id}>{x.name}</option>)}</select></label><label className="pt-collabToggle"><span>Availability</span><button type="button" className={collabOnly?'active':''} onClick={()=>setCollabOnly(v=>!v)}><Handshake size={15}/>{collabOnly?'Open to collaboration':'Any availability'}</button></label>{(query||country||achievement||missionGroupId||collabOnly)&&<button type="button" className="pt-clearFilters" onClick={()=>{setQuery('');setCountry('');setAchievement('');setMissionGroupId('');setCollabOnly(false)}}>Clear filters</button>}</div></section>{error&&<p className="pt-error">{error}</p>}<section className="pt-grid">{items.length?items.map(x=><TalentCard key={x.slug} x={x}/>):!loading&&<div className="pt-empty">No public Talent Discovery profiles match your search.</div>}</section>{hasMore&&<div className="pt-loadMore"><a className="pt-button secondary" href={nextHref} onClick={e=>{e.preventDefault();fetchPage()}}>{loading?'Loading...':'Load more profiles'}</a></div>}</main>
 }
 function Profile({slug}){
- const[award,setAward]=useState(null);
- useEffect(()=>{let alive=true;getPublicC2Achievement(slug).then(v=>{if(alive)setAward(v?.badge?v:null)}).catch(()=>{});return()=>{alive=false}},[slug]);
  const[profile,setProfile]=useState(null),[publications,setPublications]=useState([]),[loading,setLoading]=useState(true),[error,setError]=useState(''),[form,setForm]=useState({name:'',email:'',organization:'',message:'',website:'',consent:false}),[sending,setSending]=useState(false),[access,setAccess]=useState(null),[thread,setThread]=useState(null),[chat,setChat]=useState(''),[copied,setCopied]=useState(false);
  const loadThread=async a=>{if(!a?.id||!a?.token)return;try{setThread(await getPublicCollaborationThread(a.id,a.token));setError('')}catch(e){setError(e.message)}};
  useEffect(()=>{getPublicTalentProfile(slug).then(async x=>{const next=x&&Object.keys(x).length?x:null;setProfile(next);if(next)setPublications(await getAuthorPublications(next.full_name));setLoading(false)}).catch(e=>{setError(e.message);setLoading(false)})},[slug]);
@@ -79,7 +98,31 @@ function Profile({slug}){
  const copy=async()=>{if(!access)return;try{await navigator.clipboard.writeText(privateChatUrl(access.id,access.token));setCopied(true);setTimeout(()=>setCopied(false),1800)}catch{setError('Copy failed. Please copy the private link manually.')}};
  if(loading)return <main className="pt-page"><p>Loading Talent Discovery profile...</p></main>;
  if(!profile)return <main className="pt-page"><Helmet><title>Profile unavailable | WOMATE</title><meta name="robots" content="noindex,nofollow"/></Helmet><a className="pt-back" href="/talent-discovery"><ArrowLeft size={16}/> Talent Discovery</a><h1>Profile unavailable</h1><p>This profile is not currently public in WOMATE Talent Discovery.</p>{error&&<p className="pt-error">{error}</p>}</main>;
- return <main className="pt-page"><SEO profile={profile} publications={publications}/><a className="pt-back" href="/talent-discovery"><ArrowLeft size={16}/> All Talent Discovery profiles</a><section className="pt-profile"><article className="pt-profileCard"><div className="pt-profilePhoto"><img src={publicTalentPhotoUrl(profile.avatar_path)} alt={`${profile.full_name} profile`}/></div><h1>{profile.full_name}</h1><p className="pt-country">{profile.country}</p><p className="pt-headline">{profile.headline}</p><Badges x={profile}/><AchievementMark badge={award}/><div className="pt-tags">{interests(profile.climate_interests).map(i=><span key={i}>{i}</span>)}</div></article><div>{thread?<Thread thread={thread} chat={chat} setChat={setChat} send={send} busy={sending} privateUrl={privateChatUrl(access.id,access.token)} copy={copy} copied={copied}/>:profile.collaboration_open?<section className="pt-request"><span className="pt-kicker">REQUEST COLLABORATION</span><h2>Work with {profile.full_name?.split(/\s+/)[0]||'this WOMATE talent'}</h2><p>Your contact details are shared privately with this participant only so she can review and respond to your request. They are not published on WOMATE.</p><form onSubmit={submit}><div className="pt-formGrid"><label>Full name<input required maxLength="120" autoComplete="name" value={form.name} onChange={e=>setForm(v=>({...v,name:e.target.value}))}/></label><label>Email<input required type="email" maxLength="160" autoComplete="email" value={form.email} onChange={e=>setForm(v=>({...v,email:e.target.value}))}/></label></div><label>Organisation or role<input maxLength="160" autoComplete="organization" value={form.organization} onChange={e=>setForm(v=>({...v,organization:e.target.value}))}/></label><label className="pt-honeypot" aria-hidden="true">Website<input tabIndex="-1" autoComplete="off" value={form.website} onChange={e=>setForm(v=>({...v,website:e.target.value}))}/></label><label>What would you like to collaborate on?<textarea required minLength="20" maxLength="1500" value={form.message} onChange={e=>setForm(v=>({...v,message:e.target.value}))}/></label><label className="pt-consent"><input required type="checkbox" checked={form.consent} onChange={e=>setForm(v=>({...v,consent:e.target.checked}))}/><span>I agree to share these details privately with this WOMATE participant for this collaboration request.</span></label><button className="pt-button" disabled={sending||!form.consent}><Handshake size={16}/>{sending?'Sending...':'Request collaboration'}</button></form></section>:<section className="pt-request"><h2>Collaboration requests are currently closed</h2><p>You can still view this verified public professional profile.</p></section>}{error&&<p className="pt-error">{error}</p>}</div></section>{publications.length>0&&<section className="pt-publications" aria-labelledby="pt-publications-heading"><span className="pt-kicker">PUBLISHED ON WOMATE</span><h2 id="pt-publications-heading">Research and perspectives by {profile.full_name}</h2><div className="pt-publicationList">{publications.map(p=><article key={p.id}><small>{p.kind||'Publication'}</small><h3><a href={`/publications/${p.id}`}>{p.title}</a></h3><p>{p.summary}</p></article>)}</div></section>}</main>
+ const badge=badgeKey(profile.badge),badgeName=badgeTitle(badge);
+ return <main className="pt-page pt-profilePage"><SEO profile={profile} publications={publications}/><a className="pt-back" href="/talent-discovery"><ArrowLeft size={16}/> All Talent Discovery profiles</a>
+  <section className="pt-profileHero">
+   <VerifiedBanner badge={badge} name={profile.full_name} profile/>
+   <div className="pt-profileIdentityPanel">
+    <div className="pt-profilePhoto"><img src={publicTalentPhotoUrl(profile.avatar_path)} alt={`${profile.full_name} profile`}/></div>
+    <div className="pt-profileIdentityCopy">
+     <div className="pt-profileNameLine"><h1>{profile.full_name}</h1>{badge&&<BadgeCheck size={24} aria-label="WOMATE verified"/>}</div>
+     <p className="pt-headline">{profile.headline||'Climate leadership professional'}</p>
+     <div className="pt-profileMeta"><span>{profile.country||'Africa'}</span>{badge&&<span className={'pt-profileTier badge-'+badge}>WOMATE VERIFIED · {badgeName.toUpperCase()}{Number.isFinite(Number(profile.badge_earned))?` · ${profile.badge_earned}/500`:''}</span>}{profile.collaboration_open&&<span className="available">Open to collaboration</span>}</div>
+    </div>
+   </div>
+  </section>
+  <section className="pt-profile">
+   <article className="pt-profileCard pt-profileCard--network">
+    <span className="pt-kicker">VERIFIED PROFILE</span>
+    <h2>Climate focus</h2>
+    <div className="pt-tags">{interests(profile.climate_interests).map(i=><span key={i}>{i}</span>)}</div>
+    <Badges x={profile}/>
+    {profile.mission_completed&&profile.mission_name&&<div className="pt-missionDetail"><small>VERIFIED MISSION</small><p>{profile.mission_name}</p></div>}
+   </article>
+   <div>{thread?<Thread thread={thread} chat={chat} setChat={setChat} send={send} busy={sending} privateUrl={privateChatUrl(access.id,access.token)} copy={copy} copied={copied}/>:profile.collaboration_open?<section className="pt-request"><span className="pt-kicker">REQUEST COLLABORATION</span><h2>Work with {profile.full_name?.split(/\s+/)[0]||'this WOMATE talent'}</h2><p>Your contact details are shared privately with this participant only so she can review and respond to your request. They are not published on WOMATE.</p><form onSubmit={submit}><div className="pt-formGrid"><label>Full name<input required maxLength="120" autoComplete="name" value={form.name} onChange={e=>setForm(v=>({...v,name:e.target.value}))}/></label><label>Email<input required type="email" maxLength="160" autoComplete="email" value={form.email} onChange={e=>setForm(v=>({...v,email:e.target.value}))}/></label></div><label>Organisation or role<input maxLength="160" autoComplete="organization" value={form.organization} onChange={e=>setForm(v=>({...v,organization:e.target.value}))}/></label><label className="pt-honeypot" aria-hidden="true">Website<input tabIndex="-1" autoComplete="off" value={form.website} onChange={e=>setForm(v=>({...v,website:e.target.value}))}/></label><label>What would you like to collaborate on?<textarea required minLength="20" maxLength="1500" value={form.message} onChange={e=>setForm(v=>({...v,message:e.target.value}))}/></label><label className="pt-consent"><input required type="checkbox" checked={form.consent} onChange={e=>setForm(v=>({...v,consent:e.target.checked}))}/><span>I agree to share these details privately with this WOMATE participant for this collaboration request.</span></label><button className="pt-button" disabled={sending||!form.consent}><Handshake size={16}/>{sending?'Sending...':'Request collaboration'}</button></form></section>:<section className="pt-request"><h2>Collaboration requests are currently closed</h2><p>You can still view this verified public professional profile.</p></section>}{error&&<p className="pt-error">{error}</p>}</div>
+  </section>
+  {publications.length>0&&<section className="pt-publications" aria-labelledby="pt-publications-heading"><span className="pt-kicker">PUBLISHED ON WOMATE</span><h2 id="pt-publications-heading">Research and perspectives by {profile.full_name}</h2><div className="pt-publicationList">{publications.map(p=><article key={p.id}><small>{p.kind||'Publication'}</small><h3><a href={`/publications/${p.id}`}>{p.title}</a></h3><p>{p.summary}</p></article>)}</div></section>}
+ </main>
 }
 function ChatRoute({id}){
  const[token,setToken]=useState(''),[thread,setThread]=useState(null),[chat,setChat]=useState(''),[error,setError]=useState(''),[busy,setBusy]=useState(false);
