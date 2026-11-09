@@ -75,6 +75,7 @@ function publicPhoto(pathname){
 }
 function talentAwards(p){
  const a=[];
+ if(p.badge)a.push(String(p.badge).charAt(0).toUpperCase()+String(p.badge).slice(1)+' WOMATE Verified badge');
  if(p.mission_completed)a.push('Verified climate mission completed');
  if(p.all_modules_completed)a.push('All She Leads learning modules completed');
  if(p.final_team_completed)a.push('Final Mission team');
