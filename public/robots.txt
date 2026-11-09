@@ -1,4 +1,12 @@
 User-agent: *
 Allow: /
+Disallow: /canopy/
+Disallow: /selected
+Disallow: /talent/chat/
+Disallow: /*?after=
+Disallow: /*?query=
+Disallow: /*?country=
+Disallow: /*?achievement=
+Disallow: /*?mission=
 
 Sitemap: https://www.womate.org/sitemap.xml
