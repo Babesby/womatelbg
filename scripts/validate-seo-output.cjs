@@ -2,7 +2,8 @@ const fs=require('node:fs');
 const path=require('node:path');
 const dist=path.resolve(__dirname,'../dist');
 const manifestPath=path.join(dist,'seo-manifest.json');
-const sitemapPath=path.join(dist,'sitemap.xml');
+const sitemapIndexPath=path.join(dist,'sitemap.xml');
+const childSitemaps=['sitemap-static.xml','sitemap-talent.xml','sitemap-publications.xml'];
 
 function fail(msg){throw new Error('[WOMATE SEO validation] '+msg)}
 function htmlFiles(dir,out=[]){
@@ -13,17 +14,39 @@ function htmlFiles(dir,out=[]){
  }
  return out;
 }
+function xmlLocs(xml){return [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map(x=>x[1])}
+
 if(!fs.existsSync(manifestPath))fail('seo-manifest.json is missing');
-if(!fs.existsSync(sitemapPath))fail('sitemap.xml is missing');
+if(!fs.existsSync(sitemapIndexPath))fail('sitemap.xml is missing');
+for(const file of childSitemaps)if(!fs.existsSync(path.join(dist,file)))fail(file+' is missing');
 
 const manifest=JSON.parse(fs.readFileSync(manifestPath,'utf8'));
 if(!Number.isInteger(manifest.talent_profiles)||manifest.talent_profiles<1)fail('no Talent Discovery profiles were generated');
 if(!Number.isInteger(manifest.publications)||manifest.publications<1)fail('no approved publication pages were generated');
 
-const sitemap=fs.readFileSync(sitemapPath,'utf8');
-const urls=[...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(x=>x[1]);
-if(new Set(urls).size!==urls.length)fail('sitemap contains duplicate URLs');
-if(urls.length!==manifest.canonical_urls)fail('sitemap URL count does not match SEO manifest');
+const sitemapIndex=fs.readFileSync(sitemapIndexPath,'utf8');
+if(!/<sitemapindex[ >]/i.test(sitemapIndex))fail('sitemap.xml must be a sitemap index');
+const indexLocs=xmlLocs(sitemapIndex);
+const expectedIndex=childSitemaps.map(x=>'https://www.womate.org/'+x);
+if(indexLocs.length!==expectedIndex.length||expectedIndex.some(x=>!indexLocs.includes(x)))fail('sitemap index does not reference the expected child sitemaps');
+
+const childUrls={};
+const allUrls=[];
+for(const file of childSitemaps){
+ const xml=fs.readFileSync(path.join(dist,file),'utf8');
+ if(!/<urlset[ >]/i.test(xml))fail(file+' must be a URL set');
+ const urls=xmlLocs(xml);
+ if(new Set(urls).size!==urls.length)fail(file+' contains duplicate URLs');
+ childUrls[file]=urls;
+ allUrls.push(...urls);
+}
+if(new Set(allUrls).size!==allUrls.length)fail('canonical URL appears in more than one child sitemap');
+if(allUrls.length!==manifest.canonical_urls)fail('combined child sitemap URL count does not match SEO manifest');
+
+if(childUrls['sitemap-talent.xml'].length!==manifest.talent_profiles+1)fail('Talent sitemap must include the Talent Discovery hub plus every public profile');
+if(!childUrls['sitemap-talent.xml'].includes('https://www.womate.org/talent-discovery'))fail('Talent Discovery hub missing from Talent sitemap');
+if(childUrls['sitemap-publications.xml'].length!==manifest.publications+1)fail('Publications sitemap must include the Publications hub plus every approved publication');
+if(!childUrls['sitemap-publications.xml'].includes('https://www.womate.org/publications'))fail('Publications hub missing from Publications sitemap');
 
 const talentFiles=htmlFiles(path.join(dist,'talent'));
 if(talentFiles.length!==manifest.talent_profiles)fail('generated Talent profile file count does not match source count');
@@ -44,4 +67,4 @@ for(const file of [...talentFiles,...publicationFiles]){
  if(!/<script[^>]+application\/ld\+json/i.test(html))fail(path.relative(dist,file)+' is missing structured data');
 }
 
-console.log('[WOMATE SEO validation] PASS — '+manifest.talent_profiles+' talent profiles, '+manifest.publications+' publications, '+manifest.canonical_urls+' sitemap URLs.');
+console.log('[WOMATE SEO validation] PASS — '+manifest.talent_profiles+' talent profiles, '+manifest.publications+' publications, '+manifest.canonical_urls+' canonical URLs across dedicated sitemaps.');
