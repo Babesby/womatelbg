@@ -1,6 +1,13 @@
 {
   "routes": [
     {
+      "src": "^/talent/?$",
+      "status": 308,
+      "headers": {
+        "Location": "/talent-discovery"
+      }
+    },
+    {
       "handle": "filesystem"
     },
     {
