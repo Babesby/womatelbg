@@ -144,19 +144,26 @@ merch:'/assets/img/merch/13.png'
 const DEFAULT_STATS=[];
 // Last database-verified snapshot is rendered immediately. Live records supersede it when available.
 const VERIFIED_IMPACT_SNAPSHOT={graduates:382,countries:37,learners:798,publications:2};
+const IMPACT_KEYS=['graduates','countries','learners','publications'];
+async function fetchPublicImpactMetrics(){
+ const base=(import.meta.env.VITE_CANOPY_SUPABASE_URL||'https://bwnwhsvssgponrzvwlpt.supabase.co').replace(/[/]+$/,'');
+ const key=import.meta.env.VITE_CANOPY_SUPABASE_ANON_KEY||'';
+ if(!key)throw Error('Public metrics key is unavailable');
+ const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),12000);
+ try{
+  const r=await fetch(base+'/rest/v1/rpc/womate_public_impact_stats',{method:'POST',headers:{apikey:key,Authorization:'Bearer '+key,'Content-Type':'application/json'},body:'{}',signal:controller.signal});
+  if(!r.ok)throw Error('Metrics service returned '+r.status);
+  const next=await r.json();
+  if(!next||!IMPACT_KEYS.every(k=>Number.isSafeInteger(next[k])&&next[k]>=0))throw Error('Metrics response is invalid');
+  return next;
+ }finally{clearTimeout(timeout)}
+}
 function LiveImpactStats(){
  const [data,setData]=useState(VERIFIED_IMPACT_SNAPSHOT);
  useEffect(()=>{let live=true;
- const base=(import.meta.env.VITE_CANOPY_SUPABASE_URL||'https://bwnwhsvssgponrzvwlpt.supabase.co').replace(/[/]+$/,'');
- const load=async()=>{try{
-  const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),12000);
-  let r;try{r=await fetch(base+'/functions/v1/womate-homepage-stats',{method:'GET',headers:{Accept:'application/json'},signal:controller.signal})}finally{clearTimeout(timeout)}
-  if(!r.ok)throw Error('Metrics service returned '+r.status);
-  const next=await r.json();
-  if(live&&['graduates','countries','learners','publications'].every(k=>Number.isSafeInteger(next[k])&&next[k]>=0))setData(next);
- }catch(e){console.warn('Using last verified WOMATE impact figures; refresh pending.',e)}};
- load();const timer=setInterval(load,300000);
- return()=>{live=false;clearInterval(timer)};
+  const load=()=>fetchPublicImpactMetrics().then(next=>{if(live)setData(next)}).catch(e=>console.warn('Using last verified WOMATE impact figures; refresh pending.',e));
+  load();const timer=setInterval(load,300000);
+  return()=>{live=false;clearInterval(timer)};
  },[]);
  const metrics=[{value:data.graduates,label:'Graduates'},{value:data.countries,label:'Countries'},{value:data.learners,label:'Learners'},{value:data.publications,label:'Publications'}];
  return <section className="statbar" aria-label="WOMATE verified impact">{metrics.map(m=><AnimatedStat key={m.label} {...m}/>)}</section>;
@@ -164,13 +171,7 @@ function LiveImpactStats(){
 function AnimatedStat({value,label,suffix='',compact=false}){const ref=useRef(null);const[count,setCount]=useState(0);const[started,setStarted]=useState(false);useEffect(()=>{const el=ref.current;if(!el)return;const observer=new IntersectionObserver(([entry])=>{if(entry.isIntersecting){setStarted(true);observer.disconnect()}},{threshold:.45});observer.observe(el);return()=>observer.disconnect()},[]);useEffect(()=>{if(!started)return;let frame;const duration=1350;const start=performance.now();const tick=now=>{const progress=Math.min(1,(now-start)/duration);const eased=1-Math.pow(1-progress,3);setCount(Math.round(value*eased));if(progress<1)frame=requestAnimationFrame(tick)};frame=requestAnimationFrame(tick);return()=>cancelAnimationFrame(frame)},[started,value]);let display=compact&&count>=1000?'1k':count.toLocaleString();return <div ref={ref} className="animatedStat"><strong>{display}{suffix}</strong><span>{label}</span></div>}
 function ImpactReportStats(){
  const[data,setData]=useState(VERIFIED_IMPACT_SNAPSHOT);
- useEffect(()=>{let live=true;const base=(import.meta.env.VITE_CANOPY_SUPABASE_URL||'https://bwnwhsvssgponrzvwlpt.supabase.co').replace(/[/]+$/,'');
-  const load=async()=>{try{const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),12000);let r;try{r=await fetch(base+'/functions/v1/womate-homepage-stats',{method:'GET',headers:{Accept:'application/json'},signal:controller.signal})}finally{clearTimeout(timeout)}
-   if(!r.ok)throw Error('Metrics service returned '+r.status);const next=await r.json();
-   if(live&&['graduates','countries','learners','publications'].every(k=>Number.isSafeInteger(next[k])&&next[k]>=0))setData(next);
-  }catch(e){console.warn('Annual impact report is using the last verified WOMATE impact snapshot.',e)}};
-  load();return()=>{live=false};
- },[]);
+ useEffect(()=>{let live=true;fetchPublicImpactMetrics().then(next=>{if(live)setData(next)}).catch(e=>console.warn('Annual impact report is using the last verified WOMATE impact snapshot.',e));return()=>{live=false}},[]);
  const metrics=[
   {value:data.graduates,label:'Graduates'},
   {value:data.countries,label:'Countries'},
