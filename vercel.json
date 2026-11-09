@@ -1,6 +1,20 @@
 {
   "routes": [
     {
+      "src": "^/research\\.html/?$",
+      "status": 308,
+      "headers": {
+        "Location": "/research"
+      }
+    },
+    {
+      "src": "^/(?:wok|WoK)\\.html/?$",
+      "status": 308,
+      "headers": {
+        "Location": "/wok-action"
+      }
+    },
+    {
       "src": "^/www\\.facebook\\.com/?$",
       "status": 308,
       "headers": {
