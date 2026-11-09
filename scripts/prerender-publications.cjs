@@ -1,96 +1,304 @@
-/* Build public, approved WOMATE publications as crawlable HTML pages.
- * Only the approved public endpoint is used. No private submission data is exported.
- * When the deployment lacks Supabase configuration, the build stays functional
- * but warns that pre-rendering did not run.
+/* WOMATE public SEO pre-render.
+ * Generates canonical, crawlable HTML for public site pages, every opt-in Talent
+ * Discovery profile and every approved publication. Production builds fail if
+ * dynamic SEO generation cannot complete, preventing generic SPA fallback HTML
+ * from being deployed for hundreds of distinct public URLs.
  */
-const fs=require('node:fs'),path=require('node:path');
-const root=path.resolve(__dirname,'..'),dist=path.join(root,'dist');
-const base=(process.env.VITE_CANOPY_SUPABASE_URL||process.env.CANOPY_SUPABASE_URL||'').replace(/[/]+$/,'');
-const key=process.env.VITE_CANOPY_SUPABASE_ANON_KEY||'';
-const esc=v=>String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
-const valid=id=>/^[a-f0-9-]{36}$/i.test(String(id));
-function insertMeta(html,tag){return html.replace('</head>',tag+'\n</head>')}
-function bodyMarkup(p){const lines=String(p.article_text||'').trim().split(/\n\s*\n/).filter(Boolean);
-return '<main style="font-family:system-ui,sans-serif;max-width:820px;margin:5rem auto;padding:0 24px;color:#073b39"><a href="/publications">WOMATE Publications</a><p style="margin-top:48px;font-size:14px">'+esc(p.kind||'Article')+' · '+esc((p.published_at||'').slice(0,10))+'</p><h1 style="font-size:clamp(32px,5vw,58px);line-height:1.1">'+esc(p.title)+'</h1><p>By '+esc(p.name)+'</p><h2>Abstract</h2><p style="line-height:1.8">'+esc(p.summary)+'</p>'+(lines.length?'<h2>Full article</h2>'+lines.map(t=>'<p style="line-height:1.9;white-space:pre-wrap">'+esc(t)+'</p>').join(''):'<p>Explore the original publication in the interactive reader.</p>')+'</main>'}
+const fs=require('node:fs');
+const path=require('node:path');
 
-async function talentPages(template){
- if(!key){console.warn('[WOMATE SEO] Public talent pre-render skipped: missing anon key.');return []}
- const head={apikey:key,Authorization:'Bearer '+key,'Content-Type':'application/json'};
- let after=null;const all=[];const seen=new Set();
- for(let i=0;i<100;i++){
-  const response=await fetch(base+'/rest/v1/rpc/canopy_public_talent_directory',{method:'POST',headers:head,body:JSON.stringify({p_after_slug:after,p_limit:48}),signal:AbortSignal.timeout(20000)});
+const root=path.resolve(__dirname,'..');
+const dist=path.join(root,'dist');
+const base=(process.env.VITE_CANOPY_SUPABASE_URL||process.env.CANOPY_SUPABASE_URL||'https://bwnwhsvssgponrzvwlpt.supabase.co').replace(/[/]+$/,'');
+const key=process.env.VITE_CANOPY_SUPABASE_ANON_KEY||'';
+const production=process.env.VERCEL_ENV==='production'||process.env.NODE_ENV==='production';
+
+const ORIGIN='https://www.womate.org';
+const OG_IMAGE=ORIGIN+'/og-womate.png';
+const esc=v=>String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+const validPublicationId=id=>/^[a-f0-9-]{36}$/i.test(String(id));
+const validTalentSlug=slug=>/^[a-z0-9-]{2,180}$/i.test(String(slug));
+const norm=v=>String(v||'').trim().toLowerCase().replace(/\s+/g,' ');
+const paragraphs=v=>String(v||'').replace(/\r/g,'').trim().split(/\n\s*\n/).map(x=>x.trim()).filter(Boolean);
+const unique=a=>[...new Set(a.filter(Boolean))];
+
+function removeHeadSignals(html){
+ return html
+  .replace(/<link[^>]+rel=["']canonical["'][^>]*>\s*/gi,'')
+  .replace(/<meta[^>]+name=["']robots["'][^>]*>\s*/gi,'')
+  .replace(/<meta[^>]+property=["']og:(?:type|site_name|title|description|url|image|image:alt)["'][^>]*>\s*/gi,'')
+  .replace(/<meta[^>]+name=["']twitter:(?:card|title|description|image)["'][^>]*>\s*/gi,'')
+  .replace(/<script[^>]+type=["']application\/ld\+json["'][^>]*>[\s\S]*?<\/script>\s*/gi,'');
+}
+function replaceTitleDescription(html,title,description){
+ return html
+  .replace(/<title>[\s\S]*?<\/title>/i,'<title>'+esc(title)+'</title>')
+  .replace(/<meta[^>]*name=["']description["'][^>]*>/i,'<meta name="description" content="'+esc(description)+'">');
+}
+function insertHead(html,markup){return html.replace('</head>',markup+'\n</head>')}
+function setRoot(html,body){return html.replace('<div id="root"></div>','<div id="root">'+body+'</div>')}
+function schemaJson(value){return JSON.stringify(value).replace(/</g,'\\u003c')}
+function seoHead({canonical,title,description,type='website',image=OG_IMAGE,schema,robots='index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1'}){
+ return [
+  '<link rel="canonical" href="'+esc(canonical)+'">',
+  '<meta name="robots" content="'+robots+'">',
+  '<meta property="og:type" content="'+esc(type)+'">',
+  '<meta property="og:site_name" content="WOMATE">',
+  '<meta property="og:title" content="'+esc(title)+'">',
+  '<meta property="og:description" content="'+esc(description)+'">',
+  '<meta property="og:url" content="'+esc(canonical)+'">',
+  '<meta property="og:image" content="'+esc(image||OG_IMAGE)+'">',
+  '<meta property="og:image:alt" content="'+esc(title)+'">',
+  '<meta name="twitter:card" content="summary_large_image">',
+  '<meta name="twitter:title" content="'+esc(title)+'">',
+  '<meta name="twitter:description" content="'+esc(description)+'">',
+  '<meta name="twitter:image" content="'+esc(image||OG_IMAGE)+'">',
+  schema?'<script type="application/ld+json">'+schemaJson(schema)+'</script>':''
+ ].filter(Boolean).join('');
+}
+function pageHtml(template,{canonical,title,description,body,type='website',image=OG_IMAGE,schema,robots}){
+ let html=removeHeadSignals(template);
+ html=replaceTitleDescription(html,title,description);
+ html=setRoot(html,body);
+ html=insertHead(html,seoHead({canonical,title,description,type,image,schema,robots}));
+ return html;
+}
+function writeRoute(route,html){
+ if(route==='/'){fs.writeFileSync(path.join(dist,'index.html'),html);return}
+ const dir=path.join(dist,route.replace(/^\//,''));
+ fs.mkdirSync(dir,{recursive:true});
+ fs.writeFileSync(path.join(dir,'index.html'),html);
+}
+function publicPhoto(pathname){
+ const clean=String(pathname||'').replace(/^\/+/, '');
+ return clean?base+'/storage/v1/object/public/canopy-profile-images/'+clean:OG_IMAGE;
+}
+function talentAwards(p){
+ const a=[];
+ if(p.mission_completed)a.push('Verified climate mission completed');
+ if(p.all_modules_completed)a.push('All She Leads learning modules completed');
+ if(p.final_team_completed)a.push('Final Mission team');
+ if(Number(p.spotlight_count)>0)a.push('WOMATE Canopy Spotlight');
+ return a;
+}
+function talentDescription(p){
+ const parts=[
+  p.full_name,
+  p.country,
+  p.headline,
+  Array.isArray(p.climate_interests)&&p.climate_interests.length?'Climate focus: '+p.climate_interests.slice(0,4).join(', '):''
+ ].filter(Boolean);
+ return parts.join(' · ').slice(0,158);
+}
+function talentBody(p,authored=[]){
+ const topics=Array.isArray(p.climate_interests)?p.climate_interests.filter(Boolean):[];
+ const awards=talentAwards(p);
+ const mission=p.mission_name?'<section><h2>Verified climate mission</h2><p>'+esc(p.mission_name)+'</p></section>':'';
+ const topicsHtml=topics.length?'<section><h2>Climate focus</h2><ul>'+topics.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul></section>':'';
+ const evidence=awards.length?'<section><h2>Verified WOMATE achievements</h2><ul>'+awards.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul></section>':'';
+ const pubs=authored.length?'<section><h2>Published on WOMATE</h2><ul>'+authored.map(x=>'<li><a href="/publications/'+esc(x.id)+'">'+esc(x.title)+'</a></li>').join('')+'</ul></section>':'';
+ return '<main class="womate-seo-profile" style="font-family:system-ui,sans-serif;max-width:900px;margin:4rem auto;padding:0 24px;color:#073b39">'+
+  '<nav aria-label="Breadcrumb"><a href="/">WOMATE</a> › <a href="/talent-discovery">Talent Discovery</a> › '+esc(p.full_name)+'</nav>'+
+  '<article><header style="margin-top:42px"><img src="'+esc(publicPhoto(p.avatar_path))+'" alt="'+esc(p.full_name)+' profile photo" width="180" height="180" style="border-radius:24px;object-fit:cover"><p>WOMATE Talent Discovery · '+esc(p.country||'Africa')+'</p><h1>'+esc(p.full_name)+'</h1><p style="font-size:1.25rem;line-height:1.6">'+esc(p.headline||'Climate leadership professional')+'</p></header>'+
+  topicsHtml+mission+evidence+pubs+
+  '<section><h2>Professional visibility</h2><p>This is a public WOMATE Talent Discovery profile for professional discovery, climate collaboration and verified programme achievement.</p></section>'+
+  '</article></main>';
+}
+function articleType(kind){
+ const k=String(kind||'').toLowerCase();
+ if(/research|paper|study/.test(k))return 'ScholarlyArticle';
+ if(/report/.test(k))return 'Report';
+ return 'Article';
+}
+function articleBody(p,authorProfile){
+ const full=paragraphs(p.article_text);
+ const author=authorProfile?'<a href="/talent/'+esc(authorProfile.slug)+'">'+esc(p.name)+'</a>':esc(p.name);
+ return '<main class="womate-seo-article" style="font-family:system-ui,sans-serif;max-width:860px;margin:4rem auto;padding:0 24px;color:#073b39">'+
+  '<nav aria-label="Breadcrumb"><a href="/">WOMATE</a> › <a href="/publications">Publications</a> › '+esc(p.title)+'</nav>'+
+  '<article><header style="margin-top:42px"><p>'+esc(p.kind||'Article')+' · '+esc((p.published_at||'').slice(0,10))+'</p><h1>'+esc(p.title)+'</h1><p>By '+author+(p.affiliation?' · '+esc(p.affiliation):'')+'</p></header>'+
+  '<section><h2>Overview</h2>'+paragraphs(p.summary).map(x=>'<p style="line-height:1.8">'+esc(x)+'</p>').join('')+'</section>'+
+  (full.length?'<section><h2>Full article</h2>'+full.map(x=>'<p style="line-height:1.9;white-space:pre-wrap">'+esc(x)+'</p>').join('')+'</section>':'')+
+  '</article></main>';
+}
+
+const STATIC_PAGES=[
+ ['/',"WOMATE | Women's Climate Leadership & Mentorship in Africa","WOMATE advances women's climate leadership across Africa through mentorship, practical climate action, research, advocacy and professional opportunities.",'Women leading climate action across Africa'],
+ ['/she-leads','Climate Mentorship for Women in Africa | WOMATE She Leads','She Leads equips emerging women leaders with climate knowledge, leadership skills and practical pathways to credible climate action.','She Leads Climate Mentorship'],
+ ['/she-leads/asia','She Leads Asia | Climate Leadership for Women | WOMATE','She Leads Asia connects women across Asia with practical climate leadership, regional evidence and action-focused learning.','She Leads Asia'],
+ ['/wok-action',"WoK Action | Women's Climate Knowledge | WOMATE","WoK Action documents, protects and activates women's local climate knowledge for community resilience and adaptation.",'Women’s local knowledge for climate adaptation'],
+ ['/circle','The WOMATE Circle | Climate Community for Women','A professional climate community connecting women to learning, opportunities, peer networks and long-term climate leadership.','The WOMATE Circle'],
+ ['/research','Climate Research & Gender Intelligence | WOMATE','Explore WOMATE climate research, gender-responsive evidence and community-rooted insight for better climate decisions.','Climate research and evidence'],
+ ['/resilient-minds','Resilient Minds | Climate, Wellbeing & Women | WOMATE','Resilient Minds connects climate resilience with mental health, care, restoration and dignity.','Climate resilience includes wellbeing'],
+ ['/honours','Climate Honours Africa | Women Climate Leaders & Advocates | WOMATE','Meet women recognised through WOMATE Climate Honours for contributions to climate action, advocacy, sustainability and leadership across Africa.','Climate Honours'],
+ ['/leadership','Leadership & Organisation | WOMATE','Meet the WOMATE leadership team and the organisation advancing women-led climate action, technology, research and community practice.','WOMATE leadership and organisation'],
+ ['/funding','Climate Funding Readiness | WOMATE','WOMATE supports African women founders to strengthen climate funding applications, documentation and competitive positioning.','Climate funding readiness'],
+ ['/womateer','Become a WOMATEER | Volunteer with WOMATE','Contribute professional skills to women-led climate action, research, technology and community impact.','Volunteer with WOMATE'],
+ ['/merchandise','The Vault | WOMATE','Explore WOMATE merchandise created for the community advancing women-led climate action.','The WOMATE Vault'],
+ ['/donate','Donate to WOMATE | Support Women in Climate','Support WOMATE programmes advancing women in climate leadership, research, technology and community action.','Support women-led climate leadership'],
+ ['/courses','WOMATE Courses | Specialist Climate Learning','Explore WOMATE short, applied climate courses designed to build practical skills for climate action.','WOMATE climate courses'],
+ ['/courses/climate-innovation-digital-growth','Climate Innovation & Digital Growth | WOMATE Courses','Build the foundations of a locally grounded climate initiative and learn how to communicate and grow it digitally.','Climate Innovation & Digital Growth'],
+ ['/courses/gender-responsive-adaptation-finance','Gender-Responsive Climate Adaptation & Finance | WOMATE Courses','Understand local climate risks, gender-responsive adaptation and practical pathways to climate funding and policy influence.','Gender-Responsive Climate Adaptation & Finance'],
+ ['/privacy','Privacy Policy | WOMATE','Read how WOMATE collects, uses and protects personal information.','Privacy Policy'],
+ ['/terms','Terms of Service | WOMATE','Read the terms governing WOMATE websites, programmes and digital services.','Terms of Service']
+];
+
+async function fetchPublications(){
+ const response=await fetch(base+'/functions/v1/womate-publications',{
+  method:'POST',
+  headers:{'Content-Type':'application/json',...(key?{apikey:key}: {})},
+  body:JSON.stringify({action:'list'}),
+  signal:AbortSignal.timeout(20000)
+ });
+ if(!response.ok)throw Error('Publications HTTP '+response.status);
+ const data=await response.json();
+ return (data.items||[]).filter(x=>validPublicationId(x.id));
+}
+async function fetchTalent(){
+ if(!key)throw Error('VITE_CANOPY_SUPABASE_ANON_KEY is required to pre-render Talent Discovery');
+ const headers={apikey:key,Authorization:'Bearer '+key,'Content-Type':'application/json'};
+ let after=null;
+ const all=[];
+ const seen=new Set();
+ for(let pageNo=0;pageNo<200;pageNo++){
+  const response=await fetch(base+'/rest/v1/rpc/canopy_public_talent_directory',{
+   method:'POST',
+   headers,
+   body:JSON.stringify({p_after_slug:after,p_limit:48}),
+   signal:AbortSignal.timeout(20000)
+  });
   if(!response.ok)throw Error('Public talent directory HTTP '+response.status);
-  const page=await response.json();const items=Array.isArray(page.items)?page.items:[];
-  for(const p of items)if(p.slug&&/^[a-z0-9-]{2,160}$/i.test(p.slug)&&!seen.has(p.slug)){all.push(p);seen.add(p.slug)}
+  const page=await response.json();
+  const items=Array.isArray(page.items)?page.items:[];
+  for(const p of items){
+   if(p.slug&&validTalentSlug(p.slug)&&!seen.has(p.slug)){all.push(p);seen.add(p.slug)}
+  }
   if(!page.has_more||!page.next_cursor||page.next_cursor===after)break;
   after=page.next_cursor;
  }
- for(const p of all){
-  const canonical='https://www.womate.org/talent/'+encodeURIComponent(p.slug);
-  const title=String(p.full_name||'WOMATE Climate Talent')+' | '+String(p.headline||'Climate Leadership')+' | WOMATE';
-  const description=[p.full_name,p.country,p.headline].filter(Boolean).join(' · ').slice(0,160);
-  const topics=Array.isArray(p.climate_interests)?p.climate_interests:[];
-  const profile='<main style="font-family:system-ui,sans-serif;max-width:860px;margin:5rem auto;padding:0 24px;color:#073b39"><a href="/talent-discovery">WOMATE Talent Discovery</a><h1>'+esc(p.full_name)+'</h1><p>'+esc(p.country||'Africa')+'</p><h2>'+esc(p.headline||'Climate leadership professional')+'</h2><p>Climate interests: '+esc(topics.join(', '))+'</p><p>Explore this publicly approved WOMATE talent profile for collaboration and professional opportunities.</p></main>';
-  let html=template.replace(/<title>[^<]*<\/title>/,'<title>'+esc(title)+'</title>').replace(/<meta[^>]*name="description"[^>]*>/,'<meta name="description" content="'+esc(description)+'">');
-  html=html.replace('<div id="root"></div>','<div id="root">'+profile+'</div>');
-  const schema=JSON.stringify({'@context':'https://schema.org','@type':'ProfilePage',mainEntity:{'@type':'Person',name:p.full_name,description:p.headline||'',knowsAbout:topics,homeLocation:p.country?{'@type':'Place',name:p.country}:undefined},url:canonical}).replace(/</g,'\\u003c');
-  html=insertMeta(html,'<link rel="canonical" href="'+canonical+'"><meta property="og:type" content="profile"><meta property="og:title" content="'+esc(title)+'"><meta property="og:description" content="'+esc(description)+'"><meta property="og:url" content="'+canonical+'"><script type="application/ld+json">'+schema+'</script>');
-  const dir=path.join(dist,'talent',p.slug);fs.mkdirSync(dir,{recursive:true});fs.writeFileSync(path.join(dir,'index.html'),html);
- }
- const directoryFile=path.join(dist,'talent-discovery','index.html');
- if(fs.existsSync(directoryFile)){
-  let content=fs.readFileSync(directoryFile,'utf8');
-  const links=all.map(p=>'<li><a href="/talent/'+encodeURIComponent(p.slug)+'">'+esc(p.full_name)+'</a> - '+esc(p.country||'Africa')+'</li>').join('');
-  content=content.replace('</main></div>','<section aria-label="WOMATE public talent profiles"><h2>Explore WOMATE climate leaders</h2><ul>'+links+'</ul></section></main></div>');
-  fs.writeFileSync(directoryFile,content);
- }
- return all.map(p=>'https://www.womate.org/talent/'+encodeURIComponent(p.slug));
+ if(!all.length)throw Error('Public Talent Discovery returned zero profiles');
+ return all;
 }
-
-
-function staticLandingPages(template){
- const pages=[
-  ['/','WOMATE | Women’s Climate Leadership & Mentorship in Africa',"WOMATE advances women's climate leadership across Africa through mentorship, practical climate action, research and advocacy.",'Women leading climate action across Africa'],
-  ['/she-leads','Climate Mentorship for Women in Africa | WOMATE She Leads','Explore WOMATE She Leads climate mentorship, leadership development and professional opportunities for emerging African women.','Climate mentorship and leadership for women in Africa'],
-  ['/honours','Climate Honours Africa | Women Climate Leaders & Advocates | WOMATE','Meet women recognised through WOMATE Climate Honours for contributions to climate action, advocacy, sustainability and leadership across Africa.','Climate Honours: Celebrating women leading climate action'],
-  ['/talent-discovery','African Women Climate Leaders & Talent Directory | WOMATE','Discover public professional profiles of African women working in climate action, research, advocacy, sustainability and leadership.','Discover African women climate leaders'],
-  ['/publications','Climate Research, Leadership & Advocacy Publications | WOMATE','Explore WOMATE research, climate action reports, policy perspectives and original articles by women climate leaders.','Climate research and publications'],
-  ['/research','Climate Research and Evidence in Africa | WOMATE','Explore WOMATE research and evidence on climate adaptation, community leadership and women-led climate solutions.','Climate research informed by communities'],
-  ['/wok-action','Women’s Climate Knowledge and Community Action | WOMATE','WoK Action documents local climate knowledge and community-led adaptation across Africa.','Women’s local wisdom for climate action']
- ];
- for(const [route,title,description,h1] of pages){
-  const canonical='https://www.womate.org'+(route==='/'?'':route);
-  let html=template.replace(/<title>[^<]*<\/title>/,'<title>'+esc(title)+'</title>').replace(/<meta[^>]*name="description"[^>]*>/,'<meta name="description" content="'+esc(description)+'">');
-  html=html.replace('<div id="root"></div>','<div id="root"><main class="womate-seo-shell" style="font-family:system-ui,sans-serif;padding:7rem 5vw;color:#073b39"><h1>'+esc(h1)+'</h1><p>'+esc(description)+'</p><nav><a href="/she-leads">She Leads</a> · <a href="/talent-discovery">Talent Discovery</a> · <a href="/honours">Climate Honours</a> · <a href="/publications">Publications</a></nav></main></div>');
-  const schema=JSON.stringify({'@context':'https://schema.org','@type':route==='/honours'?'WebPage':'WebPage',name:title,description,url:canonical,isPartOf:{'@type':'WebSite',name:'WOMATE',url:'https://www.womate.org/'}}).replace(/</g,'\\u003c');
-  html=insertMeta(html,'<link rel="canonical" href="'+canonical+'"><meta property="og:url" content="'+canonical+'"><meta property="og:title" content="'+esc(title)+'"><meta property="og:description" content="'+esc(description)+'"><script type="application/ld+json">'+schema+'</script>');
-  if(route==='/')fs.writeFileSync(path.join(dist,'index.html'),html);
-  else{const d=path.join(dist,route.slice(1));fs.mkdirSync(d,{recursive:true});fs.writeFileSync(path.join(d,'index.html'),html)}
- }
- return pages.length;
+function makeCollectionBody(title,description,links){
+ return '<main class="womate-seo-shell" style="font-family:system-ui,sans-serif;max-width:1100px;margin:4rem auto;padding:0 24px;color:#073b39"><h1>'+esc(title)+'</h1><p>'+esc(description)+'</p>'+links+'</main>';
 }
-
+function writeSitemap(urls){
+ const rows=unique(urls.map(x=>typeof x==='string'?x:x.url)).map(url=>'  <url><loc>'+esc(url)+'</loc></url>').join('\n');
+ fs.writeFileSync(path.join(dist,'sitemap.xml'),'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'+rows+'\n</urlset>\n');
+}
 async function main(){
-if(!fs.existsSync(path.join(dist,'index.html')))throw Error('Vite output missing');
-const template=fs.readFileSync(path.join(dist,'index.html'),'utf8');
-staticLandingPages(template);
-if(!base){console.warn('[WOMATE SEO] Supabase URL missing; dynamic article and profile generation skipped.');return}
-let items=[];
-try{
- const res=await fetch(base+'/functions/v1/womate-publications',{method:'POST',headers:{'Content-Type':'application/json',...(key?{apikey:key}:{})},body:JSON.stringify({action:'list'}),signal:AbortSignal.timeout(15000)});
- if(!res.ok)throw Error('Publications HTTP '+res.status);
- const data=await res.json();items=(data.items||[]).filter(x=>valid(x.id));
-}catch(e){console.warn('[WOMATE SEO] Publication source unavailable: '+e.message)}
-for(const p of items){const canon='https://www.womate.org/publications/'+p.id;let html=template.replace(/<title>[^<]*<\/title>/,'<title>'+esc(p.title)+' | WOMATE Publications</title>').replace(/<meta[^>]*name="description"[^>]*>/,'<meta name="description" content="'+esc(String(p.summary||'').slice(0,155))+'">');
-html=html.replace('<div id="root"></div>','<div id="root">'+bodyMarkup(p)+'</div>');
-const schema=JSON.stringify({'@context':'https://schema.org','@type':'Article',headline:p.title,description:p.summary,author:{'@type':'Person',name:p.name},publisher:{'@type':'Organization',name:'WOMATE'},datePublished:p.published_at,url:canon}).replace(/</g,'\\u003c');
-html=insertMeta(html,'<link rel="canonical" href="'+canon+'"><meta property="og:type" content="article"><meta property="og:title" content="'+esc(p.title)+'"><meta property="og:url" content="'+canon+'"><script type="application/ld+json">'+schema+'</script>');
-const dir=path.join(dist,'publications',p.id);fs.mkdirSync(dir,{recursive:true});fs.writeFileSync(path.join(dir,'index.html'),html);
+ if(!fs.existsSync(path.join(dist,'index.html')))throw Error('Vite output missing');
+ if(production&&!key)throw Error('Production SEO build blocked: VITE_CANOPY_SUPABASE_ANON_KEY is missing.');
+
+ const template=fs.readFileSync(path.join(dist,'index.html'),'utf8');
+ let publications=[],talent=[];
+ try{publications=await fetchPublications()}catch(e){if(production)throw e;console.warn('[WOMATE SEO] '+e.message)}
+ try{talent=await fetchTalent()}catch(e){if(production)throw e;console.warn('[WOMATE SEO] '+e.message)}
+
+ const talentByName=new Map(talent.map(p=>[norm(p.full_name),p]));
+ const pubsByAuthor=new Map();
+ for(const p of publications){
+  const k=norm(p.name);
+  if(!pubsByAuthor.has(k))pubsByAuthor.set(k,[]);
+  pubsByAuthor.get(k).push(p);
+ }
+
+ const sitemap=[];
+ const websiteSchema={'@context':'https://schema.org','@type':'WebSite',name:'WOMATE',url:ORIGIN+'/'};
+ for(const [route,title,description,h1] of STATIC_PAGES){
+  const canonical=ORIGIN+(route==='/'?'':route);
+  const body=makeCollectionBody(h1,description,
+   '<nav><a href="/she-leads">She Leads</a> · <a href="/talent-discovery">Talent Discovery</a> · <a href="/publications">Publications</a> · <a href="/research">Research</a></nav>');
+  writeRoute(route,pageHtml(template,{canonical,title,description,body,schema:{...websiteSchema,'@type':'WebPage',name:title,description,url:canonical}}));
+  sitemap.push(canonical);
+ }
+
+ const talentList=talent.map(p=>'<li><a href="/talent/'+encodeURIComponent(p.slug)+'">'+esc(p.full_name)+'</a> — '+esc(p.country||'Africa')+(p.headline?' · '+esc(p.headline):'')+'</li>').join('');
+ const talentDirectory=pageHtml(template,{
+  canonical:ORIGIN+'/talent-discovery',
+  title:'African Women Climate Leaders & Talent Directory | WOMATE',
+  description:'Discover public professional profiles of women working in climate action, research, advocacy, sustainability and leadership through WOMATE Talent Discovery.',
+  body:makeCollectionBody('WOMATE Talent Discovery','Discover public, WOMATE-approved climate talent and verified programme achievement.','<section><h2>Climate talent profiles</h2><ul>'+talentList+'</ul></section>'),
+  schema:{'@context':'https://schema.org','@type':'CollectionPage',name:'WOMATE Talent Discovery',url:ORIGIN+'/talent-discovery',description:'Public professional profiles of WOMATE-approved climate talent.'}
+ });
+ writeRoute('/talent-discovery',talentDirectory);
+
+ const publicationList=publications.map(p=>'<li><a href="/publications/'+encodeURIComponent(p.id)+'">'+esc(p.title)+'</a> — '+esc(p.name)+'</li>').join('');
+ const publicationsDirectory=pageHtml(template,{
+  canonical:ORIGIN+'/publications',
+  title:'Climate Research, Leadership & Advocacy Publications | WOMATE',
+  description:'Read WOMATE climate research, women-led climate action stories, community solutions, policy perspectives and original articles.',
+  body:makeCollectionBody('WOMATE Publications','Research, analysis and perspectives advancing climate action.','<section><h2>Published work</h2><ul>'+publicationList+'</ul></section>'),
+  schema:{'@context':'https://schema.org','@type':'CollectionPage',name:'WOMATE Publications',url:ORIGIN+'/publications'}
+ });
+ writeRoute('/publications',publicationsDirectory);
+
+ for(const p of talent){
+  const canonical=ORIGIN+'/talent/'+encodeURIComponent(p.slug);
+  const title=p.full_name+' | '+(p.headline||'Climate Leader')+' | WOMATE';
+  const description=talentDescription(p);
+  const authored=pubsByAuthor.get(norm(p.full_name))||[];
+  const awards=talentAwards(p);
+  const schema={
+   '@context':'https://schema.org',
+   '@type':'ProfilePage',
+   url:canonical,
+   name:p.full_name+' | WOMATE Talent Discovery',
+   mainEntity:{
+    '@type':'Person',
+    name:p.full_name,
+    url:canonical,
+    image:publicPhoto(p.avatar_path),
+    description:p.headline||undefined,
+    homeLocation:p.country?{'@type':'Place',name:p.country}:undefined,
+    knowsAbout:Array.isArray(p.climate_interests)?p.climate_interests:undefined,
+    award:awards.length?awards:undefined,
+    subjectOf:authored.map(a=>({'@type':'Article',headline:a.title,url:ORIGIN+'/publications/'+a.id}))
+   },
+   breadcrumb:{
+    '@type':'BreadcrumbList',
+    itemListElement:[
+     {'@type':'ListItem',position:1,name:'WOMATE',item:ORIGIN+'/'},
+     {'@type':'ListItem',position:2,name:'Talent Discovery',item:ORIGIN+'/talent-discovery'},
+     {'@type':'ListItem',position:3,name:p.full_name,item:canonical}
+    ]
+   }
+  };
+  writeRoute('/talent/'+p.slug,pageHtml(template,{canonical,title,description,body:talentBody(p,authored),type:'profile',image:publicPhoto(p.avatar_path),schema}));
+  sitemap.push(canonical);
+ }
+
+ for(const p of publications){
+  const canonical=ORIGIN+'/publications/'+encodeURIComponent(p.id);
+  const authorProfile=talentByName.get(norm(p.name));
+  const title=p.title+' | WOMATE Publications';
+  const description=String(p.summary||'').replace(/\s+/g,' ').trim().slice(0,158)||('Read '+p.title+' by '+p.name+' on WOMATE.');
+  const schema={
+   '@context':'https://schema.org',
+   '@type':articleType(p.kind),
+   headline:p.title,
+   description:p.summary||undefined,
+   articleBody:p.article_text||undefined,
+   author:{'@type':'Person',name:p.name,...(authorProfile?{url:ORIGIN+'/talent/'+authorProfile.slug}: {})},
+   publisher:{'@type':'Organization',name:'WOMATE',url:ORIGIN+'/',logo:{'@type':'ImageObject',url:ORIGIN+'/assets/img/logo.svg'}},
+   datePublished:p.published_at||undefined,
+   mainEntityOfPage:canonical,
+   url:canonical,
+   breadcrumb:{
+    '@type':'BreadcrumbList',
+    itemListElement:[
+     {'@type':'ListItem',position:1,name:'WOMATE',item:ORIGIN+'/'},
+     {'@type':'ListItem',position:2,name:'Publications',item:ORIGIN+'/publications'},
+     {'@type':'ListItem',position:3,name:p.title,item:canonical}
+    ]
+   }
+  };
+  writeRoute('/publications/'+p.id,pageHtml(template,{canonical,title,description,body:articleBody(p,authorProfile),type:'article',schema}));
+  sitemap.push(canonical);
+ }
+
+ writeSitemap(sitemap);
+ const manifest={generated_at:new Date().toISOString(),talent_profiles:talent.length,publications:publications.length,canonical_urls:unique(sitemap).length};
+ fs.writeFileSync(path.join(dist,'seo-manifest.json'),JSON.stringify(manifest,null,2));
+ console.log('[WOMATE SEO] Generated '+manifest.talent_profiles+' Talent profiles, '+manifest.publications+' publications and '+manifest.canonical_urls+' canonical sitemap URLs.');
 }
-let talentUrls=[];try{talentUrls=await talentPages(template)}catch(e){console.warn('[WOMATE SEO] Public talent source unavailable: '+e.message)}
-const sitemap=path.join(dist,'sitemap.xml');let xml=fs.existsSync(sitemap)?fs.readFileSync(sitemap,'utf8'):'<?xml version="1.0"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"></urlset>';
-xml=xml.replace('</urlset>',[...items.map(x=>'https://www.womate.org/publications/'+x.id),...talentUrls].map(u=>'  <url><loc>'+esc(u)+'</loc></url>').join('\n')+'\n</urlset>');
-fs.writeFileSync(sitemap,xml);
-console.log('[WOMATE SEO] Generated '+items.length+' approved articles and '+talentUrls.length+' opt-in public talent profiles with sitemap links.');
-}
-main().catch(e=>{console.error('[WOMATE SEO] Pre-render unavailable: '+e.message);process.exitCode=1});
+main().catch(e=>{console.error('[WOMATE SEO] '+e.message);process.exitCode=1});
