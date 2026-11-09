@@ -8,7 +8,8 @@ const sitemap=path.resolve(__dirname,'../dist/sitemap.xml');
 function clean(s){try{const u=new URL(s);return u.protocol==='https:'&&u.host===host&&!/\/(canopy|talent\/chat)(\/|$)/.test(u.pathname)?u.href:null}catch{return null}}
 async function main(){
  const direct=process.argv.slice(2).map(clean).filter(Boolean);
- if(!direct.length&&process.env.INDEXNOW_ENABLED!=='true'){console.log('IndexNow disabled: set INDEXNOW_ENABLED=true or supply changed public URLs.');return}
+ const production=process.env.VERCEL_ENV==='production'||process.env.NODE_ENV==='production';
+ if(!direct.length&&process.env.INDEXNOW_ENABLED!=='true'&&!production){console.log('IndexNow disabled outside production: set INDEXNOW_ENABLED=true or supply changed public URLs.');return}
  let urls=direct;
  if(!urls.length&&fs.existsSync(sitemap)){const xml=fs.readFileSync(sitemap,'utf8');urls=[...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map(x=>clean(x[1])).filter(Boolean)}
  urls=[...new Set(urls)].slice(0,10000);if(!urls.length)return;
