@@ -182,9 +182,32 @@ async function fetchTalent(){
 function makeCollectionBody(title,description,links){
  return '<main class="womate-seo-shell" style="font-family:system-ui,sans-serif;max-width:1100px;margin:4rem auto;padding:0 24px;color:#073b39"><h1>'+esc(title)+'</h1><p>'+esc(description)+'</p>'+links+'</main>';
 }
-function writeSitemap(urls){
- const rows=unique(urls.map(x=>typeof x==='string'?x:x.url)).map(url=>'  <url><loc>'+esc(url)+'</loc></url>').join('\n');
- fs.writeFileSync(path.join(dist,'sitemap.xml'),'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'+rows+'\n</urlset>\n');
+function sitemapLastmod(value){
+ if(!value)return null;
+ const d=new Date(value);
+ return Number.isNaN(d.getTime())?null:d.toISOString().slice(0,10);
+}
+function normaliseSitemapItems(items){
+ const byUrl=new Map();
+ for(const raw of items){
+  const item=typeof raw==='string'?{url:raw}:raw||{};
+  if(!item.url)continue;
+  const current=byUrl.get(item.url);
+  const nextLastmod=sitemapLastmod(item.lastmod);
+  if(!current||(!current.lastmod&&nextLastmod))byUrl.set(item.url,{url:item.url,lastmod:nextLastmod});
+ }
+ return [...byUrl.values()];
+}
+function writeUrlset(filename,items){
+ const rows=normaliseSitemapItems(items).map(item=>{
+  const lastmod=item.lastmod?'<lastmod>'+esc(item.lastmod)+'</lastmod>':'';
+  return '  <url><loc>'+esc(item.url)+'</loc>'+lastmod+'</url>';
+ }).join('\n');
+ fs.writeFileSync(path.join(dist,filename),'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'+rows+'\n</urlset>\n');
+}
+function writeSitemapIndex(files){
+ const rows=files.map(file=>'  <sitemap><loc>'+esc(ORIGIN+'/'+file)+'</loc></sitemap>').join('\n');
+ fs.writeFileSync(path.join(dist,'sitemap.xml'),'<?xml version="1.0" encoding="UTF-8"?>\n<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'+rows+'\n</sitemapindex>\n');
 }
 async function main(){
  if(!fs.existsSync(path.join(dist,'index.html')))throw Error('Vite output missing');
@@ -203,14 +226,15 @@ async function main(){
   pubsByAuthor.get(k).push(p);
  }
 
- const sitemap=[];
+ const sitemap=[],staticSitemap=[],talentSitemap=[],publicationSitemap=[];
  const websiteSchema={'@context':'https://schema.org','@type':'WebSite',name:'WOMATE',url:ORIGIN+'/'};
  for(const [route,title,description,h1] of STATIC_PAGES){
   const canonical=ORIGIN+(route==='/'?'':route);
   const body=makeCollectionBody(h1,description,
    '<nav><a href="/she-leads">She Leads</a> · <a href="/talent-discovery">Talent Discovery</a> · <a href="/publications">Publications</a> · <a href="/research">Research</a></nav>');
   writeRoute(route,pageHtml(template,{canonical,title,description,body,schema:{...websiteSchema,'@type':'WebPage',name:title,description,url:canonical}}));
-  sitemap.push(canonical);
+  staticSitemap.push({url:canonical});
+  sitemap.push({url:canonical});
  }
 
  const talentList=talent.map(p=>'<li><a href="/talent/'+encodeURIComponent(p.slug)+'">'+esc(p.full_name)+'</a> — '+esc(p.country||'Africa')+(p.headline?' · '+esc(p.headline):'')+'</li>').join('');
@@ -222,6 +246,9 @@ async function main(){
   schema:{'@context':'https://schema.org','@type':'CollectionPage',name:'WOMATE Talent Discovery',url:ORIGIN+'/talent-discovery',description:'Public professional profiles of WOMATE-approved climate talent.'}
  });
  writeRoute('/talent-discovery',talentDirectory);
+ const talentDirectoryUrl=ORIGIN+'/talent-discovery';
+ talentSitemap.push({url:talentDirectoryUrl});
+ sitemap.push({url:talentDirectoryUrl});
 
  const publicationList=publications.map(p=>'<li><a href="/publications/'+encodeURIComponent(p.id)+'">'+esc(p.title)+'</a> — '+esc(p.name)+'</li>').join('');
  const publicationsDirectory=pageHtml(template,{
@@ -232,6 +259,9 @@ async function main(){
   schema:{'@context':'https://schema.org','@type':'CollectionPage',name:'WOMATE Publications',url:ORIGIN+'/publications'}
  });
  writeRoute('/publications',publicationsDirectory);
+ const publicationsDirectoryUrl=ORIGIN+'/publications';
+ publicationSitemap.push({url:publicationsDirectoryUrl});
+ sitemap.push({url:publicationsDirectoryUrl});
 
  for(const p of talent){
   const canonical=ORIGIN+'/talent/'+encodeURIComponent(p.slug);
@@ -265,7 +295,9 @@ async function main(){
    }
   };
   writeRoute('/talent/'+p.slug,pageHtml(template,{canonical,title,description,body:talentBody(p,authored),type:'profile',image:publicPhoto(p.avatar_path),schema}));
-  sitemap.push(canonical);
+  const talentMapItem={url:canonical,lastmod:p.talent_updated_at||null};
+  talentSitemap.push(talentMapItem);
+  sitemap.push(talentMapItem);
  }
 
  for(const p of publications){
@@ -294,11 +326,16 @@ async function main(){
    }
   };
   writeRoute('/publications/'+p.id,pageHtml(template,{canonical,title,description,body:articleBody(p,authorProfile),type:'article',schema}));
-  sitemap.push(canonical);
+  const publicationMapItem={url:canonical,lastmod:p.published_at||null};
+  publicationSitemap.push(publicationMapItem);
+  sitemap.push(publicationMapItem);
  }
 
- writeSitemap(sitemap);
- const manifest={generated_at:new Date().toISOString(),talent_profiles:talent.length,publications:publications.length,canonical_urls:unique(sitemap).length};
+ writeUrlset('sitemap-static.xml',staticSitemap);
+ writeUrlset('sitemap-talent.xml',talentSitemap);
+ writeUrlset('sitemap-publications.xml',publicationSitemap);
+ writeSitemapIndex(['sitemap-static.xml','sitemap-talent.xml','sitemap-publications.xml']);
+ const manifest={generated_at:new Date().toISOString(),talent_profiles:talent.length,publications:publications.length,canonical_urls:normaliseSitemapItems(sitemap).length};
  fs.writeFileSync(path.join(dist,'seo-manifest.json'),JSON.stringify(manifest,null,2));
  console.log('[WOMATE SEO] Generated '+manifest.talent_profiles+' Talent profiles, '+manifest.publications+' publications and '+manifest.canonical_urls+' canonical sitemap URLs.');
 }
