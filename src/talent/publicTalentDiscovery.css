@@ -955,3 +955,419 @@
  .pt-profileHero--editorial .pt-profileNameLine h1{font-size:30px}
  .pt-profileMetaLine{font-size:11px}
 }
+
+
+/* Individual Talent profile · mobile hardening
+   Keep these rules last so legacy directory/profile media queries cannot override them. */
+@media(max-width:700px){
+  .pt-profilePage{
+    width:100%;
+    max-width:100%;
+    min-width:0;
+    box-sizing:border-box;
+    overflow-x:clip;
+    padding-top:88px;
+    padding-left:12px;
+    padding-right:12px;
+    padding-bottom:56px;
+  }
+
+  .pt-profilePage *{
+    min-width:0;
+    box-sizing:border-box;
+  }
+
+  .pt-profilePage .pt-back{
+    max-width:100%;
+    margin:0 0 14px;
+    font-size:12px;
+    line-height:1.35;
+    white-space:normal;
+  }
+
+  .pt-profileHero--editorial{
+    width:100%;
+    max-width:100%;
+    overflow:visible;
+  }
+
+  /* Preserve the complete 16:9 WOMATE Verified artwork on phones. */
+  .pt-profileHero--editorial .pt-profileBanner{
+    width:100%;
+    height:auto!important;
+    aspect-ratio:16/9;
+    border-radius:16px;
+    overflow:hidden;
+  }
+
+  .pt-profileHero--editorial .pt-profileBanner img{
+    width:100%;
+    height:100%;
+    max-width:100%;
+    object-fit:cover;
+    object-position:center;
+  }
+
+  .pt-profileHero--editorial .pt-profileBanner--neutral{
+    height:auto!important;
+    aspect-ratio:16/9;
+  }
+
+  .pt-profileHero--editorial .pt-profileIdentityPanel{
+    width:100%;
+    display:grid;
+    grid-template-columns:1fr!important;
+    gap:0!important;
+    margin:0!important;
+    padding:0 2px 24px!important;
+    text-align:center;
+    align-items:start;
+  }
+
+  .pt-profileHero--editorial .pt-profilePhoto{
+    width:106px!important;
+    height:106px!important;
+    margin:-50px auto 0!important;
+    border:4px solid #fff;
+    border-radius:50%;
+    overflow:hidden;
+  }
+
+  .pt-profileHero--editorial .pt-profilePhoto img{
+    width:100%;
+    height:100%;
+    display:block;
+    object-fit:cover;
+    object-position:center 24%;
+  }
+
+  .pt-profileHero--editorial .pt-profileIdentityCopy{
+    width:100%;
+    padding:12px 0 0!important;
+  }
+
+  .pt-profileHero--editorial .pt-profileNameLine{
+    width:100%;
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    justify-content:center!important;
+    gap:6px;
+  }
+
+  .pt-profileHero--editorial .pt-profileNameLine h1{
+    max-width:100%;
+    margin:0;
+    font-size:clamp(29px,9.2vw,40px)!important;
+    line-height:1.02!important;
+    letter-spacing:-.035em;
+    overflow-wrap:anywhere;
+    word-break:normal;
+    text-wrap:balance;
+  }
+
+  .pt-profileHero--editorial .pt-profileNameLine svg{
+    width:20px!important;
+    height:20px!important;
+    flex:0 0 auto;
+  }
+
+  .pt-profileHero--editorial .pt-profileIdentityCopy>.pt-headline{
+    width:100%;
+    max-width:34rem;
+    margin:9px auto 10px!important;
+    padding:0 4px;
+    font-size:14px!important;
+    line-height:1.5!important;
+    overflow-wrap:anywhere;
+    text-wrap:pretty;
+  }
+
+  .pt-profileMetaLine{
+    width:100%;
+    justify-content:center!important;
+    gap:6px 9px!important;
+    padding:0 4px;
+    font-size:11.5px!important;
+    line-height:1.45;
+  }
+
+  .pt-profileMetaLine i{
+    display:none!important;
+  }
+
+  .pt-profileMetaLine span,
+  .pt-profileMetaLine strong{
+    max-width:100%;
+    display:inline-flex!important;
+    white-space:normal;
+    overflow-wrap:anywhere;
+    text-align:center;
+  }
+
+  .pt-profileHeroActions{
+    width:100%;
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:8px!important;
+    margin-top:16px!important;
+  }
+
+  .pt-profilePrimaryAction,
+  .pt-profileSecondaryAction{
+    width:100%!important;
+    max-width:100%;
+    min-height:46px;
+    padding:11px 14px!important;
+    white-space:normal;
+    text-align:center;
+    line-height:1.3;
+  }
+
+  .pt-profileEditorial{
+    width:100%;
+    max-width:100%;
+    display:block!important;
+    margin:26px 0 0!important;
+  }
+
+  .pt-profileMain,
+  .pt-editorialSection,
+  .pt-profileAside{
+    width:100%;
+    max-width:100%;
+    min-width:0;
+  }
+
+  .pt-editorialSection{
+    margin:0 0 26px!important;
+    padding:0 0 26px!important;
+  }
+
+  .pt-editorialSection h2{
+    max-width:100%;
+    margin:7px 0 16px!important;
+    font-size:clamp(26px,8vw,34px)!important;
+    line-height:1.06!important;
+    letter-spacing:-.03em;
+    overflow-wrap:anywhere;
+  }
+
+  .pt-focusList{
+    width:100%;
+    max-width:100%;
+    gap:6px!important;
+  }
+
+  .pt-focusList span{
+    max-width:100%;
+    min-height:34px!important;
+    height:auto;
+    padding:7px 10px!important;
+    white-space:normal;
+    overflow-wrap:anywhere;
+    line-height:1.3;
+    font-size:11px!important;
+  }
+
+  .pt-achievementRows{
+    width:100%;
+  }
+
+  .pt-achievementRow{
+    width:100%;
+    grid-template-columns:34px minmax(0,1fr)!important;
+    gap:11px!important;
+    padding:15px 0!important;
+  }
+
+  .pt-achievementRow>div{
+    min-width:0;
+  }
+
+  .pt-achievementIcon{
+    width:34px!important;
+    height:34px!important;
+  }
+
+  .pt-achievementRow strong,
+  .pt-achievementRow p{
+    overflow-wrap:anywhere;
+  }
+
+  .pt-profileAside{
+    position:static!important;
+    top:auto!important;
+    margin:28px 0 0;
+  }
+
+  .pt-request--editorial,
+  .pt-thread{
+    width:100%;
+    max-width:100%;
+    margin:0;
+    padding:20px 15px!important;
+    border-radius:0 15px 15px 0!important;
+    overflow:hidden;
+  }
+
+  .pt-request--editorial h2{
+    max-width:100%;
+    font-size:28px!important;
+    line-height:1.05!important;
+    overflow-wrap:anywhere;
+  }
+
+  .pt-request--editorial form,
+  .pt-formGrid,
+  .pt-request--editorial label,
+  .pt-chatComposer,
+  .pt-privateLink{
+    width:100%;
+    max-width:100%;
+    min-width:0;
+  }
+
+  .pt-formGrid{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:10px!important;
+  }
+
+  /* 16px prevents iOS Safari input zoom and viewport jumps. */
+  .pt-request--editorial input,
+  .pt-request--editorial textarea,
+  .pt-chatComposer textarea{
+    width:100%!important;
+    max-width:100%;
+    min-width:0;
+    font-size:16px!important;
+  }
+
+  .pt-request--editorial input{
+    min-height:48px;
+  }
+
+  .pt-request--editorial textarea,
+  .pt-chatComposer textarea{
+    min-height:120px;
+  }
+
+  .pt-consent{
+    width:100%;
+    max-width:100%;
+    display:grid!important;
+    grid-template-columns:22px minmax(0,1fr)!important;
+    align-items:start!important;
+    gap:9px!important;
+  }
+
+  .pt-consent input{
+    width:18px!important;
+    height:18px;
+    margin:2px 0 0!important;
+  }
+
+  .pt-consent span{
+    min-width:0;
+    font-size:12px;
+    line-height:1.45;
+    overflow-wrap:anywhere;
+  }
+
+  .pt-request--editorial .pt-button{
+    width:100%!important;
+    min-height:48px;
+    padding:11px 14px;
+    white-space:normal;
+    line-height:1.3;
+  }
+
+  .pt-publicationRows{
+    width:100%;
+  }
+
+  .pt-publicationRows article{
+    width:100%;
+    grid-template-columns:minmax(0,1fr) 38px!important;
+    gap:10px!important;
+    align-items:start!important;
+    padding:16px 0!important;
+  }
+
+  .pt-publicationRows article>div{
+    min-width:0;
+  }
+
+  .pt-publicationRows h3{
+    max-width:100%;
+    font-size:18px!important;
+    line-height:1.2!important;
+    overflow-wrap:anywhere;
+  }
+
+  .pt-publicationRows p{
+    max-width:100%;
+    font-size:12px!important;
+    line-height:1.55!important;
+    -webkit-line-clamp:3!important;
+    overflow-wrap:anywhere;
+  }
+
+  .pt-publicationRows article>a{
+    width:38px!important;
+    height:38px!important;
+    flex:0 0 auto;
+  }
+
+  .pt-messages{
+    width:100%;
+    max-width:100%;
+    overflow-x:hidden;
+  }
+
+  .pt-message{
+    max-width:90%!important;
+    overflow-wrap:anywhere;
+  }
+
+  .pt-privateLink code{
+    max-width:100%;
+    overflow-wrap:anywhere;
+    word-break:break-word;
+  }
+}
+
+@media(max-width:380px){
+  .pt-profilePage{
+    padding-left:8px!important;
+    padding-right:8px!important;
+  }
+
+  .pt-profileHero--editorial .pt-profileBanner{
+    border-radius:14px;
+  }
+
+  .pt-profileHero--editorial .pt-profilePhoto{
+    width:96px!important;
+    height:96px!important;
+    margin-top:-44px!important;
+  }
+
+  .pt-profileHero--editorial .pt-profileNameLine h1{
+    font-size:28px!important;
+  }
+
+  .pt-profileMetaLine{
+    font-size:11px!important;
+  }
+
+  .pt-profilePrimaryAction,
+  .pt-profileSecondaryAction{
+    font-size:12px!important;
+  }
+
+  .pt-request--editorial{
+    padding:18px 13px!important;
+  }
+}
