@@ -273,3 +273,347 @@
 .pt-publicationList h3 a:hover{text-decoration:underline}
 .pt-publicationList p{margin:0;color:#5b756e;line-height:1.7}
 @media(max-width:720px){.pt-publicationList{grid-template-columns:1fr}}
+
+
+/* WOMATE Talent Discovery Network · premium badge-banner system */
+.pt-grid{
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:clamp(16px,1.6vw,24px);
+  align-items:stretch;
+}
+.pt-card.pt-card--network{
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  min-width:0;
+  min-height:480px;
+  padding:0;
+  gap:0;
+  overflow:hidden;
+  border:1px solid #d9e7e1;
+  border-radius:24px;
+  background:#fff;
+  box-shadow:0 8px 26px rgba(7,59,57,.055);
+  transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease;
+}
+.pt-card--network:hover{
+  transform:translateY(-4px);
+  border-color:#a7cdbd;
+  box-shadow:0 20px 48px rgba(7,59,57,.11);
+}
+.pt-networkBannerLink{display:block;text-decoration:none;background:#073b39}
+.pt-networkBanner{
+  width:100%;
+  aspect-ratio:16/9;
+  overflow:hidden;
+  background:#073b39;
+}
+.pt-networkBanner img{
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center;
+}
+.pt-networkBanner--neutral{
+  display:grid;
+  place-items:center;
+  background:
+    radial-gradient(circle at 18% 20%,rgba(198,255,82,.22),transparent 28%),
+    linear-gradient(135deg,#073b39,#0e4d4a 58%,#17665f);
+  color:#fff;
+}
+.pt-networkBanner--neutral span{font-size:11px;font-weight:850;letter-spacing:.15em}
+.pt-networkAvatarWrap{
+  position:relative;
+  height:48px;
+  display:flex;
+  justify-content:center;
+  margin-top:-45px;
+  z-index:2;
+}
+.pt-networkAvatar{
+  width:90px;
+  height:90px;
+  display:block;
+  border-radius:50%;
+  overflow:hidden;
+  border:5px solid #fff;
+  background:#eaf3ef;
+  box-shadow:0 8px 24px rgba(7,59,57,.16);
+}
+.pt-networkAvatar img{
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:cover;
+  object-position:center 24%;
+}
+.pt-networkBody{
+  display:flex!important;
+  flex-direction:column;
+  gap:13px!important;
+  padding:10px 19px 0;
+  text-align:center;
+}
+.pt-networkIdentity{min-width:0}
+.pt-verifiedTier{
+  display:inline-flex;
+  max-width:100%;
+  margin:0 auto 7px;
+  font-size:9px;
+  line-height:1.25;
+  font-weight:900;
+  letter-spacing:.115em;
+  color:#0e4d4a;
+}
+.pt-verifiedTier.neutral{color:#718880}
+.pt-card--network h3{
+  margin:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+  min-width:0;
+  font-size:clamp(18px,1.25vw,21px);
+  line-height:1.16;
+  letter-spacing:-.025em;
+}
+.pt-card--network h3 a{
+  color:#0d342d;
+  text-decoration:none;
+  overflow-wrap:anywhere;
+}
+.pt-card--network h3 svg{flex:0 0 auto;color:#0e8f70}
+.pt-card--network .pt-country{margin:5px 0 0;color:#6b817a;font-size:12px;font-weight:650}
+.pt-card--network .pt-headline{
+  margin:0 auto;
+  width:100%;
+  min-height:2.9em;
+  color:#405d55;
+  font-size:13px;
+  line-height:1.48;
+  text-align:center;
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+}
+.pt-networkSignals{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:6px;
+}
+.pt-networkSignals span{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  padding:5px 8px;
+  border-radius:999px;
+  border:1px solid #dfebe5;
+  background:#f7faf8;
+  color:#47695e;
+  font-size:9.5px;
+  line-height:1.2;
+  font-weight:760;
+}
+.pt-networkSignals span.open{
+  border-color:#b9dc70;
+  background:#f4fbdf;
+  color:#3c641b;
+}
+.pt-card--network .pt-tags{
+  justify-content:center;
+  min-height:0;
+  gap:5px;
+}
+.pt-card--network .pt-tags span{
+  max-width:46%;
+  padding:5px 8px;
+  border-radius:999px;
+  background:#eef5f1;
+  color:#4c695f;
+  font-size:9.5px;
+  font-weight:680;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.pt-card--network .pt-tags .pt-extra{
+  max-width:none;
+  border:1px solid #d7e6de;
+  background:#fff;
+}
+.pt-networkFoot{
+  margin-top:auto;
+  padding:17px 18px 19px;
+}
+.pt-card--network .pt-link{
+  width:100%;
+  min-height:44px;
+  display:flex;
+  justify-content:center;
+  gap:8px;
+  border:1.5px solid #0e7c67;
+  border-radius:999px;
+  background:#fff;
+  color:#0c6959;
+  font-size:12px;
+  font-weight:850;
+}
+.pt-card--network .pt-link:hover{background:#0e4d4a;color:#fff;border-color:#0e4d4a}
+
+/* subtle tier accent without recolouring WOMATE imagery */
+.pt-card--network.badge-ruby{border-color:#ead4d9}
+.pt-card--network.badge-emerald{border-color:#cfe7dc}
+.pt-card--network.badge-diamond{border-color:#d7e1e9}
+.pt-card--network.badge-gold{border-color:#eadfbd}
+.pt-card--network.badge-silver{border-color:#dce2e5}
+
+/* Full public profile: banner, overlapping portrait, identity */
+.pt-profilePage{max-width:1320px}
+.pt-profileHero{
+  overflow:hidden;
+  border:1px solid #d8e6e0;
+  border-radius:28px;
+  background:#fff;
+  box-shadow:0 12px 38px rgba(7,59,57,.07);
+}
+.pt-profileBanner{
+  width:100%;
+  height:clamp(220px,27vw,350px);
+  overflow:hidden;
+  background:#073b39;
+}
+.pt-profileBanner img{
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center;
+}
+.pt-profileBanner--neutral{
+  display:grid;
+  place-items:center;
+  background:
+    radial-gradient(circle at 20% 20%,rgba(198,255,82,.2),transparent 28%),
+    linear-gradient(135deg,#073b39,#0e4d4a);
+  color:#fff;
+}
+.pt-profileBanner--neutral span{font-size:12px;font-weight:900;letter-spacing:.16em}
+.pt-profileIdentityPanel{
+  display:grid;
+  grid-template-columns:150px minmax(0,1fr);
+  gap:24px;
+  align-items:end;
+  padding:0 clamp(24px,4vw,48px) 30px;
+}
+.pt-profileIdentityPanel .pt-profilePhoto{
+  width:150px;
+  height:150px;
+  aspect-ratio:auto;
+  margin-top:-68px;
+  border-radius:50%;
+  border:6px solid #fff;
+  box-shadow:0 12px 30px rgba(7,59,57,.17);
+  background:#edf5f2;
+}
+.pt-profileIdentityCopy{padding-top:20px;min-width:0}
+.pt-profileNameLine{display:flex;align-items:center;gap:8px;min-width:0}
+.pt-profileNameLine h1{
+  margin:0;
+  color:#0b342d;
+  font-size:clamp(34px,4.5vw,60px);
+  line-height:1;
+  letter-spacing:-.045em;
+  overflow-wrap:anywhere;
+}
+.pt-profileNameLine svg{color:#0b8d70;flex:0 0 auto}
+.pt-profileIdentityCopy>.pt-headline{
+  margin:11px 0 13px;
+  max-width:900px;
+  color:#3e5d54;
+  font-size:clamp(15px,1.6vw,19px);
+  line-height:1.55;
+}
+.pt-profileMeta{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.pt-profileMeta span{
+  display:inline-flex;
+  align-items:center;
+  min-height:30px;
+  padding:0 10px;
+  border-radius:999px;
+  background:#eef5f1;
+  color:#47675d;
+  font-size:10px;
+  font-weight:820;
+  letter-spacing:.02em;
+}
+.pt-profileMeta .pt-profileTier{background:#073b39;color:#fff}
+.pt-profileMeta .available{background:#eff9d8;color:#3d671c}
+.pt-profile{margin-top:24px;grid-template-columns:minmax(300px,.82fr) minmax(0,1.18fr)}
+.pt-profileCard--network{padding:26px}
+.pt-profileCard--network h2{margin:8px 0 17px;font-size:clamp(25px,3vw,36px);letter-spacing:-.035em;color:#0b342d}
+.pt-profileCard--network .pt-tags{margin-bottom:20px}
+.pt-profileCard--network .pt-tags span{font-size:11px;padding:7px 10px}
+.pt-profileCard--network .pt-missionDetail{margin-top:18px}
+
+/* Make directory controls compact and usable on touch screens */
+@media(max-width:1250px){
+  .pt-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(max-width:930px){
+  .pt-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .pt-profileIdentityPanel{grid-template-columns:125px minmax(0,1fr)}
+  .pt-profileIdentityPanel .pt-profilePhoto{width:125px;height:125px;margin-top:-55px}
+}
+@media(max-width:680px){
+  .pt-grid{grid-template-columns:1fr;gap:16px}
+  .pt-card.pt-card--network{
+    width:100%;
+    min-height:0;
+    max-width:520px;
+    margin:0 auto;
+    border-radius:21px;
+  }
+  .pt-networkBanner{aspect-ratio:16/8.7}
+  .pt-networkAvatarWrap{height:44px;margin-top:-42px}
+  .pt-networkAvatar{width:84px;height:84px;border-width:4px}
+  .pt-networkBody{padding:9px 17px 0;gap:11px!important}
+  .pt-card--network h3{font-size:19px}
+  .pt-card--network .pt-headline{min-height:0;font-size:12.5px}
+  .pt-networkSignals{gap:5px}
+  .pt-networkFoot{padding:15px 16px 17px}
+  .pt-filterRow{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .pt-filterRow label>span{font-size:8.5px}
+  .pt-filterRow select,.pt-collabToggle button,.pt-clearFilters{min-height:44px;font-size:12px;padding:0 9px}
+  .pt-profileHero{border-radius:22px}
+  .pt-profileBanner{height:clamp(150px,46vw,220px)}
+  .pt-profileIdentityPanel{
+    grid-template-columns:1fr;
+    gap:0;
+    padding:0 18px 24px;
+    text-align:center;
+  }
+  .pt-profileIdentityPanel .pt-profilePhoto{
+    width:116px;height:116px;margin:-52px auto 0;
+  }
+  .pt-profileIdentityCopy{padding-top:13px}
+  .pt-profileNameLine{justify-content:center}
+  .pt-profileNameLine h1{font-size:clamp(30px,9vw,42px)}
+  .pt-profileIdentityCopy>.pt-headline{font-size:14px;margin:9px auto 12px}
+  .pt-profileMeta{justify-content:center}
+  .pt-profile{grid-template-columns:1fr;margin-top:16px}
+}
+@media(max-width:430px){
+  .pt-filterRow{grid-template-columns:1fr}
+  .pt-card--network .pt-tags span{max-width:70%}
+  .pt-profileBanner{height:145px}
+  .pt-profileIdentityPanel .pt-profilePhoto{width:104px;height:104px;margin-top:-46px}
+}
+@media(prefers-reduced-motion:reduce){
+  .pt-card.pt-card--network{transition:none}
+  .pt-card--network:hover{transform:none}
+}
