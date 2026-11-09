@@ -37,7 +37,6 @@ async function getAuthorPublications(name){
  }catch{return[]}
 }
 function Badges({x}){return <div className="pt-badges" aria-label="WOMATE verified achievements">{x.mission_completed&&<span className="strong"><ShieldCheck size={14} aria-hidden="true"/>Mission completed · Verified</span>}{x.all_modules_completed&&<span><BadgeCheck size={14} aria-hidden="true"/>All modules completed</span>}{x.final_team_completed&&<span>Final Mission team</span>}{Number(x.spotlight_count)>0&&<span><Sparkles size={14} aria-hidden="true"/>Canopy Spotlight</span>}</div>}
-function AchievementMark({badge}){if(!badge?.badge)return null;return <div className={'pt-achievement-mark is-'+badge.badge}><span className="pt-achievement-medallion" role="img" aria-label={'WOMATE '+badge.badge+' ornamental achievement medallion'}/><div className="pt-achievement-copy"><strong>{String(badge.badge).toUpperCase()} BADGE</strong><small>{badge.earned} / 500 points</small></div></div>}
 function TalentCard({x}){
  const topics=interests(x.climate_interests).map(t=>clean(t)).filter(Boolean);
  const shown=topics.slice(0,2),extra=topics.length-shown.length;
