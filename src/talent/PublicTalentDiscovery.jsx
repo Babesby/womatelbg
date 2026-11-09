@@ -99,29 +99,79 @@ function Profile({slug}){
  if(loading)return <main className="pt-page"><p>Loading Talent Discovery profile...</p></main>;
  if(!profile)return <main className="pt-page"><Helmet><title>Profile unavailable | WOMATE</title><meta name="robots" content="noindex,nofollow"/></Helmet><a className="pt-back" href="/talent-discovery"><ArrowLeft size={16}/> Talent Discovery</a><h1>Profile unavailable</h1><p>This profile is not currently public in WOMATE Talent Discovery.</p>{error&&<p className="pt-error">{error}</p>}</main>;
  const badge=badgeKey(profile.badge),badgeName=badgeTitle(badge);
- return <main className="pt-page pt-profilePage"><SEO profile={profile} publications={publications}/><a className="pt-back" href="/talent-discovery"><ArrowLeft size={16}/> All Talent Discovery profiles</a>
-  <section className="pt-profileHero">
+ const firstName=profile.full_name?.split(/\s+/)[0]||'this WOMATE talent';
+ const achievements=[
+  profile.mission_completed&&{icon:<ShieldCheck size={18}/>,title:'Verified climate mission',detail:profile.mission_name||'Completed WOMATE climate mission'},
+  profile.all_modules_completed&&{icon:<BadgeCheck size={18}/>,title:'She Leads learning completed',detail:'Completed all programme learning modules'},
+  profile.final_team_completed&&{icon:<BadgeCheck size={18}/>,title:'Final Mission team',detail:'Completed the final collaborative Mission stage'},
+  Number(profile.spotlight_count)>0&&{icon:<Sparkles size={18}/>,title:'Canopy Spotlight',detail:'Recognised through WOMATE Canopy Spotlight'}
+ ].filter(Boolean);
+
+ return <main className="pt-page pt-profilePage"><SEO profile={profile} publications={publications}/>
+  <a className="pt-back" href="/talent-discovery"><ArrowLeft size={16}/> Talent Discovery</a>
+
+  <header className="pt-profileHero pt-profileHero--editorial">
    <VerifiedBanner badge={badge} name={profile.full_name} profile/>
    <div className="pt-profileIdentityPanel">
     <div className="pt-profilePhoto"><img src={publicTalentPhotoUrl(profile.avatar_path)} alt={`${profile.full_name} profile`}/></div>
     <div className="pt-profileIdentityCopy">
      <div className="pt-profileNameLine"><h1>{profile.full_name}</h1>{badge&&<BadgeCheck size={24} aria-label="WOMATE verified"/>}</div>
      <p className="pt-headline">{profile.headline||'Climate leadership professional'}</p>
-     <div className="pt-profileMeta"><span>{profile.country||'Africa'}</span>{badge&&<span className={'pt-profileTier badge-'+badge}>WOMATE VERIFIED · {badgeName.toUpperCase()}{Number.isFinite(Number(profile.badge_earned))?` · ${profile.badge_earned}/500`:''}</span>}{profile.collaboration_open&&<span className="available">Open to collaboration</span>}</div>
+     <div className="pt-profileMetaLine">
+      <span>{profile.country||'Africa'}</span>
+      {badge&&<><i aria-hidden="true">•</i><strong>WOMATE Verified · {badgeName}</strong></>}
+      {profile.collaboration_open&&<><i aria-hidden="true">•</i><span className="available">Open to collaboration</span></>}
+     </div>
+     <div className="pt-profileHeroActions">
+      {profile.collaboration_open&&<a className="pt-profilePrimaryAction" href="#collaborate"><Handshake size={17}/> Collaborate with {firstName}</a>}
+      <a className="pt-profileSecondaryAction" href="#profile-focus">Explore profile</a>
+     </div>
     </div>
    </div>
-  </section>
-  <section className="pt-profile">
-   <article className="pt-profileCard pt-profileCard--network">
-    <span className="pt-kicker">VERIFIED PROFILE</span>
-    <h2>Climate focus</h2>
-    <div className="pt-tags">{interests(profile.climate_interests).map(i=><span key={i}>{i}</span>)}</div>
-    <Badges x={profile}/>
-    {profile.mission_completed&&profile.mission_name&&<div className="pt-missionDetail"><small>VERIFIED MISSION</small><p>{profile.mission_name}</p></div>}
-   </article>
-   <div>{thread?<Thread thread={thread} chat={chat} setChat={setChat} send={send} busy={sending} privateUrl={privateChatUrl(access.id,access.token)} copy={copy} copied={copied}/>:profile.collaboration_open?<section className="pt-request"><span className="pt-kicker">REQUEST COLLABORATION</span><h2>Work with {profile.full_name?.split(/\s+/)[0]||'this WOMATE talent'}</h2><p>Your contact details are shared privately with this participant only so she can review and respond to your request. They are not published on WOMATE.</p><form onSubmit={submit}><div className="pt-formGrid"><label>Full name<input required maxLength="120" autoComplete="name" value={form.name} onChange={e=>setForm(v=>({...v,name:e.target.value}))}/></label><label>Email<input required type="email" maxLength="160" autoComplete="email" value={form.email} onChange={e=>setForm(v=>({...v,email:e.target.value}))}/></label></div><label>Organisation or role<input maxLength="160" autoComplete="organization" value={form.organization} onChange={e=>setForm(v=>({...v,organization:e.target.value}))}/></label><label className="pt-honeypot" aria-hidden="true">Website<input tabIndex="-1" autoComplete="off" value={form.website} onChange={e=>setForm(v=>({...v,website:e.target.value}))}/></label><label>What would you like to collaborate on?<textarea required minLength="20" maxLength="1500" value={form.message} onChange={e=>setForm(v=>({...v,message:e.target.value}))}/></label><label className="pt-consent"><input required type="checkbox" checked={form.consent} onChange={e=>setForm(v=>({...v,consent:e.target.checked}))}/><span>I agree to share these details privately with this WOMATE participant for this collaboration request.</span></label><button className="pt-button" disabled={sending||!form.consent}><Handshake size={16}/>{sending?'Sending...':'Request collaboration'}</button></form></section>:<section className="pt-request"><h2>Collaboration requests are currently closed</h2><p>You can still view this verified public professional profile.</p></section>}{error&&<p className="pt-error">{error}</p>}</div>
-  </section>
-  {publications.length>0&&<section className="pt-publications" aria-labelledby="pt-publications-heading"><span className="pt-kicker">PUBLISHED ON WOMATE</span><h2 id="pt-publications-heading">Research and perspectives by {profile.full_name}</h2><div className="pt-publicationList">{publications.map(p=><article key={p.id}><small>{p.kind||'Publication'}</small><h3><a href={`/publications/${p.id}`}>{p.title}</a></h3><p>{p.summary}</p></article>)}</div></section>}
+  </header>
+
+  <div className="pt-profileEditorial">
+   <div className="pt-profileMain">
+    <section className="pt-editorialSection" id="profile-focus">
+     <span className="pt-kicker">CLIMATE FOCUS</span>
+     <h2>Areas of interest and practice</h2>
+     {interests(profile.climate_interests).length?
+      <div className="pt-focusList">{interests(profile.climate_interests).map(i=><span key={i}>{i}</span>)}</div>:
+      <p className="pt-editorialLead">Climate leadership and community action.</p>}
+    </section>
+
+    {achievements.length>0&&<section className="pt-editorialSection">
+     <span className="pt-kicker">VERIFIED THROUGH WOMATE</span>
+     <h2>Programme record</h2>
+     <div className="pt-achievementRows">{achievements.map((a,i)=><div className="pt-achievementRow" key={a.title+i}><span className="pt-achievementIcon">{a.icon}</span><div><strong>{a.title}</strong><p>{a.detail}</p></div></div>)}</div>
+    </section>}
+
+    {publications.length>0&&<section className="pt-editorialSection pt-profilePublications" aria-labelledby="pt-publications-heading">
+     <span className="pt-kicker">PUBLISHED ON WOMATE</span>
+     <h2 id="pt-publications-heading">Research and perspectives</h2>
+     <div className="pt-publicationRows">{publications.map(p=><article key={p.id}><div><small>{p.kind||'Publication'}</small><h3><a href={`/publications/${p.id}`}>{p.title}</a></h3><p>{p.summary}</p></div><a href={`/publications/${p.id}`} aria-label={`Read ${p.title}`}><ArrowUpRight size={19}/></a></article>)}</div>
+    </section>}
+   </div>
+
+   <aside className="pt-profileAside" id="collaborate">
+    {thread?<Thread thread={thread} chat={chat} setChat={setChat} send={send} busy={sending} privateUrl={privateChatUrl(access.id,access.token)} copy={copy} copied={copied}/>:profile.collaboration_open?
+     <section className="pt-request pt-request--editorial">
+      <span className="pt-kicker">COLLABORATE</span>
+      <h2>Work with {firstName}</h2>
+      <p>Send a professional collaboration request through WOMATE.</p>
+      <form onSubmit={submit}>
+       <div className="pt-formGrid"><label>Full name<input required maxLength="120" autoComplete="name" value={form.name} onChange={e=>setForm(v=>({...v,name:e.target.value}))}/></label><label>Email<input required type="email" maxLength="160" autoComplete="email" value={form.email} onChange={e=>setForm(v=>({...v,email:e.target.value}))}/></label></div>
+       <label>Organisation or role<input maxLength="160" autoComplete="organization" value={form.organization} onChange={e=>setForm(v=>({...v,organization:e.target.value}))}/></label>
+       <label className="pt-honeypot" aria-hidden="true">Website<input tabIndex="-1" autoComplete="off" value={form.website} onChange={e=>setForm(v=>({...v,website:e.target.value}))}/></label>
+       <label>Collaboration request<textarea required minLength="20" maxLength="1500" value={form.message} onChange={e=>setForm(v=>({...v,message:e.target.value}))}/></label>
+       <label className="pt-consent"><input required type="checkbox" checked={form.consent} onChange={e=>setForm(v=>({...v,consent:e.target.checked}))}/><span>Share these details with this WOMATE participant for this request.</span></label>
+       <button className="pt-button" disabled={sending||!form.consent}><Handshake size={16}/>{sending?'Sending...':'Send collaboration request'}</button>
+      </form>
+     </section>:
+     <section className="pt-request pt-request--editorial"><span className="pt-kicker">PROFILE STATUS</span><h2>Professional profile</h2><p>Collaboration requests are currently closed.</p></section>}
+    {error&&<p className="pt-error">{error}</p>}
+   </aside>
+  </div>
  </main>
 }
 function ChatRoute({id}){
