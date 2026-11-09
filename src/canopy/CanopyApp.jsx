@@ -51,7 +51,7 @@ function isCanopyTester(viewer){return String(viewer?.user?.email||'').trim().to
 function canManageCanopy(viewer){return ['manager','admin'].includes(viewer?.profile?.role)||viewer?.staffAccess?.role==='programme_manager'}
 function isCanopyOperationsStaff(viewer){return ['programme_operations','module_coordinator','learning_fellow'].includes(viewer?.staffAccess?.role)}
 function isAnyCanopyStaff(viewer){return canManageCanopy(viewer)||isCanopyOperationsStaff(viewer)}
-function go(path){window.history.pushState({},'',path);window.dispatchEvent(new PopStateEvent('popstate'));window.scrollTo({top:0,behavior:'smooth'})}
+function go(path){const current=window.location.pathname+window.location.search+window.location.hash;if(current!==path)window.history.pushState({},'',path);window.dispatchEvent(new CustomEvent('womate:navigate',{detail:{path}}));window.scrollTo({top:0,left:0,behavior:'auto'})}
 const totalLessons=modules.reduce((n,m)=>n+m.lessons.length,0);
 const canopyDisplayWeek=w=>String(w).replace(/Weeks?\s*1(?:–|–|-)2/i,'Week 1 & 2').replace(/Weeks?\s*5(?:–|–|-)6/i,'Week 5 & 6').replace(/Weeks?\s*7(?:–|–|-)8/i,'Week 7 & 8');
 
@@ -911,8 +911,8 @@ function CanopyLearningGuide({path,viewer}){
  return <Suspense fallback={null}><AskCanopyWidget path={path}/></Suspense>;
 }
 
-export default function CanopyApp(){
- const hasBooted=useRef(false);const[path,setPath]=useState(route());const[loading,setLoading]=useState(true);const[viewer,setViewer]=useState(null);const[progress,setProgress]=useState([]);const[submissions,setSubmissions]=useState([]);const[snapshot,setSnapshot]=useState(null);const[staffDashboard,setStaffDashboard]=useState(null);const[adminCohorts,setAdminCohorts]=useState([]);const[adminCohortKey,setAdminCohortKey]=useState(()=>localStorage.getItem('canopy_admin_cohort_key')||LEGACY_CANOPY_COHORT);
+export default function CanopyApp({path:appPath}){
+ const hasBooted=useRef(false);const path=appPath||route();const[loading,setLoading]=useState(true);const[viewer,setViewer]=useState(null);const[progress,setProgress]=useState([]);const[submissions,setSubmissions]=useState([]);const[snapshot,setSnapshot]=useState(null);const[staffDashboard,setStaffDashboard]=useState(null);const[adminCohorts,setAdminCohorts]=useState([]);const[adminCohortKey,setAdminCohortKey]=useState(()=>localStorage.getItem('canopy_admin_cohort_key')||LEGACY_CANOPY_COHORT);
  useEffect(()=>{applyCanopyTheme(getCanopyTheme(),{persist:false})},[]);
  const load=async()=>{const session=getStoredSession();if(!session){setViewer(null);setProgress([]);setSubmissions([]);setSnapshot(null);setStaffDashboard(null);setLoading(false);return}try{
    const pending=sessionStorage.getItem('canopy_team_access_code_pending');
@@ -932,7 +932,6 @@ export default function CanopyApp(){
  const loadAdminCohorts=async()=>{if(viewer?.profile?.role!=='admin')return[];try{const rows=await getAdminCohortCatalog(viewer.session);const list=Array.isArray(rows)?rows:[];setAdminCohorts(list);const current=list.find(x=>x.cohort_key===adminCohortKey);if(!current&&list.length){const fallback=list.find(x=>x.cohort_key===LEGACY_CANOPY_COHORT)||list[0];setAdminCohortKey(fallback.cohort_key);localStorage.setItem('canopy_admin_cohort_key',fallback.cohort_key)}return list}catch(err){console.error('Canopy admin cohort catalog failed:',err);return[]}};
  useEffect(()=>{let live=true;if(viewer?.profile?.role!=='admin'){setAdminCohorts([]);return()=>{live=false}};(async()=>{if(live)await loadAdminCohorts()})();return()=>{live=false}},[viewer?.session?.access_token,viewer?.profile?.role]);
  const selectAdminCohort=key=>{setAdminCohortKey(key);localStorage.setItem('canopy_admin_cohort_key',key)};
- useEffect(()=>{const fn=()=>setPath(route());window.addEventListener('popstate',fn);return()=>window.removeEventListener('popstate',fn)},[]);
  // Only load the full dataset on sign-in/session changes, not on every Admin tab or route.
  useEffect(()=>{const stored=getStoredSession();if(!hasBooted.current||(stored?.user?.id||null)!==(viewer?.user?.id||null)){hasBooted.current=true;setLoading(true);load()}},[path]);
  if(path==='/canopy/manage/cohorts-2027'&&viewer?.profile?.role==='admin'){go('/canopy/manage');return null}
