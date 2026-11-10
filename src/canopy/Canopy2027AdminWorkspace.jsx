@@ -4,7 +4,7 @@ import {getCohortAdminWorkspace,reviewCohortAssignment,approveCohortCertificate,
 import {setAdminCohortMembership} from './canopyApi';
 import './Canopy2027Learning.css';
 
-const go=path=>{window.history.pushState({},'',path);window.dispatchEvent(new PopStateEvent('popstate'));window.scrollTo({top:0,behavior:'smooth'})};
+const go=path=>{const current=window.location.pathname+window.location.search+window.location.hash;if(current!==path)window.history.pushState({},'',path);window.dispatchEvent(new CustomEvent('womate:navigate',{detail:{path}}));window.scrollTo({top:0,behavior:'smooth'})};
 const adminTabs=[['overview','Operations'],['access','Learner access'],['reviews','Review assignments'],['attendance','Live attendance'],['certificates','Certificates'],['reports','Reports']];
 const validate=x=>String(x||'').trim().length>=12;
 export default function Canopy2027AdminWorkspace({viewer,cohort,view='overview'}){
