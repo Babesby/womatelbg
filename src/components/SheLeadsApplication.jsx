@@ -1,6 +1,7 @@
 import React,{useEffect,useMemo,useState} from 'react';
-import {ArrowLeft,ArrowRight,Check,CheckCircle2,Clock,ExternalLink,FileText,ShieldCheck,Sparkles,UsersRound} from 'lucide-react';
+import {ArrowLeft,ArrowRight,Check,CheckCircle2,Clock,ExternalLink,ShieldCheck} from 'lucide-react';
 import {acceptCohortOffer,getAdmissionsState,getApplicationStatus,submitCohortApplication} from '../canopy/canopyAdmissionsApi';
+import {canopyPost2026Runtime} from '../canopy/canopyCohortRuntime2027';
 import './she-leads-application.css';
 
 const READ_MORE='https://docs.google.com/document/d/15BxTdNxJvFcWr0-stuOUL1yibeSQHrnnD6YgpYjUO5Q/edit?usp=sharing';
@@ -24,6 +25,10 @@ export default function SheLeadsApplication({cohortKey='she-leads-asia-c1-2027'}
  useEffect(()=>{getAdmissionsState(cohortKey).then(setState).catch(e=>setMessage(e.message))},[cohortKey]);
  const change=(k,v)=>setForm(p=>({...p,[k]:v}));
  const open=Boolean(state?.is_open);
+ const schedule=canopyPost2026Runtime(cohortKey)?.admissions;
+ const dateLabel=value=>{if(!value)return null;const d=/^\d{4}-\d{2}-\d{2}$/.test(value)?new Date(value+'T12:00:00Z'):new Date(value);return Number.isNaN(d.getTime())?null:d.toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric',timeZone:'UTC'})};
+ const opensOn=dateLabel(state?.application_opens_at||schedule?.opens);
+ const closesOn=dateLabel(state?.application_closes_at||schedule?.closes);
  const motivationWords=useMemo(()=>wordCount(form.motivation),[form.motivation]);
 
  const stepOneValid=form.full_name.trim().length>=2&&/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())&&form.phone_whatsapp.replace(/[^\d]/g,'').length>=7&&form.gender&&form.nationality.trim()&&form.country.trim()&&form.city_region.trim()&&form.age_range&&form.current_status;
@@ -48,10 +53,12 @@ export default function SheLeadsApplication({cohortKey='she-leads-asia-c1-2027'}
 
   {mode==='apply'&&<div className="sla-layout">
    <aside className="sla-programmePanel">
-    <div className="sla-programmeBadge"><Sparkles size={18}/> WOMATE · SHE LEADS</div>
-    <h2>Five weeks. Real climate action.</h2>
-    <p className="sla-programmeSummary">Learning · Mentorship · Community</p>
-    <div className={'sla-openState '+(open?'is-open':'')}><span>{open?'APPLICATIONS OPEN':'APPLICATIONS CLOSED'}</span><strong>{open?'You can submit now.':'The form is ready for launch.'}</strong>{state?.application_opens_at&&<small><Clock size={13}/> Opens {new Date(state.application_opens_at).toLocaleString()}</small>}{state?.application_closes_at&&<small>Closes {new Date(state.application_closes_at).toLocaleString()}</small>}</div>
+    <div className="sla-programmeBadge">WOMATE · SHE LEADS</div>
+    <h2>{cohortLabel}</h2>
+    <div className={'sla-openState '+(open?'is-open':'')} aria-label="Application dates">
+     {opensOn&&<p><strong>Applications open</strong><span>{opensOn}</span></p>}
+     {closesOn&&<p><strong>Applications close</strong><span>{closesOn}</span></p>}
+    </div>
    </aside>
 
    <section className="sla-formCard">
