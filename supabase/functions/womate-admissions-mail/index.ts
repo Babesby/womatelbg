@@ -99,12 +99,18 @@ Deno.serve(async function(req){
   const accessToken=await gmailAccessToken();
   let sent=0,failed=0;
   for(const row of rows){
+    let gmailAccepted=false;
     try{
       await rest("womate_admissions_email_queue?id=eq."+row.id,{method:"PATCH",body:JSON.stringify({status:"sending",attempts:Number(row.attempts||0)+1,updated_at:new Date().toISOString()})});
       const templates=await rest("womate_admissions_email_templates?template_key=eq."+encodeURIComponent(row.template_key)+"&select=*");
       const tpl=templates&&templates[0];
       if(!tpl)throw new Error("Email template not found");
-      const p=row.payload||{};
+      const p={...(row.payload||{})};
+      // Every selected person receives seven full days beginning when Gmail
+      // accepts their own email, regardless of their batch position.
+      const offerTime=new Date();
+      const expiryTime=new Date(offerTime.getTime()+7*24*60*60*1000);
+      if(row.template_key==="selected")p.offer_deadline=expiryTime.toUTCString();
       const subject=apply(tpl.subject_template,p);
       const heading=apply(tpl.heading,p);
       const bodyText=apply(tpl.body_template,p);
@@ -112,14 +118,23 @@ Deno.serve(async function(req){
       const ctaUrl=apply(tpl.cta_path||"",p);
       const html=emailHtml(heading,bodyText,ctaLabel,ctaUrl,String(p.decision_note||""));
       const msg=await sendGmail(accessToken,row.recipient_email,subject,html);
-      await rest("womate_admissions_email_queue?id=eq."+row.id,{method:"PATCH",body:JSON.stringify({status:"sent",sent_at:new Date().toISOString(),gmail_message_id:msg.id||null,last_error:null,updated_at:new Date().toISOString()})});
-      await rest("womate_cohort_applications?id=eq."+row.application_id,{method:"PATCH",body:JSON.stringify({decision_email_status:"sent",decision_email_sent_at:new Date().toISOString(),updated_at:new Date().toISOString()})});
+      gmailAccepted=true;
+      // Atomic DB finalization updates the real deadline, selection-card
+      // expiry and mail ledger together. Never retry an accepted message.
+      await rest("rpc/womate_mail_confirm_offer_delivery",{method:"POST",body:JSON.stringify({
+        p_queue:row.id,p_gmail_message_id:msg.id,p_sent_at:offerTime.toISOString(),p_acceptance_days:7
+      })});
       sent++;
     }catch(e){
       const attempts=Number(row.attempts||0)+1;
       const mins=Math.min(360,Math.max(5,Math.pow(2,Math.min(attempts,6))*5));
       const err=String(e instanceof Error?e.message:e).slice(0,1000);
-      try{await rest("womate_admissions_email_queue?id=eq."+row.id,{method:"PATCH",body:JSON.stringify({status:"failed",last_error:err,next_attempt_at:new Date(Date.now()+mins*60000).toISOString(),updated_at:new Date().toISOString()})})}catch{}
+      // If Gmail already accepted the message, leave it in 'sending' for
+      // administrator reconciliation. Marking failed would resend it twice.
+      try{await rest("womate_admissions_email_queue?id=eq."+row.id,{method:"PATCH",body:JSON.stringify(gmailAccepted?
+        {status:"sending",last_error:"Gmail accepted message; finalization needs manual review: "+err,updated_at:new Date().toISOString()}:
+        {status:"failed",last_error:err,next_attempt_at:new Date(Date.now()+mins*60000).toISOString(),updated_at:new Date().toISOString()}
+      )})}catch{}
       failed++;
     }
   }
