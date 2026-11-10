@@ -4,7 +4,7 @@ import {modules} from './canopyData';
 import {getCohortWorkspace,completeCohortLesson,submitCohortAssignment} from './canopyLearningApi';
 import './Canopy2027Learning.css';
 
-const go=path=>{window.history.pushState({},'',path);window.dispatchEvent(new PopStateEvent('popstate'));window.scrollTo({top:0,behavior:'smooth'})};
+const go=path=>{const current=window.location.pathname+window.location.search+window.location.hash;if(current!==path)window.history.pushState({},'',path);window.dispatchEvent(new CustomEvent('womate:navigate',{detail:{path}}));window.scrollTo({top:0,behavior:'auto'})};
 const asiaKey='she-leads-asia-c1-2027';
 const tracks={
  'she-leads-climate-c3-2027':{name:'She Leads Africa · Cohort 3',region:'Africa',application:'Applications target mid-September 2027',session:'Five weeks from October 2027 · exact dates to be announced',focus:['Community climate action','Women in climate governance','Grassroots advocacy and local policy','Field-ready leadership plans','Professional pathways']},
