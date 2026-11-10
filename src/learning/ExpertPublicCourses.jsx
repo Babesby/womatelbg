@@ -1,13 +1,7 @@
 import React,{useEffect,useState} from 'react';
 import {ArrowUpRight} from 'lucide-react';
 
-const CACHE_KEY='womate_public_expert_catalog_v1';
-let catalogCache=(()=>{
- try{
-  const parsed=JSON.parse(sessionStorage.getItem(CACHE_KEY)||'null');
-  return Array.isArray(parsed)?parsed:null;
- }catch{return null}
-})();
+let catalogCache=null;
 let catalogRequest=null;
 
 const fetchCatalog=async()=>{
@@ -22,7 +16,6 @@ const fetchCatalog=async()=>{
    const values=await response.json();
    const rows=Array.isArray(values)?values.filter(x=>x.category==='expert_masterclass'):[];
    catalogCache=rows;
-   try{sessionStorage.setItem(CACHE_KEY,JSON.stringify(rows))}catch{}
    return rows;
   })
   .finally(()=>{catalogRequest=null});
