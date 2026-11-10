@@ -3870,3 +3870,103 @@ html[data-canopy-theme="dark"] .cx-impact-identity>div>p{color:#abc2bb}
   .cx-impact-achievement{break-inside:avoid;page-break-inside:avoid}
   .cx-impact-docfooter{break-inside:avoid}
 }
+
+
+/* Impact Profile refinement · concise, official WOMATE identity, usable evidence links */
+.cx-impact-professional{max-width:1080px;padding-top:32px}
+.cx-impact-dochead{align-items:center;padding-bottom:18px;border-bottom:1.5px solid #0e4d4a}
+.cx-impact-brandblock{align-items:center;gap:22px}
+.cx-impact-logo{display:block;width:92px;height:auto;object-fit:contain}
+.cx-impact-docmeta{padding-left:22px}
+.cx-impact-docmeta>span{font-size:10px;letter-spacing:.13em}
+.cx-impact-docmeta small{font-size:11px}
+.cx-impact-identity{
+  grid-template-columns:minmax(0,1fr) minmax(260px,.38fr);
+  gap:36px;
+  padding:34px 0 24px;
+}
+.cx-impact-identity h1{font-size:clamp(38px,5vw,62px);margin-bottom:8px}
+.cx-impact-identity>div>p{font-size:14px}
+.cx-impact-identity aside{padding-left:20px}
+.cx-impact-identity aside>span{display:none}
+.cx-impact-identity dl{gap:4px 18px}
+.cx-impact-identity dl div{padding:6px 0}
+.cx-impact-identity dt{font-size:10px}
+.cx-impact-identity dd{font-size:15px}
+.cx-impact-transcript{margin-top:26px}
+.cx-impact-transcript>header{padding-bottom:14px}
+.cx-impact-transcript>header h2{font-size:clamp(24px,2.8vw,32px)}
+.cx-impact-transcript>header small{display:none}
+.cx-impact-transcript-head,
+.cx-impact-transcript-body article{
+  grid-template-columns:118px minmax(0,1fr) 135px 160px;
+  gap:20px;
+}
+.cx-impact-transcript-head{padding:9px 10px}
+.cx-impact-transcript-body article{padding:20px 10px}
+.cx-impact-modulecell strong{font-size:21px}
+.cx-impact-modulecell span{font-size:8.5px;line-height:1.35}
+.cx-impact-workcell h3{font-size:18px;margin-bottom:7px}
+.cx-impact-workcell p{display:none}
+.cx-impact-competency{
+  margin-top:4px;
+  padding-top:5px;
+  border-top:1.5px solid #c6ff52;
+  font-size:9.5px;
+}
+.cx-impact-statuscell{padding-top:0}
+.cx-impact-verified,.cx-impact-submitted,.cx-impact-pending{font-size:10px}
+.cx-impact-linkcell a{
+  font-size:11px;
+  font-weight:900;
+  border-bottom:1px solid currentColor;
+  padding-bottom:2px;
+}
+.cx-impact-linkcell a:hover{color:#073b39;border-bottom-width:2px}
+.cx-impact-noevidence{color:#9aa8a3}
+.cx-impact-achievement{margin-top:30px;padding-top:22px}
+.cx-impact-achievement h2{font-size:21px}
+.cx-impact-achievement p{font-size:12px}
+.cx-impact-docfooter{
+  align-items:center;
+  margin-top:34px;
+  padding-top:14px;
+}
+.cx-impact-docfooter img{width:70px;height:auto}
+.cx-impact-docfooter>span{
+  font-size:9px;
+  font-weight:800;
+  letter-spacing:.08em;
+  color:#7b8d86;
+}
+@media(max-width:900px){
+  .cx-impact-transcript-body article{grid-template-columns:72px minmax(0,1fr);gap:14px 18px}
+}
+@media(max-width:620px){
+  .cx-impact-professional{padding-left:18px;padding-right:18px}
+  .cx-impact-logo{width:82px}
+  .cx-impact-docmeta{padding-left:0;border-left:0}
+  .cx-impact-brandblock{gap:10px}
+  .cx-impact-identity{padding:28px 0 20px}
+  .cx-impact-identity h1{font-size:40px}
+  .cx-impact-transcript-body article{padding:18px 0}
+}
+@media print{
+  .cx-impact-logo{width:26mm}
+  .cx-impact-docfooter img{width:20mm}
+  .cx-impact-linkcell a,
+  .cx-impact-achievement-link{color:#0e4d4a!important;text-decoration:underline!important}
+  .cx-impact-linkcell a[href]::after,
+  .cx-impact-achievement-link[href]::after{
+    content:"  " attr(href);
+    display:block;
+    margin-top:2px;
+    max-width:42mm;
+    overflow-wrap:anywhere;
+    font-size:6.5pt;
+    line-height:1.25;
+    font-weight:500;
+    color:#667a73;
+    text-decoration:none;
+  }
+}
