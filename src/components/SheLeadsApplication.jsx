@@ -29,7 +29,7 @@ export default function SheLeadsApplication({cohortKey='she-leads-asia-c1-2027'}
  const stepOneValid=form.full_name&&form.email&&form.phone_whatsapp&&form.gender&&form.nationality&&form.country&&form.city_region&&form.age_range&&form.current_status;
  const stepTwoValid=form.motivation&&motivationWords>=150&&motivationWords<=200&&form.hopes_to_gain.trim().length>=40;
  const stepThreeValid=form.committed_all_sessions&&form.commitment.trim().length>=20&&form.heard_about&&form.accuracy_confirmed&&form.consent&&form.privacy_accepted;
- const next=()=>{if(step===1&&stepOneValid)setStep(2);else if(step===2&&stepTwoValid)setStep(3)};
+ const next=()=>{if(!open){setStep(s=>Math.min(3,s+1));return}if(step===1&&stepOneValid)setStep(2);else if(step===2&&stepTwoValid)setStep(3)};
  const submit=async e=>{e.preventDefault();if(!stepThreeValid)return;setBusy(true);setMessage('');try{const r=await submitCohortApplication(cohortKey,form);setResult(r);setLookup(x=>({...x,reference:r.reference,email:form.email}));setMode('status');setMessage('Application received. Save your application reference.')}catch(e){setMessage(e.message)}finally{setBusy(false)}};
  const check=async e=>{e?.preventDefault?.();setBusy(true);setMessage('');try{const r=await getApplicationStatus(lookup.reference,lookup.email);setResult(r);setMessage(r.ok?'Application found.':r.message)}catch(e){setMessage(e.message)}finally{setBusy(false)}};
  const offer=async accept=>{setBusy(true);setMessage('');try{const r=await acceptCohortOffer(lookup.reference,lookup.email,lookup.code,accept);setResult(r);if(accept){localStorage.setItem('womate_admission_reference',lookup.reference.toUpperCase());localStorage.setItem('womate_admission_email',lookup.email.toLowerCase());setMessage('Offer accepted. Create or sign in to Canopy with this same email to continue.')}else setMessage('Offer declined. WOMATE has recorded your decision.')}catch(e){setMessage(e.message)}finally{setBusy(false)}};
@@ -72,7 +72,7 @@ export default function SheLeadsApplication({cohortKey='she-leads-asia-c1-2027'}
        <Field label="Phone / WhatsApp Number"><input disabled={!open} required autoComplete="tel" value={form.phone_whatsapp} onChange={e=>change('phone_whatsapp',e.target.value)} placeholder="+233 ..."/></Field>
        <Field label="Gender"><Select disabled={!open} value={form.gender} onChange={e=>change('gender',e.target.value)}><option>Female</option><option>Male</option><option>Other</option><option>Prefer not to say</option></Select></Field>
        <Field label="Nationality"><input disabled={!open} required value={form.nationality} onChange={e=>change('nationality',e.target.value)} placeholder="Nationality"/></Field>
-       <Field label="Country & City of Residence"><input disabled={!open} required value={form.city_region} onChange={e=>change('city_region',e.target.value)} placeholder="City / region"/></Field>
+       <Field label="City / Region of Residence"><input disabled={!open} required value={form.city_region} onChange={e=>change('city_region',e.target.value)} placeholder="City / region"/></Field>
        <Field label="Country of Residence"><input disabled={!open} required value={form.country} onChange={e=>change('country',e.target.value)} placeholder="Country"/></Field>
        <Field label="Age Range"><Select disabled={!open} value={form.age_range} onChange={e=>change('age_range',e.target.value)}><option>18–20</option><option>21–25</option><option>26–30</option><option>31+</option></Select></Field>
       </div>
@@ -104,7 +104,7 @@ export default function SheLeadsApplication({cohortKey='she-leads-asia-c1-2027'}
 
      <div className="sla-formNav">
       <button type="button" className="secondary" disabled={step===1} onClick={()=>setStep(s=>Math.max(1,s-1))}><ArrowLeft size={16}/> Back</button>
-      {step<3?<button type="button" disabled={!open||(step===1?!stepOneValid:!stepTwoValid)} onClick={next}>Continue <ArrowRight size={16}/></button>:<button type="submit" disabled={!open||busy||!stepThreeValid}>{busy?'Submitting…':'Submit application'} <ArrowRight size={16}/></button>}
+      {step<3?<button type="button" disabled={open&&(step===1?!stepOneValid:!stepTwoValid)} onClick={next}>{open?'Continue':'Preview next section'} <ArrowRight size={16}/></button>:<button type="submit" disabled={!open||busy||!stepThreeValid}>{busy?'Submitting…':'Submit application'} <ArrowRight size={16}/></button>}
      </div>
     </form>
    </section>
