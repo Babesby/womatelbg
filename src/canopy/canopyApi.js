@@ -201,10 +201,11 @@ export async function getViewer(session){
   try{alumni=await rest('rpc/womate_my_alumni_status',{token:fresh.access_token,method:'POST',body:{}})||{eligible:false}}catch{}
   let teaching={allowed:false,graduate:false,existing:false,status:null};
   try{teaching=await rest('rpc/womate_my_teaching_status',{token:fresh.access_token,method:'POST',body:{}})||teaching}catch{}
-  let cohorts=[];let activeCohort=null;
+  let cohorts=[];let activeCohort=null;let runtimeCohort=null;
   try{const rows=await rest('rpc/canopy_my_cohorts',{token:fresh.access_token,method:'POST',body:{}});cohorts=Array.isArray(rows)?rows:[]}catch{}
   try{activeCohort=await rest('rpc/canopy_my_active_cohort',{token:fresh.access_token,method:'POST',body:{}})}catch{}
-  return {session:fresh,user:fresh.user,profile:profiles?.[0]||null,enrollments:enrollments||[],announcements:announcements||[],withdrawal,alumni,teaching,cohorts,activeCohort};
+  try{runtimeCohort=await rest('rpc/canopy_my_runtime_cohort',{token:fresh.access_token,method:'POST',body:{}})}catch{}
+  return {session:fresh,user:fresh.user,profile:profiles?.[0]||null,enrollments:enrollments||[],announcements:announcements||[],withdrawal,alumni,teaching,cohorts,activeCohort,runtimeCohort};
 }
 export async function getMyRuntimeCohort(session){
   const s=await refreshSession(session||getStoredSession());if(!s?.access_token)return null;
