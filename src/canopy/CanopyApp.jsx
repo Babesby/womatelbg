@@ -51,7 +51,17 @@ function isCanopyTester(viewer){return String(viewer?.user?.email||'').trim().to
 function canManageCanopy(viewer){return ['manager','admin'].includes(viewer?.profile?.role)||viewer?.staffAccess?.role==='programme_manager'}
 function isCanopyOperationsStaff(viewer){return ['programme_operations','module_coordinator','learning_fellow'].includes(viewer?.staffAccess?.role)}
 function isAnyCanopyStaff(viewer){return canManageCanopy(viewer)||isCanopyOperationsStaff(viewer)}
-function go(path){const current=window.location.pathname+window.location.search+window.location.hash;if(current!==path)window.history.pushState({},'',path);window.dispatchEvent(new CustomEvent('womate:navigate',{detail:{path}}));window.scrollTo({top:0,left:0,behavior:'auto'})}
+function go(path){
+ const target=String(path||'/canopy');
+ // Canopy owns only /canopy routes. Any navigation from Admin/Canopy to a
+ // public WOMATE page must perform a real document navigation so the correct
+ // top-level route boot path runs (especially /selected).
+ if(!target.startsWith('/canopy')){window.location.assign(target);return}
+ const current=window.location.pathname+window.location.search+window.location.hash;
+ if(current!==target)window.history.pushState({},'',target);
+ window.dispatchEvent(new CustomEvent('womate:navigate',{detail:{path:target}}));
+ window.scrollTo({top:0,left:0,behavior:'auto'});
+}
 function CanopyRedirect({to}){useEffect(()=>{go(to)},[to]);return <div className="canopyLoading" role="status" aria-live="polite"><Leaf/><span>Opening Canopy…</span></div>}
 const totalLessons=modules.reduce((n,m)=>n+m.lessons.length,0);
 const canopyDisplayWeek=w=>String(w).replace(/Weeks?\s*1(?:–|–|-)2/i,'Week 1 & 2').replace(/Weeks?\s*5(?:–|–|-)6/i,'Week 5 & 6').replace(/Weeks?\s*7(?:–|–|-)8/i,'Week 7 & 8');
