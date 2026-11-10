@@ -471,41 +471,94 @@ export function CanopyPortfolioPage({viewer,submissions=[]}){
     '05':'Lead & multiply'
   };
   function print(){window.print()}
-  return <main className="cx-portfolio cx-impact-profile">
-    <header className="cx-portfolio-hero cx-impact-hero"><div><span>CANOPY IMPACT PROFILE</span><h1>{name}</h1><p>{country?`${country} · `:''}She Leads Climate Mentorship · Cohort 2 · 2026</p></div><button className="canopyPrimary cx-print" onClick={print}><Printer size={16}/> Export / Save as PDF</button></header>
+  return <main className="cx-portfolio cx-impact-profile cx-impact-professional">
+    <header className="cx-impact-dochead">
+      <div className="cx-impact-brandblock">
+        <div className="cx-impact-wordmark"><span>WOMATE</span><small>CANOPY</small></div>
+        <div className="cx-impact-docmeta"><span>IMPACT PROFILE</span><small>She Leads Climate Mentorship · Cohort 2 · 2026</small></div>
+      </div>
+      <button className="canopyPrimary cx-print" onClick={print}><Printer size={16}/> Export / Save as PDF</button>
+    </header>
 
-    <section className="cx-impact-record" aria-label="Canopy Impact Record">
-      <div className="cx-impact-record-copy"><small>CANOPY IMPACT RECORD</small></div>
-      <div className="cx-impact-summary">
-        <span><strong>{submitted.length}</strong> evidence</span>
-        <span><strong>{verified.length}</strong> verified</span>
-        <span><strong>{practicalCount}</strong> practical builds</span>
-        <span><strong>{publicActionCount}</strong> public actions</span>
-        {missionCompletion&&<span className="cx-impact-mission-edge"><strong>★</strong> mission completed</span>}
+    <section className="cx-impact-identity">
+      <div>
+        <span className="cx-impact-overline">LEARNER IMPACT RECORD</span>
+        <h1>{name}</h1>
+        <p>{country||'Country not provided'} · She Leads Climate Mentorship · Cohort 2 · 2026</p>
+      </div>
+      <aside>
+        <span>Record summary</span>
+        <dl>
+          <div><dt>Evidence</dt><dd>{submitted.length}</dd></div>
+          <div><dt>WOMATE verified</dt><dd>{verified.length}</dd></div>
+          <div><dt>Practical builds</dt><dd>{practicalCount}</dd></div>
+          <div><dt>Public actions</dt><dd>{publicActionCount}</dd></div>
+        </dl>
+      </aside>
+    </section>
+
+    <section className="cx-impact-profile-note">
+      <div>
+        <span>PROFESSIONAL SUMMARY</span>
+        <p>This record presents verified learning evidence, practical climate work and public-facing action completed through WOMATE Canopy. Evidence remains participant-owned and can be shared with employers, fellowships, funders, academic programmes and climate networks.</p>
       </div>
     </section>
 
-    <section className="cx-portfolio-intro cx-impact-intro"><BriefcaseBusiness/><div><span className="cx-impact-kicker">YOUR EVIDENCE</span><h2>Learning becomes more valuable when it leaves the classroom.</h2><p>Each module below becomes part of your professional climate record. Keep participant-owned links viewable before sharing this profile with an employer, fellowship, internship, funder or climate network.</p></div></section>
-    <section className="cx-portfolio-grid cx-impact-evidence">
-      {CANOPY_ASSIGNMENT_SCHEDULE.map(item=>{const sub=latest[item.weekKey];const module=modules.find(m=>m.id===item.moduleId);const practical=module?.assignment||{};const isVerified=sub?.review_source==='manual'&&sub?.assessment_status==='completed';return <article className={sub?'is-ready':'is-pending'} key={item.weekKey}><div className="cx-portfolio-no">{item.moduleId}</div><div><div className="cx-impact-evidence-top"><small>{practical?.portfolioLabel||'PRACTICAL WORK'}</small>{isVerified&&<span className="cx-impact-verified"><BadgeCheck size={13}/> WOMATE verified</span>}</div><h2>{practical?.practicalTitle||module?.title}</h2><p>{sub?portfolioEvidenceCopy[item.moduleId]:(practical?.portfolioSummary||practical?.practicalBrief||module?.summary)}</p><div className="cx-impact-capability"><span>{moduleImpact[item.moduleId]||'Climate action'}</span></div>{sub?<div className="cx-portfolio-links">{sub.canvas_link&&!sub.impact_hide_practical&&<a href={sub.canvas_link} target="_blank" rel="noreferrer">Open practical work <ExternalLink size={13}/></a>}{item.weekKey!=='module-05'&&sub.linkedin_link&&<a href={sub.linkedin_link} target="_blank" rel="noreferrer">Open speaker challenge <ExternalLink size={13}/></a>}</div>:<span className="cx-portfolio-pending">Builds automatically when this module is submitted</span>}</div></article>})}
+    <section className="cx-impact-transcript" aria-label="Canopy Impact Record">
+      <header>
+        <div><span>IMPACT TRANSCRIPT</span><h2>Verified learning & practical evidence</h2></div>
+        <small>Minimum professional record · participant-owned evidence</small>
+      </header>
+
+      <div className="cx-impact-transcript-head" aria-hidden="true">
+        <span>Module</span><span>Evidence / competency</span><span>Status</span><span>Evidence</span>
+      </div>
+
+      <div className="cx-impact-transcript-body">
+        {CANOPY_ASSIGNMENT_SCHEDULE.map(item=>{
+          const sub=latest[item.weekKey];
+          const module=modules.find(m=>m.id===item.moduleId);
+          const practical=module?.assignment||{};
+          const isVerified=sub?.review_source==='manual'&&sub?.assessment_status==='completed';
+          return <article className={sub?'is-ready':'is-pending'} key={item.weekKey}>
+            <div className="cx-impact-modulecell"><strong>{item.moduleId}</strong><span>{practical?.portfolioLabel||'PRACTICAL WORK'}</span></div>
+            <div className="cx-impact-workcell">
+              <h3>{practical?.practicalTitle||module?.title}</h3>
+              <p>{sub?portfolioEvidenceCopy[item.moduleId]:(practical?.portfolioSummary||practical?.practicalBrief||module?.summary)}</p>
+              <span className="cx-impact-competency">{moduleImpact[item.moduleId]||'Climate action'}</span>
+            </div>
+            <div className="cx-impact-statuscell">
+              {isVerified?<span className="cx-impact-verified"><BadgeCheck size={14}/> WOMATE verified</span>:sub?<span className="cx-impact-submitted">Submitted</span>:<span className="cx-impact-pending">Pending</span>}
+            </div>
+            <div className="cx-impact-linkcell">
+              {sub?.canvas_link&&!sub?.impact_hide_practical&&<a href={sub.canvas_link} target="_blank" rel="noreferrer">Practical work <ExternalLink size={14}/></a>}
+              {item.weekKey!=='module-05'&&sub?.linkedin_link&&<a href={sub.linkedin_link} target="_blank" rel="noreferrer">Public action <ExternalLink size={14}/></a>}
+              {!sub&&<small>Added automatically after submission</small>}
+            </div>
+          </article>
+        })}
+      </div>
     </section>
-    {!submitted.length&&<p className="cx-portfolio-empty">Your Impact Profile will build automatically as you submit real work through Canopy.</p>}
-        {missionCompletion&&<section className="cx-mission-portfolio-record cx-mission-completed-record" aria-label="WOMATE Mission Completed recognition">
-      <div className="cx-mission-portfolio-kicker">{missionGroup?.name&&missionGroup.name.toLowerCase()!=='cross-country climate mission'?`${missionGroup.name.toUpperCase()} · MISSION COMPLETED · WOMATE VERIFIED`:'MISSION COMPLETED · WOMATE VERIFIED'}</div>
-      <div className="cx-mission-portfolio-main">
-        <div>
-          <h2>{missionGroup?.name||'Cross-country climate mission'}</h2>
-          <p>{`${firstName} completed a WOMATE-reviewed contribution to the cross-country climate mission${myMissionMember?.mission_no?`, leading Mission ${myMissionMember.mission_no}`:''}. This recognition is awarded individually after WOMATE reviews the learner's submitted Mission work.`}</p>
-        </div>
-        <div className="cx-mission-portfolio-meta">
+
+    {missionCompletion&&<section className="cx-impact-achievement" aria-label="WOMATE Mission Completed recognition">
+      <div className="cx-impact-achievement-mark"><BadgeCheck/></div>
+      <div>
+        <span>ADDITIONAL VERIFIED EXPERIENCE</span>
+        <h2>{missionGroup?.name||'Cross-country climate mission'}</h2>
+        <p>{`${firstName} completed a WOMATE-reviewed contribution to the cross-country climate mission${myMissionMember?.mission_no?`, leading Mission ${myMissionMember.mission_no}`:''}. This recognition is awarded individually after WOMATE reviews the learner's submitted Mission work.`}</p>
+        <div className="cx-impact-achievement-meta">
           {missionCountries.length>0&&<span>{missionCountries.length} countries represented</span>}
           {missionCompletion.approved_at&&<span>Approved {new Date(missionCompletion.approved_at).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})}</span>}
-          <span>Priority signal for Mission-gated WOMATE opportunities</span>
+          <span>WOMATE verified</span>
         </div>
-        {missionCompletion.remark&&<p className="cx-mission-portfolio-remark">{missionCompletion.remark}</p>}
-        {missionGroup?.evidence_folder_url&&<div className="cx-portfolio-links"><a href={missionGroup.evidence_folder_url} target="_blank" rel="noreferrer">Open mission evidence <ExternalLink size={13}/></a></div>}
+        {missionCompletion.remark&&<p className="cx-impact-achievement-note">{missionCompletion.remark}</p>}
+        {missionGroup?.evidence_folder_url&&<a className="cx-impact-achievement-link" href={missionGroup.evidence_folder_url} target="_blank" rel="noreferrer">Open mission evidence <ExternalLink size={14}/></a>}
       </div>
     </section>}
-    <footer className="cx-portfolio-footer"><span>WOMATE · SHE LEADS CLIMATE MENTORSHIP</span><span>Evidence links point to participant-owned Google Drive, LinkedIn or X/Twitter work.</span></footer>
+
+    <footer className="cx-impact-docfooter">
+      <div><strong>WOMATE</strong><span>Women · Climate · Leadership</span></div>
+      <p>Evidence links point to participant-owned Google Drive, LinkedIn or X/Twitter work. Verification reflects WOMATE review status at the time this profile is generated.</p>
+    </footer>
   </main>;
 }
