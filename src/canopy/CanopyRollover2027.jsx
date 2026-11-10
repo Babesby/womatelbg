@@ -15,7 +15,7 @@ export function CanopyRolloverOffer({viewer}){
  const[data,setData]=useState(null),[busy,setBusy]=useState(false),[msg,setMsg]=useState('');
  const load=async()=>{try{setData(await getMyRollover2027(viewer?.session))}catch(e){setMsg(e.message)}};
  useEffect(()=>{load()},[viewer?.session?.access_token]);
- const approve=async()=>{setBusy(true);setMsg('');try{setData(await acceptMyRollover2027(viewer?.session));setMsg('Approved. You have been added to She Leads Cohort 3 · 2027.')}catch(e){setMsg(e.message)}finally{setBusy(false)}};
+ const approve=async()=>{setBusy(true);setMsg('');try{setData(await acceptMyRollover2027(viewer?.session));setMsg('Approved. Your continuation request is now awaiting WOMATE review.')}catch(e){setMsg(e.message)}finally{setBusy(false)}};
  if(!data)return <main className="canopyDashboard crOfferShell"><div className="crOfferLoading">Loading your continuation record…</div></main>;
  if(!data.eligible)return <main className="canopyDashboard crOfferShell">
   <section className="crOfferHero crOfferHeroCompact">
@@ -27,6 +27,7 @@ export function CanopyRolloverOffer({viewer}){
  </main>;
 
  const transferred=data.status==='transferred';
+ const approved=data.status==='approved';
  const metrics=[
   {key:'assignments',label:'Reviewed assignments',icon:ClipboardCheck,current:Number(data.reviewed_assignments)||0,target:3,total:5,remaining:Number(data.assignments_remaining)||0},
   {key:'lessons',label:'Lessons',icon:BookOpenCheck,current:Number(data.lessons_completed)||0,target:10,total:20,remaining:Number(data.lessons_remaining)||0},
@@ -79,13 +80,13 @@ export function CanopyRolloverOffer({viewer}){
 
   <section className="crOfferDecision">
    <div>
-    <span className="canopyEyebrow">{transferred?'TRANSFER CONFIRMED':'CONTINUE INTO COHORT 3'}</span>
-    <h2>{transferred?'Your place is carried forward.':'Ready to continue?'}</h2>
-    <p>{transferred?'You are already transferred into She Leads Climate Mentorship · Cohort 3 · 2027.':'Approve automatic transfer to keep your verified progress and continue from where you stopped.'}</p>
+    <span className="canopyEyebrow">{transferred?'TRANSFER CONFIRMED':approved?'AWAITING WOMATE REVIEW':'CONTINUE INTO COHORT 3'}</span>
+    <h2>{transferred?'Your place is carried forward.':approved?'You have approved continuation.':'Ready to continue?'}</h2>
+    <p>{transferred?'You are already transferred into She Leads Climate Mentorship · Cohort 3 · 2027.':approved?'WOMATE will now review your request. Your verified progress remains preserved while the transfer decision is pending.':'Approve continuation so WOMATE can review and transfer you into Cohort 3 without losing your verified progress.'}</p>
    </div>
    <div className="crOfferActions">
-    {transferred?<button className="canopyPrimary" disabled><CheckCircle2 size={17}/> Transfer approved</button>:<button className="canopyPrimary" disabled={busy} onClick={approve}>{busy?'Approving…':'Approve automatic transfer'} <ArrowRight size={17}/></button>}
-    {!transferred&&<a className="canopySecondary" href="https://www.womate.org/she-leads">Register interest instead</a>}
+    {transferred?<button className="canopyPrimary" disabled><CheckCircle2 size={17}/> Transfer complete</button>:approved?<button className="canopyPrimary" disabled><CheckCircle2 size={17}/> Approved · awaiting review</button>:<button className="canopyPrimary" disabled={busy} onClick={approve}>{busy?'Approving…':'Approve continuation'} <ArrowRight size={17}/></button>}
+    {!transferred&&!approved&&<a className="canopySecondary" href="https://www.womate.org/she-leads">Register interest instead</a>}
    </div>
   </section>
 
@@ -121,8 +122,8 @@ export function CanopyRolloverAdmin({viewer}){
 
   <section className="cr2027Metrics" aria-label="Rollover summary">
    <article><div><UsersRound/></div><span>Eligible learners</span><strong>{data.total}</strong><small>Active rollover records</small></article>
-   <article><div><UserRoundCheck/></div><span>Canopy accounts</span><strong>{data.with_account}</strong><small>Ready to respond</small></article>
-   <article><div><UserRoundX/></div><span>Need account</span><strong>{data.without_account}</strong><small>Awaiting matched account</small></article>
+   <article><div><UserRoundCheck/></div><span>Approved responses</span><strong>{counts.approved}</strong><small>Learners awaiting your decision</small></article>
+   <article><div><UserRoundX/></div><span>Awaiting response</span><strong>{counts.notified}</strong><small>Invitation sent, no approval yet</small></article>
    <article><div><RefreshCw/></div><span>Transferred</span><strong>{data.transferred}</strong><small>Moved into Cohort 3</small></article>
   </section>
 
@@ -160,7 +161,7 @@ export function CanopyRolloverAdmin({viewer}){
      </div></td>
      <td><span className={reqLabel(r)==='No additional baseline work'?'cr2027Done':'cr2027Remaining'}>{reqLabel(r)}</span></td>
      <td><span className={'cr2027Status cr2027Status-'+String(r.status).replace('_','-')}>{String(r.status).replace('_',' ')}</span></td>
-     <td className="cr2027Actions">{r.user_id&&r.status!=='transferred'&&<button className="cr2027Transfer" disabled={busy===r.id} onClick={()=>change(r,'transferred')}>{busy===r.id?'Saving…':'Transfer'}</button>}{r.status!=='declined'&&r.status!=='transferred'&&<button className="cr2027Decline" disabled={busy===r.id} onClick={()=>change(r,'declined')}>Decline</button>}</td>
+     <td className="cr2027Actions">{r.status==='approved'?<><button className="cr2027Transfer" disabled={busy===r.id} onClick={()=>change(r,'transferred')}>{busy===r.id?'Saving…':'Transfer'}</button><button className="cr2027Decline" disabled={busy===r.id} onClick={()=>change(r,'declined')}>Decline</button></>:r.status==='transferred'?<span className="cr2027ActionDone">Transferred</span>:r.status==='declined'?<span className="cr2027ActionDone">Declined</span>:<span className="cr2027ActionWaiting">Awaiting learner</span>}</td>
     </tr>
    })}</tbody></table></div>
    {!rows.length&&<div className="cr2027Empty"><UsersRound/><h3>No learners match this view</h3><p>Change the search or status filter.</p></div>}
