@@ -20,12 +20,12 @@ function ChoiceGrid({name,value,onChange,options,disabled=false}){return <div cl
 export default function SheLeadsApplication({cohortKey='she-leads-asia-c1-2027'}){
  const isAsia=cohortKey==='she-leads-asia-c1-2027';
  const cohortLabel=isAsia?'Cohort 1 · 2027 · Asia':'Cohort 3 · 2027 · Africa';
- const [state,setState]=useState(null),[mode,setMode]=useState('apply'),[step,setStep]=useState(1),[busy,setBusy]=useState(false),[message,setMessage]=useState(''),[result,setResult]=useState(null);
+ const [state,setState]=useState(null),[loadError,setLoadError]=useState(false),[mode,setMode]=useState('apply'),[step,setStep]=useState(1),[busy,setBusy]=useState(false),[message,setMessage]=useState(''),[result,setResult]=useState(null);
  const [form,setForm]=useState(initial),[lookup,setLookup]=useState({reference:'',email:'',code:''});
- useEffect(()=>{getAdmissionsState(cohortKey).then(setState).catch(e=>setMessage(e.message))},[cohortKey]);
+ useEffect(()=>{let alive=true;setState(null);setLoadError(false);setStep(1);getAdmissionsState(cohortKey).then(data=>{if(alive)setState(data)}).catch(e=>{if(alive){setLoadError(true);setMessage(e.message)}});return()=>{alive=false}},[cohortKey]);
  const change=(k,v)=>setForm(p=>({...p,[k]:v}));
  const open=Boolean(state?.is_open);
- const loading=state===null;
+ const loading=state===null&&!loadError;
  const schedule=canopyPost2026Runtime(cohortKey)?.admissions;
  const dateLabel=value=>{if(!value)return null;const d=/^\d{4}-\d{2}-\d{2}$/.test(value)?new Date(value+'T12:00:00Z'):new Date(value);return Number.isNaN(d.getTime())?null:d.toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric',timeZone:'UTC'})};
  const opensOn=dateLabel(state?.application_opens_at||schedule?.opens);
@@ -64,7 +64,7 @@ export default function SheLeadsApplication({cohortKey='she-leads-asia-c1-2027'}
    <section className="sla-formCard">
     {open&&<div className="sla-progress" aria-label={'Application step '+step+' of 3'}>{[1,2,3].map(n=><div key={n} aria-current={step===n?'step':undefined} className={step===n?'active':step>n?'done':''}><span>{step>n?<Check size={14}/>:n}</span><small>{n===1?'About you':n===2?'Study & motivation':'Commitment'}</small></div>)}</div>}
 
-    {!open?<div className="sla-closedMessage" role="status"><h2>{loading?'Loading application dates…':`Applications open ${opensOn||'soon'}`}</h2>{closesOn&&<p>Apply by {closesOn}.</p>}<p>Return during the application period to complete your application.</p><a href={READ_MORE} target="_blank" rel="noopener noreferrer">Programme details <ExternalLink size={16}/></a></div>:<form onSubmit={submit}>
+    {!open?<div className="sla-closedMessage" role="status"><h2>{loading?'Loading application dates…':loadError?'Application information unavailable':`Applications open ${opensOn||'soon'}`}</h2>{closesOn&&<p>Apply by {closesOn}.</p>}<p>{loadError?'Please check back shortly.':'Return during the application period to complete your application.'}</p><a href={READ_MORE} target="_blank" rel="noopener noreferrer">Programme details <ExternalLink size={16}/></a></div>:<form onSubmit={submit}>
      {step===1&&<section className="sla-step">
       <div className="sla-stepHead"><span>01 · ABOUT YOU</span><h2>Tell us who you are.</h2><p>Use the email you plan to use for Canopy.</p></div>
       <div className="sla-grid two">
