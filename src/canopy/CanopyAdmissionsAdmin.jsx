@@ -95,7 +95,7 @@ export default function CanopyAdmissionsAdmin({viewer,cohort}){
   </section>
 
   <section className="canopyAdmissionsOps">
-   <article><Mail/><div><small>WOMATE GMAIL</small><strong>{mailStatus?.enabled&&mailStatus?.worker_job_active?'Automatic sending enabled':'Sending paused · Gmail test accepted'}</strong><span>{mail?.pending||0} pending · {mail?.failed||0} failed · {mail?.sent||0} sent</span></div></article>
+   <article><Mail/><div><small>WOMATE GMAIL</small><strong>{mailStatus?.enabled&&mailStatus?.worker_job_active?'Automatic sending enabled':'Sending paused · inbox delivery unverified'}</strong><span>{mail?.pending||0} pending · {mail?.failed||0} failed · {mail?.sent||0} sent</span></div></article>
    <article><BarChart3/><div><small>REVIEW SCORE</small><strong>{analytics?.average_score??'—'}</strong><span>Average reviewed application score</span></div></article>
    <button className="canopySecondary" type="button" disabled={Boolean(busy)} onClick={()=>updateMail(!(mailStatus?.enabled&&mailStatus?.worker_job_active))}>{busy==='mail'?'Updating…':mailStatus?.enabled&&mailStatus?.worker_job_active?'Pause Gmail worker':'Activate Gmail worker'}</button>
    <button className="canopySecondary" disabled={busy==='reminders'} onClick={reminders}><RefreshCw/> Queue reminders</button>
@@ -103,7 +103,7 @@ export default function CanopyAdmissionsAdmin({viewer,cohort}){
    <button className="canopySecondary" onClick={()=>downloadCsv(rows,cohort?.display_name)}><Download/> Export CSV</button>
   </section>
 
-  <p className="canopyFormMsg">Before activating unattended sending, confirm receipt of the isolated test titled “WOMATE admissions mail test” in womatead@gmail.com. A Gmail message ID confirms API acceptance, not inbox receipt.</p>
+  <p className="canopyFormMsg">Sending remains paused until WOMATE confirms the test email is present in womatead@gmail.com. Search All Mail, Sent and Spam for “WOMATE admissions mail test”. A Gmail message ID alone is not proof of receipt.</p>
 
   <section className="canopyAdmissionsAnalytics">
    <header><span>ADMISSIONS FUNNEL</span><strong>Cohort-specific live view</strong></header>
