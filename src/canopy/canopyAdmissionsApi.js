@@ -10,10 +10,28 @@ async function rpc(name,body={},session=null){
  return data;
 }
 export const getAdmissionsState=cohortKey=>rpc('womate_public_cohort_admissions_state',{p_cohort:cohortKey});
-export const submitCohortApplication=(cohortKey,form)=>rpc('womate_submit_cohort_application',{
- p_cohort:cohortKey,p_full_name:form.full_name,p_email:form.email,p_country:form.country,p_city_region:form.city_region||'',
- p_climate_focus:form.climate_focus,p_motivation:form.motivation,p_experience:form.experience,p_commitment:form.commitment,
- p_consent:Boolean(form.consent),p_privacy_accepted:Boolean(form.privacy_accepted),p_website:form.website||''
+export const submitCohortApplication=(cohortKey,form)=>rpc('womate_submit_cohort_application_v2',{
+ p_cohort:cohortKey,
+ p_full_name:form.full_name,
+ p_email:form.email,
+ p_phone_whatsapp:form.phone_whatsapp,
+ p_gender:form.gender,
+ p_nationality:form.nationality,
+ p_country:form.country,
+ p_city_region:form.city_region||'',
+ p_age_range:form.age_range,
+ p_current_status:form.current_status,
+ p_university_program:form.university_program||'',
+ p_year_of_study:form.year_of_study||'',
+ p_motivation:form.motivation,
+ p_hopes_to_gain:form.hopes_to_gain,
+ p_commitment:form.commitment,
+ p_committed_all_sessions:Boolean(form.committed_all_sessions),
+ p_heard_about:form.heard_about,
+ p_consent:Boolean(form.consent),
+ p_privacy_accepted:Boolean(form.privacy_accepted),
+ p_accuracy_confirmed:Boolean(form.accuracy_confirmed),
+ p_website:form.website||''
 });
 export const getApplicationStatus=(reference,email)=>rpc('womate_public_application_status',{p_reference:reference,p_email:email});
 export const acceptCohortOffer=(reference,email,code,accept)=>rpc('womate_accept_cohort_offer',{p_reference:reference,p_email:email,p_code:code,p_accept:Boolean(accept)});
