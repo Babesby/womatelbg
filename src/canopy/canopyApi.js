@@ -2,6 +2,7 @@ const URL=(import.meta.env.VITE_CANOPY_SUPABASE_URL||'').replace(/\/$/,'');
 const KEY=import.meta.env.VITE_CANOPY_SUPABASE_ANON_KEY||'';
 const STORE='womate_canopy_session_v1';
 const COHORT2_KEY='she-leads-climate-c2-2026';
+let refreshInFlight=null;
 
 export const canopyConfigured=Boolean(URL&&KEY);
 const headers=(token,extra={})=>({apikey:KEY,'Content-Type':'application/json',...(token?{Authorization:`Bearer ${token}`}:{Authorization:`Bearer ${KEY}`}),...extra});
@@ -77,8 +78,34 @@ export async function consumeAuthCallback(){
 export async function refreshSession(session){
   if(!session?.refresh_token||!canopyConfigured)return session;
   if(session.expires_at&&Date.now()/1000 < session.expires_at-90)return session;
-  const r=await fetch(`${URL}/auth/v1/token?grant_type=refresh_token`,{method:'POST',headers:headers(),body:JSON.stringify({refresh_token:session.refresh_token})});
-  const data=await parse(r);storeSession(data);return data;
+
+  const refreshToken=session.refresh_token;
+  if(refreshInFlight?.token===refreshToken)return refreshInFlight.promise;
+
+  const promise=(async()=>{
+    try{
+      const r=await fetch(`${URL}/auth/v1/token?grant_type=refresh_token`,{
+        method:'POST',
+        headers:headers(),
+        body:JSON.stringify({refresh_token:refreshToken})
+      });
+      const data=await parse(r);
+      storeSession(data);
+      return data;
+    }catch(error){
+      const message=String(error?.message||error||'');
+      // A revoked/expired refresh token is not recoverable. Remove it so a stale
+      // identity can never drive protected routing on the next render.
+      if(/refresh token|invalid[_ ]?grant|session (?:expired|not found)|jwt.*expired/i.test(message)){
+        storeSession(null);
+      }
+      throw error;
+    }
+  })();
+
+  refreshInFlight={token:refreshToken,promise};
+  try{return await promise}
+  finally{if(refreshInFlight?.promise===promise)refreshInFlight=null}
 }
 export async function signOut(){
   const session=getStoredSession();
