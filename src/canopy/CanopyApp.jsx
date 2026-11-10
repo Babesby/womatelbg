@@ -1011,7 +1011,7 @@ const manager=canManageCanopy(viewer);const operational=isCanopyOperationsStaff(
    content=<main className="canopyDashboard"><h1>2026 Feedback · Tester verification</h1><p>Test-only feedback verification. Learner dashboards no longer display a mandatory feedback popup.</p><p>This is tester-only verification; no learner completion or certificate record was changed.</p><a href="/canopy/classroom">Return to Canopy classroom</a><GraduationFeedback2026 session={viewer.session} tester/></main>;
   } else if(!manager&&(path==='/canopy/courses'||path.startsWith('/canopy/courses/')||path==='/canopy/expert-studio')){
   content=<CanopyCourses viewer={viewer} path={path}/>;
- } else if(runtimeCohort&&['/canopy/classroom','/canopy/course/she-leads','/canopy/assignments','/canopy/progress','/canopy/portfolio','/canopy/opportunities','/canopy/graduation','/canopy/certificate'].includes(path)){
+ } else if(runtimeCohort&&(['/canopy/classroom','/canopy/course/she-leads','/canopy/assignments','/canopy/progress','/canopy/portfolio','/canopy/opportunities','/canopy/graduation','/canopy/certificate'].includes(path)||path.startsWith('/canopy/course/she-leads/'))){
   content=<CanopyCohortParticipantRuntime viewer={viewer} cohortKey={runtimeCohort.cohort_key} membershipStatus={runtimeCohort.membership_status||'active'} path={path}/>;
  } else
  if(path==='/canopy/team-access')content=<CanopyTeamActivation viewer={viewer} onActivated={()=>{setLoading(true);load().then(()=>window.location.assign('/canopy/classroom'))}}/>;
