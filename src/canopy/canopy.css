@@ -4343,3 +4343,260 @@ html[data-canopy-theme="dark"] .cn-item-clear{background:#153a34;border-color:#3
  .cn-item-open{display:grid;padding:16px 52px 16px 16px}
  .cn-item-clear{right:10px;top:10px}
 }
+
+
+/* Impact Profile v4 · compact reference-style record */
+.cx-impact-premium{
+  max-width:1240px!important;
+  padding:22px 24px 44px!important;
+}
+.cx-impact-premium .cx-impact-dochead{
+  padding-bottom:14px!important;
+}
+.cx-impact-premium .cx-impact-identity{
+  grid-template-columns:minmax(0,1fr) minmax(300px,.42fr)!important;
+  gap:28px!important;
+  padding:24px 0 20px!important;
+}
+.cx-impact-premium .cx-impact-identity h1{
+  font-size:clamp(36px,4.8vw,58px)!important;
+}
+.cx-impact-premium .cx-impact-transcript{
+  margin-top:22px!important;
+}
+.cx-impact-premium .cx-impact-transcript>header{
+  grid-template-columns:minmax(0,1fr) minmax(280px,.55fr)!important;
+  gap:24px!important;
+  padding-bottom:12px!important;
+}
+.cx-impact-premium .cx-impact-record-list{
+  display:grid;
+  gap:7px;
+  border-top:0!important;
+}
+.cx-impact-premium .cx-impact-record-list article{
+  display:grid!important;
+  grid-template-columns:72px minmax(0,1fr) 150px 128px!important;
+  gap:0!important;
+  align-items:stretch!important;
+  min-height:96px;
+  padding:0!important;
+  border:1px solid #dbe6df!important;
+  border-radius:14px!important;
+  overflow:hidden;
+  background:#fff!important;
+  opacity:1!important;
+}
+.cx-impact-premium .cx-impact-record-list article.is-pending{
+  opacity:.82!important;
+}
+.cx-impact-premium .cx-impact-record-index{
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  min-width:0;
+  padding:14px 12px!important;
+  border:0!important;
+  background:#0e4d4a;
+}
+.cx-impact-premium .cx-impact-record-index strong{
+  font-size:24px!important;
+  color:#fff!important;
+}
+.cx-impact-premium .cx-impact-record-index span{
+  margin-top:7px!important;
+  color:#d9ebe5!important;
+  font-size:7.5px!important;
+  line-height:1.35!important;
+  letter-spacing:.06em!important;
+}
+.cx-impact-premium .cx-impact-record-main{
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  min-width:0;
+  padding:14px 18px;
+}
+.cx-impact-premium .cx-impact-record-titleline h3{
+  font-size:17px!important;
+  line-height:1.15!important;
+}
+.cx-impact-premium .cx-impact-record-description{
+  max-width:none!important;
+  margin:6px 0 0!important;
+  font-size:11.5px!important;
+  line-height:1.5!important;
+}
+.cx-impact-record-skill{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:12px 14px;
+  border-left:1px solid #e1e9e5;
+  text-align:center;
+}
+.cx-impact-record-skill span{
+  color:#28544c;
+  font-size:10px;
+  line-height:1.35;
+  font-weight:900;
+}
+.cx-impact-record-state{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  justify-content:center;
+  gap:9px;
+  padding:12px 14px;
+  border-left:1px solid #e1e9e5;
+}
+.cx-impact-record-state .cx-impact-verified,
+.cx-impact-record-state .cx-impact-submitted,
+.cx-impact-record-state .cx-impact-pending{
+  font-size:9px!important;
+  white-space:nowrap;
+}
+.cx-impact-premium .cx-impact-linkcell{
+  display:grid!important;
+  gap:4px!important;
+  justify-content:start!important;
+}
+.cx-impact-premium .cx-impact-linkcell a{
+  font-size:8.5px!important;
+  line-height:1.25;
+}
+.cx-impact-premium .cx-impact-noevidence{
+  font-size:8px;
+  line-height:1.25;
+  color:#879690;
+}
+.cx-impact-premium .cx-impact-achievement{
+  margin-top:24px!important;
+  padding-top:18px!important;
+}
+.cx-impact-premium .cx-impact-docfooter{
+  margin-top:24px!important;
+  padding-top:12px!important;
+}
+html[data-canopy-theme="dark"] .cx-impact-premium .cx-impact-record-list article{background:#102b27!important;border-color:#31514a!important}
+html[data-canopy-theme="dark"] .cx-impact-premium .cx-impact-record-index{background:#0e4d4a!important}
+html[data-canopy-theme="dark"] .cx-impact-record-skill,
+html[data-canopy-theme="dark"] .cx-impact-record-state{border-color:#31514a}
+html[data-canopy-theme="dark"] .cx-impact-record-skill span{color:#d7e7e1}
+
+@media(max-width:860px){
+  .cx-impact-premium{padding:22px 18px 50px!important}
+  .cx-impact-premium .cx-impact-identity{grid-template-columns:1fr!important;gap:18px!important}
+  .cx-impact-premium .cx-impact-identity aside{padding-left:0!important;padding-top:14px!important;border-left:0!important;border-top:1px solid #d7e3dd}
+  .cx-impact-premium .cx-impact-record-list article{
+    grid-template-columns:64px minmax(0,1fr) 126px!important;
+  }
+  .cx-impact-record-state{
+    grid-column:2/4;
+    flex-direction:row;
+    align-items:center;
+    justify-content:space-between;
+    border-left:0;
+    border-top:1px solid #e1e9e5;
+    padding:9px 14px;
+  }
+  .cx-impact-premium .cx-impact-linkcell{display:flex!important;flex-wrap:wrap!important}
+}
+@media(max-width:620px){
+  .cx-impact-premium{padding:18px 14px 42px!important}
+  .cx-impact-premium .cx-impact-dochead{gap:12px}
+  .cx-impact-premium .cx-impact-identity{padding:20px 0 16px!important}
+  .cx-impact-premium .cx-impact-identity h1{font-size:38px!important}
+  .cx-impact-premium .cx-impact-transcript>header{grid-template-columns:1fr!important;gap:8px!important}
+  .cx-impact-premium .cx-impact-transcript>header p{text-align:left!important}
+  .cx-impact-premium .cx-impact-record-list article{
+    grid-template-columns:56px minmax(0,1fr)!important;
+    min-height:0;
+  }
+  .cx-impact-premium .cx-impact-record-index{padding:12px 9px!important}
+  .cx-impact-premium .cx-impact-record-main{padding:12px 13px}
+  .cx-impact-record-skill{
+    grid-column:2;
+    justify-content:flex-start;
+    padding:8px 13px;
+    border-left:0;
+    border-top:1px solid #e1e9e5;
+    text-align:left;
+  }
+  .cx-impact-record-state{
+    grid-column:1/-1;
+    padding:9px 12px;
+  }
+}
+
+@media print{
+  @page{size:A4 portrait;margin:7mm}
+  .cx-portfolio.cx-impact-premium{
+    position:static!important;
+    inset:auto!important;
+    width:auto!important;
+    max-width:none!important;
+    padding:0!important;
+    margin:0!important;
+    font-size:9pt!important;
+  }
+  .cx-impact-premium .cx-impact-dochead{
+    padding:0 0 3.5mm!important;
+  }
+  .cx-impact-premium .cx-impact-logo{width:21mm!important}
+  .cx-impact-premium .cx-impact-docmeta{padding-left:5mm!important}
+  .cx-impact-premium .cx-impact-docmeta>span{font-size:7pt!important}
+  .cx-impact-premium .cx-impact-docmeta small{font-size:7.5pt!important}
+  .cx-impact-premium .cx-impact-identity{
+    grid-template-columns:minmax(0,1fr) 68mm!important;
+    gap:7mm!important;
+    padding:5mm 0 4mm!important;
+  }
+  .cx-impact-premium .cx-impact-identity h1{
+    font-size:26pt!important;
+    margin-bottom:2mm!important;
+  }
+  .cx-impact-premium .cx-impact-identity>div>p{font-size:8pt!important}
+  .cx-impact-premium .cx-impact-identity dl{gap:0 4mm!important}
+  .cx-impact-premium .cx-impact-identity dl div{padding:1.5mm 0!important}
+  .cx-impact-premium .cx-impact-identity dt{font-size:6.5pt!important}
+  .cx-impact-premium .cx-impact-identity dd{font-size:9pt!important}
+  .cx-impact-premium .cx-impact-transcript{margin-top:4mm!important}
+  .cx-impact-premium .cx-impact-transcript>header{
+    grid-template-columns:1fr 72mm!important;
+    gap:6mm!important;
+    padding-bottom:3mm!important;
+  }
+  .cx-impact-premium .cx-impact-transcript>header span{font-size:6.5pt!important}
+  .cx-impact-premium .cx-impact-transcript>header h2{font-size:16pt!important}
+  .cx-impact-premium .cx-impact-transcript>header p{font-size:6.5pt!important;line-height:1.35!important}
+  .cx-impact-premium .cx-impact-record-list{gap:2mm!important}
+  .cx-impact-premium .cx-impact-record-list article{
+    grid-template-columns:18mm minmax(0,1fr) 31mm 29mm!important;
+    min-height:21mm!important;
+    gap:0!important;
+    padding:0!important;
+    border-radius:3mm!important;
+    break-inside:avoid!important;
+    page-break-inside:avoid!important;
+  }
+  .cx-impact-premium .cx-impact-record-index{padding:3mm!important}
+  .cx-impact-premium .cx-impact-record-index strong{font-size:14pt!important}
+  .cx-impact-premium .cx-impact-record-index span{font-size:4.8pt!important;margin-top:1.5mm!important}
+  .cx-impact-premium .cx-impact-record-main{padding:3mm 4mm!important}
+  .cx-impact-premium .cx-impact-record-titleline h3{font-size:10pt!important}
+  .cx-impact-premium .cx-impact-record-description{font-size:6.6pt!important;line-height:1.35!important;margin-top:1.2mm!important}
+  .cx-impact-record-skill{padding:2.5mm!important}
+  .cx-impact-record-skill span{font-size:6pt!important}
+  .cx-impact-record-state{padding:2.5mm!important;gap:1.5mm!important}
+  .cx-impact-record-state .cx-impact-verified,
+  .cx-impact-record-state .cx-impact-submitted,
+  .cx-impact-record-state .cx-impact-pending{font-size:5.7pt!important}
+  .cx-impact-premium .cx-impact-linkcell a{font-size:5.4pt!important}
+  .cx-impact-premium .cx-impact-linkcell a[href]::after,
+  .cx-impact-achievement-link[href]::after{content:none!important}
+  .cx-impact-premium .cx-impact-noevidence{font-size:5.2pt!important}
+  .cx-impact-premium .cx-impact-achievement{margin-top:4mm!important;padding-top:3mm!important}
+  .cx-impact-premium .cx-impact-docfooter{margin-top:4mm!important;padding-top:2.5mm!important}
+  .cx-impact-premium .cx-impact-docfooter img{width:17mm!important}
+}
