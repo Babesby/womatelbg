@@ -10,6 +10,7 @@ import CanopyCredentialAdmin from './CanopyCredentialAdmin';
 import CanopyGraduationPortal from './CanopyGraduationPortal';
 import CanopyAlumniCheckin from './CanopyAlumniCheckin';
 import CanopyAlumniAdmin from './CanopyAlumniAdmin';
+import CanopyProgrammeReport from './CanopyProgrammeReport';
 import CanopyCelebration,{CANOPY_C2_CELEBRATION_START} from './CanopyCelebration2026';
 import CanopyAdminClosing from './CanopyAdminClosing';
 import CanopyAttendance from './CanopyAttendance';
@@ -786,7 +787,7 @@ function ManagerOperations({snapshot,session,onReload,viewer,view='overview',coh
   {view==='complaints'&&<ManagerComplaintList actions={filtered('complaint')} nameFor={nameFor} busy={busy} session={session} onReload={onReload} setMsg={setMsg}/>}
   {view==='attendance'&&<CanopyAttendance viewer={viewer} cohortKey={cohortKey}/>} 
   {view==='certificates'&&<ManagerCertificatePanel learners={learners} certificates={snapshot.certificates||[]} progress={snapshot.progress||[]} submissions={snapshot.submissions||[]} session={session} busy={busy} setBusy={setBusy} setMsg={setMsg} onReload={onReload} cohort={cohort}/>}
-  {view==='reports'&&<section className="canopyOpsReport"><article><strong>{snapshot.progress.filter(x=>x.completed).length}</strong><span>completed lessons</span></article><article><strong>{new Set((snapshot.submissions||[]).map(x=>`${x.user_id}:${x.week_key}`)).size}</strong><span>weekly assignments</span></article><article><strong>{(snapshot.certificates||[]).length}</strong><span>certificates issued</span></article><article><strong>{filtered('complaint').filter(x=>x.status==='open').length}</strong><span>open complaints</span></article></section>}
+  {view==='reports'&&<CanopyProgrammeReport viewer={viewer} snapshot={snapshot} cohort={cohort}/>} 
  </main>
 }
 function ManagerCertificatePanel({learners,certificates,progress=[],submissions=[],session,busy,setBusy,setMsg,onReload,cohort=null}){
