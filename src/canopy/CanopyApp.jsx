@@ -1000,6 +1000,8 @@ const manager=canManageCanopy(viewer);const operational=isCanopyOperationsStaff(
  const selectedAdminCohort=viewer?.profile?.role==='admin'?(adminCohorts.find(x=>x.cohort_key===adminCohortKey)||adminCohorts.find(x=>x.cohort_key===LEGACY_CANOPY_COHORT)||adminCohorts[0]||null):null;
  const scopedAdminSnapshot=viewer?.profile?.role==='admin'?scopeAdminSnapshotByCohort(snapshot,selectedAdminCohort):snapshot;
  const activeRuntimeCohort=!tester&&!manager&&!operational&&isPost2026RuntimeCohort(viewer?.activeCohort?.cohort_key)?viewer.activeCohort:null;
+ const pendingRuntimeCohort=!tester&&!manager&&!operational&&!activeRuntimeCohort?((viewer?.cohorts||[]).find(x=>isPost2026RuntimeCohort(x.cohort_key)&&x.membership_status==='pending')||null):null;
+ const runtimeCohort=activeRuntimeCohort||pendingRuntimeCohort;
  const active=tester||viewer.enrollments?.some(e=>e.status==='active')||Boolean(activeRuntimeCohort);let content;
  if(tester&&path==='/canopy/test/mission-closed'){
     content=<CanopyMissionClosedPreview/>;
@@ -1009,8 +1011,8 @@ const manager=canManageCanopy(viewer);const operational=isCanopyOperationsStaff(
    content=<main className="canopyDashboard"><h1>2026 Feedback · Tester verification</h1><p>Test-only feedback verification. Learner dashboards no longer display a mandatory feedback popup.</p><p>This is tester-only verification; no learner completion or certificate record was changed.</p><a href="/canopy/classroom">Return to Canopy classroom</a><GraduationFeedback2026 session={viewer.session} tester/></main>;
   } else if(!manager&&(path==='/canopy/courses'||path.startsWith('/canopy/courses/')||path==='/canopy/expert-studio')){
   content=<CanopyCourses viewer={viewer} path={path}/>;
- } else if(activeRuntimeCohort&&['/canopy/classroom','/canopy/course/she-leads','/canopy/assignments','/canopy/progress','/canopy/portfolio','/canopy/opportunities','/canopy/graduation','/canopy/certificate'].includes(path)){
-  content=<CanopyCohortParticipantRuntime viewer={viewer} cohortKey={activeRuntimeCohort.cohort_key} path={path}/>;
+ } else if(runtimeCohort&&['/canopy/classroom','/canopy/course/she-leads','/canopy/assignments','/canopy/progress','/canopy/portfolio','/canopy/opportunities','/canopy/graduation','/canopy/certificate'].includes(path)){
+  content=<CanopyCohortParticipantRuntime viewer={viewer} cohortKey={runtimeCohort.cohort_key} membershipStatus={runtimeCohort.membership_status||'active'} path={path}/>;
  } else
  if(path==='/canopy/team-access')content=<CanopyTeamActivation viewer={viewer} onActivated={()=>{setLoading(true);load().then(()=>window.location.assign('/canopy/classroom'))}}/>;
  else if(manager&&path==='/canopy/manage/team-access')content=legacyAdmin?<CanopyTeamAccessAdmin viewer={viewer}/>:<ManagerOperations snapshot={scopedAdminSnapshot} session={viewer.session} onReload={async()=>{await load();await loadAdminCohorts?.()}} viewer={viewer} cohort={selectedAdminCohort} view="overview"/>;
