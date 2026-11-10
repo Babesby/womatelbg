@@ -4320,3 +4320,6 @@ html[data-canopy-theme="dark"] .crOfferDecision p{color:#abc2bb}
  .crOfferActions{display:grid;grid-template-columns:1fr;width:100%}
  .crOfferActions .canopyPrimary,.crOfferActions .canopySecondary{width:100%;text-align:center}
 }
+
+.cr2027ActionWaiting,.cr2027ActionDone{font-size:10px;font-weight:850;color:#7b8c86;white-space:nowrap}
+.cr2027ActionDone{color:#17643b}
