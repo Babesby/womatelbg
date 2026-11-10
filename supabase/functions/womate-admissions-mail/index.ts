@@ -80,6 +80,19 @@ Deno.serve(async function(req){
   try{auth=await rest("rpc/womate_mail_worker_authorize",{method:"POST",body:JSON.stringify({p_token:workerToken})})}catch{}
   if(auth!==true)return json({error:"Mail worker disabled or unauthorized"},401);
   if(!GOOGLE_CLIENT_ID||!GOOGLE_CLIENT_SECRET||!GOOGLE_REFRESH_TOKEN)return json({error:"WOMATE Gmail OAuth is not configured yet"},503);
+  // Isolated, authenticated diagnostics never touch the admissions queue.
+  // All test mail goes to the configured WOMATE sender, never arbitrary recipients.
+  const diagnostic=await req.json().catch(()=>({}));
+  if(diagnostic?.action==="check_oauth"||diagnostic?.action==="send_self_test"){
+    try{
+      const accessToken=await gmailAccessToken();
+      if(diagnostic.action==="check_oauth")return json({ok:true,oauth:"refresh_succeeded",queue_unchanged:true});
+      const html=emailHtml("WOMATE Gmail delivery test","This is an isolated admissions-mail delivery test. No applicant has been contacted.",null,null,null);
+      const result=await sendGmail(accessToken,WOMATE_GMAIL_FROM,"WOMATE admissions mail test",html);
+      return json({ok:true,oauth:"refresh_succeeded",gmail_message_id:result.id||null,recipient:WOMATE_GMAIL_FROM,queue_unchanged:true,inbox_receipt_verified:false});
+    }catch(e){return json({ok:false,stage:"gmail_diagnostic",error:String(e instanceof Error?e.message:e).slice(0,400)},502)}
+  }
+
 
   // WOMATE policy: send at most 200 admissions messages in any rolling 24 hours.
   // Small batches avoid bursts and preserve Gmail allowance for regular account use.
