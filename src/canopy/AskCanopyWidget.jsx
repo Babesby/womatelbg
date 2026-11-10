@@ -48,8 +48,7 @@ export default function AskCanopyWidget({path=window.location.pathname}){
   function go(path){
   if(!path)return;
   if(!String(path).startsWith('/canopy')){window.location.assign(path);return}
-  window.history.pushState({},'',path);
-  window.dispatchEvent(new PopStateEvent('popstate'));
+  const current=window.location.pathname+window.location.search+window.location.hash;if(current!==path)window.history.pushState({},'',path);window.dispatchEvent(new CustomEvent('womate:navigate',{detail:{path}}));
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
