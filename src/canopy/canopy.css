@@ -4617,3 +4617,29 @@ html[data-canopy-theme="dark"] .cx-impact-record-skill span{color:#d7e7e1}
 .cx-lesson-sources a p{margin:3px 0 0;font-size:.84rem;line-height:1.45;color:var(--canopy-muted,#557068)}
 .cx-lesson-sources a>svg{position:absolute;right:15px;top:16px}
 @media(max-width:720px){.cx-lesson-sources>div{grid-template-columns:1fr}.cx-lesson-sources{margin-top:26px}}
+
+
+/* 2027 ADMISSIONS ADMIN · responsive control layer */
+.canopyAdmissionsAdmin .canopyAdminReviewFind>label{display:grid;gap:6px;min-width:190px;flex:1 1 210px}
+.canopyAdmissionsAdmin .canopyAdminReviewFind>label>span{font-size:9px;font-weight:900;letter-spacing:.09em;text-transform:uppercase;color:#6f817b}
+.canopyAdmissionsAdmin .canopyAdminReviewFind input[type="datetime-local"]{width:100%;min-height:40px;border:1px solid #d5e0db;background:#fff;color:var(--canopy-ink);border-radius:12px;padding:9px 11px;font:inherit;font-size:12px;box-sizing:border-box}
+.canopyAdmissionsAdmin .canopyAdminReviewFind>.canopyPrimary,
+.canopyAdmissionsAdmin .canopyAdminReviewFind>.canopyDangerButton{flex:0 0 auto;min-height:40px;align-self:end}
+.canopyAdmissionsAdmin .canopyReviewEvidence{grid-template-columns:repeat(2,minmax(0,1fr))}
+.canopyAdmissionsAdmin .canopyReviewEvidence>section{min-width:0}
+.canopyAdmissionsAdmin .canopyReviewEvidence p{overflow-wrap:anywhere}
+@media(max-width:860px){
+ .canopyAdmissionsAdmin .canopyAdminReviewFind{display:grid;grid-template-columns:1fr 1fr;align-items:end}
+ .canopyAdmissionsAdmin .canopyAdminReviewFind>label{min-width:0}
+ .canopyAdmissionsAdmin .canopyAdminReviewFind>.canopyPrimary,
+ .canopyAdmissionsAdmin .canopyAdminReviewFind>.canopyDangerButton{grid-column:1/-1;width:100%}
+}
+@media(max-width:640px){
+ .canopyAdmissionsAdmin .canopyReviewToolbar{padding:14px;border-radius:16px}
+ .canopyAdmissionsAdmin .canopyAdminReviewFind{grid-template-columns:1fr}
+ .canopyAdmissionsAdmin .canopyAdminReviewFind>.canopyPrimary,
+ .canopyAdmissionsAdmin .canopyAdminReviewFind>.canopyDangerButton{grid-column:auto}
+ .canopyAdmissionsAdmin .canopyReviewEvidence{grid-template-columns:1fr}
+ .canopyAdmissionsAdmin .canopyReviewFilters{margin-left:-2px;margin-right:-2px;padding-left:2px;padding-right:2px}
+ .canopyAdmissionsAdmin .canopyReviewCard>header p{overflow-wrap:anywhere}
+}
