@@ -72,3 +72,13 @@
  .sla-formNav button{font-size:.78rem;padding:10px 8px}
 }
 @media(prefers-reduced-motion:reduce){.sla-page *, .sla-page *:before, .sla-page *:after{scroll-behavior:auto!important;transition:none!important}}
+
+
+/* Cohort-specific public dates: no internal operational or launch wording. */
+.sla-programmePanel .sla-openState{background:transparent;border:0;border-top:1px solid rgba(255,255,255,.2);border-radius:0;padding:16px 0 0;margin-top:17px;gap:14px}
+.sla-programmePanel .sla-openState p{display:grid;gap:4px;margin:0}
+.sla-programmePanel .sla-openState p strong{color:#c6ff52;font-size:.75rem;line-height:1.3;font-weight:750}
+.sla-programmePanel .sla-openState p span{color:#fff;font-size:1rem;line-height:1.4;font-weight:650}
+@media(max-width:1000px){.sla-programmePanel .sla-openState{margin-top:0;padding-top:10px}}
+@media(max-width:720px){.sla-programmePanel .sla-openState{margin-top:6px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.sla-programmePanel .sla-openState p span{font-size:.9rem}}
+@media(max-width:370px){.sla-programmePanel .sla-openState{grid-template-columns:minmax(0,1fr)}}
