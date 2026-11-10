@@ -15,7 +15,7 @@ export default function CanopyAdmissionsAdmin({viewer,cohort}){
  const setDraft=(id,patch)=>setDrafts(d=>({...d,[id]:{...draft(rows.find(x=>x.id===id)||{}),...patch}}));
  const save=async x=>{const d=draft(x);setBusy(x.id);setMsg('');try{const r=await reviewCohortApplication(x.id,d.status,d.score,d.private_note,d.public_note,d.offer_expires_at?new Date(d.offer_expires_at).toISOString():null,viewer.session);setMsg(r?.offer_code?'Selected. Offer code: '+r.offer_code+' — copy this now for the applicant.':'Admissions decision saved.');await load()}catch(e){setMsg(e.message)}finally{setBusy('')}};
  const toggle=async open=>{setBusy('window');setMsg('');try{await setCohortAdmissions(key,open,windowForm.opens?new Date(windowForm.opens).toISOString():null,windowForm.closes?new Date(windowForm.closes).toISOString():null,viewer.session);setMsg(open?'Applications opened.':'Applications closed.');await load()}catch(e){setMsg(e.message)}finally{setBusy('')}};
- return <main className="canopyManager canopyOps">
+ return <main className="canopyManager canopyOps canopyAdmissionsAdmin">
   <div className="canopyPageHead"><span className="canopyEyebrow">WOMATE · ADMISSIONS</span><h1>Admissions</h1><p><b>{cohort?.display_name}</b> · Public application → review → decision → acceptance → Canopy account → onboarding.</p></div>
   {msg&&<p className="canopyFormMsg" role="status">{msg}</p>}
   <section className="canopyManagerStats"><article><strong>{counts.all||0}</strong><span>applications</span></article><article><strong>{counts.submitted||0}</strong><span>new</span></article><article><strong>{counts.selected||0}</strong><span>selected</span></article><article><strong>{counts.onboarding_complete||0}</strong><span>onboarded</span></article></section>
