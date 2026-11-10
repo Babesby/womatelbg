@@ -30,6 +30,6 @@ export default function WomateLearningPages({path}){
  const cohortPage=path==='/she-leads';
  const title=cohortPage?'She Leads Cohorts: Africa & Asia | WOMATE':course?course.title+' | WOMATE Courses':'WOMATE Courses | Specialist Climate Learning';
  const description=cohortPage?'Explore She Leads climate leadership cohorts across Africa and Asia.':course?course.summary:'Explore WOMATE climate and leadership short courses designed for practical learning and action.';
- const content=cohortPage?<Cohorts/>:course?<Detail course={course}/>:slug?<ExpertPublicCourses slug={slug}/>:<Courses/>;
+ const content=cohortPage?<Cohorts/>:course?<Detail course={course}/>:slug?<ExpertPublicCourses key={slug} slug={slug}/>:<Courses/>;
  return <><Helmet><title>{title}</title><meta name="description" content={description}/><link rel="canonical" href={'https://www.womate.org'+(course||cohortPage?path:'/courses')}/><meta property="og:title" content={title}/><meta property="og:description" content={description}/><meta property="og:type" content="website"/><meta name="robots" content="index,follow"/></Helmet>{content}</>;
 }
