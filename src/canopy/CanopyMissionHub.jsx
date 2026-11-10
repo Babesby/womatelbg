@@ -12,7 +12,7 @@ const STANDARD=[
 ];
 const deadline='Monday, 26 October 2026 at 11:59 PM GMT';
 
-function go(path){window.history.pushState({},'',path);window.dispatchEvent(new PopStateEvent('popstate'));window.scrollTo({top:0,behavior:'smooth'})}
+function go(path){window.history.pushState({},'',path);window.dispatchEvent(new CustomEvent('womate:navigate',{detail:{path:path}}));window.scrollTo({top:0,behavior:'smooth'})}
 function statusText(v){return String(v||'').replaceAll('_',' ')}
 function meaningfulMissionName(v){const s=String(v||'').trim();return s.length>=4&&s.length<=100&&!['mission','climate mission','womate mission','cross-country climate mission','cross country climate mission'].includes(s.toLowerCase())&&!/^mission\s*[#_-]?\s*\d+$/i.test(s)&&!/^mission\s+(one|two|three|four|five|six|seven|eight|nine|ten)$/i.test(s)}
 const MISSION_STAGE_LABELS={1:'Observe locally',2:'Listen to people',3:'Map responsibility',4:'Take public action',5:'Multiply the learning'};
