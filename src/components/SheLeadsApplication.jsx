@@ -1,5 +1,5 @@
 import React,{useEffect,useMemo,useState} from 'react';
-import {ArrowLeft,ArrowRight,Check,CheckCircle2,Clock,ExternalLink,ShieldCheck} from 'lucide-react';
+import {ArrowLeft,ArrowRight,Check,CheckCircle2,ExternalLink} from 'lucide-react';
 import {acceptCohortOffer,getAdmissionsState,getApplicationStatus,submitCohortApplication} from '../canopy/canopyAdmissionsApi';
 import {canopyPost2026Runtime} from '../canopy/canopyCohortRuntime2027';
 import './she-leads-application.css';
@@ -25,6 +25,7 @@ export default function SheLeadsApplication({cohortKey='she-leads-asia-c1-2027'}
  useEffect(()=>{getAdmissionsState(cohortKey).then(setState).catch(e=>setMessage(e.message))},[cohortKey]);
  const change=(k,v)=>setForm(p=>({...p,[k]:v}));
  const open=Boolean(state?.is_open);
+ const loading=state===null;
  const schedule=canopyPost2026Runtime(cohortKey)?.admissions;
  const dateLabel=value=>{if(!value)return null;const d=/^\d{4}-\d{2}-\d{2}$/.test(value)?new Date(value+'T12:00:00Z'):new Date(value);return Number.isNaN(d.getTime())?null:d.toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric',timeZone:'UTC'})};
  const opensOn=dateLabel(state?.application_opens_at||schedule?.opens);
@@ -34,7 +35,7 @@ export default function SheLeadsApplication({cohortKey='she-leads-asia-c1-2027'}
  const stepOneValid=form.full_name.trim().length>=2&&/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())&&form.phone_whatsapp.replace(/[^\d]/g,'').length>=7&&form.gender&&form.nationality.trim()&&form.country.trim()&&form.city_region.trim()&&form.age_range&&form.current_status;
  const stepTwoValid=form.motivation&&motivationWords>=150&&motivationWords<=200&&form.hopes_to_gain.trim().length>=40;
  const stepThreeValid=form.committed_all_sessions&&form.commitment.trim().length>=20&&form.heard_about&&form.accuracy_confirmed&&form.consent&&form.privacy_accepted;
- const next=()=>{setMessage('');if(!open){setStep(s=>Math.min(3,s+1));return}if(step===1&&stepOneValid)setStep(2);else if(step===2&&stepTwoValid)setStep(3)};
+ const next=()=>{setMessage('');if(!open)return;if(step===1&&stepOneValid)setStep(2);else if(step===2&&stepTwoValid)setStep(3)};
  const submit=async e=>{e.preventDefault();if(!open||!stepOneValid||!stepTwoValid||!stepThreeValid){setMessage('Please complete all three sections before submitting.');return;}setBusy(true);setMessage('');try{const r=await submitCohortApplication(cohortKey,form);setResult(r);setLookup(x=>({...x,reference:r.reference,email:form.email}));setMode('status');setMessage('Application received. Save your application reference.')}catch(e){setMessage(e.message)}finally{setBusy(false)}};
  const check=async e=>{e?.preventDefault?.();setBusy(true);setMessage('');try{const r=await getApplicationStatus(lookup.reference,lookup.email);setResult(r);setMessage(r.ok?'Application found.':r.message)}catch(e){setMessage(e.message)}finally{setBusy(false)}};
  const offer=async accept=>{setBusy(true);setMessage('');try{const r=await acceptCohortOffer(lookup.reference,lookup.email,lookup.code,accept);setResult(r);if(accept){localStorage.setItem('womate_admission_reference',lookup.reference.toUpperCase());localStorage.setItem('womate_admission_email',lookup.email.toLowerCase());setMessage('Offer accepted. Create or sign in to Canopy with this same email to continue.')}else setMessage('Offer declined. WOMATE has recorded your decision.')}catch(e){setMessage(e.message)}finally{setBusy(false)}};
@@ -43,9 +44,8 @@ export default function SheLeadsApplication({cohortKey='she-leads-asia-c1-2027'}
   <section className="sla-masthead">
    <div className="sla-brandMark">W</div>
    <div className="sla-mastCopy">
-    <span>SHE LEADS CLIMATE MENTORSHIP PROGRAM · {cohortLabel.toUpperCase()}</span>
-    <h1>{mode==='apply'?'Application form':'Application status'}</h1>
-    <p>Five weeks of climate leadership, mentorship and practical learning.</p>
+    <span>WOMATE · SHE LEADS · {cohortLabel.toUpperCase()}</span>
+    <h1>{mode==='apply'?'Apply':'Application status'}</h1>
     <div className="sla-mastActions"><a href={READ_MORE} target="_blank" rel="noopener noreferrer">Read programme brief <ExternalLink size={15}/></a><a href="mailto:womatead@gmail.com">womatead@gmail.com</a></div>
    </div>
    <div className="sla-modeTabs" aria-label="Application pages"><button type="button" aria-current={mode==='apply'?'page':undefined} className={mode==='apply'?'active':''} onClick={()=>setMode('apply')}>Apply</button><button type="button" aria-current={mode==='status'?'page':undefined} className={mode==='status'?'active':''} onClick={()=>setMode('status')}>Check status</button></div>
@@ -56,17 +56,15 @@ export default function SheLeadsApplication({cohortKey='she-leads-asia-c1-2027'}
     <div className="sla-programmeBadge">WOMATE · SHE LEADS</div>
     <h2>{cohortLabel}</h2>
     <div className={'sla-openState '+(open?'is-open':'')} aria-label="Application dates">
-     {opensOn&&<p><strong>Applications open</strong><span>{opensOn}</span></p>}
-     {closesOn&&<p><strong>Applications close</strong><span>{closesOn}</span></p>}
+     {opensOn&&<p><strong>Opens</strong><span>{opensOn}</span></p>}
+     {closesOn&&<p><strong>Closes</strong><span>{closesOn}</span></p>}
     </div>
    </aside>
 
    <section className="sla-formCard">
-    <div className="sla-progress" aria-label={'Application step '+step+' of 3'}>{[1,2,3].map(n=><div key={n} aria-current={step===n?'step':undefined} className={step===n?'active':step>n?'done':''}><span>{step>n?<Check size={14}/>:n}</span><small>{n===1?'About you':n===2?'Study & motivation':'Commitment'}</small></div>)}</div>
+    {open&&<div className="sla-progress" aria-label={'Application step '+step+' of 3'}>{[1,2,3].map(n=><div key={n} aria-current={step===n?'step':undefined} className={step===n?'active':step>n?'done':''}><span>{step>n?<Check size={14}/>:n}</span><small>{n===1?'About you':n===2?'Study & motivation':'Commitment'}</small></div>)}</div>}
 
-    {!open&&<div className="sla-closedBanner"><ShieldCheck/><div><strong>Applications are not open yet.</strong><p>Preview the questions now. You can submit when applications open.</p></div></div>}
-
-    <form onSubmit={submit}>
+    {!open?<div className="sla-closedMessage" role="status"><h2>{loading?'Loading application dates…':`Applications open ${opensOn||'soon'}`}</h2>{closesOn&&<p>Apply by {closesOn}.</p>}<p>Return during the application period to complete your application.</p><a href={READ_MORE} target="_blank" rel="noopener noreferrer">Programme details <ExternalLink size={16}/></a></div>:<form onSubmit={submit}>
      {step===1&&<section className="sla-step">
       <div className="sla-stepHead"><span>01 · ABOUT YOU</span><h2>Tell us who you are.</h2><p>Use the email you plan to use for Canopy.</p></div>
       <div className="sla-grid two">
@@ -107,9 +105,9 @@ export default function SheLeadsApplication({cohortKey='she-leads-asia-c1-2027'}
 
      <div className="sla-formNav">
       <button type="button" className="secondary" disabled={step===1} onClick={()=>{setMessage('');setStep(s=>Math.max(1,s-1))}}><ArrowLeft size={16}/> Back</button>
-      {step<3?<button type="button" disabled={open&&(step===1?!stepOneValid:!stepTwoValid)} onClick={next}>{open?'Continue':'Preview next section'} <ArrowRight size={16}/></button>:<button type="submit" disabled={!open||busy||!stepThreeValid}>{busy?'Submitting…':'Submit application'} <ArrowRight size={16}/></button>}
+      {step<3?<button type="button" disabled={step===1?!stepOneValid:!stepTwoValid} onClick={next}>Continue <ArrowRight size={16}/></button>:<button type="submit" disabled={!open||busy||!stepThreeValid}>{busy?'Submitting…':'Submit application'} <ArrowRight size={16}/></button>}
      </div>
-    </form>
+    </form>}
    </section>
   </div>}
 
