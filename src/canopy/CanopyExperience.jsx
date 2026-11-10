@@ -304,7 +304,12 @@ function ReflectionCard({moduleId,lessonId,prompt}){
   return <aside className="cx-reflect"><div className="cx-reflect-icon"><Sparkles size={17}/></div><div className="cx-reflect-main"><small>PAUSE & APPLY · PRIVATE NOTE</small><h3>{prompt}</h3><p>Private · not graded.</p><textarea rows="3" value={value} onChange={e=>setValue(e.target.value)} placeholder="Write one honest thought…" maxLength={360}/><div><button type="button" onClick={save} disabled={!value.trim()}>Save reflection</button><span>{value.length}/360</span></div></div></aside>;
 }
 
-export function CanopyLessonActivity({moduleId,lessonId}){
+export function CanopyLessonActivity({moduleId,lessonId,activityOverride=null}){
+  if(activityOverride){
+    if(activityOverride.type==='truth-myth')return <TruthMythGame lessonId={lessonId} activity={activityOverride}/>;
+    if(activityOverride.type==='word-search')return <WordSearchGame lessonId={lessonId} activity={activityOverride}/>;
+    return <ChoiceGame lessonId={lessonId} activity={activityOverride}/>;
+  }
   if(!['02','03','04','05'].includes(String(moduleId)))return null;
   const prompt=REFLECTION_PROMPTS[lessonId];
   if(prompt)return <ReflectionCard moduleId={moduleId} lessonId={lessonId} prompt={prompt}/>;
