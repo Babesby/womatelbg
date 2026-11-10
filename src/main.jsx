@@ -1332,6 +1332,8 @@ useEffect(()=>{
 
  const handlePopState=()=>commitRoute();
  const handleAppNavigate=e=>commitRoute(e?.detail?.path||normalizePath());
+ const handlePageShow=()=>commitRoute(normalizePath());
+ const handleVisibility=()=>{if(document.visibilityState==='visible')commitRoute(normalizePath())};
 
  const handleInternalNavigation=e=>{
   if(e.defaultPrevented||e.button!==0||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;
@@ -1374,6 +1376,8 @@ useEffect(()=>{
  const previousRestoration=window.history.scrollRestoration;
  window.history.scrollRestoration='manual';
  window.addEventListener('popstate',handlePopState);
+ window.addEventListener('pageshow',handlePageShow);
+ document.addEventListener('visibilitychange',handleVisibility);
  window.addEventListener('womate:navigate',handleAppNavigate);
  // Capture-phase interception prevents the browser or a nested router from
  // briefly rendering an intermediate route first.
@@ -1381,6 +1385,8 @@ useEffect(()=>{
  return()=>{
   window.history.scrollRestoration=previousRestoration;
   window.removeEventListener('popstate',handlePopState);
+  window.removeEventListener('pageshow',handlePageShow);
+  document.removeEventListener('visibilitychange',handleVisibility);
   window.removeEventListener('womate:navigate',handleAppNavigate);
   document.removeEventListener('click',handleInternalNavigation,true);
  };
@@ -1399,7 +1405,7 @@ const publicationDetail=path.startsWith('/publications/');
 return <>
 {!publicTalent&&!publicLearning&&!publicationDetail&&<PageSEO path={path}/>}<UIPolish/><DeepRepairStyles/>
 <Header/>
-{publicTalent?<PublicTalentDiscovery/>:publicLearning?<WomateLearningPages path={path}/>:p.type==='home'?<Home/>:p.type==='she'?<SheLeads/>:p.type==='asia'?<SheLeadsAsia HeroVisual={HeroVisual}/>:p.type==='wok'?<WokAction/>:p.type==='research'?<ResearchPage/>:p.type==='publications'?<PublicationsPage/>:p.type==='circle'?<CirclePage/>:p.type==='minds'?<ResilientMinds/>:p.type==='honours'?<HonoursPage/>:p.type==='leadership'?<LeadershipPage/>:p.type==='volunteer'?<WomateerPage/>:p.type==='merch'?<MerchandisePage/>:p.type==='funding'?<FundingPage/>:p.type==='donate'?<DonationPage/>:p.type==='privacy'?<LegalPage kind="privacy"/>:p.type==='terms'?<LegalPage kind="terms"/>:<Standard p={p}/>}
+{publicTalent?<PublicTalentDiscovery/>:publicLearning?<WomateLearningPages key={path} path={path}/>:p.type==='home'?<Home/>:p.type==='she'?<SheLeads/>:p.type==='asia'?<SheLeadsAsia HeroVisual={HeroVisual}/>:p.type==='wok'?<WokAction/>:p.type==='research'?<ResearchPage/>:p.type==='publications'?<PublicationsPage/>:p.type==='circle'?<CirclePage/>:p.type==='minds'?<ResilientMinds/>:p.type==='honours'?<HonoursPage/>:p.type==='leadership'?<LeadershipPage/>:p.type==='volunteer'?<WomateerPage/>:p.type==='merch'?<MerchandisePage/>:p.type==='funding'?<FundingPage/>:p.type==='donate'?<DonationPage/>:p.type==='privacy'?<LegalPage kind="privacy"/>:p.type==='terms'?<LegalPage kind="terms"/>:<Standard p={p}/>}
 <Footer/>
 </>
 }
