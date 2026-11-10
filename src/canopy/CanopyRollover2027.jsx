@@ -1,5 +1,5 @@
 import React,{useEffect,useMemo,useState}from'react';
-import {ArrowRight,CheckCircle2,Search,UsersRound,UserRoundCheck,UserRoundX,RefreshCw,Filter} from 'lucide-react';
+import {ArrowRight,CheckCircle2,Search,UsersRound,UserRoundCheck,UserRoundX,RefreshCw,Filter,BookOpenCheck,ClipboardCheck,Radio,KeyRound} from 'lucide-react';
 import {acceptMyRollover2027,getAdminRollover2027,getMyRollover2027,updateAdminRollover2027} from './canopyApi';
 
 const reqLabel=(r)=>{
@@ -16,23 +16,80 @@ export function CanopyRolloverOffer({viewer}){
  const load=async()=>{try{setData(await getMyRollover2027(viewer?.session))}catch(e){setMsg(e.message)}};
  useEffect(()=>{load()},[viewer?.session?.access_token]);
  const approve=async()=>{setBusy(true);setMsg('');try{setData(await acceptMyRollover2027(viewer?.session));setMsg('Approved. You have been added to She Leads Cohort 3 · 2027.')}catch(e){setMsg(e.message)}finally{setBusy(false)}};
- if(!data)return <main className="canopyDashboard"><p>{msg||'Loading your continuation offer…'}</p></main>;
- if(!data.eligible)return <main className="canopyDashboard"><div className="canopyPageHead"><span className="canopyEyebrow">SHE LEADS 2027</span><h1>Continue your WOMATE journey</h1><p>No automatic rollover offer is attached to this account. You can still register your interest for the next cohort.</p></div><a className="canopyPrimary" href="https://www.womate.org/she-leads">Register interest <ArrowRight size={16}/></a></main>;
+ if(!data)return <main className="canopyDashboard crOfferShell"><div className="crOfferLoading">Loading your continuation record…</div></main>;
+ if(!data.eligible)return <main className="canopyDashboard crOfferShell">
+  <section className="crOfferHero crOfferHeroCompact">
+   <span className="canopyEyebrow">SHE LEADS 2027</span>
+   <h1>Continue your WOMATE journey</h1>
+   <p>No automatic rollover offer is attached to this account. You can still register your interest for the next cohort.</p>
+   <a className="canopyPrimary crOfferPrimaryLink" href="https://www.womate.org/she-leads">Register interest <ArrowRight size={16}/></a>
+  </section>
+ </main>;
+
  const transferred=data.status==='transferred';
- return <main className="canopyDashboard">
-  <div className="canopyPageHead"><span className="canopyEyebrow">SHE LEADS · CONTINUE TO GRADUATION</span><h1>You do not have to start again.</h1><p>Your verified Cohort 2 work will carry forward. In Cohort 3 · 2027, you only complete what is still missing from the graduation minimum.</p></div>
-  <div className="canopyStatsGrid">
-   <article><span>Reviewed assignments</span><strong>{data.reviewed_assignments}/5</strong><small>Minimum carried forward: 3</small></article>
-   <article><span>Lessons completed</span><strong>{data.lessons_completed}/20</strong><small>Minimum carried forward: 10</small></article>
-   <article><span>Live sessions</span><strong>{data.attendance_count}/5</strong><small>Minimum carried forward: 3</small></article>
-   <article><span>Selection code</span><strong>{data.has_selection_code?'Generated':'Still needed'}</strong></article>
-  </div>
-  <section className="canopyCard"><span className="canopyEyebrow">WHAT YOU STILL NEED</span><h2>{reqLabel(data)}</h2><p>Previous verified progress remains credited. New Cohort 3 work only needs to close these remaining minimums before final graduation review.</p></section>
-  <div className="canopyActions">
-   {transferred?<button className="canopyPrimary" disabled><CheckCircle2 size={17}/> Automatic transfer approved</button>:<button className="canopyPrimary" disabled={busy} onClick={approve}>{busy?'Approving…':'Approve automatic transfer'} <ArrowRight size={17}/></button>}
-   <a className="canopySecondary" href="https://www.womate.org/she-leads">Register interest instead</a>
-  </div>
-  {msg&&<p className="canopyFormMsg" role="status">{msg}</p>}
+ const metrics=[
+  {key:'assignments',label:'Reviewed assignments',icon:ClipboardCheck,current:Number(data.reviewed_assignments)||0,target:3,total:5,remaining:Number(data.assignments_remaining)||0},
+  {key:'lessons',label:'Lessons',icon:BookOpenCheck,current:Number(data.lessons_completed)||0,target:10,total:20,remaining:Number(data.lessons_remaining)||0},
+  {key:'live',label:'Live sessions',icon:Radio,current:Number(data.attendance_count)||0,target:3,total:5,remaining:Number(data.attendance_remaining)||0}
+ ];
+ return <main className="canopyDashboard crOfferShell">
+  <section className="crOfferHero">
+   <div className="crOfferHeroCopy">
+    <span className="canopyEyebrow">SHE LEADS · CONTINUE TO GRADUATION</span>
+    <h1>You do not have to start again.</h1>
+    <p>Your verified Cohort 2 progress stays with you. In Cohort 3 · 2027, you only complete the graduation requirements you have not yet met.</p>
+   </div>
+   <div className="crOfferYearFlow" aria-label="Cohort 2 to Cohort 3"><strong>2026</strong><ArrowRight/><strong>2027</strong></div>
+  </section>
+
+  <section className="crOfferProgress" aria-label="Progress carried forward">
+   <header>
+    <div><span className="canopyEyebrow">YOUR VERIFIED PROGRESS</span><h2>What carries forward</h2></div>
+    <p>Graduation minimums are 3 reviewed assignments, 10 lessons and 3 live sessions.</p>
+   </header>
+   <div className="crOfferProgressRows">
+    {metrics.map(m=>{
+     const Icon=m.icon;
+     const credited=Math.min(m.current,m.target);
+     const pct=Math.min(100,Math.round((credited/m.target)*100));
+     return <article key={m.key}>
+      <div className="crOfferMetricIcon"><Icon/></div>
+      <div className="crOfferMetricMain">
+       <div className="crOfferMetricTop"><span>{m.label}</span><strong>{m.current}<small> recorded</small></strong></div>
+       <div className="crOfferTrack" aria-label={`${credited} of ${m.target} graduation minimum credited`}><span style={{width:`${pct}%`}}/></div>
+       <div className="crOfferMetricFoot"><span>{credited}/{m.target} credited toward graduation</span>{m.remaining>0?<b>{m.remaining} remaining</b>:<b className="is-complete">Minimum met</b>}</div>
+      </div>
+     </article>
+    })}
+    <article className="crOfferCodeRow">
+     <div className="crOfferMetricIcon"><KeyRound/></div>
+     <div className="crOfferMetricMain">
+      <div className="crOfferMetricTop"><span>Selection code</span><strong>{data.has_selection_code?'Ready':'Needed'}</strong></div>
+      <div className="crOfferMetricFoot"><span>{data.has_selection_code?'Your existing selection code remains valid for this record.':'A valid selection code is still required before final graduation review.'}</span></div>
+     </div>
+    </article>
+   </div>
+  </section>
+
+  <section className="crOfferRemaining">
+   <span className="canopyEyebrow">WHAT YOU STILL NEED</span>
+   <h2>{reqLabel(data)}</h2>
+   <p>Complete only these remaining requirements in Cohort 3. Your verified 2026 work stays credited.</p>
+  </section>
+
+  <section className="crOfferDecision">
+   <div>
+    <span className="canopyEyebrow">{transferred?'TRANSFER CONFIRMED':'CONTINUE INTO COHORT 3'}</span>
+    <h2>{transferred?'Your place is carried forward.':'Ready to continue?'}</h2>
+    <p>{transferred?'You are already transferred into She Leads Climate Mentorship · Cohort 3 · 2027.':'Approve automatic transfer to keep your verified progress and continue from where you stopped.'}</p>
+   </div>
+   <div className="crOfferActions">
+    {transferred?<button className="canopyPrimary" disabled><CheckCircle2 size={17}/> Transfer approved</button>:<button className="canopyPrimary" disabled={busy} onClick={approve}>{busy?'Approving…':'Approve automatic transfer'} <ArrowRight size={17}/></button>}
+    {!transferred&&<a className="canopySecondary" href="https://www.womate.org/she-leads">Register interest instead</a>}
+   </div>
+  </section>
+
+  {msg&&<p className="canopyFormMsg crOfferMsg" role="status">{msg}</p>}
  </main>;
 }
 
