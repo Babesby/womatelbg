@@ -197,10 +197,12 @@ export async function getViewer(session){
   ]);
   let withdrawal=null;
   try{withdrawal=await rest('rpc/canopy_get_own_withdrawal_status',{token:fresh.access_token,method:'POST',body:{}})}catch{}
+  let alumni={eligible:false};
+  try{alumni=await rest('rpc/womate_my_alumni_status',{token:fresh.access_token,method:'POST',body:{}})||{eligible:false}}catch{}
   let cohorts=[];let activeCohort=null;
   try{const rows=await rest('rpc/canopy_my_cohorts',{token:fresh.access_token,method:'POST',body:{}});cohorts=Array.isArray(rows)?rows:[]}catch{}
   try{activeCohort=await rest('rpc/canopy_my_active_cohort',{token:fresh.access_token,method:'POST',body:{}})}catch{}
-  return {session:fresh,user:fresh.user,profile:profiles?.[0]||null,enrollments:enrollments||[],announcements:announcements||[],withdrawal,cohorts,activeCohort};
+  return {session:fresh,user:fresh.user,profile:profiles?.[0]||null,enrollments:enrollments||[],announcements:announcements||[],withdrawal,alumni,cohorts,activeCohort};
 }
 export async function getMyRuntimeCohort(session){
   const s=await refreshSession(session||getStoredSession());if(!s?.access_token)return null;
