@@ -476,12 +476,12 @@ export async function savePuzzleCompletion(session,weekKey){
 }
 export async function getCanopyNotifications(session){
   const s=await refreshSession(session||getStoredSession());if(!s?.access_token)return[];
-  return rest(`canopy_notifications?select=*&user_id=eq.${s.user.id}&order=created_at.desc&limit=100`,{token:s.access_token});
+  return rest(`canopy_notifications?select=*&user_id=eq.${s.user.id}&cleared_at=is.null&order=created_at.desc&limit=100`,{token:s.access_token});
 }
 
 export async function getUnreadNotificationCount(session){
   const s=await refreshSession(session||getStoredSession());if(!s?.access_token)return 0;
-  const rows=await rest(`canopy_notifications?select=id&user_id=eq.${s.user.id}&read_at=is.null&limit=100`,{token:s.access_token});
+  const rows=await rest(`canopy_notifications?select=id&user_id=eq.${s.user.id}&read_at=is.null&cleared_at=is.null&limit=100`,{token:s.access_token});
   return Array.isArray(rows)?rows.length:0;
 }
 export async function markAllNotificationsRead(session){
@@ -491,6 +491,16 @@ export async function markAllNotificationsRead(session){
 export async function markNotificationRead(session,id){
   const s=await refreshSession(session||getStoredSession());
   return rest(`canopy_notifications?id=eq.${encodeURIComponent(id)}&user_id=eq.${s.user.id}`,{token:s.access_token,method:'PATCH',prefer:'return=representation',body:{read_at:new Date().toISOString()}});
+}
+export async function clearNotification(session,id){
+  const s=await refreshSession(session||getStoredSession());if(!s?.access_token)return[];
+  const now=new Date().toISOString();
+  return rest(`canopy_notifications?id=eq.${encodeURIComponent(id)}&user_id=eq.${s.user.id}`,{token:s.access_token,method:'PATCH',prefer:'return=representation',body:{cleared_at:now,read_at:now}});
+}
+export async function clearAllNotifications(session){
+  const s=await refreshSession(session||getStoredSession());if(!s?.access_token)return[];
+  const now=new Date().toISOString();
+  return rest(`canopy_notifications?user_id=eq.${s.user.id}&cleared_at=is.null`,{token:s.access_token,method:'PATCH',prefer:'return=representation',body:{cleared_at:now,read_at:now}});
 }
 export async function issueCanopyCertificate(session,{userId,driveUrl}){
   const s=await refreshSession(session||getStoredSession());
