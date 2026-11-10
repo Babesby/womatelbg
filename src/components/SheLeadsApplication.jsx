@@ -26,11 +26,11 @@ export default function SheLeadsApplication({cohortKey='she-leads-asia-c1-2027'}
  const open=Boolean(state?.is_open);
  const motivationWords=useMemo(()=>wordCount(form.motivation),[form.motivation]);
 
- const stepOneValid=form.full_name&&form.email&&form.phone_whatsapp&&form.gender&&form.nationality&&form.country&&form.city_region&&form.age_range&&form.current_status;
+ const stepOneValid=form.full_name.trim().length>=2&&/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())&&form.phone_whatsapp.replace(/[^\d]/g,'').length>=7&&form.gender&&form.nationality.trim()&&form.country.trim()&&form.city_region.trim()&&form.age_range&&form.current_status;
  const stepTwoValid=form.motivation&&motivationWords>=150&&motivationWords<=200&&form.hopes_to_gain.trim().length>=40;
  const stepThreeValid=form.committed_all_sessions&&form.commitment.trim().length>=20&&form.heard_about&&form.accuracy_confirmed&&form.consent&&form.privacy_accepted;
- const next=()=>{if(!open){setStep(s=>Math.min(3,s+1));return}if(step===1&&stepOneValid)setStep(2);else if(step===2&&stepTwoValid)setStep(3)};
- const submit=async e=>{e.preventDefault();if(!stepThreeValid)return;setBusy(true);setMessage('');try{const r=await submitCohortApplication(cohortKey,form);setResult(r);setLookup(x=>({...x,reference:r.reference,email:form.email}));setMode('status');setMessage('Application received. Save your application reference.')}catch(e){setMessage(e.message)}finally{setBusy(false)}};
+ const next=()=>{setMessage('');if(!open){setStep(s=>Math.min(3,s+1));return}if(step===1&&stepOneValid)setStep(2);else if(step===2&&stepTwoValid)setStep(3)};
+ const submit=async e=>{e.preventDefault();if(!open||!stepOneValid||!stepTwoValid||!stepThreeValid){setMessage('Please complete all three sections before submitting.');return;}setBusy(true);setMessage('');try{const r=await submitCohortApplication(cohortKey,form);setResult(r);setLookup(x=>({...x,reference:r.reference,email:form.email}));setMode('status');setMessage('Application received. Save your application reference.')}catch(e){setMessage(e.message)}finally{setBusy(false)}};
  const check=async e=>{e?.preventDefault?.();setBusy(true);setMessage('');try{const r=await getApplicationStatus(lookup.reference,lookup.email);setResult(r);setMessage(r.ok?'Application found.':r.message)}catch(e){setMessage(e.message)}finally{setBusy(false)}};
  const offer=async accept=>{setBusy(true);setMessage('');try{const r=await acceptCohortOffer(lookup.reference,lookup.email,lookup.code,accept);setResult(r);if(accept){localStorage.setItem('womate_admission_reference',lookup.reference.toUpperCase());localStorage.setItem('womate_admission_email',lookup.email.toLowerCase());setMessage('Offer accepted. Create or sign in to Canopy with this same email to continue.')}else setMessage('Offer declined. WOMATE has recorded your decision.')}catch(e){setMessage(e.message)}finally{setBusy(false)}};
 
@@ -40,32 +40,28 @@ export default function SheLeadsApplication({cohortKey='she-leads-asia-c1-2027'}
    <div className="sla-mastCopy">
     <span>SHE LEADS CLIMATE MENTORSHIP PROGRAM · {cohortLabel.toUpperCase()}</span>
     <h1>{mode==='apply'?'Application form':'Application status'}</h1>
-    <p>WOMATE equips women and emerging leaders with climate knowledge, mentorship, technology and community support to move from concern to credible action.</p>
+    <p>Five weeks of climate leadership, mentorship and practical learning.</p>
     <div className="sla-mastActions"><a href={READ_MORE} target="_blank" rel="noopener noreferrer">Read programme brief <ExternalLink size={15}/></a><a href="mailto:womatead@gmail.com">womatead@gmail.com</a></div>
    </div>
-   <div className="sla-modeTabs" role="tablist"><button className={mode==='apply'?'active':''} onClick={()=>setMode('apply')}>Apply</button><button className={mode==='status'?'active':''} onClick={()=>setMode('status')}>Check status</button></div>
+   <div className="sla-modeTabs" aria-label="Application pages"><button type="button" aria-current={mode==='apply'?'page':undefined} className={mode==='apply'?'active':''} onClick={()=>setMode('apply')}>Apply</button><button type="button" aria-current={mode==='status'?'page':undefined} className={mode==='status'?'active':''} onClick={()=>setMode('status')}>Check status</button></div>
   </section>
 
   {mode==='apply'&&<div className="sla-layout">
    <aside className="sla-programmePanel">
     <div className="sla-programmeBadge"><Sparkles size={18}/> WOMATE · SHE LEADS</div>
-    <h2>Apply now to join a five-week journey of learning, leadership and practical climate action.</h2>
-    <div className="sla-programmeFacts">
-     <div><FileText/><span><b>Structured learning</b><small>Lessons, assignments and guided reflection.</small></span></div>
-     <div><UsersRound/><span><b>Mentorship & community</b><small>Learn with peers, facilitators and climate practitioners.</small></span></div>
-     <div><ShieldCheck/><span><b>Commitment matters</b><small>Applicants should be ready to attend all sessions and complete programme work.</small></span></div>
-    </div>
+    <h2>Five weeks. Real climate action.</h2>
+    <p className="sla-programmeSummary">Learning · Mentorship · Community</p>
     <div className={'sla-openState '+(open?'is-open':'')}><span>{open?'APPLICATIONS OPEN':'APPLICATIONS CLOSED'}</span><strong>{open?'You can submit now.':'The form is ready for launch.'}</strong>{state?.application_opens_at&&<small><Clock size={13}/> Opens {new Date(state.application_opens_at).toLocaleString()}</small>}{state?.application_closes_at&&<small>Closes {new Date(state.application_closes_at).toLocaleString()}</small>}</div>
    </aside>
 
    <section className="sla-formCard">
-    <div className="sla-progress" aria-label={'Application step '+step+' of 3'}>{[1,2,3].map(n=><div key={n} className={step===n?'active':step>n?'done':''}><span>{step>n?<Check size={14}/>:n}</span><small>{n===1?'About you':n===2?'Study & motivation':'Commitment'}</small></div>)}</div>
+    <div className="sla-progress" aria-label={'Application step '+step+' of 3'}>{[1,2,3].map(n=><div key={n} aria-current={step===n?'step':undefined} className={step===n?'active':step>n?'done':''}><span>{step>n?<Check size={14}/>:n}</span><small>{n===1?'About you':n===2?'Study & motivation':'Commitment'}</small></div>)}</div>
 
-    {!open&&<div className="sla-closedBanner"><ShieldCheck/><div><strong>Applications are not open yet.</strong><p>You can review the full application structure below. Submission will activate when WOMATE opens this cohort.</p></div></div>}
+    {!open&&<div className="sla-closedBanner"><ShieldCheck/><div><strong>Applications are not open yet.</strong><p>Preview the questions now. You can submit when applications open.</p></div></div>}
 
     <form onSubmit={submit}>
      {step===1&&<section className="sla-step">
-      <div className="sla-stepHead"><span>01 · ABOUT YOU</span><h2>Tell us who you are.</h2><p>Use the same email you will later use for your Canopy account if selected.</p></div>
+      <div className="sla-stepHead"><span>01 · ABOUT YOU</span><h2>Tell us who you are.</h2><p>Use the email you plan to use for Canopy.</p></div>
       <div className="sla-grid two">
        <Field label="Full Name"><input disabled={!open} required autoComplete="name" value={form.full_name} onChange={e=>change('full_name',e.target.value)} placeholder="Your full name"/></Field>
        <Field label="Email Address"><input disabled={!open} required type="email" autoComplete="email" value={form.email} onChange={e=>change('email',e.target.value)} placeholder="you@example.com"/></Field>
@@ -80,7 +76,7 @@ export default function SheLeadsApplication({cohortKey='she-leads-asia-c1-2027'}
      </section>}
 
      {step===2&&<section className="sla-step">
-      <div className="sla-stepHead"><span>02 · STUDY & MOTIVATION</span><h2>What brings you here?</h2><p>We are interested in your own voice, your context and what you want to build from this experience.</p></div>
+      <div className="sla-stepHead"><span>02 · STUDY & MOTIVATION</span><h2>What brings you here?</h2><p>Tell us what motivates you and what you hope to learn.</p></div>
       <div className="sla-grid two">
        <Field label="University & Program of Study" required={false} hint="If not currently studying, enter your most recent programme or leave blank."><input disabled={!open} value={form.university_program} onChange={e=>change('university_program',e.target.value)} placeholder="University · programme"/></Field>
        <Field label="Year of Study" required={false}><Select disabled={!open} required={false} value={form.year_of_study} onChange={e=>change('year_of_study',e.target.value)}><option>First Year</option><option>Second Year</option><option>Third Year</option><option>Final Year</option><option>Recent Graduate</option><option>Post graduate</option><option>Other</option></Select></Field>
@@ -90,7 +86,7 @@ export default function SheLeadsApplication({cohortKey='she-leads-asia-c1-2027'}
      </section>}
 
      {step===3&&<section className="sla-step">
-      <div className="sla-stepHead"><span>03 · COMMITMENT & DECLARATION</span><h2>Can you show up fully?</h2><p>The programme is designed for active participation across the full five-week journey.</p></div>
+      <div className="sla-stepHead"><span>03 · COMMITMENT & DECLARATION</span><h2>Can you show up fully?</h2><p>Please confirm your availability and consent.</p></div>
       <Field label="Are you committed to attending all live sessions and completing all assignments?"><ChoiceGrid disabled={!open} name="commitment" value={form.committed_all_sessions?'Yes':form.committed_all_sessions===false&&form.commitment?'No':''} onChange={v=>{change('committed_all_sessions',v==='Yes');if(v==='No')change('commitment','I am not able to commit to all programme sessions and assignments.')}} options={['Yes','No']}/></Field>
       <Field label="How will you make time for the programme?" hint="Tell us briefly how you will protect time for lessons, live sessions and assignments."><textarea disabled={!open} required minLength={20} rows={4} value={form.commitment} onChange={e=>change('commitment',e.target.value)} placeholder="I will..."/></Field>
       <Field label="How did you hear about this program?"><ChoiceGrid disabled={!open} name="heard_about" value={form.heard_about} onChange={v=>change('heard_about',v)} options={['Social Media','Friend/Colleague','University Notice','WOMATE Community','Other']}/></Field>
@@ -103,7 +99,7 @@ export default function SheLeadsApplication({cohortKey='she-leads-asia-c1-2027'}
      </section>}
 
      <div className="sla-formNav">
-      <button type="button" className="secondary" disabled={step===1} onClick={()=>setStep(s=>Math.max(1,s-1))}><ArrowLeft size={16}/> Back</button>
+      <button type="button" className="secondary" disabled={step===1} onClick={()=>{setMessage('');setStep(s=>Math.max(1,s-1))}}><ArrowLeft size={16}/> Back</button>
       {step<3?<button type="button" disabled={open&&(step===1?!stepOneValid:!stepTwoValid)} onClick={next}>{open?'Continue':'Preview next section'} <ArrowRight size={16}/></button>:<button type="submit" disabled={!open||busy||!stepThreeValid}>{busy?'Submitting…':'Submit application'} <ArrowRight size={16}/></button>}
      </div>
     </form>
