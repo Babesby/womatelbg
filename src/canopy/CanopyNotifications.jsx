@@ -1,5 +1,6 @@
 import React,{useEffect,useState} from 'react';
-import {getCanopyNotifications,markNotificationRead,markAllNotificationsRead,refreshLearningAutomation} from './canopyApi';
+import {Trash2} from 'lucide-react';
+import {getCanopyNotifications,markNotificationRead,markAllNotificationsRead,clearNotification,clearAllNotifications,refreshLearningAutomation} from './canopyApi';
 
 export default function CanopyNotifications({viewer}){
   const[items,setItems]=useState([]);
@@ -9,9 +10,11 @@ export default function CanopyNotifications({viewer}){
   useEffect(()=>{load()},[viewer?.session?.access_token]);
   async function open(n){try{if(!n.read_at)await markNotificationRead(viewer.session,n.id);if(n.link&&String(n.link).startsWith('/canopy/')){window.history.pushState({},'',n.link);window.dispatchEvent(new CustomEvent('womate:navigate',{detail:{path:n.link}}));window.scrollTo({top:0,behavior:'smooth'})}else if(n.link)window.location.assign(n.link);else await load()}catch(e){setMsg(e?.message||'Unable to update this notification.')}}
   async function markAll(){setBusy(true);setMsg('');try{await markAllNotificationsRead(viewer.session);await load();setMsg('All notifications marked as read.')}catch(e){setMsg(e?.message||'Unable to mark notifications as read.')}finally{setBusy(false)}}
+  async function clearOne(e,n){e.stopPropagation();if(!window.confirm('Clear this notification from your list?'))return;setBusy(true);setMsg('');try{await clearNotification(viewer.session,n.id);setItems(v=>v.filter(x=>x.id!==n.id));setMsg('Notification cleared.')}catch(err){setMsg(err?.message||'Unable to clear this notification.')}finally{setBusy(false)}}
+  async function clearAll(){if(!items.length)return;if(!window.confirm('Clear all notifications from your list?'))return;setBusy(true);setMsg('');try{await clearAllNotifications(viewer.session);setItems([]);setMsg('All notifications cleared.')}catch(err){setMsg(err?.message||'Unable to clear notifications.')}finally{setBusy(false)}}
   const unread=items.filter(n=>!n.read_at).length;
   return <section className="cn-page">
-    <div className="cn-head"><div><span className="cn-kicker">NOTIFICATIONS</span><h1>What needs your attention.</h1></div>{unread>0&&<button className="canopySecondary" disabled={busy} onClick={markAll}>{busy?'Updating…':'Mark all as read'}</button>}</div>
+    <div className="cn-head"><div><span className="cn-kicker">NOTIFICATIONS</span><h1>What needs your attention.</h1></div><div className="cn-head-actions">{unread>0&&<button className="canopySecondary" disabled={busy} onClick={markAll}>{busy?'Updating…':'Mark all as read'}</button>}{items.length>0&&<button className="canopySecondary cn-clear-all" disabled={busy} onClick={clearAll}><Trash2 size={16}/> Clear all</button>}</div></div>
     {msg&&<p className="canopyFormMsg" role="status">{msg}</p>}
     {!items.length&&<div className="cn-empty">You have no notifications yet.</div>}
     <div className="cn-list">{items.map(n=>n.type==='completed_appreciation_music'
@@ -31,9 +34,12 @@ export default function CanopyNotifications({viewer}){
           />
         </div>
       </article>
-      :<button key={n.id} className={`cn-item ${n.read_at?'':'unread'}`} onClick={()=>open(n)}>
-        <div><small>{n.type?.replaceAll('_',' ')}</small><h3>{n.title}</h3><p>{n.body}</p></div>
-        <time>{new Date(n.created_at).toLocaleString()}</time>
-      </button>)}</div>
+      :<article key={n.id} className={`cn-item cn-item-row ${n.read_at?'':'unread'}`}>
+        <button type="button" className="cn-item-open" onClick={()=>open(n)}>
+          <div><small>{n.type?.replaceAll('_',' ')}</small><h3>{n.title}</h3><p>{n.body}</p></div>
+          <time>{new Date(n.created_at).toLocaleString()}</time>
+        </button>
+        <button type="button" className="cn-item-clear" aria-label="Clear notification" title="Clear notification" disabled={busy} onClick={e=>clearOne(e,n)}><Trash2 size={16}/></button>
+      </article>)}</div>
   </section>
 }
