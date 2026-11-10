@@ -3,7 +3,7 @@ import {ArrowRight,BarChart3,CheckCircle2,Clock3,Download,FileText,Mail,RefreshC
 import {
  getAdmissionsState,listCohortApplications,reviewCohortApplication,setCohortAdmissions,
  scoreCohortApplication,promoteWaitlistedApplication,expireCohortOffers,queueAdmissionsReminders,
- getAdmissionsAnalytics,getAdmissionsEmailQueue,getAdmissionsMailStatus
+ getAdmissionsAnalytics,getAdmissionsEmailQueue,getAdmissionsMailStatus,setAdmissionsMailEnabled
 } from './canopyAdmissionsApi';
 
 const labels={submitted:'Submitted',under_review:'Under review',selected:'Selected',waitlisted:'Waitlisted',not_selected:'Not selected',offer_accepted:'Offer accepted',offer_declined:'Offer declined',account_linked:'Account linked',onboarding_complete:'Onboarding complete',withdrawn:'Withdrawn'};
@@ -65,6 +65,7 @@ export default function CanopyAdmissionsAdmin({viewer,cohort}){
  const promote=async x=>{setBusy('promote:'+x.id);setMsg('');try{await promoteWaitlistedApplication(x.id,'A place has become available and WOMATE is pleased to offer you admission.',null,viewer.session);setMsg('Waitlisted applicant promoted. Offer email queued.');await load()}catch(e){setMsg(e.message)}finally{setBusy('')}};
  const toggle=async open=>{setBusy('window');setMsg('');try{await setCohortAdmissions(key,open,windowForm.opens?new Date(windowForm.opens).toISOString():null,windowForm.closes?new Date(windowForm.closes).toISOString():null,viewer.session);setMsg(open?'Applications opened.':'Applications closed.');await load()}catch(e){setMsg(e.message)}finally{setBusy('')}};
  const expire=async()=>{setBusy('expire');try{const r=await expireCohortOffers(key,viewer.session);setMsg((r?.expired||0)+' expired offer(s) released.');await load()}catch(e){setMsg(e.message)}finally{setBusy('')}};
+ const updateMail=async enabled=>{if(enabled&&!window.confirm('Confirm the WOMATE test email has arrived in womatead@gmail.com. This enables unattended admissions sending every five minutes. Continue?'))return;setBusy('mail');setMsg('');try{const next=await setAdmissionsMailEnabled(enabled,viewer.session);setMailStatus(next);setMsg(enabled?'Mail worker and scheduler activated.':'Mail worker and scheduler paused.');await load()}catch(e){setMsg(e.message)}finally{setBusy('')}};
  const reminders=async()=>{setBusy('reminders');try{const r=await queueAdmissionsReminders(key,viewer.session);setMsg((r?.offer_reminders||0)+' offer reminder(s) and '+(r?.onboarding_reminders||0)+' onboarding reminder(s) queued.');await load()}catch(e){setMsg(e.message)}finally{setBusy('')}};
 
  return <main className="canopyManager canopyOps canopyAdmissionsAdmin">
@@ -95,12 +96,15 @@ export default function CanopyAdmissionsAdmin({viewer,cohort}){
   </section>
 
   <section className="canopyAdmissionsOps">
-   <article><Mail/><div><small>WOMATE GMAIL</small><strong>{mailStatus?.enabled?'Automated delivery active':'Worker ready · Gmail authorization pending'}</strong><span>{mail?.pending||0} pending · {mail?.failed||0} failed · {mail?.sent||0} sent</span></div></article>
+   <article><Mail/><div><small>WOMATE GMAIL</small><strong>{mailStatus?.enabled&&mailStatus?.worker_job_active?'Automatic sending enabled':'Sending paused · Gmail test accepted'}</strong><span>{mail?.pending||0} pending · {mail?.failed||0} failed · {mail?.sent||0} sent</span></div></article>
    <article><BarChart3/><div><small>REVIEW SCORE</small><strong>{analytics?.average_score??'—'}</strong><span>Average reviewed application score</span></div></article>
+   <button className="canopySecondary" type="button" disabled={Boolean(busy)} onClick={()=>updateMail(!(mailStatus?.enabled&&mailStatus?.worker_job_active))}>{busy==='mail'?'Updating…':mailStatus?.enabled&&mailStatus?.worker_job_active?'Pause Gmail worker':'Activate Gmail worker'}</button>
    <button className="canopySecondary" disabled={busy==='reminders'} onClick={reminders}><RefreshCw/> Queue reminders</button>
    <button className="canopySecondary" disabled={busy==='expire'} onClick={expire}><Clock3/> Release expired offers</button>
    <button className="canopySecondary" onClick={()=>downloadCsv(rows,cohort?.display_name)}><Download/> Export CSV</button>
   </section>
+
+  <p className="canopyFormMsg">Before activating unattended sending, confirm receipt of the isolated test titled “WOMATE admissions mail test” in womatead@gmail.com. A Gmail message ID confirms API acceptance, not inbox receipt.</p>
 
   <section className="canopyAdmissionsAnalytics">
    <header><span>ADMISSIONS FUNNEL</span><strong>Cohort-specific live view</strong></header>
