@@ -4230,3 +4230,93 @@ html[data-canopy-theme="dark"] .cx-impact-record-description{color:#abc2bb!impor
    color:#667a73;
  }
 }
+
+
+/* Learner rollover offer · responsive continuation UX */
+.crOfferShell{max-width:1160px}
+.crOfferLoading{padding:40px 0;color:var(--canopy-muted)}
+.crOfferHero{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:30px;align-items:end;padding:8px 0 28px;border-bottom:1px solid var(--canopy-line)}
+.crOfferHeroCompact{grid-template-columns:1fr;max-width:760px}
+.crOfferHeroCopy h1,.crOfferHeroCompact h1{margin:7px 0 12px;font-size:clamp(42px,6vw,70px);line-height:.96;letter-spacing:-.06em;color:#103c35}
+.crOfferHeroCopy p,.crOfferHeroCompact p{margin:0;max-width:760px;color:var(--canopy-muted);font-size:16px;line-height:1.65}
+.crOfferYearFlow{display:flex;align-items:center;gap:10px;color:#0e4d4a;padding-bottom:5px}
+.crOfferYearFlow strong{font-size:18px}
+.crOfferYearFlow svg{width:17px}
+.crOfferPrimaryLink{margin-top:20px;display:inline-flex!important;width:max-content;align-items:center;gap:7px}
+
+.crOfferProgress{padding:30px 0 8px}
+.crOfferProgress>header{display:flex;justify-content:space-between;gap:24px;align-items:end;margin-bottom:16px}
+.crOfferProgress>header h2{margin:5px 0 0;font-size:29px;letter-spacing:-.03em;color:#103c35}
+.crOfferProgress>header p{max-width:460px;margin:0;text-align:right;color:#71827c;font-size:11px;line-height:1.55}
+.crOfferProgressRows{border-top:1px solid var(--canopy-line)}
+.crOfferProgressRows article{display:grid;grid-template-columns:44px minmax(0,1fr);gap:15px;align-items:start;padding:18px 0;border-bottom:1px solid var(--canopy-line)}
+.crOfferMetricIcon{width:38px;height:38px;display:grid;place-items:center;border-radius:12px;background:#eef6f1;color:#0e4d4a}
+.crOfferMetricIcon svg{width:18px}
+.crOfferMetricMain{min-width:0}
+.crOfferMetricTop{display:flex;align-items:baseline;justify-content:space-between;gap:16px}
+.crOfferMetricTop>span{font-size:12px;font-weight:900;color:#214c44}
+.crOfferMetricTop strong{font-size:18px;color:#103c35;white-space:nowrap}
+.crOfferMetricTop strong small{font-size:9px;font-weight:800;color:#899892}
+.crOfferTrack{height:7px;margin-top:10px;border-radius:999px;background:#e8efeb;overflow:hidden}
+.crOfferTrack>span{display:block;height:100%;border-radius:999px;background:#0e4d4a}
+.crOfferMetricFoot{display:flex;justify-content:space-between;gap:16px;margin-top:7px;color:#778982;font-size:10px}
+.crOfferMetricFoot b{color:#6c5d2a}
+.crOfferMetricFoot b.is-complete{color:#17643b}
+.crOfferCodeRow .crOfferMetricTop strong{font-size:15px}
+.crOfferCodeRow .crOfferMetricFoot{justify-content:flex-start}
+
+.crOfferRemaining{margin-top:28px;padding:26px 0;border-top:2px solid #0e4d4a;border-bottom:1px solid var(--canopy-line)}
+.crOfferRemaining h2{max-width:900px;margin:7px 0 8px;font-size:clamp(25px,3vw,36px);line-height:1.15;letter-spacing:-.035em;color:#103c35}
+.crOfferRemaining p{margin:0;color:#667a73;font-size:12px;line-height:1.6}
+
+.crOfferDecision{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:28px;align-items:center;margin-top:26px;padding:24px 0 4px}
+.crOfferDecision h2{margin:5px 0 7px;font-size:25px;color:#103c35}
+.crOfferDecision p{margin:0;max-width:650px;color:#6f817a;font-size:12px;line-height:1.6}
+.crOfferActions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+.crOfferActions .canopyPrimary,.crOfferActions .canopySecondary{min-height:44px;display:inline-flex!important;align-items:center;justify-content:center;gap:7px}
+.crOfferMsg{margin-top:14px}
+
+html[data-canopy-theme="dark"] .crOfferHero,
+html[data-canopy-theme="dark"] .crOfferProgressRows,
+html[data-canopy-theme="dark"] .crOfferProgressRows article,
+html[data-canopy-theme="dark"] .crOfferRemaining{border-color:#31514a}
+html[data-canopy-theme="dark"] .crOfferHeroCopy h1,
+html[data-canopy-theme="dark"] .crOfferHeroCompact h1,
+html[data-canopy-theme="dark"] .crOfferProgress>header h2,
+html[data-canopy-theme="dark"] .crOfferMetricTop strong,
+html[data-canopy-theme="dark"] .crOfferRemaining h2,
+html[data-canopy-theme="dark"] .crOfferDecision h2{color:#f4fff9}
+html[data-canopy-theme="dark"] .crOfferMetricIcon{background:#153a34;color:#c6ff52}
+html[data-canopy-theme="dark"] .crOfferTrack{background:#203d37}
+html[data-canopy-theme="dark"] .crOfferTrack>span{background:#c6ff52}
+html[data-canopy-theme="dark"] .crOfferMetricTop>span{color:#d7e7e1}
+html[data-canopy-theme="dark"] .crOfferMetricFoot,
+html[data-canopy-theme="dark"] .crOfferProgress>header p,
+html[data-canopy-theme="dark"] .crOfferRemaining p,
+html[data-canopy-theme="dark"] .crOfferDecision p{color:#abc2bb}
+
+@media(max-width:820px){
+ .crOfferHero{grid-template-columns:1fr}
+ .crOfferYearFlow{display:none}
+ .crOfferProgress>header{align-items:flex-start;flex-direction:column}
+ .crOfferProgress>header p{text-align:left}
+ .crOfferDecision{grid-template-columns:1fr}
+ .crOfferActions{justify-content:flex-start}
+}
+@media(max-width:560px){
+ .crOfferShell{padding-left:18px!important;padding-right:18px!important}
+ .crOfferHero{padding-top:0;padding-bottom:22px}
+ .crOfferHeroCopy h1,.crOfferHeroCompact h1{font-size:42px}
+ .crOfferHeroCopy p,.crOfferHeroCompact p{font-size:14px}
+ .crOfferProgress{padding-top:24px}
+ .crOfferProgressRows article{grid-template-columns:36px minmax(0,1fr);gap:12px;padding:16px 0}
+ .crOfferMetricIcon{width:34px;height:34px;border-radius:10px}
+ .crOfferMetricTop{align-items:flex-start;flex-direction:column;gap:4px}
+ .crOfferMetricTop strong{font-size:17px}
+ .crOfferMetricFoot{align-items:flex-start;flex-direction:column;gap:3px}
+ .crOfferRemaining{margin-top:22px;padding:22px 0}
+ .crOfferRemaining h2{font-size:27px}
+ .crOfferDecision{padding-top:20px}
+ .crOfferActions{display:grid;grid-template-columns:1fr;width:100%}
+ .crOfferActions .canopyPrimary,.crOfferActions .canopySecondary{width:100%;text-align:center}
+}
