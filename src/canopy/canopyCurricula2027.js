@@ -76,8 +76,8 @@ export const CANOPY_2027_CURRICULA=Object.freeze({
  },
  'she-leads-asia-c1-2027':{
   cohortKey:'she-leads-asia-c1-2027',
-  name:'She Leads Asia · Cohort 1 · 2027',
-  shortName:'She Leads Asia · Cohort 1',
+  name:'She Leads Climate Mentorship · Cohort 1 · 2027',
+  shortName:'Cohort 1 · 2027 · Asia',
   region:'Asia',
   application:'Applications target mid-March through April 2027',
   session:'Five weeks · exact dates and regional session times to be announced',
