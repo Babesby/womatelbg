@@ -22,6 +22,8 @@ import CanopyTalentNetwork,{CanopyTalentAdmin} from './CanopyTalentNetwork';
 import CanopyCollaborationOversight from './CanopyCollaborationOversight';
 import CanopyTalentFinance from './CanopyTalentFinance';
 import CanopyAsiaInterestAdmin from './CanopyAsiaInterestAdmin';
+import CanopyAdmissionsAdmin from './CanopyAdmissionsAdmin';
+import CanopyAdmissionsOnboarding from './CanopyAdmissionsOnboarding';
 import CanopyFundingHub,{CanopyFundingAdmin} from './CanopyFundingHub';
 import CanopySelectionCodes from './CanopySelectionCodes';
 import {CanopyRolloverOffer,CanopyRolloverAdmin} from './CanopyRollover2027';
@@ -56,6 +58,7 @@ function isCanopyTester(viewer){return String(viewer?.user?.email||'').trim().to
 function getCanopyTesterCohort(){try{const value=sessionStorage.getItem(CANOPY_TESTER_COHORT_KEY)||'2026';return CANOPY_TESTER_COHORTS.has(value)?value:'2026'}catch{return'2026'}}
 function setCanopyTesterCohort(value){const next=CANOPY_TESTER_COHORTS.has(value)?value:'2026';try{sessionStorage.setItem(CANOPY_TESTER_COHORT_KEY,next)}catch{}return next}
 function canopyTesterCohortLabel(value){return value==='she-leads-climate-c3-2027'?'Cohort 3 · 2027 · Africa':value==='she-leads-asia-c1-2027'?'Cohort 1 · 2027 · Asia':'Cohort 2 · 2026'}
+function pendingAdmissionPath(){try{return localStorage.getItem('womate_admission_reference')?'/canopy/onboarding':'/canopy/classroom'}catch{return'/canopy/classroom'}}
 function canManageCanopy(viewer){return ['manager','admin'].includes(viewer?.profile?.role)||viewer?.staffAccess?.role==='programme_manager'}
 function isCanopyOperationsStaff(viewer){return ['programme_operations','module_coordinator','learning_fellow'].includes(viewer?.staffAccess?.role)}
 function isAnyCanopyStaff(viewer){return canManageCanopy(viewer)||isCanopyOperationsStaff(viewer)}
@@ -102,7 +105,7 @@ function Auth({mode='login'}){
        sessionStorage.removeItem('canopy_team_access_code_pending');
        feedback('Team access activated. Opening your WOMATE workspace…','success');
      }else feedback('Signed in successfully. Opening Canopy…','success');
-     window.location.assign('/canopy/classroom')
+     window.location.assign(pendingAdmissionPath())
    }else{
      if(form.team_code.trim())sessionStorage.setItem('canopy_team_access_code_pending',form.team_code.trim());
      const data=await signUp({full_name:form.full_name,country:form.country,email:form.email,password:form.password});
@@ -112,7 +115,7 @@ function Auth({mode='login'}){
          sessionStorage.removeItem('canopy_team_access_code_pending');
          feedback('Account created and team access activated. Opening your WOMATE workspace…','success');
        }else feedback('Account created and signed in. Canopy learning access opens from 20 September 2026.','success');
-       go('/canopy/classroom')
+       go(pendingAdmissionPath())
      }else if(data?.possible_existing_account){
        feedback('An account may already exist for this email. Try signing in, or use “Resend confirmation” if the account is still unconfirmed.','warning')
      }else{
@@ -131,9 +134,9 @@ function Auth({mode='login'}){
    <div className="canopyAuthVisualOverlay"/>
    <button className="canopyAuthLogo" onClick={()=>go('/canopy')} aria-label="Canopy home"><img src="/assets/canopy/auth/canopy-logo-white.png" alt="Canopy — Climate Learning by WOMATE"/></button>
    <div className="canopyAuthVisualCopy">
-    <span className="canopyAuthKicker">SHE LEADS · COHORT 2</span>
+    <span className="canopyAuthKicker">SHE LEADS · WOMATE</span>
     <h1>{mode==='login'?'Continue your climate leadership journey.':'Your climate learning starts here.'}</h1>
-    <p>{mode==='login'?'Return to your lessons, live sessions, assignments and progress in Canopy.':'Create your WOMATE learning account and get ready for She Leads Cohort 2.'}</p>
+    <p>{mode==='login'?'Return to your lessons, live sessions, assignments and progress in Canopy.':'Create your WOMATE learning account and continue to your assigned She Leads cohort.'}</p>
    </div>
    <div className="canopyAuthVisualFoot"><span>UNDERSTAND</span><span>QUESTION</span><span>ENGAGE</span><span>LEAD</span></div>
   </aside>
@@ -161,7 +164,7 @@ function Auth({mode='login'}){
   </main>
  </div>
 }
-function AuthCallback(){const[msg,setMsg]=useState('Confirming your Canopy account…');useEffect(()=>{let live=true;(async()=>{try{const result=await consumeAuthCallback();if(!live)return;if(result?.type==='recovery'){setMsg('Password-reset link accepted. Opening secure password update…');setTimeout(()=>go('/canopy/reset-password'),350)}else{const pending=sessionStorage.getItem('canopy_team_access_code_pending');if(pending){try{const session=getStoredSession();await activateTeamAccess(session,pending);sessionStorage.removeItem('canopy_team_access_code_pending');setMsg('Email confirmed and WOMATE team access activated. Opening your workspace…')}catch(err){setMsg(`Email confirmed. Team access still needs attention: ${err.message}`);return}}else setMsg('Email confirmed successfully. Opening Canopy…');setTimeout(()=>go('/canopy/classroom'),450)}}catch(err){if(live)setMsg(err.message||'This confirmation link is invalid or has expired. Return to sign in and request a fresh confirmation email.')}})();return()=>{live=false}},[]);return <div className="canopyLoading"><Leaf/><span>{msg}</span><button className="canopySecondary" onClick={()=>go('/canopy/login')}>Return to sign in</button></div>}
+function AuthCallback(){const[msg,setMsg]=useState('Confirming your Canopy account…');useEffect(()=>{let live=true;(async()=>{try{const result=await consumeAuthCallback();if(!live)return;if(result?.type==='recovery'){setMsg('Password-reset link accepted. Opening secure password update…');setTimeout(()=>go('/canopy/reset-password'),350)}else{const pending=sessionStorage.getItem('canopy_team_access_code_pending');if(pending){try{const session=getStoredSession();await activateTeamAccess(session,pending);sessionStorage.removeItem('canopy_team_access_code_pending');setMsg('Email confirmed and WOMATE team access activated. Opening your workspace…')}catch(err){setMsg(`Email confirmed. Team access still needs attention: ${err.message}`);return}}else setMsg('Email confirmed successfully. Opening Canopy…');setTimeout(()=>go(pendingAdmissionPath()),450)}}catch(err){if(live)setMsg(err.message||'This confirmation link is invalid or has expired. Return to sign in and request a fresh confirmation email.')}})();return()=>{live=false}},[]);return <div className="canopyLoading"><Leaf/><span>{msg}</span><button className="canopySecondary" onClick={()=>go('/canopy/login')}>Return to sign in</button></div>}
 
 function ResetPassword(){const[p1,setP1]=useState('');const[p2,setP2]=useState('');const[busy,setBusy]=useState(false);const[msg,setMsg]=useState('');const submit=async e=>{e.preventDefault();if(p1!==p2){setMsg('The passwords do not match.');return}setBusy(true);setMsg('');try{await updatePassword(p1);setMsg('Password changed successfully. You can now sign in with your new password.');setTimeout(async()=>{await signOut();go('/canopy/login')},700)}catch(err){setMsg(err.message)}finally{setBusy(false)}};return <div className="canopyAuth"><aside><Brand/><div><span className="canopyEyebrow">ACCOUNT RECOVERY</span><h1>Set a new password.</h1><p>Choose a new password for your WOMATE Canopy account.</p></div><blockquote>SECURE · CONTINUE · LEARN</blockquote></aside><main><button className="canopyBack" onClick={()=>go('/canopy/login')}><ArrowLeft/> Back to sign in</button><form onSubmit={submit}><div className="canopyAuthHead"><span>PASSWORD RESET</span><h2>New password</h2></div><label>New password<input required type="password" minLength="8" autoComplete="new-password" value={p1} onChange={e=>setP1(e.target.value)}/></label><label>Confirm new password<input required type="password" minLength="8" autoComplete="new-password" value={p2} onChange={e=>setP2(e.target.value)}/></label><button className="canopyPrimary full" disabled={busy}>{busy?'Updating…':'Change password'} <ArrowRight size={17}/></button>{msg&&<p className="canopyFormMsg" role="status">{msg}</p>}</form></main></div>}
 
@@ -177,7 +180,7 @@ const manager=canManageCanopy(viewer);
  const legacyAdmin=['manager','admin'].includes(viewer?.profile?.role);
  const selectedAdminKey=adminCohort?.cohort_key||LEGACY_CANOPY_COHORT;
  const adminIsLegacy=selectedAdminKey===LEGACY_CANOPY_COHORT;
- const managerItems=[['/canopy/manage','Operations',ClipboardCheck],['/canopy/manage/access','Manage cohort',UsersRound],['/canopy/manage/reviews','Assess submissions',FileText],['/canopy/manage/communications','Warnings & feedback',MessageSquare],['/canopy/manage/reminders','Reminders',Bell],['/canopy/manage/complaints','Complaints',ShieldAlert],['/canopy/manage/attendance','Attendance',UsersRound],['/canopy/manage/certificates','Certificates',Award],['/canopy/manage/reports','Reports',BarChart3],['/canopy/manage/opportunities','Opportunities',BriefcaseBusiness],['/canopy/manage/funding','Funding & paid work',Award],['/canopy/manage/talent','Talent directory & approvals',UsersRound],['/canopy/manage/missions','Mission groups',Globe2]];
+ const managerItems=[['/canopy/manage','Operations',ClipboardCheck],['/canopy/manage/access','Manage cohort',UsersRound],['/canopy/manage/admissions','Admissions',FileText],['/canopy/manage/reviews','Assess submissions',FileText],['/canopy/manage/communications','Warnings & feedback',MessageSquare],['/canopy/manage/reminders','Reminders',Bell],['/canopy/manage/complaints','Complaints',ShieldAlert],['/canopy/manage/attendance','Attendance',UsersRound],['/canopy/manage/certificates','Certificates',Award],['/canopy/manage/reports','Reports',BarChart3],['/canopy/manage/opportunities','Opportunities',BriefcaseBusiness],['/canopy/manage/funding','Funding & paid work',Award],['/canopy/manage/talent','Talent directory & approvals',UsersRound],['/canopy/manage/missions','Mission groups',Globe2]];
  if(adminIsLegacy){
   managerItems.splice(8,0,['/canopy/manage/credentials','Graduate registry',ShieldCheck],['/canopy/manage/alumni-checkins','Alumni check-ins',Heart],['/canopy/manage/graduation-2026','Graduation 2026',GraduationCap],['/canopy/manage/inactivity-2026','Inactivity review',ShieldAlert]);
   if(viewer?.profile?.role==='admin')managerItems.push(['/canopy/manage/talent-collaborations','Collaboration management',Handshake],['/canopy/manage/talent-finance','Deals, invoices & reports',BarChart3],['/canopy/manage/spotlight','Canopy Spotlight',Sparkles],['/canopy/manage/team-access','Team Access',UserRound]);
@@ -1016,7 +1019,9 @@ const manager=canManageCanopy(viewer);const operational=isCanopyOperationsStaff(
  const learnerRuntimeCohort=!tester&&!manager&&!operational&&isPost2026RuntimeCohort(viewer?.runtimeCohort?.cohort_key)?viewer.runtimeCohort:null;
  const runtimeCohort=testerRuntimeCohort||learnerRuntimeCohort;
  const active=tester||viewer.enrollments?.some(e=>e.status==='active')||Boolean(learnerRuntimeCohort?.membership_status==='active');let content;
- if(tester&&path==='/canopy/test/mission-closed'){
+ if(!manager&&!operational&&path==='/canopy/onboarding'){
+    content=<CanopyAdmissionsOnboarding viewer={viewer}/>;
+  } else if(tester&&path==='/canopy/test/mission-closed'){
     content=<CanopyMissionClosedPreview/>;
   } else if(tester&&path==='/canopy/test/celebration-2026'){
    content=<CanopyCelebration viewer={viewer} progress={progress} submissions={submissions} tester onNavigate={go}/>;
@@ -1043,6 +1048,7 @@ const manager=canManageCanopy(viewer);const operational=isCanopyOperationsStaff(
  else if(manager&&path==='/canopy/manage/talent')content=<CanopyTalentAdmin viewer={viewer} cohortKey={selectedAdminCohort?.cohort_key||LEGACY_CANOPY_COHORT} cohort={selectedAdminCohort}/>;
  else if(manager&&viewer?.profile?.role==='admin'&&path==='/canopy/manage/talent-collaborations')content=<main className="canopyManager"><div className="canopyPageHead"><span className="canopyEyebrow">TALENT MANAGEMENT · COLLABORATIONS</span><h1>Requests, partners & safety</h1><p>Review activity, verify requesters, manage commercial terms and resolve safety reports without reading unrelated private messages.</p></div><CanopyCollaborationOversight session={viewer.session}/></main>;
  else if(manager&&viewer?.profile?.role==='admin'&&path==='/canopy/manage/talent-finance')content=<main className="canopyManager"><div className="canopyPageHead"><span className="canopyEyebrow">TALENT MANAGEMENT · FINANCE</span><h1>Deals, invoices & revenue</h1><p>Review agreed collaboration fees, mutually confirmed completion and payment records. Live payment collection remains disabled.</p></div><CanopyTalentFinance session={viewer.session}/></main>;
+ else if(manager&&viewer?.profile?.role==='admin'&&path==='/canopy/manage/admissions')content=<CanopyAdmissionsAdmin viewer={viewer} cohort={selectedAdminCohort}/>;
  else if(manager&&viewer?.profile?.role==='admin'&&path==='/canopy/manage/asia-interest')content=<CanopyAsiaInterestAdmin viewer={viewer}/>;
  else if(manager&&viewer?.profile?.role==='admin'&&path==='/canopy/manage/rollover-2027')content=<CanopyRolloverAdmin viewer={viewer}/>;
  else if(manager&&viewer?.profile?.role==='admin'&&path.startsWith('/canopy/courses/'))content=<CanopyCourses viewer={viewer} path={path}/>;
