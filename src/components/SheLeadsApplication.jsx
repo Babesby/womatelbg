@@ -4,7 +4,7 @@ import {acceptCohortOffer,getAdmissionsState,getApplicationStatus,submitCohortAp
 import {canopyPost2026Runtime} from '../canopy/canopyCohortRuntime2027';
 import './she-leads-application.css';
 
-const READ_MORE='https://docs.google.com/document/d/15BxTdNxJvFcWr0-stuOUL1yibeSQHrnnD6YgpYjUO5Q/edit?usp=sharing';
+const AFRICA_BRIEF='https://docs.google.com/document/d/15BxTdNxJvFcWr0-stuOUL1yibeSQHrnnD6YgpYjUO5Q/edit?usp=sharing';
 const initial={
  full_name:'',email:'',phone_whatsapp:'',gender:'',nationality:'',country:'',city_region:'',
  age_range:'',current_status:'',university_program:'',year_of_study:'',motivation:'',hopes_to_gain:'',
@@ -46,7 +46,7 @@ export default function SheLeadsApplication({cohortKey='she-leads-asia-c1-2027'}
    <div className="sla-mastCopy">
     <span>WOMATE · SHE LEADS · {cohortLabel.toUpperCase()}</span>
     <h1>{mode==='apply'?'Apply':'Application status'}</h1>
-    <div className="sla-mastActions"><a href={READ_MORE} target="_blank" rel="noopener noreferrer">Read programme brief <ExternalLink size={15}/></a><a href="mailto:womatead@gmail.com">womatead@gmail.com</a></div>
+    <div className="sla-mastActions">{!isAsia&&<a href={AFRICA_BRIEF} target="_blank" rel="noopener noreferrer">Africa programme brief <ExternalLink size={15}/></a>}<a href="mailto:womatead@gmail.com">womatead@gmail.com</a></div>
    </div>
    <div className="sla-modeTabs" aria-label="Application pages"><button type="button" aria-current={mode==='apply'?'page':undefined} className={mode==='apply'?'active':''} onClick={()=>setMode('apply')}>Apply</button><button type="button" aria-current={mode==='status'?'page':undefined} className={mode==='status'?'active':''} onClick={()=>setMode('status')}>Check status</button></div>
   </section>
@@ -64,7 +64,7 @@ export default function SheLeadsApplication({cohortKey='she-leads-asia-c1-2027'}
    <section className="sla-formCard">
     {open&&<div className="sla-progress" aria-label={'Application step '+step+' of 3'}>{[1,2,3].map(n=><div key={n} aria-current={step===n?'step':undefined} className={step===n?'active':step>n?'done':''}><span>{step>n?<Check size={14}/>:n}</span><small>{n===1?'About you':n===2?'Study & motivation':'Commitment'}</small></div>)}</div>}
 
-    {!open?<div className="sla-closedMessage" role="status"><h2>{loading?'Loading application dates…':loadError?'Application information unavailable':`Applications open ${opensOn||'soon'}`}</h2>{closesOn&&<p>Apply by {closesOn}.</p>}<p>{loadError?'Please check back shortly.':'Return during the application period to complete your application.'}</p><a href={READ_MORE} target="_blank" rel="noopener noreferrer">Programme details <ExternalLink size={16}/></a></div>:<form onSubmit={submit}>
+    {!open?<div className="sla-closedMessage" role="status"><h2>{loading?'Loading application dates…':loadError?'Application information unavailable':`Applications open ${opensOn||'soon'}`}</h2>{closesOn&&<p>Apply by {closesOn}.</p>}<p>{loadError?'Please check back shortly.':'Return during the application period to complete your application.'}</p>{!isAsia&&<a href={AFRICA_BRIEF} target="_blank" rel="noopener noreferrer">Africa programme brief <ExternalLink size={16}/></a>}</div>:<form onSubmit={submit}>
      {step===1&&<section className="sla-step">
       <div className="sla-stepHead"><span>01 · ABOUT YOU</span><h2>Tell us who you are.</h2><p>Use the email you plan to use for Canopy.</p></div>
       <div className="sla-grid two">
