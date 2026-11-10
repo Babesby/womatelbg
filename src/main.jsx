@@ -23,7 +23,7 @@ if(__WOMATE_SELECTED_ROUTE__){
 
 const pages={
 '/':{k:'WOMATE',title:'Women leading climate action.',accent:'Driving inclusive climate action with technology.',intro:'We equip African women to understand climate systems, lead resilient communities and shape the institutions building our shared future.',type:'home'},
-'/she-leads/asia':{k:'SHE LEADS ASIA',title:'She Leads Asia · Cohort 1 (2027)',accent:'A new chapter in climate leadership.',intro:'A free five-week climate leadership programme for emerging women leaders across Asia. Applications planned mid-March through April 2027.',type:'asia'},
+'/she-leads/asia':{k:'SHE LEADS ASIA',title:'She Leads Asia · Cohort 1 (2027)',accent:'A new chapter in climate leadership.',intro:'A free five-week climate leadership programme for emerging women leaders across Asia. Application dates will be announced before the programme begins.',type:'asia'},
 '/she-leads':{k:'SHE LEADS',title:'She Leads Climate Mentorship.',accent:'Climate knowledge. Leadership. Agency.',intro:'A learning and leadership pathway designed for young African women ready to move from climate concern to credible action.',type:'she'},
 '/wok-action':{k:'WoK Action',title:'Women’s local knowledge for climate adaptation.',accent:'Knowledge held by women is climate infrastructure.',intro:'We document, protect and activate women’s community knowledge as living evidence for locally grounded adaptation.',type:'wok'},
 '/circle':{k:'THE WOMATE CIRCLE',title:'A climate community for women.',accent:'Belong. Build. Lead.',intro:'A professional and community network where women access opportunities, peers, learning, visibility and long-term climate leadership support.',type:'circle'},
