@@ -31,7 +31,7 @@ export const CANOPY_POST_2026_RUNTIMES=Object.freeze({
     year:2027,
     region:'Asia',
     applicationWindow:'Mid-March through April 2027',
-    sessions:'Five weeks; exact dates to be confirmed',
+    sessions:'Programme opens 1 March 2027 · Modules release weekly from 8 March · Graduation 12 April 2027',
     track:'asia',
     accessModel:'free',
     status:'planning',
@@ -43,6 +43,9 @@ export const CANOPY_POST_2026_RUNTIMES=Object.freeze({
     certificateStatus:'ready',
     paymentGate:false,
     regionalDelivery:true,
+    programmeOpenDate:'2027-03-01',
+    moduleReleaseDates:{'01':'2027-03-08','02':'2027-03-15','03':'2027-03-22','04':'2027-03-29','05':'2027-04-05'},
+    graduationDate:'2027-04-12',
     timezoneAware:true,
     languageSupport:'planned_evaluation'
   }),
