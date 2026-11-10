@@ -34,7 +34,7 @@ export const CANOPY_POST_2026_RUNTIMES=Object.freeze({
     fullName:'She Leads Climate Mentorship · Cohort 1 · 2027',
     year:2027,
     region:'Asia',
-    applicationWindow:'15 January–15 February 2027',
+    applicationWindow:'1 January–15 February 2027',
     sessions:'Programme opens 1 March 2027 · Modules release weekly from 8 March · Graduation 12 April 2027',
     track:'asia',
     accessModel:'free',
@@ -51,7 +51,7 @@ export const CANOPY_POST_2026_RUNTIMES=Object.freeze({
     moduleReleaseDates:{'01':'2027-03-08','02':'2027-03-15','03':'2027-03-22','04':'2027-03-29','05':'2027-04-05'},
     graduationDate:'2027-04-12',
     timezoneAware:true,
-    admissions:{opens:'2027-01-15',closes:'2027-02-15',decision:'2027-02-22',acceptanceDaysAfterEmail:7,onboardingDeadline:'2027-03-07',seatCapacity:1000},
+    admissions:{opens:'2027-01-01',closes:'2027-02-15',decision:'2027-02-22',acceptanceDaysAfterEmail:7,onboardingDeadline:'2027-03-07',seatCapacity:1000},
     languageSupport:'planned_evaluation'
   }),
   'she-leads-advanced-c1-2027':Object.freeze({
