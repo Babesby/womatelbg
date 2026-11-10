@@ -25,7 +25,7 @@ export const CANOPY_POST_2026_RUNTIMES=Object.freeze({
     programmeOpenDate:'2027-10-04',
     moduleReleaseDates:{'01':'2027-10-11','02':'2027-10-18','03':'2027-10-25','04':'2027-11-01','05':'2027-11-08'},
     graduationDate:'2027-11-15',
-    admissions:{opens:'2027-09-10',closes:'2027-09-20',decision:'2027-09-26',acceptanceDeadline:'2027-09-30',onboardingDeadline:'2027-10-03',seatCapacity:500}
+    admissions:{opens:'2027-09-10',closes:'2027-09-20',decision:'2027-09-26',acceptanceDaysAfterEmail:7,onboardingDeadline:'2027-10-10',seatCapacity:1000}
   }),
   'she-leads-asia-c1-2027':Object.freeze({
     cohortKey:'she-leads-asia-c1-2027',
@@ -51,7 +51,7 @@ export const CANOPY_POST_2026_RUNTIMES=Object.freeze({
     moduleReleaseDates:{'01':'2027-03-08','02':'2027-03-15','03':'2027-03-22','04':'2027-03-29','05':'2027-04-05'},
     graduationDate:'2027-04-12',
     timezoneAware:true,
-    admissions:{opens:'2027-01-15',closes:'2027-02-15',decision:'2027-02-22',acceptanceDeadline:'2027-02-26',onboardingDeadline:'2027-02-28',seatCapacity:300},
+    admissions:{opens:'2027-01-15',closes:'2027-02-15',decision:'2027-02-22',acceptanceDaysAfterEmail:7,onboardingDeadline:'2027-03-07',seatCapacity:1000},
     languageSupport:'planned_evaluation'
   }),
   'she-leads-advanced-c1-2027':Object.freeze({
