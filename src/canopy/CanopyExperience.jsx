@@ -530,7 +530,6 @@ export function CanopyPortfolioPage({viewer,submissions=[]}){
             <div className="cx-impact-record-main">
               <div className="cx-impact-record-titleline">
                 <h3>{shortEvidence[item.moduleId]||practical?.practicalTitle||module?.title}</h3>
-                {isVerified?<span className="cx-impact-verified"><BadgeCheck size={14}/> WOMATE verified</span>:sub?<span className="cx-impact-submitted">Submitted</span>:<span className="cx-impact-pending">Pending</span>}
               </div>
 
               <p className="cx-impact-record-description">
@@ -539,13 +538,18 @@ export function CanopyPortfolioPage({viewer,submissions=[]}){
                   : (practical?.portfolioSummary||practical?.practicalBrief||module?.summary)}
               </p>
 
-              <div className="cx-impact-record-bottom">
-                <span className="cx-impact-competency">{moduleImpact[item.moduleId]||'Climate action'}</span>
-                <div className="cx-impact-linkcell">
-                  {practicalUrl&&!sub?.impact_hide_practical&&<a href={practicalUrl} target="_blank" rel="noreferrer">View practical evidence <ExternalLink size={14}/></a>}
-                  {item.weekKey!=='module-05'&&publicUrl&&<a href={publicUrl} target="_blank" rel="noreferrer">View public action <ExternalLink size={14}/></a>}
-                  {!sub&&<span className="cx-impact-noevidence">Evidence will appear after submission</span>}
-                </div>
+            </div>
+
+            <div className="cx-impact-record-skill">
+              <span>{moduleImpact[item.moduleId]||'Climate action'}</span>
+            </div>
+
+            <div className="cx-impact-record-state">
+              {isVerified?<span className="cx-impact-verified"><BadgeCheck size={13}/> WOMATE verified</span>:sub?<span className="cx-impact-submitted">Submitted</span>:<span className="cx-impact-pending">Pending</span>}
+              <div className="cx-impact-linkcell">
+                {practicalUrl&&!sub?.impact_hide_practical&&<a href={practicalUrl} target="_blank" rel="noreferrer">Practical evidence <ExternalLink size={12}/></a>}
+                {item.weekKey!=='module-05'&&publicUrl&&<a href={publicUrl} target="_blank" rel="noreferrer">Public action <ExternalLink size={12}/></a>}
+                {!sub&&<span className="cx-impact-noevidence">Evidence after submission</span>}
               </div>
             </div>
           </article>
