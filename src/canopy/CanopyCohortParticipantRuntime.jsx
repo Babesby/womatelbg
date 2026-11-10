@@ -4,7 +4,7 @@ import Canopy2027Learning from './Canopy2027Learning';
 import {ArrowLeft,BookOpen,CalendarDays,CheckCircle2,CreditCard,FileText,Globe2,GraduationCap,LockKeyhole,Radio,ShieldCheck,Sparkles,UsersRound} from 'lucide-react';
 import {canopyPost2026Runtime,CANOPY_POST_2026_RUNTIMES} from './canopyCohortRuntime2027';
 
-const go=path=>{window.history.pushState({},'',path);window.dispatchEvent(new PopStateEvent('popstate'));window.scrollTo({top:0,behavior:'smooth'})};
+const go=path=>{const current=window.location.pathname+window.location.search+window.location.hash;if(current!==path)window.history.pushState({},'',path);window.dispatchEvent(new CustomEvent('womate:navigate',{detail:{path}}));window.scrollTo({top:0,behavior:'auto'})};
 
 function StatusCard({icon:Icon,title,status,copy}){
   const pending=status==='configuration_pending';
@@ -92,7 +92,8 @@ export function CanopyTesterRuntimeRouter(){
   const params=new URLSearchParams(window.location.search);
   const cohortKey=params.get('cohort');
   const view=params.get('view')||'overview';
-  const runtime=canopyPost2026Runtime(cohortKey)||Object.values(CANOPY_POST_2026_RUNTIMES)[0];
+  const runtime=canopyPost2026Runtime(cohortKey);
+  if(!runtime)return <main className="canopyDashboard canopyCohortRuntime"><section className="canopyRuntimePlaceholder" role="status"><ShieldCheck/><span className="canopyEyebrow">CANOPY TESTER</span><h2>Choose a cohort to preview.</h2><p>No preview cohort is assumed automatically. Select the exact cohort you want to inspect.</p><button type="button" className="canopySecondary" onClick={()=>go('/canopy/test/cohort-preview')}>Choose cohort</button></section></main>;
   const fakePath={
     overview:'/canopy/classroom',course:'/canopy/course/she-leads',assignments:'/canopy/assignments',
     schedule:'/canopy/schedule',progress:'/canopy/progress',certificate:'/canopy/certificate'
