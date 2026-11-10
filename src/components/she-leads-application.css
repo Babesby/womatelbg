@@ -82,3 +82,12 @@
 @media(max-width:1000px){.sla-programmePanel .sla-openState{margin-top:0;padding-top:10px}}
 @media(max-width:720px){.sla-programmePanel .sla-openState{margin-top:6px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.sla-programmePanel .sla-openState p span{font-size:.9rem}}
 @media(max-width:370px){.sla-programmePanel .sla-openState{grid-template-columns:minmax(0,1fr)}}
+
+
+/* Public application availability: a clear short notice instead of disabled form fields. */
+.sla-closedMessage{padding:clamp(24px,5vw,52px);min-height:250px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:12px}
+.sla-closedMessage h2{color:#073b39;letter-spacing:-.045em;font-size:clamp(1.65rem,3.4vw,2.65rem);line-height:1.13;margin:0;max-width:650px}
+.sla-closedMessage p{margin:0;color:#49665c;line-height:1.5;max-width:500px}
+.sla-closedMessage a{display:inline-flex;align-items:center;gap:8px;min-height:44px;margin-top:7px;font-weight:750;color:#073b39;text-underline-offset:4px}
+.sla-formCard:has(.sla-closedMessage){border-radius:20px}
+@media(max-width:720px){.sla-closedMessage{padding:26px 18px;min-height:200px}.sla-closedMessage h2{font-size:clamp(1.65rem,8vw,2.25rem)}}
