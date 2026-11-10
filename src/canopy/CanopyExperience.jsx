@@ -142,7 +142,7 @@ export function CanopyLiveCountdown({item}){
       {!liveEnded&&!countdown.ended&&<div className="cx-countdown" aria-label={`${countdown.days} days ${countdown.hours} hours ${countdown.minutes} minutes until live session`}>
         {[['DAYS',countdown.days],['HRS',countdown.hours],['MIN',countdown.minutes],['SEC',countdown.seconds]].map(([label,value])=><div key={label}><strong>{String(value).padStart(2,'0')}</strong><span>{label}</span></div>)}
       </div>}
-      {item.liveUrl?<a className="cx-link" href={item.liveUrl} target="_blank" rel="noreferrer">{actionLabel} <ExternalLink size={14}/></a>:<button type="button" className="cx-link" onClick={()=>{window.history.pushState({},'','/canopy/notifications');window.dispatchEvent(new PopStateEvent('popstate'))}}>Session details <ArrowRight size={14}/></button>}
+      {item.liveUrl?<a className="cx-link" href={item.liveUrl} target="_blank" rel="noreferrer">{actionLabel} <ExternalLink size={14}/></a>:<button type="button" className="cx-link" onClick={()=>{window.history.pushState({},'','/canopy/notifications');window.dispatchEvent(new CustomEvent('womate:navigate',{detail:{path:'/canopy/notifications'}}))}}>Session details <ArrowRight size={14}/></button>}
     </div>
   </section>;
 }
@@ -164,7 +164,7 @@ export function CanopyThisWeek({progress=[],submissions=[],next}){
   const now=new Date();
   const speakerOpen=now>=new Date(item.speakerOpensAt);
   const duePassed=now>new Date(item.dueAt);
-  const goTo=path=>{window.history.pushState({},'',path);window.dispatchEvent(new PopStateEvent('popstate'));window.scrollTo({top:0,behavior:'smooth'})};
+  const goTo=path=>{window.history.pushState({},'',path);window.dispatchEvent(new CustomEvent('womate:navigate',{detail:{path:path}}));window.scrollTo({top:0,behavior:'smooth'})};
   return <section className="cx-week">
     <header><span>THIS WEEK</span><strong>Module {item.moduleId}</strong></header>
     <div className="cx-week-list">
@@ -325,7 +325,7 @@ export function CanopyReflectionTimeline(){
 export function CanopyModuleComplete({module,onClose}){
   const stage=CANOPY_JOURNEY_STAGES.find(x=>x.moduleId===module.id);
   return <div className="cx-complete-backdrop" role="dialog" aria-modal="true" aria-label={`Module ${module.id} completed`}>
-    <section className="cx-complete"><div className="cx-complete-mark"><Check/></div><small>MODULE {module.id} COMPLETE</small><h2>{stage?.verb||'KEEP GOING'}.</h2><p><b>{module.title}</b> complete. Finish the weekly assignment when ready.</p><div><button className="canopyPrimary" onClick={()=>{onClose?.();window.history.pushState({},'','/canopy/assignments');window.dispatchEvent(new PopStateEvent('popstate'))}}>Go to assignment <ArrowRight size={15}/></button><button className="canopySecondary" onClick={onClose}>Stay here</button></div></section>
+    <section className="cx-complete"><div className="cx-complete-mark"><Check/></div><small>MODULE {module.id} COMPLETE</small><h2>{stage?.verb||'KEEP GOING'}.</h2><p><b>{module.title}</b> complete. Finish the weekly assignment when ready.</p><div><button className="canopyPrimary" onClick={()=>{onClose?.();window.history.pushState({},'','/canopy/assignments');window.dispatchEvent(new CustomEvent('womate:navigate',{detail:{path:'/canopy/assignments'}}))}}>Go to assignment <ArrowRight size={15}/></button><button className="canopySecondary" onClick={onClose}>Stay here</button></div></section>
   </div>;
 }
 
