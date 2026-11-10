@@ -3474,3 +3474,399 @@ html[data-canopy-theme="dark"] .cx-special-recognition-song>span{color:var(--can
 .canopySidebar nav{overflow-y:auto;scrollbar-width:thin;min-height:0;padding-bottom:18px}
 .canopySidebar nav button{cursor:pointer}
 .canopySidebar nav button:focus-visible{outline:2px solid #2a8871;outline-offset:2px}
+
+
+/* Premium professional Impact Profile · transcript / CV treatment */
+.cx-impact-professional{
+  max-width:1180px;
+  padding-top:38px;
+  font-size:15px;
+  color:#173f38;
+}
+.cx-impact-dochead{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:24px;
+  padding:0 0 22px;
+  border-bottom:2px solid #0e4d4a;
+}
+.cx-impact-brandblock{
+  display:flex;
+  align-items:flex-end;
+  gap:28px;
+}
+.cx-impact-wordmark{
+  display:grid;
+  gap:1px;
+  line-height:1;
+}
+.cx-impact-wordmark span{
+  font-size:24px;
+  font-weight:950;
+  letter-spacing:-.035em;
+  color:#073b39;
+}
+.cx-impact-wordmark small{
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:.22em;
+  color:#6d827a;
+}
+.cx-impact-docmeta{
+  display:grid;
+  gap:4px;
+  padding-left:28px;
+  border-left:1px solid #cfded7;
+}
+.cx-impact-docmeta>span{
+  font-size:11px;
+  font-weight:950;
+  letter-spacing:.14em;
+  color:#0e4d4a;
+}
+.cx-impact-docmeta small{
+  font-size:12px;
+  color:#6c8078;
+}
+.cx-impact-identity{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(300px,.45fr);
+  gap:48px;
+  align-items:end;
+  padding:44px 0 30px;
+  border-bottom:1px solid #d7e3dd;
+}
+.cx-impact-overline,
+.cx-impact-profile-note span,
+.cx-impact-transcript>header span,
+.cx-impact-achievement>div>span{
+  display:block;
+  margin-bottom:8px;
+  font-size:10px;
+  font-weight:950;
+  letter-spacing:.15em;
+  color:#0e4d4a;
+}
+.cx-impact-identity h1{
+  margin:0 0 10px;
+  font-size:clamp(42px,6vw,72px);
+  line-height:.94;
+  letter-spacing:-.055em;
+  color:#09261d;
+}
+.cx-impact-identity>div>p{
+  margin:0;
+  font-size:15px;
+  line-height:1.5;
+  color:#5c7069;
+}
+.cx-impact-identity aside{
+  padding-left:24px;
+  border-left:1px solid #d7e3dd;
+}
+.cx-impact-identity aside>span{
+  display:block;
+  margin-bottom:12px;
+  font-size:11px;
+  font-weight:850;
+  color:#5f746c;
+}
+.cx-impact-identity dl{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:9px 20px;
+  margin:0;
+}
+.cx-impact-identity dl div{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  padding:8px 0;
+  border-bottom:1px solid #e3ebe7;
+}
+.cx-impact-identity dt{
+  font-size:11px;
+  color:#6b7e77;
+}
+.cx-impact-identity dd{
+  margin:0;
+  font-size:16px;
+  font-weight:950;
+  color:#0e4d4a;
+}
+.cx-impact-profile-note{
+  padding:25px 0 28px;
+  border-bottom:1px solid #dfe8e3;
+}
+.cx-impact-profile-note p{
+  max-width:900px;
+  margin:0;
+  font-size:14px;
+  line-height:1.75;
+  color:#526a62;
+}
+.cx-impact-transcript{
+  margin-top:34px;
+}
+.cx-impact-transcript>header{
+  display:flex;
+  align-items:end;
+  justify-content:space-between;
+  gap:24px;
+  padding-bottom:18px;
+}
+.cx-impact-transcript>header h2{
+  margin:0;
+  font-size:clamp(26px,3vw,36px);
+  line-height:1.06;
+  letter-spacing:-.03em;
+  color:#103c35;
+}
+.cx-impact-transcript>header small{
+  max-width:270px;
+  text-align:right;
+  font-size:10px;
+  line-height:1.45;
+  color:#71847d;
+}
+.cx-impact-transcript-head,
+.cx-impact-transcript-body article{
+  display:grid;
+  grid-template-columns:130px minmax(0,1fr) 170px 170px;
+  gap:24px;
+}
+.cx-impact-transcript-head{
+  padding:11px 14px;
+  border-top:1px solid #cfded7;
+  border-bottom:1px solid #cfded7;
+  background:#f4f8f5;
+  color:#5a7168;
+}
+.cx-impact-transcript-head span{
+  font-size:9px;
+  font-weight:950;
+  letter-spacing:.11em;
+  text-transform:uppercase;
+}
+.cx-impact-transcript-body article{
+  align-items:start;
+  padding:24px 14px;
+  border-bottom:1px solid #dfe8e3;
+  background:transparent;
+}
+.cx-impact-transcript-body article.is-pending{
+  opacity:.72;
+}
+.cx-impact-modulecell{
+  display:grid;
+  gap:7px;
+}
+.cx-impact-modulecell strong{
+  font-size:24px;
+  line-height:1;
+  color:#0e4d4a;
+}
+.cx-impact-modulecell span{
+  font-size:9px;
+  line-height:1.45;
+  font-weight:950;
+  letter-spacing:.09em;
+  color:#73877f;
+}
+.cx-impact-workcell h3{
+  margin:0 0 8px;
+  font-size:20px;
+  line-height:1.15;
+  letter-spacing:-.02em;
+  color:#143f37;
+}
+.cx-impact-workcell p{
+  margin:0;
+  max-width:680px;
+  font-size:13px;
+  line-height:1.7;
+  color:#5b7068;
+}
+.cx-impact-competency{
+  display:inline-block;
+  margin-top:10px;
+  padding-top:7px;
+  border-top:2px solid #c6ff52;
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:.04em;
+  color:#0e4d4a;
+}
+.cx-impact-statuscell{
+  padding-top:2px;
+}
+.cx-impact-verified,
+.cx-impact-submitted,
+.cx-impact-pending{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  padding:0;
+  border-radius:0;
+  background:transparent;
+  font-size:10px;
+  font-weight:900;
+}
+.cx-impact-verified{color:#14613b}
+.cx-impact-submitted{color:#0e4d4a}
+.cx-impact-pending{color:#7c8d87}
+.cx-impact-linkcell{
+  display:grid;
+  gap:7px;
+  justify-items:start;
+}
+.cx-impact-linkcell a,
+.cx-impact-achievement-link{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  padding-bottom:2px;
+  border-bottom:1px solid #95b4a7;
+  color:#0e4d4a;
+  text-decoration:none;
+  font-size:11px;
+  font-weight:900;
+}
+.cx-impact-linkcell small{
+  font-size:10px;
+  line-height:1.45;
+  color:#82918c;
+}
+.cx-impact-achievement{
+  display:grid;
+  grid-template-columns:54px minmax(0,1fr);
+  gap:22px;
+  margin-top:40px;
+  padding:28px 0 0;
+  border-top:2px solid #0e4d4a;
+}
+.cx-impact-achievement-mark{
+  width:48px;
+  height:48px;
+  display:grid;
+  place-items:center;
+  background:#073b39;
+  color:#c6ff52;
+}
+.cx-impact-achievement h2{
+  margin:0 0 8px;
+  font-size:24px;
+  color:#103c35;
+}
+.cx-impact-achievement p{
+  margin:0;
+  max-width:900px;
+  font-size:13px;
+  line-height:1.7;
+  color:#5c7069;
+}
+.cx-impact-achievement-meta{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px 18px;
+  margin-top:14px;
+  color:#5f746c;
+  font-size:10px;
+  font-weight:850;
+}
+.cx-impact-achievement-note{
+  margin-top:12px!important;
+  padding-left:14px;
+  border-left:3px solid #c6ff52;
+}
+.cx-impact-achievement-link{
+  margin-top:14px;
+}
+.cx-impact-docfooter{
+  display:flex;
+  justify-content:space-between;
+  gap:28px;
+  margin-top:46px;
+  padding:20px 0 0;
+  border-top:1px solid #cfded7;
+}
+.cx-impact-docfooter>div{
+  display:grid;
+  gap:3px;
+}
+.cx-impact-docfooter strong{
+  font-size:14px;
+  color:#073b39;
+}
+.cx-impact-docfooter span{
+  font-size:9px;
+  letter-spacing:.1em;
+  color:#7b8d86;
+}
+.cx-impact-docfooter p{
+  max-width:600px;
+  margin:0;
+  text-align:right;
+  font-size:9.5px;
+  line-height:1.55;
+  color:#7b8d86;
+}
+
+html[data-canopy-theme="dark"] .cx-impact-dochead,
+html[data-canopy-theme="dark"] .cx-impact-identity,
+html[data-canopy-theme="dark"] .cx-impact-profile-note,
+html[data-canopy-theme="dark"] .cx-impact-transcript-body article,
+html[data-canopy-theme="dark"] .cx-impact-achievement,
+html[data-canopy-theme="dark"] .cx-impact-docfooter{border-color:#31514a}
+html[data-canopy-theme="dark"] .cx-impact-wordmark span,
+html[data-canopy-theme="dark"] .cx-impact-identity h1,
+html[data-canopy-theme="dark"] .cx-impact-transcript>header h2,
+html[data-canopy-theme="dark"] .cx-impact-workcell h3,
+html[data-canopy-theme="dark"] .cx-impact-achievement h2{color:#f4fff9}
+html[data-canopy-theme="dark"] .cx-impact-docmeta,
+html[data-canopy-theme="dark"] .cx-impact-identity aside{border-color:#31514a}
+html[data-canopy-theme="dark"] .cx-impact-transcript-head{background:#102f2b;border-color:#31514a;color:#a9c0b9}
+html[data-canopy-theme="dark"] .cx-impact-workcell p,
+html[data-canopy-theme="dark"] .cx-impact-profile-note p,
+html[data-canopy-theme="dark"] .cx-impact-achievement p,
+html[data-canopy-theme="dark"] .cx-impact-identity>div>p{color:#abc2bb}
+
+@media(max-width:900px){
+  .cx-impact-identity{grid-template-columns:1fr;gap:24px}
+  .cx-impact-identity aside{padding-left:0;padding-top:18px;border-left:0;border-top:1px solid #d7e3dd}
+  .cx-impact-transcript-head{display:none}
+  .cx-impact-transcript-body article{grid-template-columns:80px minmax(0,1fr);gap:16px 20px}
+  .cx-impact-statuscell,.cx-impact-linkcell{grid-column:2}
+}
+@media(max-width:620px){
+  .cx-impact-professional{padding:30px 20px 64px;font-size:16px}
+  .cx-impact-dochead{align-items:flex-start;flex-direction:column}
+  .cx-impact-brandblock{align-items:flex-start;flex-direction:column;gap:12px}
+  .cx-impact-docmeta{padding-left:0;border-left:0}
+  .cx-impact-identity{padding-top:30px}
+  .cx-impact-identity h1{font-size:43px}
+  .cx-impact-identity dl{grid-template-columns:1fr}
+  .cx-impact-transcript>header{align-items:flex-start;flex-direction:column}
+  .cx-impact-transcript>header small{text-align:left}
+  .cx-impact-transcript-body article{grid-template-columns:1fr;padding:22px 0}
+  .cx-impact-modulecell,.cx-impact-statuscell,.cx-impact-linkcell{grid-column:1}
+  .cx-impact-modulecell{grid-template-columns:auto 1fr;align-items:end}
+  .cx-impact-workcell h3{font-size:22px}
+  .cx-impact-workcell p{font-size:14px}
+  .cx-impact-achievement{grid-template-columns:1fr}
+  .cx-impact-docfooter{flex-direction:column}
+  .cx-impact-docfooter p{text-align:left}
+}
+@media print{
+  .cx-impact-professional{max-width:none;padding:0 8mm!important;color:#173f38!important;background:#fff!important;font-size:11pt}
+  .cx-impact-dochead{padding-top:0}
+  .cx-impact-dochead .cx-print{display:none!important}
+  .cx-impact-identity{padding:10mm 0 6mm}
+  .cx-impact-identity h1{font-size:34pt}
+  .cx-impact-profile-note{padding:5mm 0}
+  .cx-impact-transcript{margin-top:7mm}
+  .cx-impact-transcript-body article{break-inside:avoid;page-break-inside:avoid}
+  .cx-impact-achievement{break-inside:avoid;page-break-inside:avoid}
+  .cx-impact-docfooter{break-inside:avoid}
+}
