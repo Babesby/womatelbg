@@ -60,3 +60,7 @@ html[data-canopy-theme="dark"] .cf-icon{border-color:#3b5b50}
 .cfa-feedback-editor>.cfa-primary{justify-self:start;padding:13px 20px;border-radius:999px;cursor:pointer}
 .cfa-feedback-editor button:disabled{opacity:.55;cursor:not-allowed}
 @media(max-width:740px){.cfa-workspace-tabs{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}.cfa-workspace-tabs button{white-space:nowrap;flex-shrink:0}.cfa-workspace .cfa-form{grid-template-columns:1fr;padding:18px}.cfa-workspace .cfa-form>.cfa-two{grid-template-columns:1fr}.cfa-review-row{grid-template-columns:1fr}.cfa-workspace .cfa-calls article{display:grid;gap:15px}.cfa-actions{justify-content:start}.cfa-workspace-tools{align-items:stretch}.cfa-review>article>div:first-child{display:grid}}
+
+.cf-tabs .strong-fit-tab{font-weight:900}
+.cf-list>article.strong-fit{border-color:rgba(14,77,74,.28);box-shadow:0 12px 30px rgba(14,77,74,.07)}
+.cf-strong-fit{display:inline-flex!important;align-items:center;gap:5px;background:#eaf6ed;color:#17643b!important;border-radius:999px;padding:5px 8px;font-weight:900!important}
