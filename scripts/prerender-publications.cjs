@@ -235,7 +235,7 @@ async function main(){
  // can never shadow the SPA shell.
  const reactOwnedRoutes=STATIC_PAGES.map(([route])=>route).filter(route=>route!=='/').concat(['/selected','/verify','/canopy']);
  for(const route of reactOwnedRoutes){
-  const dir=path.join(dist,route.replace(/^\\//,''));
+  const dir=path.join(dist,route.replace(/^\//,''));
   if(fs.existsSync(dir))fs.rmSync(dir,{recursive:true,force:true});
  }
 
