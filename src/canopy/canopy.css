@@ -4643,3 +4643,60 @@ html[data-canopy-theme="dark"] .cx-impact-record-skill span{color:#d7e7e1}
  .canopyAdmissionsAdmin .canopyReviewFilters{margin-left:-2px;margin-right:-2px;padding-left:2px;padding-right:2px}
  .canopyAdmissionsAdmin .canopyReviewCard>header p{overflow-wrap:anywhere}
 }
+
+
+/* 2027 ADMISSIONS OPERATIONS */
+.canopyAdmissionsTimeline{display:flex;gap:8px 16px;flex-wrap:wrap;padding-top:2px;color:var(--canopy-muted);font-size:11px;font-weight:800}
+.canopyAdmissionsTimeline span{display:inline-flex;align-items:center;gap:5px}
+.canopyAdmissionsOps{display:grid;grid-template-columns:minmax(220px,1.2fr) minmax(180px,.8fr) repeat(3,auto);gap:10px;align-items:stretch}
+.canopyAdmissionsOps article{display:flex;gap:12px;align-items:flex-start;background:#fff;border:1px solid var(--canopy-line);border-radius:18px;padding:16px}
+.canopyAdmissionsOps article>svg{color:var(--canopy);flex:0 0 auto}
+.canopyAdmissionsOps article>div{display:grid;gap:3px;min-width:0}
+.canopyAdmissionsOps article small{font-size:9px;letter-spacing:.1em;font-weight:900;color:var(--canopy-muted)}
+.canopyAdmissionsOps article strong{font-size:14px;line-height:1.35}
+.canopyAdmissionsOps article span{font-size:11px;line-height:1.45;color:var(--canopy-muted)}
+.canopyAdmissionsOps>button{align-self:stretch;min-height:54px;white-space:nowrap}
+.canopyAdmissionsAnalytics{background:#fff;border:1px solid var(--canopy-line);border-radius:20px;padding:18px 20px}
+.canopyAdmissionsAnalytics>header{display:flex;justify-content:space-between;gap:16px;align-items:center;margin-bottom:14px}
+.canopyAdmissionsAnalytics>header span{font-size:10px;letter-spacing:.1em;font-weight:900;color:var(--canopy)}
+.canopyAdmissionsAnalytics>header strong{font-size:12px;color:var(--canopy-muted)}
+.canopyAdmissionsAnalytics>div{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px}
+.canopyAdmissionsAnalytics article{padding:13px 10px;border-radius:14px;background:#f5f9f7;display:grid;gap:3px;text-align:center;min-width:0}
+.canopyAdmissionsAnalytics article strong{font-size:21px;color:var(--canopy-ink)}
+.canopyAdmissionsAnalytics article span{font-size:10px;line-height:1.25;color:var(--canopy-muted)}
+.canopyAdmissionsRubric{margin-top:16px;border:1px solid var(--canopy-line);border-radius:16px;padding:15px;background:#f8fbf9}
+.canopyAdmissionsRubric>header{display:flex;justify-content:space-between;gap:18px;align-items:flex-end}
+.canopyAdmissionsRubric>header>div{display:grid;gap:3px}
+.canopyAdmissionsRubric>header small{font-size:9px;font-weight:900;letter-spacing:.1em;color:var(--canopy)}
+.canopyAdmissionsRubric>header strong{font-size:23px}
+.canopyAdmissionsRubric>header>span{max-width:580px;text-align:right;font-size:10px;line-height:1.45;color:var(--canopy-muted)}
+.canopyAdmissionsRubric>div{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin:14px 0}
+.canopyAdmissionsRubric label{display:grid;gap:6px;min-width:0}
+.canopyAdmissionsRubric label>span{display:flex;justify-content:space-between;gap:6px;font-size:10px;font-weight:850;color:#405652}
+.canopyAdmissionsRubric label small{font-weight:700;color:var(--canopy-muted)}
+.canopyAdmissionsRubric input{width:100%;box-sizing:border-box;border:1px solid #cbd9d5;border-radius:10px;padding:9px 10px;background:#fff;color:var(--canopy-ink);font:inherit}
+@media(max-width:1180px){
+ .canopyAdmissionsOps{grid-template-columns:1fr 1fr 1fr}
+ .canopyAdmissionsOps article{grid-column:span 1}
+ .canopyAdmissionsOps>button{width:100%}
+ .canopyAdmissionsAnalytics>div{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+@media(max-width:860px){
+ .canopyAdmissionsOps{grid-template-columns:1fr 1fr}
+ .canopyAdmissionsAnalytics>div{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .canopyAdmissionsRubric>div{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .canopyAdmissionsRubric>header{align-items:flex-start}
+ .canopyAdmissionsRubric>header>span{text-align:left}
+}
+@media(max-width:640px){
+ .canopyAdmissionsOps{grid-template-columns:1fr}
+ .canopyAdmissionsOps article,.canopyAdmissionsOps>button{grid-column:auto}
+ .canopyAdmissionsAnalytics{padding:14px}
+ .canopyAdmissionsAnalytics>header{display:grid;gap:4px}
+ .canopyAdmissionsAnalytics>div{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .canopyAdmissionsAnalytics article{padding:11px 8px}
+ .canopyAdmissionsRubric>header{display:grid}
+ .canopyAdmissionsRubric>div{grid-template-columns:1fr}
+ .canopyAdmissionsRubric>header>span{max-width:none}
+ .canopyAdmissionsTimeline{display:grid;gap:7px}
+}
