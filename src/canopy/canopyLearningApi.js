@@ -38,3 +38,6 @@ export const approveCourseCertificate=(course,user,note,s)=>rpc('womate_course_a
 export const issueCourseCertificate=(course,user,url,s)=>rpc('womate_course_admin_issue_certificate',{p_course:course,p_user:user,p_url:url},s);
 
 export const saveExpertAssessment=(course,module,title,instructions,s)=>rpc('womate_course_expert_save_assessment',{p_course:course,p_module:Number(module),p_title:title,p_instructions:instructions},s);
+
+export const getCohortMissionGroups=(cohort,s)=>rpc('canopy_admin_cohort_mission_groups',{p_cohort_key:cohort},s);
+export const getCohortFundingCalls=(cohort,s)=>rpc('canopy_admin_cohort_funding_calls',{p_cohort_key:cohort},s);
