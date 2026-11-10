@@ -83,13 +83,14 @@ Deno.serve(async function(req){
   // Isolated, authenticated diagnostics never touch the admissions queue.
   // All test mail goes to the configured WOMATE sender, never arbitrary recipients.
   const diagnostic=await req.json().catch(()=>({}));
-  if(diagnostic?.action==="check_oauth"||diagnostic?.action==="send_self_test"){
+  if(diagnostic?.action==="check_oauth"||diagnostic?.action==="send_self_test"||diagnostic?.action==="send_recipient_test"){
     try{
       const accessToken=await gmailAccessToken();
       if(diagnostic.action==="check_oauth")return json({ok:true,oauth:"refresh_succeeded",queue_unchanged:true});
       const html=emailHtml("WOMATE Gmail delivery test","This is an isolated admissions-mail delivery test. No applicant has been contacted.",null,null,null);
-      const result=await sendGmail(accessToken,WOMATE_GMAIL_FROM,"WOMATE admissions mail test",html);
-      return json({ok:true,oauth:"refresh_succeeded",gmail_message_id:result.id||null,recipient:WOMATE_GMAIL_FROM,queue_unchanged:true,inbox_receipt_verified:false});
+      const recipient=diagnostic.action==="send_recipient_test"?"phillipaaidoo12345@gmail.com":WOMATE_GMAIL_FROM;
+      const result=await sendGmail(accessToken,recipient,"WOMATE admissions mail test",html);
+      return json({ok:true,oauth:"refresh_succeeded",gmail_message_id:result.id||null,recipient,queue_unchanged:true,inbox_receipt_verified:false});
     }catch(e){return json({ok:false,stage:"gmail_diagnostic",error:String(e instanceof Error?e.message:e).slice(0,400)},502)}
   }
 
