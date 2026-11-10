@@ -726,6 +726,12 @@ export async function getCanopyAssignmentServerClock(session){
 }
 
 /* Authorized WOMATE admin register; never exposed through the public verification endpoint. */
+export async function getAdminAlumniCheckins(session){
+  const s=await refreshSession(session||getStoredSession());
+  if(!s?.access_token)throw new Error('Sign in again to view alumni check-ins.');
+  return rest('rpc/womate_admin_alumni_checkins',{token:s.access_token,method:'POST',body:{}});
+}
+
 export async function getCanopyCredentialCandidates(session){
  const s=await refreshSession(session||getStoredSession());
  if(!s?.access_token)throw new Error('Sign in again to view the graduation register.');
