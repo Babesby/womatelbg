@@ -455,6 +455,13 @@ export function CanopyPortfolioPage({viewer,submissions=[]}){
   const verified=submitted.filter(item=>{const sub=latest[item.weekKey];return sub?.review_source==='manual'&&sub?.assessment_status==='completed'});
   const practicalCount=submitted.filter(item=>{const sub=latest[item.weekKey];return Boolean(sub?.canvas_link)&&!sub?.impact_hide_practical}).length;
   const publicActionCount=submitted.filter(item=>item.weekKey!=='module-05'&&Boolean(latest[item.weekKey]?.linkedin_link)).length;
+  const portfolioEvidenceCopy={
+    '01':`${firstName} created a CanopyCanvas awareness graphic for a defined local audience, communicating a climate issue responsibly and calling for one realistic action.`,
+    '02':`${firstName} created an AI voice picture story connecting gender, lived experience and climate justice for a public audience.`,
+    '03':`${firstName} translated a climate governance idea into one clear policy rule and presented it as a practical public-facing action.`,
+    '04':`${firstName} produced a locally grounded climate advocacy piece and shared a public speaker-challenge action on LinkedIn or X/Twitter.`,
+    '05':`${firstName} created a climate leadership vision board connecting the issue they care about with the leader, skills and impact they want to build.`
+  };
   const moduleImpact={
     '01':'Observe & communicate',
     '02':'Centre people & justice',
@@ -475,7 +482,7 @@ export function CanopyPortfolioPage({viewer,submissions=[]}){
     return /^https?:\/\//i.test(raw)?raw:`https://${raw}`;
   };
   function print(){window.print()}
-  return <main className="cx-portfolio cx-impact-profile cx-impact-professional">
+  return <main className="cx-portfolio cx-impact-profile cx-impact-professional cx-impact-premium">
     <header className="cx-impact-dochead">
       <div className="cx-impact-brandblock">
         <img className="cx-impact-logo" src="/assets/img/logo.svg" alt="WOMATE"/>
@@ -486,9 +493,9 @@ export function CanopyPortfolioPage({viewer,submissions=[]}){
 
     <section className="cx-impact-identity">
       <div>
-        <span className="cx-impact-overline">LEARNER RECORD</span>
+        <span className="cx-impact-overline">LEARNER IMPACT RECORD</span>
         <h1>{name}</h1>
-        <p>{country||'Country not provided'} · Cohort 2 · 2026</p>
+        <p>{country||'Country not provided'} · She Leads Climate Mentorship · Cohort 2 · 2026</p>
       </div>
       <aside>
         <dl>
@@ -502,14 +509,11 @@ export function CanopyPortfolioPage({viewer,submissions=[]}){
 
     <section className="cx-impact-transcript" aria-label="Canopy Impact Record">
       <header>
-        <div><span>IMPACT TRANSCRIPT</span><h2>Learning & evidence</h2></div>
+        <div><span>IMPACT RECORD</span><h2>Verified work, skills & public action</h2></div>
+        <p>Each entry reflects work completed through Canopy and links to participant-owned evidence where available.</p>
       </header>
 
-      <div className="cx-impact-transcript-head" aria-hidden="true">
-        <span>Module</span><span>Work</span><span>Status</span><span>Evidence</span>
-      </div>
-
-      <div className="cx-impact-transcript-body">
+      <div className="cx-impact-transcript-body cx-impact-record-list">
         {CANOPY_ASSIGNMENT_SCHEDULE.map(item=>{
           const sub=latest[item.weekKey];
           const module=modules.find(m=>m.id===item.moduleId);
@@ -518,18 +522,31 @@ export function CanopyPortfolioPage({viewer,submissions=[]}){
           const practicalUrl=externalHref(sub?.canvas_link);
           const publicUrl=externalHref(sub?.linkedin_link);
           return <article className={sub?'is-ready':'is-pending'} key={item.weekKey}>
-            <div className="cx-impact-modulecell"><strong>{item.moduleId}</strong><span>{module?.title||''}</span></div>
-            <div className="cx-impact-workcell">
-              <h3>{shortEvidence[item.moduleId]||practical?.practicalTitle||module?.title}</h3>
-              <span className="cx-impact-competency">{moduleImpact[item.moduleId]||'Climate action'}</span>
+            <div className="cx-impact-record-index">
+              <strong>{item.moduleId}</strong>
+              <span>{module?.title||''}</span>
             </div>
-            <div className="cx-impact-statuscell">
-              {isVerified?<span className="cx-impact-verified"><BadgeCheck size={14}/> Verified</span>:sub?<span className="cx-impact-submitted">Submitted</span>:<span className="cx-impact-pending">Pending</span>}
-            </div>
-            <div className="cx-impact-linkcell">
-              {practicalUrl&&!sub?.impact_hide_practical&&<a href={practicalUrl} target="_blank" rel="noreferrer">View evidence <ExternalLink size={14}/></a>}
-              {item.weekKey!=='module-05'&&publicUrl&&<a href={publicUrl} target="_blank" rel="noreferrer">View public post <ExternalLink size={14}/></a>}
-              {!sub&&<span className="cx-impact-noevidence">—</span>}
+
+            <div className="cx-impact-record-main">
+              <div className="cx-impact-record-titleline">
+                <h3>{shortEvidence[item.moduleId]||practical?.practicalTitle||module?.title}</h3>
+                {isVerified?<span className="cx-impact-verified"><BadgeCheck size={14}/> WOMATE verified</span>:sub?<span className="cx-impact-submitted">Submitted</span>:<span className="cx-impact-pending">Pending</span>}
+              </div>
+
+              <p className="cx-impact-record-description">
+                {sub
+                  ? portfolioEvidenceCopy[item.moduleId]
+                  : (practical?.portfolioSummary||practical?.practicalBrief||module?.summary)}
+              </p>
+
+              <div className="cx-impact-record-bottom">
+                <span className="cx-impact-competency">{moduleImpact[item.moduleId]||'Climate action'}</span>
+                <div className="cx-impact-linkcell">
+                  {practicalUrl&&!sub?.impact_hide_practical&&<a href={practicalUrl} target="_blank" rel="noreferrer">View practical evidence <ExternalLink size={14}/></a>}
+                  {item.weekKey!=='module-05'&&publicUrl&&<a href={publicUrl} target="_blank" rel="noreferrer">View public action <ExternalLink size={14}/></a>}
+                  {!sub&&<span className="cx-impact-noevidence">Evidence will appear after submission</span>}
+                </div>
+              </div>
             </div>
           </article>
         })}
@@ -539,9 +556,9 @@ export function CanopyPortfolioPage({viewer,submissions=[]}){
     {missionCompletion&&<section className="cx-impact-achievement" aria-label="WOMATE Mission Completed recognition">
       <div className="cx-impact-achievement-mark"><BadgeCheck/></div>
       <div>
-        <span>VERIFIED EXPERIENCE</span>
+        <span>ADDITIONAL VERIFIED EXPERIENCE</span>
         <h2>{missionGroup?.name||'Cross-country climate mission'}</h2>
-        <p>{`${firstName} completed a WOMATE-reviewed mission contribution${myMissionMember?.mission_no?` · Mission ${myMissionMember.mission_no}`:''}.`}</p>
+        <p>{`${firstName} completed a WOMATE-reviewed contribution to the cross-country climate mission${myMissionMember?.mission_no?`, leading Mission ${myMissionMember.mission_no}`:''}.`}</p>
         {missionGroup?.evidence_folder_url&&<a className="cx-impact-achievement-link" href={externalHref(missionGroup.evidence_folder_url)} target="_blank" rel="noreferrer">View mission evidence <ExternalLink size={14}/></a>}
       </div>
     </section>}
