@@ -228,6 +228,17 @@ async function main(){
  if(production&&!key)throw Error('Production SEO build blocked: VITE_CANOPY_SUPABASE_ANON_KEY is missing.');
 
  const template=fs.readFileSync(path.join(dist,'index.html'),'utf8');
+
+ // Deep production repair: Vite/Vercel may carry generated route directories from
+ // the SEO stage into the final filesystem. Remove every primary React route
+ // directory before generating dynamic SEO detail pages so filesystem routing
+ // can never shadow the SPA shell.
+ const reactOwnedRoutes=STATIC_PAGES.map(([route])=>route).filter(route=>route!=='/').concat(['/selected','/verify','/canopy']);
+ for(const route of reactOwnedRoutes){
+  const dir=path.join(dist,route.replace(/^\\//,''));
+  if(fs.existsSync(dir))fs.rmSync(dir,{recursive:true,force:true});
+ }
+
  let publications=[],talent=[];
  try{publications=await fetchPublications()}catch(e){if(production)throw e;console.warn('[WOMATE SEO] '+e.message)}
  try{talent=await fetchTalent()}catch(e){if(production)throw e;console.warn('[WOMATE SEO] '+e.message)}
