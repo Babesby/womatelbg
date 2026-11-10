@@ -9,8 +9,8 @@ export const CANOPY_POST_2026_RUNTIMES=Object.freeze({
     fullName:'She Leads Climate Mentorship · Cohort 3 · 2027',
     year:2027,
     region:'Africa',
-    applicationWindow:'Mid-September 2027',
-    sessions:'Five weeks from October 2027',
+    applicationWindow:'10–20 September 2027',
+    sessions:'Programme opens 4 October 2027 · Modules release weekly from 11 October · Graduation 15 November 2027',
     track:'standard',
     accessModel:'free',
     status:'planning',
@@ -21,7 +21,11 @@ export const CANOPY_POST_2026_RUNTIMES=Object.freeze({
     liveSessionsStatus:'planned',
     certificateStatus:'ready',
     paymentGate:false,
-    regionalDelivery:false
+    regionalDelivery:false,
+    programmeOpenDate:'2027-10-04',
+    moduleReleaseDates:{'01':'2027-10-11','02':'2027-10-18','03':'2027-10-25','04':'2027-11-01','05':'2027-11-08'},
+    graduationDate:'2027-11-15',
+    admissions:{opens:'2027-09-10',closes:'2027-09-20',decision:'2027-09-26',acceptanceDeadline:'2027-09-30',onboardingDeadline:'2027-10-03',seatCapacity:500}
   }),
   'she-leads-asia-c1-2027':Object.freeze({
     cohortKey:'she-leads-asia-c1-2027',
@@ -30,7 +34,7 @@ export const CANOPY_POST_2026_RUNTIMES=Object.freeze({
     fullName:'She Leads Climate Mentorship · Cohort 1 · 2027',
     year:2027,
     region:'Asia',
-    applicationWindow:'Mid-March through April 2027',
+    applicationWindow:'15 January–15 February 2027',
     sessions:'Programme opens 1 March 2027 · Modules release weekly from 8 March · Graduation 12 April 2027',
     track:'asia',
     accessModel:'free',
@@ -47,6 +51,7 @@ export const CANOPY_POST_2026_RUNTIMES=Object.freeze({
     moduleReleaseDates:{'01':'2027-03-08','02':'2027-03-15','03':'2027-03-22','04':'2027-03-29','05':'2027-04-05'},
     graduationDate:'2027-04-12',
     timezoneAware:true,
+    admissions:{opens:'2027-01-15',closes:'2027-02-15',decision:'2027-02-22',acceptanceDeadline:'2027-02-26',onboardingDeadline:'2027-02-28',seatCapacity:300},
     languageSupport:'planned_evaluation'
   }),
   'she-leads-advanced-c1-2027':Object.freeze({
