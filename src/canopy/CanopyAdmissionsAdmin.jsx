@@ -54,15 +54,15 @@ export default function CanopyAdmissionsAdmin({viewer,cohort}){
  const filtered=rows.filter(x=>(filter==='all'||x.status===filter)&&[x.full_name,x.email,x.country,x.city_region,x.nationality,x.current_status,x.university_program,x.motivation,x.reference].join(' ').toLowerCase().includes(q.toLowerCase()));
  const accepted=(analytics?.funnel?.accepted||0),capacity=Number(state?.seat_capacity||0),available=capacity?Math.max(0,capacity-accepted):null;
 
- const draft=x=>drafts[x.id]||{status:x.status==='submitted'?'under_review':x.status,score:x.review_score??'',private_note:x.reviewer_note_private||'',public_note:x.decision_note_public||'',offer_expires_at:x.offer_expires_at?new Date(x.offer_expires_at).toISOString().slice(0,16):''};
+ const draft=x=>drafts[x.id]||{status:x.status==='submitted'?'under_review':x.status,score:x.review_score??'',private_note:x.reviewer_note_private||'',public_note:x.decision_note_public||'',offer_expires_at:''};
  const setDraft=(id,patch)=>setDrafts(d=>({...d,[id]:{...draft(rows.find(x=>x.id===id)||{}),...patch}}));
  const rubric=x=>rubrics[x.id]||{motivation:Number(x.rubric_scores?.motivation||0),climate_alignment:Number(x.rubric_scores?.climate_alignment||0),leadership_community:Number(x.rubric_scores?.leadership_community||0),commitment:Number(x.rubric_scores?.commitment||0),cohort_contribution:Number(x.rubric_scores?.cohort_contribution||0)};
  const setRubric=(id,k,v)=>setRubrics(r=>({...r,[id]:{...rubric(rows.find(x=>x.id===id)||{}),[k]:Math.max(0,Number(v||0))}}));
  const rubricTotal=x=>Object.values(rubric(x)).reduce((a,b)=>a+Number(b||0),0);
 
  const saveRubric=async x=>{setBusy('rubric:'+x.id);setMsg('');try{await scoreCohortApplication(x.id,rubric(x),draft(x).private_note,viewer.session);setMsg('Rubric saved. Total score: '+rubricTotal(x)+'/100.');await load()}catch(e){setMsg(e.message)}finally{setBusy('')}};
- const save=async x=>{const d=draft(x);setBusy(x.id);setMsg('');try{const r=await reviewCohortApplication(x.id,d.status,d.score,d.private_note,d.public_note,d.offer_expires_at?new Date(d.offer_expires_at).toISOString():null,viewer.session);setMsg(r?.offer_code?'Selected. Offer code generated and queued for WOMATE Gmail delivery.':'Admissions decision saved and communication queued.');await load()}catch(e){setMsg(e.message)}finally{setBusy('')}};
- const promote=async x=>{setBusy('promote:'+x.id);setMsg('');try{const expiry=state?.acceptance_deadline?new Date(state.acceptance_deadline+'T23:59:59Z').toISOString():null;await promoteWaitlistedApplication(x.id,'A place has become available and WOMATE is pleased to offer you admission.',expiry,viewer.session);setMsg('Waitlisted applicant promoted. Offer email queued.');await load()}catch(e){setMsg(e.message)}finally{setBusy('')}};
+ const save=async x=>{const d=draft(x);setBusy(x.id);setMsg('');try{const r=await reviewCohortApplication(x.id,d.status,d.score,d.private_note,d.public_note,null,viewer.session);setMsg(r?.offer_code?'Selected. Offer code generated and queued for WOMATE Gmail delivery.':'Admissions decision saved and communication queued.');await load()}catch(e){setMsg(e.message)}finally{setBusy('')}};
+ const promote=async x=>{setBusy('promote:'+x.id);setMsg('');try{await promoteWaitlistedApplication(x.id,'A place has become available and WOMATE is pleased to offer you admission.',null,viewer.session);setMsg('Waitlisted applicant promoted. Offer email queued.');await load()}catch(e){setMsg(e.message)}finally{setBusy('')}};
  const toggle=async open=>{setBusy('window');setMsg('');try{await setCohortAdmissions(key,open,windowForm.opens?new Date(windowForm.opens).toISOString():null,windowForm.closes?new Date(windowForm.closes).toISOString():null,viewer.session);setMsg(open?'Applications opened.':'Applications closed.');await load()}catch(e){setMsg(e.message)}finally{setBusy('')}};
  const expire=async()=>{setBusy('expire');try{const r=await expireCohortOffers(key,viewer.session);setMsg((r?.expired||0)+' expired offer(s) released.');await load()}catch(e){setMsg(e.message)}finally{setBusy('')}};
  const reminders=async()=>{setBusy('reminders');try{const r=await queueAdmissionsReminders(key,viewer.session);setMsg((r?.offer_reminders||0)+' offer reminder(s) and '+(r?.onboarding_reminders||0)+' onboarding reminder(s) queued.');await load()}catch(e){setMsg(e.message)}finally{setBusy('')}};
@@ -88,7 +88,7 @@ export default function CanopyAdmissionsAdmin({viewer,cohort}){
     </div>
     <div className="canopyAdmissionsTimeline">
      <span><Clock3/> Decision {state?.decision_date||'—'}</span>
-     <span>Acceptance {state?.acceptance_deadline||'—'}</span>
+     <span>Acceptance: {state?.offer_acceptance_days||7} days from successful Gmail dispatch</span>
      <span>Onboarding {state?.onboarding_deadline||'—'}</span>
     </div>
    </div>
@@ -143,7 +143,7 @@ export default function CanopyAdmissionsAdmin({viewer,cohort}){
        <div className="canopyManualReviewGrid">
         <label>Decision<select value={d.status} onChange={e=>setDraft(x.id,{status:e.target.value})}><option value="under_review">Under review</option><option value="selected">Selected</option><option value="waitlisted">Waitlisted</option><option value="not_selected">Not selected</option></select></label>
         <label>Review score<input type="number" min="0" max="100" value={d.score} onChange={e=>setDraft(x.id,{score:e.target.value})}/></label>
-        {d.status==='selected'&&<label>Offer expires<input type="datetime-local" value={d.offer_expires_at} onChange={e=>setDraft(x.id,{offer_expires_at:e.target.value})}/></label>}
+        {d.status==='selected'&&<p className="canopyFormMsg">Each offer receives seven full days after Gmail sends the selection email. WOMATE sets each applicant's deadline automatically.</p>}
         <label className="wide">Private reviewer note<textarea rows="3" value={d.private_note} onChange={e=>setDraft(x.id,{private_note:e.target.value})}/></label>
         <label className="wide">Applicant-facing decision note<textarea rows="3" value={d.public_note} onChange={e=>setDraft(x.id,{public_note:e.target.value})}/></label>
        </div>
