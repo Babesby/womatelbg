@@ -64,3 +64,7 @@ html[data-canopy-theme="dark"] .co-mark{border-color:#3b5b50}
 .coa-review-controls button{border:0;border-radius:999px;background:#073b39;color:#fff;padding:13px 20px;font-size:12px;font-weight:750;cursor:pointer}
 .coa-review-controls button:disabled{opacity:.55}
 @media(max-width:740px){.coa-workspace-tabs{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}.coa-workspace-tabs button{white-space:nowrap;flex-shrink:0}.coa-workspace .coa-form{grid-template-columns:1fr;padding:18px}.coa-workspace .coa-form>.coa-two{grid-template-columns:1fr}.coa-workspace .coa-list article{display:grid;gap:15px}.coa-workspace-tools{align-items:stretch}.coa-app-review>header{flex-wrap:wrap}.coa-review-controls{align-items:stretch;flex-direction:column}.coa-review-controls button{align-self:flex-start}}
+
+.co-tabs .strong-fit-tab{font-weight:900}
+.co-list>article.strong-fit{border-color:rgba(14,77,74,.28);box-shadow:0 12px 30px rgba(14,77,74,.07)}
+.co-strong-fit{display:inline-flex!important;align-items:center;gap:5px;background:#eaf6ed;color:#17643b!important;border-radius:999px;padding:5px 8px;font-weight:900!important}
