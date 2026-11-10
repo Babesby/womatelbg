@@ -25,9 +25,9 @@ export const CANOPY_POST_2026_RUNTIMES=Object.freeze({
   }),
   'she-leads-asia-c1-2027':Object.freeze({
     cohortKey:'she-leads-asia-c1-2027',
-    shortName:'Asia Cohort 1',
-    programme:'She Leads Asia',
-    fullName:'She Leads Asia · Cohort 1 · 2027',
+    shortName:'Cohort 1 · 2027 · Asia',
+    programme:'She Leads Climate Mentorship',
+    fullName:'She Leads Climate Mentorship · Cohort 1 · 2027',
     year:2027,
     region:'Asia',
     applicationWindow:'Mid-March through April 2027',
