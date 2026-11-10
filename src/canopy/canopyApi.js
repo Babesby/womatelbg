@@ -800,3 +800,8 @@ export async function getMyRollover2027(session){const s=await refreshSession(se
 export async function acceptMyRollover2027(session){const s=await refreshSession(session||getStoredSession());if(!s?.access_token)throw new Error('Sign in to approve your transfer.');return rest('rpc/womate_accept_rollover_2027',{token:s.access_token,method:'POST',body:{}})}
 export async function getAdminRollover2027(session){const s=await refreshSession(session||getStoredSession());return rest('rpc/womate_admin_rollover_2027',{token:s.access_token,method:'POST',body:{}})}
 export async function updateAdminRollover2027(session,id,status,note=''){const s=await refreshSession(session||getStoredSession());return rest('rpc/womate_admin_update_rollover_2027',{token:s.access_token,method:'POST',body:{p_id:id,p_status:status,p_note:note||null}})}
+
+export async function getAdminProgrammeEvidenceReport(session,cohortKey){
+ const s=await refreshSession(session||getStoredSession());if(!s?.access_token)throw new Error('Sign in again.');
+ return rest('rpc/womate_admin_programme_evidence_report',{token:s.access_token,method:'POST',body:{p_cohort_key:cohortKey}});
+}
