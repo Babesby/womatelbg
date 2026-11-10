@@ -13,6 +13,7 @@ import WomateLearningPages from './learning/WomateLearningPages.jsx';
 
 import SheLeads2027Interest from "./components/SheLeads2027Interest.jsx";
 import SheLeadsAsia from './components/SheLeadsAsia.jsx';
+import SheLeadsApplication from './components/SheLeadsApplication.jsx';
 // WOMATE_SELECTED_ROUTE_GATE
 const __WOMATE_SELECTED_ROUTE__ = window.location.pathname.replace(/\/$/,'') === '/selected';
 
@@ -1401,11 +1402,12 @@ if(path==='/verify')return <React.Suspense fallback={<div role='status'>Opening 
 if(path==='/canopy'||path.startsWith('/canopy/'))return <React.Suspense fallback={<main role='status' aria-live='polite' style={{minHeight:'65vh',display:'grid',placeItems:'center',color:'#0E4D4A'}}>Loading Canopy...</main>}><CanopyApp path={path}/></React.Suspense>;
 const publicTalent=path==='/talent'||path==='/talent-discovery'||path.startsWith('/talent/');
 const publicLearning=path==='/courses'||path.startsWith('/courses/');
+const publicAdmissions=path==='/she-leads/asia/apply'||path==='/she-leads/asia/application';
 const publicationDetail=path.startsWith('/publications/');
 return <>
 {!publicTalent&&!publicLearning&&!publicationDetail&&<PageSEO path={path}/>}<UIPolish/><DeepRepairStyles/>
 <Header/>
-{publicTalent?<PublicTalentDiscovery/>:publicLearning?<WomateLearningPages key={path} path={path}/>:p.type==='home'?<Home/>:p.type==='she'?<SheLeads/>:p.type==='asia'?<SheLeadsAsia HeroVisual={HeroVisual}/>:p.type==='wok'?<WokAction/>:p.type==='research'?<ResearchPage/>:p.type==='publications'?<PublicationsPage/>:p.type==='circle'?<CirclePage/>:p.type==='minds'?<ResilientMinds/>:p.type==='honours'?<HonoursPage/>:p.type==='leadership'?<LeadershipPage/>:p.type==='volunteer'?<WomateerPage/>:p.type==='merch'?<MerchandisePage/>:p.type==='funding'?<FundingPage/>:p.type==='donate'?<DonationPage/>:p.type==='privacy'?<LegalPage kind="privacy"/>:p.type==='terms'?<LegalPage kind="terms"/>:<Standard p={p}/>}
+{publicTalent?<PublicTalentDiscovery/>:publicLearning?<WomateLearningPages key={path} path={path}/>:publicAdmissions?<SheLeadsApplication cohortKey="she-leads-asia-c1-2027"/>:p.type==='home'?<Home/>:p.type==='she'?<SheLeads/>:p.type==='asia'?<SheLeadsAsia HeroVisual={HeroVisual}/>:p.type==='wok'?<WokAction/>:p.type==='research'?<ResearchPage/>:p.type==='publications'?<PublicationsPage/>:p.type==='circle'?<CirclePage/>:p.type==='minds'?<ResilientMinds/>:p.type==='honours'?<HonoursPage/>:p.type==='leadership'?<LeadershipPage/>:p.type==='volunteer'?<WomateerPage/>:p.type==='merch'?<MerchandisePage/>:p.type==='funding'?<FundingPage/>:p.type==='donate'?<DonationPage/>:p.type==='privacy'?<LegalPage kind="privacy"/>:p.type==='terms'?<LegalPage kind="terms"/>:<Standard p={p}/>}
 <Footer/>
 </>
 }
