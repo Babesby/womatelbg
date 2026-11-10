@@ -190,7 +190,11 @@ async function fetchTalent(){
  return all;
 }
 function makeCollectionBody(title,description,links){
- return '<main class="womate-seo-shell" style="font-family:system-ui,sans-serif;max-width:1100px;margin:4rem auto;padding:0 24px;color:#073b39"><h1>'+esc(title)+'</h1><p>'+esc(description)+'</p>'+links+'</main>';
+ return '<main class="womate-seo-shell" style="font-family:Manrope,system-ui,sans-serif;width:min(1180px,100%);min-height:100vh;margin:0 auto;padding:clamp(44px,7vw,88px) clamp(24px,5vw,64px);box-sizing:border-box;color:#073b39;background:#fff">'+
+  '<h1 style="max-width:1040px;margin:0 0 20px;font-size:clamp(52px,6vw,78px);line-height:.94;letter-spacing:-.055em;font-weight:800;text-wrap:balance">'+esc(title)+'</h1>'+
+  '<p style="max-width:1080px;margin:0 0 18px;font-size:clamp(16px,1.6vw,19px);line-height:1.55;font-weight:500">'+esc(description)+'</p>'+
+  '<div style="max-width:1080px;font-size:14px;line-height:1.5;font-weight:700">'+links+'</div>'+
+  '</main>';
 }
 function sitemapLastmod(value){
  if(!value)return null;
