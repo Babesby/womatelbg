@@ -3,7 +3,7 @@ import {ArrowRight,CheckCircle2,CreditCard,Globe2,GraduationCap,ShieldCheck,User
 import {getAdmin2027Portfolio} from './canopyApi';
 import {SHE_LEADS_2027_PROGRAMMES} from './canopyProgrammes2027';
 
-const go=path=>{window.history.pushState({},'',path);window.dispatchEvent(new PopStateEvent('popstate'));window.scrollTo({top:0,behavior:'smooth'})};
+const go=path=>{const current=window.location.pathname+window.location.search+window.location.hash;if(current!==path)window.history.pushState({},'',path);window.dispatchEvent(new CustomEvent('womate:navigate',{detail:{path}}));window.scrollTo({top:0,behavior:'auto'})};
 const modelLabel=value=>value==='paid'?'Paid':'Free';
 
 function CohortCard({cohort,preview=false}){
