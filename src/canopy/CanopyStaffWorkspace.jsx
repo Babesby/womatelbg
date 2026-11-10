@@ -91,9 +91,10 @@ async function rpc(session,name,body={}){
   return data;
 }
 function nav(path){
-  window.history.pushState({},'',path);
-  window.dispatchEvent(new PopStateEvent('popstate'));
-  window.scrollTo({top:0,behavior:'smooth'});
+  const current=window.location.pathname+window.location.search+window.location.hash;
+  if(current!==path)window.history.pushState({},'',path);
+  window.dispatchEvent(new CustomEvent('womate:navigate',{detail:{path}}));
+  window.scrollTo({top:0,behavior:'auto'});
 }
 function moduleLabel(id){
   if(!id)return'Programme-wide';
@@ -334,7 +335,7 @@ export default function CanopyStaffWorkspace({viewer,path,onSignOut}){
     window.addEventListener('popstate',sync);
     return()=>window.removeEventListener('popstate',sync);
   },[]);
-  const livePath=window.location.pathname.replace(/\/$/,'')||'/canopy';
+  const livePath=(path||window.location.pathname).replace(/\/$/,'')||'/canopy';
   const params=useMemo(()=>new URLSearchParams(window.location.search),[locationKey]);
   const isPreview=livePath==='/canopy/manage/role-preview'||livePath.startsWith('/canopy/manage/role-preview/');
   const previewRole=isPreview?params.get('role'):null;
