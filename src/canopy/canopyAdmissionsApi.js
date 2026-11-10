@@ -45,3 +45,22 @@ export const completeCohortOnboarding=(reference,form,session)=>rpc('womate_comp
  p_reference:reference,p_timezone:form.timezone,p_whatsapp:form.whatsapp||'',p_learning_goal:form.learning_goal,
  p_participant_agreement:Boolean(form.participant_agreement),p_notifications:Boolean(form.notifications)
 },session);
+
+export const scoreCohortApplication=(id,scores,privateNote,session)=>rpc('womate_admin_score_application',{
+ p_application:id,
+ p_motivation:Number(scores.motivation||0),
+ p_climate_alignment:Number(scores.climate_alignment||0),
+ p_leadership_community:Number(scores.leadership_community||0),
+ p_commitment:Number(scores.commitment||0),
+ p_cohort_contribution:Number(scores.cohort_contribution||0),
+ p_private_note:privateNote||null
+},session);
+export const promoteWaitlistedApplication=(id,publicNote,offerExpiresAt,session)=>rpc('womate_admin_promote_waitlist',{
+ p_application:id,p_public_note:publicNote||null,p_offer_expires_at:offerExpiresAt||null
+},session);
+export const expireCohortOffers=(cohortKey,session)=>rpc('womate_admin_expire_offers',{p_cohort:cohortKey},session);
+export const queueAdmissionsReminders=(cohortKey,session)=>rpc('womate_admin_queue_admissions_reminders',{p_cohort:cohortKey},session);
+export const getAdmissionsAnalytics=(cohortKey,session)=>rpc('womate_admin_admissions_analytics',{p_cohort:cohortKey},session);
+export const getAdmissionsEmailQueue=(cohortKey,session)=>rpc('womate_admin_email_queue_summary',{p_cohort:cohortKey},session);
+export const getAdmissionsMailStatus=(session)=>rpc('womate_admin_mail_status',{},session);
+export const setAdmissionsMailEnabled=(enabled,session)=>rpc('womate_admin_set_mail_enabled',{p_enabled:Boolean(enabled)},session);
