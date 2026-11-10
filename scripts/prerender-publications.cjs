@@ -244,9 +244,9 @@ async function main(){
  const websiteSchema={'@context':'https://schema.org','@type':'WebSite',name:'WOMATE',url:ORIGIN+'/'};
  for(const [route,title,description,h1] of STATIC_PAGES){
   const canonical=ORIGIN+(route==='/'?'':route);
-  const body=makeCollectionBody(h1,description,
-   '<nav><a href="/she-leads">She Leads</a> · <a href="/talent-discovery">Talent Discovery</a> · <a href="/publications">Publications</a> · <a href="/research">Research</a></nav>');
-  writeRoute(route,pageHtml(template,{canonical,title,description,body,schema:{...websiteSchema,'@type':'WebPage',name:title,description,url:canonical}}));
+  // React owns all primary application routes. Do not emit physical HTML
+  // route files here: Vercel's filesystem routing would shadow the SPA and
+  // serve the SEO shell instead of the real WOMATE UI (notably /selected).
   staticSitemap.push({url:canonical});
   sitemap.push({url:canonical});
  }
@@ -259,7 +259,8 @@ async function main(){
   body:makeCollectionBody('WOMATE Talent Discovery','Discover public, WOMATE-approved climate talent and verified programme achievement.','<section><h2>Climate talent profiles</h2><ul>'+talentList+'</ul></section>'),
   schema:{'@context':'https://schema.org','@type':'CollectionPage',name:'WOMATE Talent Discovery',url:ORIGIN+'/talent-discovery',description:'Public professional profiles of WOMATE-approved climate talent.'}
  });
- writeRoute('/talent-discovery',talentDirectory);
+ // /talent-discovery is rendered by React; keep it in the sitemap without
+ // generating a shadowing physical route.
  const talentDirectoryUrl=ORIGIN+'/talent-discovery';
  talentSitemap.push({url:talentDirectoryUrl});
  sitemap.push({url:talentDirectoryUrl});
@@ -272,7 +273,8 @@ async function main(){
   body:makeCollectionBody('WOMATE Publications','Research, analysis and perspectives advancing climate action.','<section><h2>Published work</h2><ul>'+publicationList+'</ul></section>'),
   schema:{'@context':'https://schema.org','@type':'CollectionPage',name:'WOMATE Publications',url:ORIGIN+'/publications'}
  });
- writeRoute('/publications',publicationsDirectory);
+ // /publications is rendered by React; keep it in the sitemap without
+ // generating a shadowing physical route.
  const publicationsDirectoryUrl=ORIGIN+'/publications';
  publicationSitemap.push({url:publicationsDirectoryUrl});
  sitemap.push({url:publicationsDirectoryUrl});
