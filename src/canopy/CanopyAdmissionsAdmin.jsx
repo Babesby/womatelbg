@@ -45,7 +45,6 @@ export default function CanopyAdmissionsAdmin({viewer,cohort}){
    ]);
    setRows(Array.isArray(apps)?apps:[]);setState(st);setAnalytics(an);setMail(mq);setMailStatus(ms);
    setWindowForm({opens:st?.application_opens_at?new Date(st.application_opens_at).toISOString().slice(0,16):'',closes:st?.application_closes_at?new Date(st.application_closes_at).toISOString().slice(0,16):''});
-   setMsg('');
   }catch(e){setMsg(e.message)}
  };
  useEffect(()=>{load()},[key,viewer?.session?.access_token]);
