@@ -128,3 +128,53 @@
  .vix-showcase-links .vix-pill{width:auto;min-height:43px}
 }
 @media(prefers-reduced-motion:reduce){.vix-card,.vix-drawer-tab{transition:none!important}.vix-card:hover{transform:none}}
+
+
+/* WOMATE Reflections & Experiences — bespoke organic cloud shapes. */
+.vix-reimagined{background:#f9fbf8;color:#073b39}
+.vix-newHero{position:relative;min-height:440px;padding:clamp(125px,11vw,168px) clamp(22px,7vw,112px) clamp(55px,6vw,92px);background:#073b39;color:#fff;display:flex;align-items:center;justify-content:space-between;gap:30px;overflow:hidden}
+.vix-newHero-copy{position:relative;z-index:1;max-width:900px}.vix-newHero h1{margin:0;font-size:clamp(3.05rem,7.4vw,7.7rem);line-height:1.02;letter-spacing:-.069em;font-weight:800;text-wrap:balance;color:#fff}.vix-newHero h1 em{font-family:Georgia,serif;font-weight:500;color:#c6ff52;font-style:italic}
+.vix-newHero p{color:#d8e9e1;font-size:clamp(.99rem,1.45vw,1.2rem);line-height:1.6;max-width:650px;margin:22px 0 25px}
+.vix-hero-link{display:inline-flex;align-items:center;gap:10px;text-decoration:none;color:#c6ff52;font-size:.89rem;font-weight:850;border-bottom:1px solid rgba(198,255,82,.65);padding:0 0 7px}
+.vix-heroMark{width:230px;height:230px;flex:0 0 230px;border-radius:48% 52% 41% 59%/52% 48% 54% 46%;background:linear-gradient(140deg,#266d56,#14483b);display:grid;place-items:center;transform:rotate(9deg);opacity:.65}.vix-heroMark span{font-family:Georgia,serif;font-size:17rem;line-height:.6;color:#c6ff52;transform:translateY(30px)}
+.vix-numbers{max-width:1320px;margin:-32px auto 0;padding:20px clamp(16px,4vw,50px);background:#fff;position:relative;z-index:2;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;border:1px solid #dce9e0;border-radius:24px;box-shadow:0 12px 42px rgba(7,59,57,.07)}
+.vix-liveMetric{min-width:0;padding:15px clamp(10px,2.7vw,40px);display:flex;flex-direction:column;align-items:flex-start;gap:6px}
+.vix-liveMetric+.vix-liveMetric{border-left:1px solid #d9e9de}
+.vix-liveMetric strong{color:#073b39;font-weight:850;line-height:1.08;font-size:clamp(2.1rem,4.3vw,4.6rem);font-variant-numeric:tabular-nums;letter-spacing:-.07em;white-space:nowrap}
+.vix-liveMetric span{font-size:clamp(.77rem,1.05vw,.92rem);line-height:1.35;color:#4b7364;font-weight:650}
+.vix-bubbleLibrary{max-width:1440px;margin:0 auto;padding:clamp(65px,7vw,110px) clamp(18px,5vw,84px) clamp(75px,9vw,125px)}
+.vix-bubbleLibrary-head{display:flex;align-items:end;justify-content:space-between;gap:22px;margin:0 0 35px;flex-wrap:wrap}
+.vix-bubbleLibrary-head h2{font-size:clamp(2.3rem,4.3vw,4.5rem);line-height:1.07;letter-spacing:-.065em;margin:0 0 6px;color:#073b39}.vix-bubbleLibrary-head p{font-size:.95rem;margin:0;color:#51746a}
+.vix-countryFilter{display:grid;gap:8px;color:#567a6f;font-weight:700;font-size:.77rem}.vix-countryFilter select{appearance:auto;font:inherit;min-height:46px;min-width:200px;border:1px solid #b7d6c6;padding:10px 13px;border-radius:12px;background:#fff;color:#073b39;font-size:.87rem}
+.vix-bubbleGrid{columns:3 280px;column-gap:clamp(17px,2.4vw,32px)}
+.vix-bubble{position:relative;display:inline-flex;width:100%;min-width:0;min-height:230px;vertical-align:top;break-inside:avoid;flex-direction:column;justify-content:space-between;gap:20px;padding:clamp(25px,2.9vw,38px);margin:0 0 clamp(19px,2.5vw,32px);border:0;border-radius:34% 22% 28% 21%/19% 30% 20% 31%;background:#f1f6ee;color:#073b39;filter:drop-shadow(0 9px 17px rgba(7,59,57,.06));box-shadow:inset 0 0 0 1px rgba(7,59,57,.025);transition:filter .2s}
+.vix-bubble:after{content:'';position:absolute;left:33px;bottom:-10px;width:30px;height:26px;background:inherit;clip-path:polygon(0 0,100% 0,0 100%);z-index:-1}
+.vix-bubble:nth-child(3n+2){border-radius:22% 32% 20% 36%/29% 20% 35% 23%;transform:translateY(8px)}
+.vix-bubble:nth-child(4n+3){border-radius:32% 23% 35% 22%/26% 33% 21% 32%}
+.vix-bubble:nth-child(5n+4):after{left:auto;right:32px;transform:scaleX(-1)}
+.vix-bubble-0{background:#ffffff;color:#073b39}
+.vix-bubble-1{background:#c6ff52;color:#073b39}
+.vix-bubble-2{background:#0e4d4a;color:#ffffff}
+.vix-bubble-3{background:#e5f3e7;color:#073b39}
+.vix-bubble-4{background:#103d36;color:#ffffff}
+.vix-bubble-5{background:#d2e8d8;color:#073b39}
+.vix-bubbleTop{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.vix-bubbleGlyph{font-family:Georgia,serif;font-size:4.7rem;line-height:.72;color:currentColor;opacity:.28}.vix-bubbleCountry{font-size:.66rem;letter-spacing:.065em;text-transform:uppercase;font-weight:800;opacity:.7}
+.vix-bubble blockquote{font-family:Georgia,serif;font-size:clamp(1.17rem,1.52vw,1.57rem);line-height:1.42;letter-spacing:-.025em;margin:0;overflow-wrap:anywhere}
+.vix-bubblePerson{display:flex;align-items:center;gap:10px;border-top:1px solid currentColor;padding-top:16px;min-width:0;border-color:rgba(60,110,93,.25)}
+.vix-bubble-2 .vix-bubblePerson,.vix-bubble-4 .vix-bubblePerson{border-color:rgba(255,255,255,.24)}
+.vix-bubblePerson>div{min-width:0;display:grid;gap:3px}.vix-bubblePerson strong{font-size:.85rem;line-height:1.3}.vix-bubblePerson div>span{font-size:.7rem;opacity:.72;line-height:1.3}
+.vix-bubble .vix-initial{display:grid;place-items:center;flex:0 0 38px;width:38px;height:38px;background:rgba(7,59,57,.12);border-radius:50%;font-weight:850;color:inherit}
+.vix-bubble-2 .vix-initial,.vix-bubble-4 .vix-initial{background:rgba(255,255,255,.16)}
+.vix-bubble .vix-profilePhoto{flex:0 0 38px;width:38px;height:38px}
+.vix-loadRow{display:flex;align-items:center;justify-content:center;gap:22px;flex-wrap:wrap;margin-top:25px}
+.vix-more{display:inline-flex;gap:10px;align-items:center;justify-content:center;min-height:48px;padding:13px 23px;color:#fff;background:#073b39;border:0;border-radius:999px;font:inherit;font-size:.86rem;font-weight:800;cursor:pointer}.vix-more:hover{background:#14614e}
+.vix-loadRow>span{color:#5c7b6e;font-size:.77rem}
+.vix-libraryEnd{margin-top:clamp(70px,8vw,110px);padding:32px 0 0;border-top:1px solid #d8e8dd;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}.vix-libraryEnd p{margin:0;font-size:clamp(1.32rem,2.4vw,2rem);font-weight:750;letter-spacing:-.035em}
+.vix-drawer-tab{top:46%;transform:none!important;transition:none!important;animation:none!important;will-change:auto!important;right:0;padding:10px 12px!important;touch-action:manipulation;z-index:2147483000}
+.vix-drawer-tab:hover,.vix-drawer-tab:focus,.vix-drawer-tab:active{transform:none!important;animation:none!important}
+.vix-drawer,.vix-drawer-overlay{animation:none!important;transition:none!important;transform:none!important}
+@media(max-width:950px){.vix-bubbleGrid{columns:2 260px}.vix-heroMark{width:150px;height:150px;flex-basis:150px}.vix-heroMark span{font-size:11rem}}
+@media(max-width:690px){.vix-newHero{padding:112px 19px 72px;min-height:0}.vix-newHero h1{font-size:clamp(2.8rem,11vw,4.8rem)}.vix-heroMark{display:none}.vix-numbers{margin:-23px 14px 0;padding:12px 9px;border-radius:18px}.vix-liveMetric{padding:15px 8px;gap:9px}.vix-liveMetric strong{font-size:clamp(1.43rem,6vw,2.1rem)}.vix-liveMetric span{font-size:.67rem;line-height:1.35}.vix-bubbleLibrary{padding:65px 16px 75px}.vix-bubbleLibrary-head{align-items:stretch}.vix-bubbleLibrary-head h2{font-size:clamp(2.3rem,9vw,3.5rem)}.vix-countryFilter select{width:100%}.vix-bubbleGrid{columns:1}.vix-bubble{width:100%;min-height:0;padding:28px 25px;margin-bottom:23px;border-radius:27% 23% 31% 23%/18% 26% 21% 27%}.vix-bubble:nth-child(3n+2){transform:none}.vix-bubble blockquote{font-size:clamp(1.24rem,5vw,1.58rem)}.vix-libraryEnd{margin-top:60px}}
+@media(max-width:375px){.vix-liveMetric strong{font-size:1.3rem}.vix-liveMetric span{font-size:.6rem}.vix-newHero{padding-top:100px}}
+@media(prefers-reduced-motion:reduce){.vix-bubble{transition:none}.vix-newHero *{scroll-behavior:auto}}
