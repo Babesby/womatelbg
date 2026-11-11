@@ -83,16 +83,16 @@ function AnimatedStatistic({value,label,format}){
  return <div ref={ref} className="vix-liveMetric" aria-label={label+': '+(format==='rating'?value.toFixed(2)+'/5':format==='percent'?value+'%':value)}><strong aria-hidden="true">{complete?(format==='rating'?value.toFixed(2)+'/5':format==='percent'?value+'%':String(value)):display}</strong><span>{label}</span></div>
 }
 function VoiceBubble({voice,i}){
- const linked=avatarByName.get(voice.name.toLowerCase());const [imageBroken,setImageBroken]=useState(false);
+ const linked=voice.avatarPath?voice:avatarByName.get(voice.name.toLowerCase());const [imageBroken,setImageBroken]=useState(false);
  return <article className={'vix-bubble vix-bubble-'+(i%6)}><div className="vix-bubbleTop"><span className="vix-bubbleGlyph" aria-hidden="true">“</span><span className="vix-bubbleCountry">{countryMap[voice.country]||voice.country}</span></div><blockquote>{voice.quote}</blockquote><div className="vix-bubblePerson">{linked&&!imageBroken?<a className="vix-profilePhoto" href={'/talent/'+linked.profileSlug} title={'View '+voice.name+' profile'}><img loading="lazy" alt={voice.name} src={'https://bwnwhsvssgponrzvwlpt.supabase.co/storage/v1/object/public/canopy-profile-images/'+linked.avatarPath} onError={()=>setImageBroken(true)}/></a>:<span className="vix-initial" aria-hidden="true">{voice.name.charAt(0).toUpperCase()}</span>}<div><strong>{voice.name}</strong><span>She Leads Africa participant</span></div></div></article>
 }
 export function VoicesImpactPage(){
- const [shown,setShown]=useState(15);
+ const [shown,setShown]=useState(18);
  const [country,setCountry]=useState('All countries');
  const countries=['All countries',...new Set(evaluationVoices.map(v=>countryMap[v.country]||v.country))].sort((a,b)=>a==='All countries'?-1:b==='All countries'?1:a.localeCompare(b));
  const filtered=evaluationVoices.filter(v=>country==='All countries'||(countryMap[v.country]||v.country)===country);
  const visible=filtered.slice(0,shown);
- const updateCountry=e=>{setCountry(e.target.value);setShown(15)};
+ const updateCountry=e=>{setCountry(e.target.value);setShown(18)};
  return <main className="vix-page vix-reimagined" id="content">
   <header className="vix-newHero"><div className="vix-newHero-copy"><h1>Reflections <em>&amp; Experiences.</em></h1><p>Personal reflections from women who joined the She Leads programme.</p><a href="/she-leads" className="vix-hero-link">Discover She Leads <ArrowUpRight size={18}/></a></div><div className="vix-heroMark" aria-hidden="true"><span>“</span></div></header>
   <section className="vix-numbers" aria-label="She Leads Africa Cohort 2 programme evaluation">
@@ -103,7 +103,7 @@ export function VoicesImpactPage(){
   <section className="vix-bubbleLibrary" aria-labelledby="vix-library-title">
     <div className="vix-bubbleLibrary-head"><div><h2 id="vix-library-title">In their own words.</h2><p>{filtered.length} participant reflections</p></div><label className="vix-countryFilter"><span>Browse by country</span><select value={country} onChange={updateCountry}>{countries.map(x=><option key={x} value={x}>{x}</option>)}</select></label></div>
     <div className="vix-bubbleGrid">{visible.map((voice,i)=><VoiceBubble key={voice.name+'-'+i} voice={voice} i={i}/>)}</div>
-    {shown<filtered.length&&<div className="vix-loadRow"><button type="button" className="vix-more" onClick={()=>setShown(n=>Math.min(n+15,filtered.length))}>Show more voices <ChevronDown size={19}/></button><span>Showing {Math.min(shown,filtered.length)} of {filtered.length}</span></div>}
+    {shown<filtered.length&&<div className="vix-loadRow"><button type="button" className="vix-more" onClick={()=>setShown(n=>Math.min(n+18,filtered.length))}>Show more voices <ChevronDown size={19}/></button><span>Showing {Math.min(shown,filtered.length)} of {filtered.length}</span></div>}
     <div className="vix-libraryEnd"><p>Curious about the next chapter?</p><a href="/she-leads/apply" className="vix-pill">Explore application dates <ArrowUpRight size={17}/></a></div>
   </section>
  </main>;
