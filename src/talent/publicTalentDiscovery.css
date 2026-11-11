@@ -1371,3 +1371,11 @@
     padding:18px 13px!important;
   }
 }
+
+
+/* Crawlable all-profile index: visually useful and an actual HTML link. */
+.pt-allProfiles{margin:30px clamp(16px,5vw,70px) 24px;padding:22px 26px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:18px 28px;background:#edf6ee;border:1px solid #d1e7d7;border-radius:18px;color:#073b39}
+.pt-allProfiles strong{display:block;font-size:1rem;letter-spacing:-.02em}.pt-allProfiles p{margin:4px 0 0;font-size:.87rem;line-height:1.5;color:#5b7769}
+.pt-allProfiles a{display:inline-flex;align-items:center;gap:8px;min-height:44px;white-space:normal;text-decoration:none;background:#073b39;color:#fff;padding:12px 17px;border-radius:999px;font-size:.83rem;font-weight:750}
+.pt-allProfiles a:hover{background:#0e4d4a}
+@media(max-width:600px){.pt-allProfiles{margin:20px 15px;padding:20px 16px}.pt-allProfiles a{width:100%;justify-content:center}}
