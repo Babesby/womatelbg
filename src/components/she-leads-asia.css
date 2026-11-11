@@ -32,3 +32,13 @@
 @media(max-width:1050px){.sia-pillarGrid{grid-template-columns:repeat(3,minmax(0,1fr))}.sia-pillarCard{min-height:190px}}
 @media(max-width:700px){.sia-pillarShell{padding:11px;border-radius:26px}.sia-pillarGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.sia-pillarCard{min-height:150px;padding:24px 10px 16px;border-radius:20px}.sia-pillarIcon{width:60px;height:60px;border-radius:18px}.sia-pillarCard strong{font-size:12px;max-width:13ch}.sia-pillarExplore{font-size:9px}.sia-pillarDialog{padding:30px 22px 32px;border-radius:24px}.sia-pillarDialog h3{font-size:clamp(32px,9vw,46px)}}
 @media(max-width:420px){.sia-pillarGrid{grid-template-columns:1fr 1fr}.sia-pillarCard{min-height:142px}.sia-pillarNo{top:12px;left:13px}.sia-pillarIcon{width:54px;height:54px}}
+
+
+/* Official Asia Cohort 1 admissions CTA replaces dormant expression of interest. */
+.sia-applyCta{display:flex;align-items:center;justify-content:space-between;gap:30px;flex-wrap:wrap;background:#073b39;color:white;border-radius:24px;padding:clamp(28px,5vw,62px);margin:clamp(45px,7vw,85px) 0}
+.sia-applyCta>div{max-width:670px}.sia-applyCta span{color:#c6ff52;font-size:.71rem;letter-spacing:.12em;font-weight:850}
+.sia-applyCta h2{color:white;font-size:clamp(1.9rem,4vw,3.5rem);line-height:1.1;letter-spacing:-.05em;margin:13px 0 12px}
+.sia-applyCta p{color:#d3e7de;max-width:550px;line-height:1.65;margin:0}
+.sia-applyCta>a{display:inline-flex;gap:10px;align-items:center;justify-content:center;background:#c6ff52;color:#073b39;border-radius:100px;text-decoration:none;padding:15px 22px;min-height:48px;font-size:.85rem;font-weight:850}
+.sia-applyCta>a:hover{background:#deff9b}
+@media(max-width:700px){.sia-applyCta{margin:50px 0 24px;border-radius:19px;padding:28px 22px;gap:22px}.sia-applyCta>a{width:100%}}

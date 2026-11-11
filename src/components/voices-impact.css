@@ -240,3 +240,22 @@
  .vix-bubbleArtwork .vix-bubblePerson strong{font-size:.69rem}
  .vix-bubbleArtwork .vix-bubblePerson div>span{font-size:.56rem}
 }
+
+
+/* 2026-11-11 refinement: align real supplied bubble silhouettes and keep ALL
+   text inside their narrower centre instead of clipping at the organic edges. */
+.vix-bubbleGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(14px,2.3vw,29px);align-items:start}
+.vix-bubbleArtwork,.vix-bubbleArtwork:nth-child(n){aspect-ratio:1.54;overflow:visible}
+.vix-bubbleArtwork .vix-bubbleArt{filter:drop-shadow(0 13px 16px rgba(7,59,57,.075))}
+.vix-bubbleArtwork .vix-bubbleInner{padding:17% 19% 18%;gap:5px;align-items:center;text-align:center;justify-content:space-between;overflow:hidden}
+.vix-bubbleArtwork .vix-bubbleCountry{width:100%;text-align:center;white-space:nowrap;font-size:clamp(.62rem,.8vw,.72rem)}
+.vix-bubbleArtwork blockquote{width:100%;max-width:100%;max-height:95px;flex:1 1 auto;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;line-height:1.28;font-family:Georgia,serif;font-size:clamp(1rem,1.38vw,1.3rem);font-weight:500;text-align:center}
+.vix-bubbleFooter{width:100%;display:grid;grid-template-columns:minmax(0,1fr);justify-items:center;gap:4px;flex:0 0 auto;min-width:0}
+.vix-bubbleArtwork .vix-bubblePerson{width:100%;max-width:100%;display:flex;align-items:center;justify-content:center;gap:6px;min-width:0;flex:0 0 auto}
+.vix-bubbleArtwork .vix-bubblePerson>div{max-width:calc(100% - 45px);text-align:left}
+.vix-bubbleArtwork .vix-bubblePerson strong{font-size:clamp(.73rem,.97vw,.85rem);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block}
+.vix-bubbleArtwork .vix-bubblePerson div>span{font-size:.65rem}
+.vix-bubbleArtwork .vix-bubbleRead{justify-self:center;min-height:22px;font-size:.69rem;padding:1px 0 2px}
+@media(min-width:1650px){.vix-bubbleGrid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:760px){.vix-bubbleGrid{grid-template-columns:1fr;gap:11px}.vix-bubbleArtwork,.vix-bubbleArtwork:nth-child(n){width:min(100%,540px);aspect-ratio:1.55}.vix-bubbleArtwork .vix-bubbleInner{padding:18% 20% 19%}.vix-bubbleArtwork blockquote{font-size:clamp(1rem,3.6vw,1.3rem);max-height:88px}.vix-bubbleArtwork .vix-bubbleCountry{font-size:.67rem}}
+@media(max-width:375px){.vix-bubbleArtwork .vix-bubbleInner{padding:18% 19% 18%}.vix-bubbleArtwork blockquote{font-size:.9rem;-webkit-line-clamp:3}.vix-bubbleArtwork .vix-bubblePerson strong{font-size:.69rem}}

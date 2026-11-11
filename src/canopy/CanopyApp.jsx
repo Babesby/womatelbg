@@ -35,6 +35,7 @@ import {CanopyTester2027Preview} from './CanopyCohortControl';
 import CanopyCohortParticipantRuntime,{CanopyTesterRuntimeRouter} from './CanopyCohortParticipantRuntime';
 import CanopyCourses from './CanopyCourses';
 import Canopy2027AdminWorkspace from './Canopy2027AdminWorkspace';
+import Canopy2027AdminNav from './Canopy2027AdminNav';
 import {CanopyAdminCohortBar,CanopyAdminCohortEmpty,CanopyAdminCohortSafeHold,LEGACY_CANOPY_COHORT} from './CanopyAdminCohortContext';
 import {isPost2026RuntimeCohort} from './canopyCohortRuntime2027';
 import{ArrowLeft,ArrowRight,BookOpen,Check,ChevronRight,ClipboardCheck,Clock,FileText,GraduationCap,Leaf,Lock,LogOut,Menu,PlayCircle,Sparkles,UserRound,X,BookMarked,UsersRound,PenLine,TrendingUp,Eye,EyeOff,MessageSquare,ShieldAlert,Award,BarChart3,Bell,Moon,Sun,Globe2,Mail,ShieldCheck,BriefcaseBusiness,Handshake,Heart,Volume2,Square,Camera,Trash2} from 'lucide-react';
@@ -181,7 +182,18 @@ const manager=canManageCanopy(viewer);
  const selectedAdminKey=adminCohort?.cohort_key||LEGACY_CANOPY_COHORT;
  const adminIsLegacy=selectedAdminKey===LEGACY_CANOPY_COHORT;
  const managerItems=[['/canopy/manage','Operations',ClipboardCheck],['/canopy/manage/access','Manage cohort',UsersRound],['/canopy/manage/reviews','Assess submissions',FileText],['/canopy/manage/communications','Warnings & feedback',MessageSquare],['/canopy/manage/reminders','Reminders',Bell],['/canopy/manage/complaints','Complaints',ShieldAlert],['/canopy/manage/attendance','Attendance',UsersRound],['/canopy/manage/certificates','Certificates',Award],['/canopy/manage/reports','Reports',BarChart3],['/canopy/manage/opportunities','Opportunities',BriefcaseBusiness],['/canopy/manage/funding','Funding & paid work',Award],['/canopy/manage/talent','Talent directory & approvals',UsersRound],['/canopy/manage/missions','Mission groups',Globe2]];
- if(!adminIsLegacy)managerItems.splice(2,0,['/canopy/manage/admissions','Admissions',FileText]);
+ if(!adminIsLegacy)managerItems.splice(0,managerItems.length,
+  ['/canopy/manage','2027 dashboard',ClipboardCheck],
+  ['/canopy/manage/admissions','Applications & selection',FileText],
+  ['/canopy/manage/access','Learner access',UsersRound],
+  ['/canopy/manage/reviews','Review assignments',FileText],
+  ['/canopy/manage/attendance','Live attendance',UsersRound],
+  ['/canopy/manage/certificates','Certificates',Award],
+  ['/canopy/manage/reports','Reports',BarChart3],
+  ['/canopy/manage/communications','Communications',MessageSquare],
+  ['/canopy/manage/missions','Mission groups',Globe2],
+  ['/canopy/manage/funding','Funding calls',Award]
+ );
  if(adminIsLegacy){
   managerItems.splice(8,0,['/canopy/manage/credentials','Graduate registry',ShieldCheck],['/canopy/manage/alumni-checkins','Alumni check-ins',Heart],['/canopy/manage/graduation-2026','Graduation 2026',GraduationCap],['/canopy/manage/inactivity-2026','Inactivity review',ShieldAlert]);
   if(viewer?.profile?.role==='admin')managerItems.push(['/canopy/manage/talent-collaborations','Collaboration management',Handshake],['/canopy/manage/talent-finance','Deals, invoices & reports',BarChart3],['/canopy/manage/spotlight','Canopy Spotlight',Sparkles],['/canopy/manage/team-access','Team Access',UserRound]);
@@ -194,7 +206,7 @@ const manager=canManageCanopy(viewer);
  return <aside className={'canopySidebar '+(open?'open':'')}>
   <div className="canopySideTop"><Brand compact/><button className="canopySideClose" onClick={()=>setOpen(false)}><X/></button></div>
   {tester&&<div className="canopyTesterCohortContext"><label htmlFor="canopyTesterCohortSelect">Tester cohort</label><select id="canopyTesterCohortSelect" value={testerCohort} onChange={e=>{const value=setCanopyTesterCohort(e.target.value);go('/canopy/classroom');setOpen(false)}}><option value="2026">She Leads Climate Mentorship · Cohort 2 · 2026</option><option value="she-leads-climate-c3-2027">She Leads Climate Mentorship · Cohort 3 · 2027</option><option value="she-leads-asia-c1-2027">She Leads Climate Mentorship · Cohort 1 · 2027 · Asia</option></select><small>This switches your full tester workspace. Tester access remains unrestricted.</small></div>}
-  <nav aria-label={manager?'WOMATE admin navigation':'Canopy navigation'}>{items.map(([p,n,I])=><React.Fragment key={p}>{manager&&p==='/canopy/manage'&&<div className="canopySidebarSectionTitle">PROGRAMME OPERATIONS</div>}{manager&&p==='/canopy/manage/talent'&&<div className="canopySidebarSectionTitle">TALENT DISCOVERY</div>}{manager&&p==='/canopy/manage/courses'&&<div className="canopySidebarSectionTitle">LEARNING & GROWTH</div>}<button className={route()===p?'active':''} onClick={()=>{go(p);setOpen(false)}}><I size={18}/><span>{n}</span></button></React.Fragment>)}</nav>
+  <nav aria-label={manager?'WOMATE admin navigation':'Canopy navigation'}>{items.map(([p,n,I])=><React.Fragment key={p}>{manager&&p==='/canopy/manage'&&<div className="canopySidebarSectionTitle">{adminIsLegacy?'PROGRAMME OPERATIONS':'2027 COHORT OPERATIONS'}</div>}{manager&&p==='/canopy/manage/talent'&&<div className="canopySidebarSectionTitle">TALENT DISCOVERY</div>}{manager&&p==='/canopy/manage/courses'&&<div className="canopySidebarSectionTitle">LEARNING & GROWTH</div>}<button className={route()===p?'active':''} onClick={()=>{go(p);setOpen(false)}}><I size={18}/><span>{n}</span></button></React.Fragment>)}</nav>
   <div className="canopySideBottom"><small>{manager?'WOMATE OPERATIONS':isCanopyOperationsStaff(viewer)?'WOMATE DELIVERY TEAM':tester?(testerRuntime?'TESTER · SHE LEADS CLIMATE MENTORSHIP':'PROGRAMME EXPLORATION'):runtimeCohort?'SHE LEADS CLIMATE MENTORSHIP':CANOPY_BRAND.programme}</small><b>{manager?'All WOMATE programmes · Select your cohort above':isCanopyOperationsStaff(viewer)?teamRoleLabel(viewer.staffAccess?.role):tester?(testerRuntime?canopyTesterCohortLabel(testerCohort)+' · unrestricted':'All modules · all assignments · unrestricted'):runtimeCohort?(runtimeCohort.cohort_key==='she-leads-asia-c1-2027'?'Cohort 1 · 2027 · Asia':'Cohort 3 · 2027 · Africa'):CANOPY_BRAND.cohort}</b></div>
  </aside>
 }
@@ -1043,9 +1055,9 @@ const manager=canManageCanopy(viewer);const operational=isCanopyOperationsStaff(
  else if(manager&&viewer?.profile?.role==='admin'&&path==='/canopy/manage/inactivity-2026')content=<CanopyAdminClosing viewer={viewer} area="inactivity"/>;
  else if(manager&&viewer?.profile?.role==='admin'&&path==='/canopy/manage/credentials')content=<CanopyCredentialAdmin viewer={viewer}/>;
  else if(manager&&viewer?.profile?.role==='admin'&&path==='/canopy/manage/alumni-checkins')content=<CanopyAlumniAdmin viewer={viewer}/>;
- else if(manager&&path==='/canopy/manage/missions')content=<CanopyMissionAdmin viewer={viewer} cohortKey={selectedAdminCohort?.cohort_key||LEGACY_CANOPY_COHORT} cohort={selectedAdminCohort}/>;
+ else if(manager&&path==='/canopy/manage/missions')content=!isPost2026RuntimeCohort(selectedAdminCohort?.cohort_key)?<CanopyMissionAdmin viewer={viewer} cohortKey={selectedAdminCohort?.cohort_key||LEGACY_CANOPY_COHORT} cohort={selectedAdminCohort}/>:<Canopy2027AdminWorkspace viewer={viewer} cohort={selectedAdminCohort} view="mission"/>;
  else if(manager&&path==='/canopy/manage/opportunities')content=<CanopyOpportunityAdmin viewer={viewer} cohortKey={selectedAdminCohort?.cohort_key||LEGACY_CANOPY_COHORT} cohort={selectedAdminCohort}/>;
- else if(manager&&path==='/canopy/manage/funding')content=<CanopyFundingAdmin viewer={viewer} cohortKey={selectedAdminCohort?.cohort_key||LEGACY_CANOPY_COHORT} cohort={selectedAdminCohort}/>;
+ else if(manager&&path==='/canopy/manage/funding')content=!isPost2026RuntimeCohort(selectedAdminCohort?.cohort_key)?<CanopyFundingAdmin viewer={viewer} cohortKey={selectedAdminCohort?.cohort_key||LEGACY_CANOPY_COHORT} cohort={selectedAdminCohort}/>:<Canopy2027AdminWorkspace viewer={viewer} cohort={selectedAdminCohort} view="funding"/>;
  else if(manager&&path==='/canopy/manage/talent')content=<CanopyTalentAdmin viewer={viewer} cohortKey={selectedAdminCohort?.cohort_key||LEGACY_CANOPY_COHORT} cohort={selectedAdminCohort}/>;
  else if(manager&&viewer?.profile?.role==='admin'&&path==='/canopy/manage/talent-collaborations')content=<main className="canopyManager"><div className="canopyPageHead"><span className="canopyEyebrow">TALENT MANAGEMENT · COLLABORATIONS</span><h1>Requests, partners & safety</h1><p>Review activity, verify requesters, manage commercial terms and resolve safety reports without reading unrelated private messages.</p></div><CanopyCollaborationOversight session={viewer.session}/></main>;
  else if(manager&&viewer?.profile?.role==='admin'&&path==='/canopy/manage/talent-finance')content=<main className="canopyManager"><div className="canopyPageHead"><span className="canopyEyebrow">TALENT MANAGEMENT · FINANCE</span><h1>Deals, invoices & revenue</h1><p>Review agreed collaboration fees, mutually confirmed completion and payment records. Live payment collection remains disabled.</p></div><CanopyTalentFinance session={viewer.session}/></main>;
@@ -1054,7 +1066,7 @@ const manager=canManageCanopy(viewer);const operational=isCanopyOperationsStaff(
  else if(manager&&viewer?.profile?.role==='admin'&&path==='/canopy/manage/rollover-2027')content=<CanopyRolloverAdmin viewer={viewer}/>;
  else if(manager&&viewer?.profile?.role==='admin'&&path.startsWith('/canopy/courses/'))content=<CanopyCourses viewer={viewer} path={path}/>;
  else if(manager&&viewer?.profile?.role==='admin'&&path==='/canopy/manage/courses')content=<CanopyCourses viewer={viewer} path={path}/>;
- else if(manager&&viewer?.profile?.role==='admin'&&['she-leads-climate-c3-2027','she-leads-asia-c1-2027'].includes(selectedAdminCohort?.cohort_key)&&['/canopy/manage','/canopy/manage/access','/canopy/manage/reviews','/canopy/manage/attendance','/canopy/manage/certificates','/canopy/manage/reports'].includes(path))content=<Canopy2027AdminWorkspace viewer={viewer} cohort={selectedAdminCohort} view={path==='/canopy/manage'?'overview':path.split('/').pop()}/>;
+ else if(manager&&viewer?.profile?.role==='admin'&&['she-leads-climate-c3-2027','she-leads-asia-c1-2027'].includes(selectedAdminCohort?.cohort_key)&&['/canopy/manage','/canopy/manage/access','/canopy/manage/reviews','/canopy/manage/attendance','/canopy/manage/certificates','/canopy/manage/reports','/canopy/manage/communications'].includes(path))content=<Canopy2027AdminWorkspace viewer={viewer} cohort={selectedAdminCohort} view={path==='/canopy/manage'?'overview':path.split('/').pop()}/>;
  else if(manager&&path.startsWith('/canopy/manage')){const sub=path.split('/').pop();const view=path==='/canopy/manage'?'overview':sub;content=view==='selection-codes'?<CanopySelectionCodes session={viewer.session} cohort={selectedAdminCohort}/>:<ManagerOperations snapshot={scopedAdminSnapshot} session={viewer.session} onReload={async()=>{await load();await loadAdminCohorts?.()}} viewer={viewer} cohort={selectedAdminCohort} view={view}/>}
  else if(operational&&['/canopy/operations','/canopy/coordinator','/canopy/fellow'].includes(path))content=<CanopyStaffDashboard viewer={viewer} access={viewer.staffAccess} data={staffDashboard} onReload={async()=>{try{setStaffDashboard(await getStaffDashboard(viewer.session))}catch(err){console.error(err)}}}/>;
  else if(path==='/canopy/classroom')content=tester?<TesterDashboard viewer={viewer} progress={progress} submissions={submissions}/>:<Dashboard viewer={viewer} progress={progress} submissions={submissions}/>;
@@ -1084,7 +1096,7 @@ const manager=canManageCanopy(viewer);const operational=isCanopyOperationsStaff(
   const preparatoryPaths=['/canopy/manage/opportunities','/canopy/manage/funding','/canopy/manage/selection-codes','/canopy/manage/rollover-2027'];
   if(!legacy&&path==='/canopy/manage/team-access')content=<CanopyAdminCohortSafeHold cohort={selected} section="team access"/>;
   else if(empty&&!preparatoryPaths.includes(path))content=<CanopyAdminCohortEmpty cohort={selected} section="This management area"/>;
-  content=<><CanopyAdminCohortBar cohorts={adminCohorts} value={selected?.cohort_key||adminCohortKey} onChange={selectAdminCohort}/>{content}</>;
+  content=<><CanopyAdminCohortBar cohorts={adminCohorts} value={selected?.cohort_key||adminCohortKey} onChange={selectAdminCohort}/>{!legacy&&isPost2026RuntimeCohort(selected?.cohort_key)&&<Canopy2027AdminNav cohort={selected} path={path} onNavigate={go}/>} {content}</>;
  }
  return <><Helmet><title>{isAnyCanopyStaff(viewer)?'Canopy Operations':'My Canopy'} | WOMATE</title></Helmet><CanopyLearningGuide path={path} viewer={viewer}/><LearnerShell viewer={viewer} progress={progress} adminCohort={selectedAdminCohort}>{content}</LearnerShell></>
 }
