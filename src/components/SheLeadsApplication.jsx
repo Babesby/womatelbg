@@ -1,5 +1,5 @@
 import React,{useEffect,useMemo,useState} from 'react';
-import {ArrowLeft,ArrowRight,Check,CheckCircle2,ExternalLink} from 'lucide-react';
+import {ArrowLeft,ArrowRight,Check,CheckCircle2,ExternalLink,ShieldCheck} from 'lucide-react';
 import {acceptCohortOffer,getAdmissionsState,getApplicationStatus,submitCohortApplication} from '../canopy/canopyAdmissionsApi';
 import {canopyPost2026Runtime} from '../canopy/canopyCohortRuntime2027';
 import './she-leads-application.css';
@@ -38,7 +38,7 @@ export default function SheLeadsApplication({cohortKey='she-leads-asia-c1-2027'}
  const stepThreeValid=form.committed_all_sessions&&form.commitment.trim().length>=20&&form.heard_about&&form.accuracy_confirmed&&form.consent&&form.privacy_accepted;
  const next=()=>{setMessage('');if(!open)return;if(step===1&&stepOneValid)setStep(2);else if(step===2&&stepTwoValid)setStep(3)};
  const submit=async e=>{e.preventDefault();if(!open||!stepOneValid||!stepTwoValid||!stepThreeValid){setMessage('Please complete all three sections before submitting.');return;}setBusy(true);setMessage('');try{const r=await submitCohortApplication(cohortKey,form);setResult(r);setLookup(x=>({...x,reference:r.reference,email:form.email}));setMode('status');setMessage('Application received. Save your application reference.')}catch(e){setMessage(e.message)}finally{setBusy(false)}};
- const check=async e=>{e?.preventDefault?.();setBusy(true);setMessage('');try{const r=await getApplicationStatus(lookup.reference,lookup.email);setResult(r);setMessage(r.ok?'Application found.':r.message)}catch(e){setMessage(e.message)}finally{setBusy(false)}};
+ const check=async e=>{e?.preventDefault?.();if(!lookup.reference.trim()||!lookup.email.trim()){setMessage('Enter your application reference and email address.');return;}setBusy(true);setMessage('');setResult(null);try{const r=await getApplicationStatus(lookup.reference.trim(),lookup.email.trim());if(r?.ok){setResult(r);setMessage('Application found.')}else{setMessage(r?.message||'We could not find an application matching those details.')}}catch(e){setMessage(e.message||'Could not check application status. Please try again.')}finally{setBusy(false)}};
  const offer=async accept=>{setBusy(true);setMessage('');try{const r=await acceptCohortOffer(lookup.reference,lookup.email,lookup.code,accept);setResult(r);if(accept){localStorage.setItem('womate_admission_reference',lookup.reference.toUpperCase());localStorage.setItem('womate_admission_email',lookup.email.toLowerCase());setMessage('Offer accepted. Create or sign in to Canopy with this same email to continue.')}else setMessage('Offer declined. WOMATE has recorded your decision.')}catch(e){setMessage(e.message)}finally{setBusy(false)}};
 
  return <main className="sla-page">
@@ -49,7 +49,7 @@ export default function SheLeadsApplication({cohortKey='she-leads-asia-c1-2027'}
     <h1>{mode==='apply'?'Apply':'Application status'}</h1>
     <div className="sla-mastActions"><a href={isAsia?ASIA_BRIEF:AFRICA_BRIEF} target="_blank" rel="noopener noreferrer">{isAsia?"Asia programme brief":"Africa programme brief"} <ExternalLink size={15}/></a><a href="mailto:womatead@gmail.com">womatead@gmail.com</a></div>
    </div>
-   <div className="sla-modeTabs" aria-label="Application pages"><button type="button" aria-current={mode==='apply'?'page':undefined} className={mode==='apply'?'active':''} onClick={()=>setMode('apply')}>Apply</button><button type="button" aria-current={mode==='status'?'page':undefined} className={mode==='status'?'active':''} onClick={()=>setMode('status')}>Check status</button></div>
+   <div className="sla-modeTabs" aria-label="Application pages"><button type="button" aria-current={mode==='apply'?'page':undefined} className={mode==='apply'?'active':''} onClick={()=>{setMessage('');setResult(null);setMode('apply')}}>Apply</button><button type="button" aria-current={mode==='status'?'page':undefined} className={mode==='status'?'active':''} onClick={()=>{setMessage('');setResult(null);setMode('status')}}>Check status</button></div>
   </section>
 
   {mode==='apply'&&<div className="sla-layout">
