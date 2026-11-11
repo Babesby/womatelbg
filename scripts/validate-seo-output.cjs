@@ -48,6 +48,14 @@ if(!childUrls['sitemap-talent.xml'].includes('https://www.womate.org/talent-disc
 if(childUrls['sitemap-publications.xml'].length!==manifest.publications+1)fail('Publications sitemap must include the Publications hub plus every approved publication');
 if(!childUrls['sitemap-publications.xml'].includes('https://www.womate.org/publications'))fail('Publications hub missing from Publications sitemap');
 
+const allProfilesIndex=path.join(dist,'talent-profiles.html');
+if(!fs.existsSync(allProfilesIndex))fail('complete public Talent Discovery index is missing');
+const allProfilesHtml=fs.readFileSync(allProfilesIndex,'utf8');
+const allProfilesLinks=[...allProfilesHtml.matchAll(/<a\\s+href="(\\/talent\\/[^"]+)"/g)].map(m=>m[1]);
+if(allProfilesLinks.length!==manifest.talent_profiles||new Set(allProfilesLinks).size!==manifest.talent_profiles)fail('all-profiles index must link exactly once to every public Talent profile');
+if(!allProfilesHtml.includes('<link rel="canonical" href="https://www.womate.org/talent-profiles.html">'))fail('all-profile index missing canonical');
+if(!childUrls['sitemap-static.xml'].includes('https://www.womate.org/talent-profiles.html'))fail('all-profile index missing from static sitemap');
+
 const talentFiles=htmlFiles(path.join(dist,'talent'));
 if(talentFiles.length!==manifest.talent_profiles)fail('generated Talent profile file count does not match source count');
 
