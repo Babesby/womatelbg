@@ -1,0 +1,55 @@
+/* Cohort 2-inspired operational tables, usable across 2027 cohorts. */
+.c27-list{background:#fff;border:1px solid #dce7e1;border-radius:17px;overflow:hidden;box-shadow:0 6px 24px rgba(7,59,57,.035);color:#073b39;min-width:0}
+.c27-listHead{padding:25px 26px 19px;display:flex;justify-content:space-between;align-items:start;gap:20px}
+.c27-listHead h2{font-size:clamp(1.25rem,2.1vw,1.75rem);letter-spacing:-.04em;line-height:1.14;color:#073b39;margin:0 0 8px}
+.c27-listHead p{font-size:.83rem;line-height:1.5;color:#59786b;max-width:700px;margin:0}
+.c27-total{font-weight:800;flex:0 0 auto;color:#3d7460;background:#edf6ed;border-radius:100px;padding:7px 12px;font-size:.74rem}
+.c27-filterBar{padding:14px 20px;display:flex;align-items:end;flex-wrap:wrap;gap:10px;background:#f7faf7;border-block:1px solid #e3ede6}
+.c27-search{position:relative;flex:1 1 240px;min-width:150px;display:flex;align-items:center}
+.c27-search svg{position:absolute;left:13px;pointer-events:none;color:#6f9183}
+.c27-search input{width:100%;height:43px;padding:10px 12px 10px 39px;border:1px solid #cbdcd2;border-radius:9px;background:white;color:#073b39;font:inherit;font-size:.82rem}
+.c27-control{display:grid;gap:4px;font-size:.67rem;color:#648073;font-weight:800;min-width:112px}
+.c27-control select{height:43px;padding:9px 11px;max-width:180px;border:1px solid #cbdcd2;border-radius:9px;color:#073b39;background:white;font:inherit;font-size:.81rem;font-weight:650}
+.c27-reset{background:none;border:0;color:#145b4d;font-size:.78rem;cursor:pointer;text-decoration:underline;padding:12px 5px}
+.c27-listTableWrap{width:100%;overflow-x:auto;overscroll-behavior-inline:contain}
+.c27-listTable{border-collapse:collapse;width:100%;min-width:610px;font-family:inherit;font-size:.82rem}
+.c27-listTable th{background:#fff;color:#71877e;font-size:.65rem;letter-spacing:.055em;text-transform:uppercase;text-align:left;font-weight:850;border-bottom:1px solid #dfebe3;padding:13px 17px}
+.c27-listTable td{border-bottom:1px solid #edf2ef;padding:14px 17px;vertical-align:middle;color:#375b4e}
+.c27-listTable td strong{font-size:.84rem;color:#073b39;line-height:1.35;font-weight:770}
+.c27-listTable td small{display:block;font-size:.69rem;color:#789287;margin-top:3px}
+.c27-listTable tbody tr:not(.c27-expandedRow):hover{background:#f7faf7}
+.c27-listTable tbody tr.is-open{background:#eef7f0}
+.c27-listTable tbody tr:last-child td{border-bottom:0}
+.c27-actionHeader{text-align:right!important}
+.c27-rowAction{text-align:right}
+.c27-rowAction button{min-width:91px;display:inline-flex;gap:6px;align-items:center;justify-content:center;padding:9px 10px;border:1px solid #c9ddd2;background:#fff;color:#145b4d;border-radius:8px;font:inherit;font-size:.73rem;font-weight:820;cursor:pointer}
+.c27-rowAction button:hover,.c27-rowAction button:focus-visible{background:#e8f4ec;border-color:#7daa92}
+.c27-rowAction svg{transition:transform .15s ease}.c27-rowAction svg.rotated{transform:rotate(180deg)}
+.c27-badge{display:inline-block;padding:5px 9px;border-radius:100px;font-size:.68rem;font-weight:820;white-space:nowrap;text-transform:capitalize}
+.c27-badge-success{background:#e2f5e8;color:#206645}.c27-badge-warning{background:#fff4df;color:#8b5d17}.c27-badge-danger{background:#ffebe8;color:#913f33}.c27-badge-neutral{background:#eef2ef;color:#476759}
+.c27-expandedRow td{background:#f8fbf8;padding:0!important}
+.c27-expanded{padding:24px clamp(18px,3.5vw,43px) 29px;max-width:900px}
+.c27-expanded>p{font-size:.84rem;color:#5c7469;line-height:1.6}
+.c27-expanded .c27-detailTitle{font-weight:800;color:#073b39;font-size:.92rem}
+.c27-inlineActions{display:flex;align-items:end;gap:10px;flex-wrap:wrap;margin-top:16px}
+.c27-inlineActions button,.c27-editPanel button{border:1px solid #073b39;background:#073b39;color:white;border-radius:8px;min-height:40px;padding:9px 15px;font:inherit;font-weight:750;font-size:.77rem;cursor:pointer}
+.c27-inlineActions button:nth-of-type(n+2){background:#fff;color:#073b39;border-color:#c5d7cd}
+.c27-inlineActions button.c27-danger{color:#9c4036}
+.c27-inlineActions button:disabled,.c27-editPanel button:disabled{opacity:.44;cursor:not-allowed}
+.c27-inlineActions label,.c27-editPanel label{display:grid;gap:7px;color:#42695a;font-size:.79rem;font-weight:750}
+.c27-inlineActions select,.c27-editPanel input,.c27-editPanel textarea{border:1px solid #c9ded1;border-radius:9px;background:#fff;color:#073b39;font:inherit;padding:10px 12px;font-size:.82rem;width:100%;min-width:0}
+.c27-submissionText{white-space:pre-wrap;line-height:1.65;font-size:.84rem;color:#2d5347;background:#fff;border:1px solid #e1ebe3;padding:18px;border-radius:9px;max-height:280px;overflow:auto;overflow-wrap:anywhere}
+.c27-oldFeedback{border-left:3px solid #a0d49b;padding:12px 16px;background:#eaf6eb;border-radius:3px}
+.c27-editPanel{display:grid;gap:15px;margin-top:18px;max-width:720px}
+.c27-editPanel button{justify-self:start}
+.c27-editPanel small{font-size:.7rem;color:#668378}
+.c27-evidenceLink{display:inline-flex;align-items:center;gap:7px;color:#155e4c;text-decoration:underline;text-underline-offset:4px;font-weight:770;font-size:.78rem;margin-top:10px}
+.c27-eligibility{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.c27-eligibility span{background:#e8f3eb;border-radius:7px;padding:8px 10px;font-size:.76rem;font-weight:750}
+.c27-empty{text-align:center;display:grid;justify-items:center;gap:9px;padding:47px 20px;color:#729183}
+.c27-empty strong{color:#073b39;font-size:1rem}.c27-empty p{font-size:.82rem;color:#678176;max-width:430px;margin:0}
+.c27-pagination{display:flex;gap:15px;justify-content:space-between;align-items:center;padding:16px 23px;border-top:1px solid #e3ede6;font-size:.73rem;color:#648074}
+.c27-pagination button{background:#f0f7f1;border:1px solid #d0e0d5;border-radius:8px;display:inline-flex;align-items:center;gap:6px;font-size:.76rem;font-weight:800;color:#0e5447;padding:10px 13px;cursor:pointer}
+.c27-list :is(input,select,textarea,button):focus-visible{outline:2px solid #398a73;outline-offset:2px}
+@media(max-width:700px){.c27-listHead{padding:20px 17px;gap:12px}.c27-filterBar{padding:13px;gap:9px}.c27-search{flex-basis:100%}.c27-control{flex:1 1 110px}.c27-control select{max-width:100%;width:100%}.c27-listTable th,.c27-listTable td{padding:13px 12px}.c27-listTable{min-width:570px}.c27-expanded{padding:18px 17px}.c27-pagination{flex-wrap:wrap}}
+@media(prefers-reduced-motion:reduce){.c27-rowAction svg{transition:none}}

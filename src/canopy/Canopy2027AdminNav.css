@@ -24,3 +24,21 @@
  .c27-adminMobileSelect select{appearance:auto;display:block;width:100%;min-height:47px;border:1px solid #bed8ca;border-radius:10px;background:white;color:#073b39;padding:11px 14px;font:inherit;font-size:.92rem;font-weight:750}
  .c27-adminNavCurrent{display:none}
 }
+
+
+/* Cohort 2 visual language: slim grouped navigation, not five tall panels. */
+.c27-adminNav{background:transparent;border:0;border-bottom:1px solid #dce9df;border-radius:0;box-shadow:none;padding:0 0 18px;margin:0 0 24px}
+.c27-adminNavHeading{padding:0 0 13px;margin:0;gap:12px}
+.c27-adminNavHeading strong{font-size:.93rem;color:#073b39;letter-spacing:-.02em}
+.c27-adminNavHeading span{font-size:.74rem;color:#658176}
+.c27-adminNavHeading .c27-adminNavCurrent{font-weight:750;color:#33745d}
+.c27-adminNavGroups{display:flex;align-items:flex-start;flex-wrap:wrap;gap:0;justify-content:flex-start;background:#f7faf7;border-radius:11px;border:1px solid #e2ece4;overflow:hidden;padding:7px}
+.c27-adminNavGroup,.c27-adminNavGroup.is-current{flex:1 1 150px;min-width:145px;box-shadow:none;border:0;border-radius:0;padding:7px;background:transparent}
+.c27-adminNavGroup+.c27-adminNavGroup{border-left:1px solid #e2ebe4}
+.c27-adminNavLabel{padding:4px 7px 10px;font-size:.69rem;text-transform:uppercase;letter-spacing:.06em;line-height:1.2;color:#6b8a7b;gap:6px}
+.c27-adminNavLabel svg{color:#5d957a}
+.c27-adminNavLinks{display:flex;flex-wrap:wrap;gap:4px}
+.c27-adminNavLinks button{width:auto;min-height:31px;border-radius:6px;padding:7px 9px;font-size:.73rem;color:#385f4f;line-height:1.2;font-weight:700}
+.c27-adminNavLinks button.is-active{background:#073b39;color:#fff}
+@media(max-width:1210px){.c27-adminNavGroups{display:flex;flex-wrap:wrap;gap:2px}.c27-adminNavGroup{flex:1 1 205px}.c27-adminNavGroup+.c27-adminNavGroup{border-left:0}}
+@media(max-width:780px){.c27-adminNav{padding:0 0 17px;margin:0 0 22px}.c27-adminNavHeading{padding:0 0 12px}.c27-adminNavMobileSelect{display:grid}.c27-adminNavGroups{display:none}}

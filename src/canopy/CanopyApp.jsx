@@ -182,17 +182,12 @@ const manager=canManageCanopy(viewer);
  const selectedAdminKey=adminCohort?.cohort_key||LEGACY_CANOPY_COHORT;
  const adminIsLegacy=selectedAdminKey===LEGACY_CANOPY_COHORT;
  const managerItems=[['/canopy/manage','Operations',ClipboardCheck],['/canopy/manage/access','Manage cohort',UsersRound],['/canopy/manage/reviews','Assess submissions',FileText],['/canopy/manage/communications','Warnings & feedback',MessageSquare],['/canopy/manage/reminders','Reminders',Bell],['/canopy/manage/complaints','Complaints',ShieldAlert],['/canopy/manage/attendance','Attendance',UsersRound],['/canopy/manage/certificates','Certificates',Award],['/canopy/manage/reports','Reports',BarChart3],['/canopy/manage/opportunities','Opportunities',BriefcaseBusiness],['/canopy/manage/funding','Funding & paid work',Award],['/canopy/manage/talent','Talent directory & approvals',UsersRound],['/canopy/manage/missions','Mission groups',Globe2]];
+ // A single grouped 2027 navigation bar handles all cohort sub-pages.
+ // Keep the global sidebar short so it does not duplicate every operational route.
  if(!adminIsLegacy)managerItems.splice(0,managerItems.length,
-  ['/canopy/manage','2027 dashboard',ClipboardCheck],
+  ['/canopy/manage','2027 workspace',ClipboardCheck],
   ['/canopy/manage/admissions','Applications & selection',FileText],
-  ['/canopy/manage/access','Learner access',UsersRound],
-  ['/canopy/manage/reviews','Review assignments',FileText],
-  ['/canopy/manage/attendance','Live attendance',UsersRound],
-  ['/canopy/manage/certificates','Certificates',Award],
-  ['/canopy/manage/reports','Reports',BarChart3],
-  ['/canopy/manage/communications','Communications',MessageSquare],
-  ['/canopy/manage/missions','Mission groups',Globe2],
-  ['/canopy/manage/funding','Funding calls',Award]
+  ['/canopy/manage/reports','Programme reports',BarChart3]
  );
  if(adminIsLegacy){
   managerItems.splice(8,0,['/canopy/manage/credentials','Graduate registry',ShieldCheck],['/canopy/manage/alumni-checkins','Alumni check-ins',Heart],['/canopy/manage/graduation-2026','Graduation 2026',GraduationCap],['/canopy/manage/inactivity-2026','Inactivity review',ShieldAlert]);
