@@ -54,8 +54,10 @@ export default function SheLeadsApplication({cohortKey='she-leads-asia-c1-2027'}
 
   {mode==='apply'&&<div className="sla-layout">
    <aside className="sla-programmePanel">
-    <div className="sla-programmeBadge">WOMATE · SHE LEADS</div>
-    <h2>{cohortLabel}</h2>
+    <div className="sla-cohortIdentity">
+     <div className="sla-programmeBadge">WOMATE · SHE LEADS</div>
+     <h2>{cohortLabel}</h2>
+    </div>
     <div className={'sla-openState '+(open?'is-open':'')} aria-label="Application dates">
      {opensOn&&<p><strong>Opens</strong><span>{opensOn}</span></p>}
      {closesOn&&<p><strong>Closes</strong><span>{closesOn}</span></p>}
@@ -65,7 +67,7 @@ export default function SheLeadsApplication({cohortKey='she-leads-asia-c1-2027'}
    <section className="sla-formCard">
     {open&&<div className="sla-progress" aria-label={'Application step '+step+' of 3'}>{[1,2,3].map(n=><div key={n} aria-current={step===n?'step':undefined} className={step===n?'active':step>n?'done':''}><span>{step>n?<Check size={14}/>:n}</span><small>{n===1?'About you':n===2?'Study & motivation':'Commitment'}</small></div>)}</div>}
 
-    {!open?<div className="sla-closedMessage" role="status"><h2>{loading?'Loading application dates…':loadError?'Application information unavailable':`Applications open ${opensOn||'soon'}`}</h2>{closesOn&&<p>Apply by {closesOn}.</p>}<p>{loadError?'Please check back shortly.':'Return during the application period to complete your application.'}</p><a href={isAsia?ASIA_BRIEF:AFRICA_BRIEF} target="_blank" rel="noopener noreferrer">{isAsia?"Asia programme brief":"Africa programme brief"} <ExternalLink size={16}/></a></div>:<form onSubmit={submit}>
+    {!open?<div className="sla-closedMessage" role="status"><span className="sla-closedEyebrow">{loading?'CHECKING APPLICATION DATES':loadError?'INFORMATION UNAVAILABLE':'UPCOMING APPLICATIONS'}</span><h2>{loading?'Loading…':loadError?'Application details unavailable':'Applications are not open yet'}</h2><p>{loadError?'Please try again shortly.':opensOn&&closesOn?`Applications run from ${opensOn} to ${closesOn}.`:'Application dates will be announced here.'}</p><a href={isAsia?ASIA_BRIEF:AFRICA_BRIEF} target="_blank" rel="noopener noreferrer">Read {isAsia?"Asia":"Africa"} programme brief <ExternalLink size={16}/></a></div>:<form onSubmit={submit}>
      {step===1&&<section className="sla-step">
       <div className="sla-stepHead"><span>01 · ABOUT YOU</span><h2>Tell us who you are.</h2><p>Use the email you plan to use for Canopy.</p></div>
       <div className="sla-grid two">
