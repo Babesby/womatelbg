@@ -1,5 +1,6 @@
 import React,{useEffect,useRef,useState} from 'react';
 import {createPortal} from 'react-dom';
+import {evaluationVoices} from './evaluationVoices2026.js';
 import {ArrowUpRight,ChevronLeft,ChevronRight,ChevronDown,Quote,ShieldCheck,X} from 'lucide-react';
 import './voices-impact.css';
 
@@ -53,7 +54,7 @@ export function VoicesDrawer(){
  // Portal both the trigger and dialog to document.body so positioned parent
  // sections and their stacking contexts cannot intercept the first click.
  return createPortal(<div className="vix-drawer-shell">
-  {!open&&<button ref={triggerRef} className="vix-drawer-tab" type="button" onClick={()=>setOpen(true)} aria-label="Open participant voices" aria-expanded={false}><Quote size={17}/> <span>Participant voices</span></button>}
+  {!open&&<button ref={triggerRef} className="vix-drawer-tab" type="button" onPointerDown={e=>{if(e.pointerType==='touch'||e.pointerType==='pen'){e.preventDefault();setOpen(true)}}} onClick={()=>setOpen(true)} aria-label="Open participant voices" aria-expanded={false}><Quote size={17}/> <span>Participant voices</span></button>}
   {open&&<div className="vix-drawer-overlay">
    <button className="vix-drawer-scrim" type="button" aria-label="Close participant voices" onClick={()=>setOpen(false)}/>
    <aside className="vix-drawer" id="vix-drawer-panel" role="dialog" aria-modal="true" aria-labelledby="vix-drawer-title">
@@ -66,8 +67,44 @@ export function VoicesDrawer(){
   </div>}
  </div>,document.body);
 }
+
+const countryMap={Ghanaian:'Ghana',Malawian:'Malawi',Kenyan:'Kenya',Ugandan:'Uganda',Zambian:'Zambia',Rwandan:'Rwanda',Nigerian:'Nigeria',Tanzanian:'Tanzania',Zimbabwean:'Zimbabwe',Gambian:'The Gambia',Beninese:'Benin',Moroccan:'Morocco',Somali:'Somalia'};
+const avatarByName=new Map(participantVoices.filter(v=>v.avatarPath).map(v=>[v.name.toLowerCase(),v]));
+function AnimatedStatistic({value,label,format}){
+ const [display,setDisplay]=useState(value);
+ const [complete,setComplete]=useState(false);
+ const ref=useRef(null);
+ useEffect(()=>{
+  if(!ref.current||typeof window==='undefined')return;
+  if(window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches){setComplete(true);return;}
+  const obs=new IntersectionObserver(entries=>{if(!entries.some(x=>x.isIntersecting))return;obs.disconnect();const started=performance.now();let frame=0;const tick=now=>{const progress=Math.min((now-started)/950,1);const eased=1-Math.pow(1-progress,3);setDisplay(format==='rating'?(value*eased).toFixed(2)+'/5':format==='percent'?Math.round(value*eased)+'%':String(Math.round(value*eased)));if(progress<1)frame=requestAnimationFrame(tick);else setComplete(true)};frame=requestAnimationFrame(tick);return()=>cancelAnimationFrame(frame);},{threshold:.25});
+  obs.observe(ref.current);return()=>obs.disconnect();
+ },[value,format]);
+ return <div ref={ref} className="vix-liveMetric" aria-label={label+': '+(format==='rating'?value.toFixed(2)+'/5':format==='percent'?value+'%':value)}><strong aria-hidden="true">{complete?(format==='rating'?value.toFixed(2)+'/5':format==='percent'?value+'%':String(value)):display}</strong><span>{label}</span></div>
+}
+function VoiceBubble({voice,i}){
+ const linked=avatarByName.get(voice.name.toLowerCase());const [imageBroken,setImageBroken]=useState(false);
+ return <article className={'vix-bubble vix-bubble-'+(i%6)}><div className="vix-bubbleTop"><span className="vix-bubbleGlyph" aria-hidden="true">“</span><span className="vix-bubbleCountry">{countryMap[voice.country]||voice.country}</span></div><blockquote>{voice.quote}</blockquote><div className="vix-bubblePerson">{linked&&!imageBroken?<a className="vix-profilePhoto" href={'/talent/'+linked.profileSlug} title={'View '+voice.name+' profile'}><img loading="lazy" alt={voice.name} src={'https://bwnwhsvssgponrzvwlpt.supabase.co/storage/v1/object/public/canopy-profile-images/'+linked.avatarPath} onError={()=>setImageBroken(true)}/></a>:<span className="vix-initial" aria-hidden="true">{voice.name.charAt(0).toUpperCase()}</span>}<div><strong>{voice.name}</strong><span>She Leads Africa participant</span></div></div></article>
+}
 export function VoicesImpactPage(){
- const [theme,setTheme]=useState('All voices');
- const list=theme==='All voices'?participantVoices:participantVoices.filter(v=>v.theme===theme);
- return <main className="vix-page" id="content"><header className="vix-page-hero"><div><span className="vix-overline">WOMATE · Voices & Impact</span><h1>Real women.<br/><em>Real reflections.</em></h1><p>Participant perspectives from She Leads Africa Cohort 2, shared with permission. Discover what they learned, what changed in their confidence, and what they hope to do next.</p><a className="vix-pill" href="/she-leads">Explore She Leads <ArrowUpRight size={18}/></a></div><div className="vix-hero-decoration"><span>“</span><strong>Every voice carries a future.</strong></div></header><section className="vix-page-proof"><Metric value={voicesMetrics.rating} label="Average programme rating"/><Metric value={voicesMetrics.recommend} label="Would recommend"/><Metric value="208" label="Evaluation responses"/></section><section className="vix-library" aria-labelledby="vix-library-title"><div className="vix-library-head"><span className="vix-overline">The reflections</span><h2 id="vix-library-title">What the women said.</h2><p>Explore participant experiences by theme. These reflections are self-reported, not independently verified impact claims.</p></div><div className="vix-chips vix-light-chips" role="group" aria-label="Filter reflections">{themes.map(t=><button key={t} type="button" className={theme===t?'active':''} aria-pressed={theme===t} onClick={()=>setTheme(t)}>{t}</button>)}</div><div className="vix-library-grid">{list.map(v=><VoiceCard key={v.name} voice={v}/>)}</div><a className="vix-pill vix-library-cta" href="/she-leads/apply">See application dates & status <ArrowUpRight size={17}/></a></section><section className="vix-impact-explainer"><ShieldCheck size={24}/><div><h2>What these numbers mean.</h2><p>Ratings and recommendation figures describe the 208 received evaluations, not all programme participants. Written quotations are excerpts from respondents who granted permission. They reflect participants' experiences and intentions, not independently measured outcomes.</p></div></section></main>
+ const [shown,setShown]=useState(15);
+ const [country,setCountry]=useState('All countries');
+ const countries=['All countries',...new Set(evaluationVoices.map(v=>countryMap[v.country]||v.country))].sort((a,b)=>a==='All countries'?-1:b==='All countries'?1:a.localeCompare(b));
+ const filtered=evaluationVoices.filter(v=>country==='All countries'||(countryMap[v.country]||v.country)===country);
+ const visible=filtered.slice(0,shown);
+ const updateCountry=e=>{setCountry(e.target.value);setShown(15)};
+ return <main className="vix-page vix-reimagined" id="content">
+  <header className="vix-newHero"><div className="vix-newHero-copy"><h1>Reflections <em>&amp; Experiences.</em></h1><p>Personal reflections from women who joined the She Leads programme.</p><a href="/she-leads" className="vix-hero-link">Discover She Leads <ArrowUpRight size={18}/></a></div><div className="vix-heroMark" aria-hidden="true"><span>“</span></div></header>
+  <section className="vix-numbers" aria-label="She Leads Africa Cohort 2 programme evaluation">
+   <AnimatedStatistic value={4.72} format="rating" label="Average programme rating"/>
+   <AnimatedStatistic value={98} format="percent" label="Would recommend"/>
+   <AnimatedStatistic value={208} label="Evaluation responses"/>
+  </section>
+  <section className="vix-bubbleLibrary" aria-labelledby="vix-library-title">
+    <div className="vix-bubbleLibrary-head"><div><h2 id="vix-library-title">In their own words.</h2><p>{filtered.length} participant reflections</p></div><label className="vix-countryFilter"><span>Browse by country</span><select value={country} onChange={updateCountry}>{countries.map(x=><option key={x} value={x}>{x}</option>)}</select></label></div>
+    <div className="vix-bubbleGrid">{visible.map((voice,i)=><VoiceBubble key={voice.name+'-'+i} voice={voice} i={i}/>)}</div>
+    {shown<filtered.length&&<div className="vix-loadRow"><button type="button" className="vix-more" onClick={()=>setShown(n=>Math.min(n+15,filtered.length))}>Show more voices <ChevronDown size={19}/></button><span>Showing {Math.min(shown,filtered.length)} of {filtered.length}</span></div>}
+    <div className="vix-libraryEnd"><p>Curious about the next chapter?</p><a href="/she-leads/apply" className="vix-pill">Explore application dates <ArrowUpRight size={17}/></a></div>
+  </section>
+ </main>;
 }
