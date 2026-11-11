@@ -147,3 +147,8 @@
  .sla-programmePanel .sla-openState{grid-template-columns:minmax(0,1fr)}
  .sla-mastActions{flex-direction:column;align-items:flex-start}
 }
+
+/* Keep application tracker eyebrow horizontally aligned with its icon. */
+.sla-statusLabel{display:inline-flex;align-items:center;gap:9px;max-width:100%;color:var(--forest)}
+.sla-statusLabel svg{width:19px;height:19px;flex:0 0 auto;margin:0}
+.sla-statusLabel span{font-size:.7rem;letter-spacing:.12em;font-weight:900;line-height:1.3;color:#5d756c}
