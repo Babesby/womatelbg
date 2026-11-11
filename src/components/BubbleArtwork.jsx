@@ -1,0 +1,23 @@
+import React,{useId} from 'react';
+// The seven unique vector silhouettes are traced from the WOMATE-provided bubble
+// artwork, including the additional white bubble. Responsive SVG scaling avoids
+// fixed-size images, while a subtle radial gradient preserves their soft 3D feel.
+const outlines=["M999,339 L966,260 L880,205 L863,141 L816,90 L742,64 L669,76 L606,18 L527,0 L441,20 L376,74 L288,56 L190,95 L145,144 L124,204 L26,269 L0,362 L39,455 L86,493 L144,510 L212,586 L274,604 L339,591 L404,635 L484,649 L553,633 L621,583 L691,607 L780,585 L838,522 L909,505 L961,466 L994,405 Z","M996,340 L957,258 L863,212 L832,142 L788,100 L711,78 L650,101 L581,24 L483,0 L403,28 L342,99 L273,79 L201,109 L140,211 L35,269 L0,390 L45,502 L139,544 L132,590 L98,639 L117,649 L235,567 L357,611 L505,582 L631,614 L723,593 L791,547 L888,550 L979,469 L999,402 Z","M999,390 L973,325 L903,274 L895,193 L848,133 L776,104 L695,114 L620,28 L507,0 L398,35 L323,118 L247,113 L175,146 L135,192 L117,258 L22,327 L0,413 L19,471 L59,516 L112,544 L174,549 L267,632 L365,645 L466,606 L536,642 L609,649 L718,616 L784,549 L858,556 L933,527 L986,466 Z","M76,193 L62,289 L0,374 L16,468 L79,528 L140,547 L208,541 L258,592 L333,622 L452,620 L543,575 L613,598 L708,583 L836,649 L820,550 L939,504 L999,408 L982,297 L885,222 L875,164 L836,113 L742,73 L654,85 L598,30 L522,0 L373,13 L303,56 L253,113 L155,125 Z","M999,355 L953,272 L863,231 L818,147 L767,125 L701,129 L664,64 L618,26 L499,0 L386,41 L307,135 L225,131 L151,166 L112,221 L103,282 L18,350 L0,432 L17,483 L58,528 L117,554 L182,556 L219,603 L280,638 L367,645 L464,607 L544,644 L612,649 L715,612 L788,533 L877,526 L941,494 L992,426 Z","M0,333 L15,430 L72,502 L153,518 L185,569 L235,602 L295,607 L362,579 L419,630 L484,649 L563,633 L629,574 L709,608 L783,591 L840,522 L897,518 L953,480 L985,426 L999,350 L989,276 L953,210 L902,172 L841,170 L789,86 L727,61 L638,84 L578,21 L511,0 L431,20 L367,83 L298,60 L226,78 L160,168 L102,172 L47,212 Z","M999,368 L975,302 L925,259 L921,190 L887,141 L822,108 L756,114 L687,26 L592,0 L527,16 L471,60 L404,26 L324,28 L261,64 L219,123 L111,146 L60,208 L52,287 L12,338 L0,402 L46,496 L107,528 L164,528 L231,600 L291,609 L355,580 L408,631 L480,649 L541,633 L588,595 L674,633 L763,615 L842,528 L901,523 L952,493 L990,438 Z"];
+const palettes=[
+ ['#f5fffc','#b4ddd2','#88c4b5'], // pale mint
+ ['#cfe5d8','#83ac99','#6e9e89'], // sage
+ ['#428e87','#0b6766','#095353'], // emerald
+ ['#388886','#075a5c','#064b51'], // dark teal
+ ['#e7ff83','#baff42','#96e326'], // lime
+ ['#307b74','#064c4b','#003b40'], // forest
+ ['#ffffff','#f3f2f4','#e4e5e8']  // white
+];
+export function BubbleArtwork({index=0}){
+ const i=((index%7)+7)%7;const uid=useId().replace(/:/g,'');
+ const [light,mid,dark]=palettes[i];const gradient='bubble-gradient-'+uid;
+ return <svg className="vix-bubbleArt" aria-hidden="true" focusable="false" viewBox="0 0 1000 650" preserveAspectRatio="none">
+  <defs><radialGradient id={gradient} cx="36%" cy="26%" r="80%" fx="34%" fy="16%"><stop offset="0%" stopColor={light}/><stop offset="68%" stopColor={mid}/><stop offset="100%" stopColor={dark}/></radialGradient></defs>
+  <path d={outlines[i]} fill={'url(#'+gradient+')'} />
+  <path d={outlines[i]} fill="none" stroke={light} strokeOpacity=".24" strokeWidth="3"/>
+ </svg>
+}

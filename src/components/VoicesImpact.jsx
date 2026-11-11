@@ -1,6 +1,7 @@
 import React,{useEffect,useRef,useState} from 'react';
 import {createPortal} from 'react-dom';
 import {evaluationVoices} from './evaluationVoices2026.js';
+import {BubbleArtwork} from './BubbleArtwork.jsx';
 import {ArrowUpRight,ChevronLeft,ChevronRight,ChevronDown,Quote,ShieldCheck,X} from 'lucide-react';
 import './voices-impact.css';
 
@@ -82,13 +83,43 @@ function AnimatedStatistic({value,label,format}){
  },[value,format]);
  return <div ref={ref} className="vix-liveMetric" aria-label={label+': '+(format==='rating'?value.toFixed(2)+'/5':format==='percent'?value+'%':value)}><strong aria-hidden="true">{complete?(format==='rating'?value.toFixed(2)+'/5':format==='percent'?value+'%':String(value)):display}</strong><span>{label}</span></div>
 }
-function VoiceBubble({voice,i}){
- const linked=voice.avatarPath?voice:avatarByName.get(voice.name.toLowerCase());const [imageBroken,setImageBroken]=useState(false);const [expanded,setExpanded]=useState(false);const hasMore=voice.quote.length>360;const excerpt=hasMore?voice.quote.slice(0,360).replace(/\s+\S*$/,'').trim()+'…':voice.quote;
- return <article className={'vix-bubble vix-bubble-'+(i%6)}><div className="vix-bubbleTop"><span className="vix-bubbleGlyph" aria-hidden="true">“</span><span className="vix-bubbleCountry">{countryMap[voice.country]||voice.country}</span></div><blockquote>{expanded?voice.quote:excerpt}</blockquote>{hasMore&&<button type="button" className="vix-bubbleExpand" aria-expanded={expanded} onClick={()=>setExpanded(x=>!x)}>{expanded?'Read less':'Read full reflection'} <ChevronDown size={16}/></button>}<div className="vix-bubblePerson">{linked&&!imageBroken?<a className="vix-profilePhoto" href={'/talent/'+linked.profileSlug} title={'View '+voice.name+' profile'}><img loading="lazy" alt={voice.name} src={'https://bwnwhsvssgponrzvwlpt.supabase.co/storage/v1/object/public/canopy-profile-images/'+linked.avatarPath} onError={()=>setImageBroken(true)}/></a>:<span className="vix-initial" aria-hidden="true">{voice.name.charAt(0).toUpperCase()}</span>}<div><strong>{voice.name}</strong><span>She Leads Africa participant</span></div></div></article>
+function BubbleAvatar({voice,large=false}){
+ const linked=voice.avatarPath?voice:avatarByName.get(voice.name.toLowerCase());
+ const [broken,setBroken]=useState(false);
+ if(linked?.avatarPath&&!broken)return <a className={'vix-profilePhoto'+(large?' vix-profilePhotoLarge':'')} href={'/talent/'+linked.profileSlug} aria-label={'View '+voice.name+' public Talent Discovery profile'}><img loading="lazy" alt="" src={'https://bwnwhsvssgponrzvwlpt.supabase.co/storage/v1/object/public/canopy-profile-images/'+linked.avatarPath} onError={()=>setBroken(true)}/><span aria-hidden="true">{voice.name.charAt(0).toUpperCase()}</span></a>;
+ return <span className="vix-initial" aria-hidden="true">{voice.name.charAt(0).toUpperCase()}</span>;
+}
+function VoiceBubble({voice,i,onRead}){
+ const excerpt=voice.quote.length>112?voice.quote.slice(0,112).replace(/\s+\S*$/,'').trim()+'…':voice.quote;
+ const hasMore=voice.quote.length>112;
+ return <article className={'vix-bubble vix-bubbleArtwork vix-bubbleArtwork-'+(i%7)}>
+  <BubbleArtwork index={i}/>
+  <div className="vix-bubbleInner">
+   <span className="vix-bubbleCountry">{countryMap[voice.country]||voice.country}</span>
+   <blockquote>“{excerpt}”</blockquote>
+   <div className="vix-bubbleFooter"><div className="vix-bubblePerson"><BubbleAvatar voice={voice}/><div><strong>{voice.name}</strong><span>She Leads Africa</span></div></div>{hasMore&&<button className="vix-bubbleRead" type="button" aria-label={'Read full reflection from '+voice.name} onClick={()=>onRead(voice)}>Read more <ArrowUpRight size={14}/></button>}</div>
+  </div>
+ </article>;
+}
+function ReflectionModal({voice,onClose}){
+ const closeButton=useRef(null);
+ useEffect(()=>{
+  if(!voice)return;
+  const old=document.body.style.overflow;
+  document.body.style.overflow='hidden';
+  const onKey=e=>{if(e.key==='Escape'){onClose();return}if(e.key==='Tab'){const modal=closeButton.current?.closest('[role="dialog"]');const focusables=[...(modal?.querySelectorAll('button:not([disabled]),a[href],select,input,[tabindex]:not([tabindex="-1"])')||[])];if(!focusables.length)return;const first=focusables[0],last=focusables[focusables.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}}};
+  document.addEventListener('keydown',onKey);
+  closeButton.current?.focus({preventScroll:true});
+  return()=>{document.body.style.overflow=old;document.removeEventListener('keydown',onKey)};
+ },[voice,onClose]);
+ if(!voice)return null;
+ return createPortal(<div className="vix-reflectionOverlay" role="presentation"><button className="vix-reflectionScrim" type="button" onClick={onClose} aria-label="Close reflection"/><section className="vix-reflectionModal" role="dialog" aria-modal="true" aria-labelledby="vix-reflectionTitle"><button type="button" className="vix-reflectionClose" ref={closeButton} aria-label="Close reflection" onClick={onClose}><X size={21}/></button><div className="vix-reflectionHeader"><BubbleAvatar voice={voice} large/><div><h2 id="vix-reflectionTitle">{voice.name}</h2><p>{countryMap[voice.country]||voice.country} · She Leads Africa Cohort 2</p></div></div><span className="vix-reflectionQuote" aria-hidden="true">“</span><blockquote>{voice.quote}</blockquote><a className="vix-reflectionAction" href="/she-leads">Explore She Leads <ArrowUpRight size={17}/></a></section></div>,document.body);
 }
 export function VoicesImpactPage(){
  const [shown,setShown]=useState(18);
  const [country,setCountry]=useState('All countries');
+ const [activeVoice,setActiveVoice]=useState(null);
+
  const countries=['All countries',...new Set(evaluationVoices.map(v=>countryMap[v.country]||v.country))].sort((a,b)=>a==='All countries'?-1:b==='All countries'?1:a.localeCompare(b));
  const filtered=evaluationVoices.filter(v=>country==='All countries'||(countryMap[v.country]||v.country)===country);
  const visible=filtered.slice(0,shown);
@@ -102,9 +133,10 @@ export function VoicesImpactPage(){
   </section>
   <section className="vix-bubbleLibrary" aria-labelledby="vix-library-title">
     <div className="vix-bubbleLibrary-head"><div><h2 id="vix-library-title">In their own words.</h2><p>{filtered.length} participant reflections</p></div><label className="vix-countryFilter"><span>Browse by country</span><select value={country} onChange={updateCountry}>{countries.map(x=><option key={x} value={x}>{x}</option>)}</select></label></div>
-    <div className="vix-bubbleGrid">{visible.map((voice,i)=><VoiceBubble key={voice.name+'-'+i} voice={voice} i={i}/>)}</div>
+    <div className="vix-bubbleGrid">{visible.map((voice,i)=><VoiceBubble key={voice.name+'-'+i} voice={voice} i={i} onRead={setActiveVoice}/>)}</div>
     {shown<filtered.length&&<div className="vix-loadRow"><button type="button" className="vix-more" onClick={()=>setShown(n=>Math.min(n+18,filtered.length))}>Show more voices <ChevronDown size={19}/></button><span>Showing {Math.min(shown,filtered.length)} of {filtered.length}</span></div>}
     <div className="vix-libraryEnd"><p>Curious about the next chapter?</p><a href="/she-leads/apply" className="vix-pill">Explore application dates <ArrowUpRight size={17}/></a></div>
   </section>
+  <ReflectionModal voice={activeVoice} onClose={()=>setActiveVoice(null)}/>
  </main>;
 }
