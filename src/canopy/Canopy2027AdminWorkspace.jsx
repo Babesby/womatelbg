@@ -19,13 +19,19 @@ export default function Canopy2027AdminWorkspace({viewer,cohort,view='overview'}
  const validCohortData=data.cohortKey===key;
  const members=validCohortData?(data.members||[]):[],progress=validCohortData?(data.progress||[]):[],subs=validCohortData?(data.submissions||[]):[];
  const loadExtra=async()=>{if(!key)return;setExtraLoading(true);try{
-   const [mail,mailStatus,missions,funding]=await Promise.all([
+   // Isolate the services: a mail-status error must not hide Mission or Funding records.
+   const results=await Promise.allSettled([
     getAdmissionsEmailQueue(key,viewer.session),
     getAdmissionsMailStatus(viewer.session),
     getCohortMissionGroups(key,viewer.session),
     getCohortFundingCalls(key,viewer.session)
    ]);
+   const value=(i,fallback)=>results[i].status==='fulfilled'?results[i].value:fallback;
+   const mail=value(0,null),mailStatus=value(1,null),missions=value(2,[]),funding=value(3,[]);
    setExtra({cohortKey:key,mail,mailStatus,missions:Array.isArray(missions)?missions:[],funding:Array.isArray(funding)?funding:[]});
+   const activeIndices=view==='communications'?[0,1]:view==='mission'?[2]:[3];
+   const failed=activeIndices.find(i=>results[i].status==='rejected');
+   if(failed!==undefined)setError(results[failed].reason?.message||'Unable to load this management area. Refresh to try again.');
   }catch(e){setError(e.message)}finally{setExtraLoading(false)}
  };
  useEffect(()=>{if(['communications','mission','funding'].includes(view))loadExtra()},[key,view,viewer.session?.access_token]);
