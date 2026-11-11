@@ -285,15 +285,19 @@ async function main(){
  // Prerender the public Voices & Impact page with actual participant text.
  // A client-only SPA shell is not sufficient for reliable first-pass indexing.
  const publicVoices=JSON.parse(fs.readFileSync(path.join(root,'src/components/evaluationVoices2026.json'),'utf8'));
- if(publicVoices.length<50)throw Error('Voices SEO page must have at least 50 consented participant reflections');
+ if(publicVoices.length<185)throw Error('Voices SEO page is missing consented participant reflections');
  const voiceCards=publicVoices.map((v,i)=>'<article class="voice"><span class="loc">'+esc(v.country)+'</span><blockquote>'+esc(v.quote)+'</blockquote><p><strong>'+esc(v.name)+'</strong> · She Leads Africa participant</p></article>').join('');
- const voiceHtml=pageHtml(template,{
+ let voiceHtml=pageHtml(template,{
   canonical:ORIGIN+'/voices-impact',
   title:'Reflections & Experiences | WOMATE Voices of She Leads',
   description:'Read '+publicVoices.length+' first-hand participant reflections about the WOMATE She Leads Climate Mentorship programme in Africa.',
   body:'<main class="womate-voices-seo" style="font-family:system-ui,-apple-system,sans-serif;background:#f9fbf8;color:#073b39"><header style="padding:130px max(24px,6vw) 65px;background:#073b39;color:white"><h1 style="font-size:clamp(2.7rem,6vw,5.5rem);letter-spacing:-.05em;max-width:950px">Reflections &amp; Experiences.</h1><p>Personal reflections from women who joined the She Leads programme.</p></header><section style="padding:30px max(24px,6vw)"><h2>She Leads Africa · Cohort 2 evaluation</h2><p>4.72/5 average programme rating · 98% would recommend · 208 evaluation responses.</p></section><section style="max-width:1300px;margin:auto;padding:40px 24px"><h2>In their own words.</h2><div style="columns:3 260px;column-gap:22px">'+voiceCards+'</div><a href="/she-leads/apply">Explore application dates</a></section></main>',
   schema:{'@context':'https://schema.org','@type':'CollectionPage',name:'Reflections & Experiences — WOMATE',url:ORIGIN+'/voices-impact',description:'Participant evaluations and voices from WOMATE She Leads Africa 2026.',mainEntity:{'@type':'ItemList',numberOfItems:publicVoices.length,itemListElement:publicVoices.map((v,i)=>({'@type':'ListItem',position:i+1,name:v.name+' — '+v.country,description:v.quote}))}}
  });
+ // Hide the raw SEO fallback in capable browsers *before first paint*. Without
+ // this, Google-readable HTML flashes before React mounts the interactive design.
+ // Bots and no-JavaScript visitors still receive the full indexable HTML.
+ voiceHtml=insertHead(voiceHtml,'<script>document.documentElement.classList.add("womate-voices-client")</script><style>.womate-voices-client #root>.womate-voices-seo{display:none!important}</style>');
  writeRoute('/voices-impact',voiceHtml);
 
  const talentList=talent.map(p=>'<li><a href="/talent/'+encodeURIComponent(p.slug)+'">'+esc(p.full_name)+'</a> — '+esc(p.country||'Africa')+(p.headline?' · '+esc(p.headline):'')+'</li>').join('');
