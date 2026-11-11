@@ -48,7 +48,7 @@ export function VoicesDrawer(){
   const oldOverflow=document.body.style.overflow;
   document.addEventListener('keydown',onKey);
   document.body.style.overflow='hidden';
-  closeRef.current?.focus();
+  closeRef.current?.focus({preventScroll:true});
   return()=>{document.removeEventListener('keydown',onKey);document.body.style.overflow=oldOverflow;triggerRef.current?.focus()};
  },[open]);
  // Portal both the trigger and dialog to document.body so positioned parent
@@ -71,14 +71,14 @@ export function VoicesDrawer(){
 const countryMap={Ghanaian:'Ghana',Malawian:'Malawi',Kenyan:'Kenya',Ugandan:'Uganda',Zambian:'Zambia',Rwandan:'Rwanda',Nigerian:'Nigeria',Tanzanian:'Tanzania',Zimbabwean:'Zimbabwe',Gambian:'The Gambia',Beninese:'Benin',Moroccan:'Morocco',Somali:'Somalia'};
 const avatarByName=new Map(participantVoices.filter(v=>v.avatarPath).map(v=>[v.name.toLowerCase(),v]));
 function AnimatedStatistic({value,label,format}){
- const [display,setDisplay]=useState(value);
+ const [display,setDisplay]=useState(format==='rating'?'0.00/5':format==='percent'?'0%':'0');
  const [complete,setComplete]=useState(false);
  const ref=useRef(null);
  useEffect(()=>{
   if(!ref.current||typeof window==='undefined')return;
   if(window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches){setComplete(true);return;}
-  const obs=new IntersectionObserver(entries=>{if(!entries.some(x=>x.isIntersecting))return;obs.disconnect();const started=performance.now();let frame=0;const tick=now=>{const progress=Math.min((now-started)/950,1);const eased=1-Math.pow(1-progress,3);setDisplay(format==='rating'?(value*eased).toFixed(2)+'/5':format==='percent'?Math.round(value*eased)+'%':String(Math.round(value*eased)));if(progress<1)frame=requestAnimationFrame(tick);else setComplete(true)};frame=requestAnimationFrame(tick);return()=>cancelAnimationFrame(frame);},{threshold:.25});
-  obs.observe(ref.current);return()=>obs.disconnect();
+  let frame=0;const obs=new IntersectionObserver(entries=>{if(!entries.some(x=>x.isIntersecting))return;obs.disconnect();const started=performance.now();const tick=now=>{const progress=Math.min((now-started)/950,1);const eased=1-Math.pow(1-progress,3);setDisplay(format==='rating'?(value*eased).toFixed(2)+'/5':format==='percent'?Math.round(value*eased)+'%':String(Math.round(value*eased)));if(progress<1)frame=requestAnimationFrame(tick);else setComplete(true)};frame=requestAnimationFrame(tick);},{threshold:.25});
+  obs.observe(ref.current);return()=>{obs.disconnect();cancelAnimationFrame(frame)};
  },[value,format]);
  return <div ref={ref} className="vix-liveMetric" aria-label={label+': '+(format==='rating'?value.toFixed(2)+'/5':format==='percent'?value+'%':value)}><strong aria-hidden="true">{complete?(format==='rating'?value.toFixed(2)+'/5':format==='percent'?value+'%':String(value)):display}</strong><span>{label}</span></div>
 }
