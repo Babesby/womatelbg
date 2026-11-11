@@ -1,0 +1,26 @@
+
+.c27-adminNav{box-sizing:border-box;max-width:100%;margin:0 0 26px;padding:22px;background:#f3f8f4;border:1px solid #d8e7dd;border-radius:20px;color:#073b39}
+.c27-adminNav *{box-sizing:border-box}
+.c27-adminNavHeading{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:18px}
+.c27-adminNavHeading>div{display:grid;gap:4px}.c27-adminNavHeading strong{font-size:1rem;letter-spacing:-.025em}.c27-adminNavHeading span{color:#668078;font-size:.75rem;line-height:1.4}.c27-adminNavHeading .c27-adminNavCurrent{font-weight:750;color:#2d7160}
+.c27-adminNavGroups{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+.c27-adminNavGroup{min-width:0;background:white;border:1px solid #dbe8df;border-radius:13px;padding:13px 10px;transition:border-color .15s ease}
+.c27-adminNavGroup.is-current{border-color:#83b59b;box-shadow:inset 0 3px #c6ff52}
+.c27-adminNavLabel{display:flex;gap:7px;align-items:center;padding:3px 7px 10px;font-weight:850;font-size:.76rem;line-height:1.3}
+.c27-adminNavLabel svg{flex:0 0 auto;color:#4c8773}
+.c27-adminNavLinks{display:grid;gap:3px}
+.c27-adminNavLinks button{min-height:36px;width:100%;display:flex;gap:5px;justify-content:space-between;align-items:center;padding:8px 9px;background:transparent;color:#46675b;border:0;border-radius:7px;text-align:left;font:inherit;font-weight:650;font-size:.72rem;cursor:pointer;line-height:1.25;white-space:normal}
+.c27-adminNavLinks button svg{flex:0 0 auto;opacity:.4}
+.c27-adminNavLinks button:hover,.c27-adminNavLinks button:focus-visible{background:#e9f4eb;color:#073b39}
+.c27-adminNavLinks button.is-active{background:#073b39;color:white}
+.c27-adminNavLinks button.is-active svg{opacity:1;color:#c6ff52}
+.c27-adminMobileSelect{display:none}
+@media(max-width:1200px){.c27-adminNavGroups{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:780px){
+ .c27-adminNav{padding:18px;border-radius:16px;margin-bottom:21px}
+ .c27-adminNavHeading{margin-bottom:12px}
+ .c27-adminNavGroups{display:none}
+ .c27-adminMobileSelect{display:grid;gap:8px;color:#55766b;font-size:.75rem;font-weight:750}
+ .c27-adminMobileSelect select{appearance:auto;display:block;width:100%;min-height:47px;border:1px solid #bed8ca;border-radius:10px;background:white;color:#073b39;padding:11px 14px;font:inherit;font-size:.92rem;font-weight:750}
+ .c27-adminNavCurrent{display:none}
+}
