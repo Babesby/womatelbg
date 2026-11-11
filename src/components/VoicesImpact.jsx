@@ -1,4 +1,5 @@
 import React,{useEffect,useRef,useState} from 'react';
+import {createPortal} from 'react-dom';
 import {ArrowUpRight,ChevronLeft,ChevronRight,ChevronDown,Quote,ShieldCheck,X} from 'lucide-react';
 import './voices-impact.css';
 
@@ -26,7 +27,7 @@ export function VoicesShowcase(){
  const [index,setIndex]=useState(0);
  const list=theme==='All voices'?participantVoices:participantVoices.filter(v=>v.theme===theme);
  const featured=list[index%list.length];
- const others=list.filter(v=>v!==featured).slice(0,2);
+ const others=list.filter(v=>v!==featured).slice(0,1);
  const choose=v=>{setTheme(v);setIndex(0)};
  const shift=d=>setIndex(i=>(i+d+list.length)%list.length);
  return <section className="vix-showcase" id="participant-voices" aria-labelledby="vix-showcase-title">
@@ -38,9 +39,32 @@ export function VoicesShowcase(){
  </section>
 }
 export function VoicesDrawer(){
- const [open,setOpen]=useState(false);const closeRef=useRef(null);const triggerRef=useRef(null);
- useEffect(()=>{if(!open)return;const onKey=e=>{if(e.key==='Escape')setOpen(false)};document.addEventListener('keydown',onKey);const old=document.body.style.overflow;document.body.style.overflow='hidden';closeRef.current?.focus();return()=>{document.removeEventListener('keydown',onKey);document.body.style.overflow=old;triggerRef.current?.focus()}},[open]);
- return <div className="vix-drawer-shell"><button ref={triggerRef} className="vix-drawer-tab" type="button" onClick={()=>setOpen(true)} aria-expanded={open} aria-controls="vix-drawer-panel"><Quote size={18}/> Participant voices</button>{open&&<div className="vix-drawer-overlay"><button className="vix-drawer-scrim" type="button" aria-label="Close participant voices" onClick={()=>setOpen(false)}/><aside className="vix-drawer" id="vix-drawer-panel" role="dialog" aria-modal="true" aria-labelledby="vix-drawer-title"><header><span className="vix-overline">She Leads · Cohort 2</span><button type="button" ref={closeRef} onClick={()=>setOpen(false)} aria-label="Close participant voices"><X/></button></header><h2 id="vix-drawer-title">Hear it from the women.</h2><p>Feedback from the participants themselves.</p><div className="vix-drawer-stats"><Metric value={voicesMetrics.rating} label="Average rating"/><Metric value={voicesMetrics.recommend} label="Would recommend"/></div><div className="vix-drawer-quotes">{participantVoices.slice(0,4).map(v=><VoiceCard key={v.name} voice={v}/>)}</div><div className="vix-drawer-actions"><a href="/voices-impact">See all voices <ArrowUpRight size={16}/></a><a href="/she-leads/apply">Applications & status <ArrowUpRight size={16}/></a></div></aside></div>}</div>
+ const [open,setOpen]=useState(false);
+ const closeRef=useRef(null),triggerRef=useRef(null);
+ useEffect(()=>{
+  if(!open)return;
+  const onKey=e=>{if(e.key==='Escape')setOpen(false)};
+  const oldOverflow=document.body.style.overflow;
+  document.addEventListener('keydown',onKey);
+  document.body.style.overflow='hidden';
+  closeRef.current?.focus();
+  return()=>{document.removeEventListener('keydown',onKey);document.body.style.overflow=oldOverflow;triggerRef.current?.focus()};
+ },[open]);
+ // Portal both the trigger and dialog to document.body so positioned parent
+ // sections and their stacking contexts cannot intercept the first click.
+ return createPortal(<div className="vix-drawer-shell">
+  {!open&&<button ref={triggerRef} className="vix-drawer-tab" type="button" onClick={()=>setOpen(true)} aria-label="Open participant voices" aria-expanded={false}><Quote size={17}/> <span>Participant voices</span></button>}
+  {open&&<div className="vix-drawer-overlay">
+   <button className="vix-drawer-scrim" type="button" aria-label="Close participant voices" onClick={()=>setOpen(false)}/>
+   <aside className="vix-drawer" id="vix-drawer-panel" role="dialog" aria-modal="true" aria-labelledby="vix-drawer-title">
+    <header><span className="vix-overline">She Leads · Participant voices</span><button type="button" ref={closeRef} onClick={()=>setOpen(false)} aria-label="Close participant voices"><X/></button></header>
+    <h2 id="vix-drawer-title">Hear it from the women.</h2><p>First-hand reflections from programme participants.</p>
+    <div className="vix-drawer-stats"><Metric value={voicesMetrics.rating} label="Average rating"/><Metric value={voicesMetrics.recommend} label="Would recommend"/></div>
+    <div className="vix-drawer-quotes">{participantVoices.slice(0,3).map(v=><VoiceCard key={v.name} voice={v}/>)}</div>
+    <div className="vix-drawer-actions"><a href="/voices-impact" onClick={()=>setOpen(false)}>Explore participant voices <ArrowUpRight size={16}/></a><a href="/she-leads/apply" onClick={()=>setOpen(false)}>Applications & status <ArrowUpRight size={16}/></a></div>
+   </aside>
+  </div>}
+ </div>,document.body);
 }
 export function VoicesImpactPage(){
  const [theme,setTheme]=useState('All voices');
