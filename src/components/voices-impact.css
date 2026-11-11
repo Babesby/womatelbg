@@ -178,3 +178,11 @@
 @media(max-width:690px){.vix-newHero{padding:112px 19px 72px;min-height:0}.vix-newHero h1{font-size:clamp(2.8rem,11vw,4.8rem)}.vix-heroMark{display:none}.vix-numbers{margin:-23px 14px 0;padding:12px 9px;border-radius:18px}.vix-liveMetric{padding:15px 8px;gap:9px}.vix-liveMetric strong{font-size:clamp(1.43rem,6vw,2.1rem)}.vix-liveMetric span{font-size:.67rem;line-height:1.35}.vix-bubbleLibrary{padding:65px 16px 75px}.vix-bubbleLibrary-head{align-items:stretch}.vix-bubbleLibrary-head h2{font-size:clamp(2.3rem,9vw,3.5rem)}.vix-countryFilter select{width:100%}.vix-bubbleGrid{columns:1}.vix-bubble{width:100%;min-height:0;padding:28px 25px;margin-bottom:23px;border-radius:27% 23% 31% 23%/18% 26% 21% 27%}.vix-bubble:nth-child(3n+2){transform:none}.vix-bubble blockquote{font-size:clamp(1.24rem,5vw,1.58rem)}.vix-libraryEnd{margin-top:60px}}
 @media(max-width:375px){.vix-liveMetric strong{font-size:1.3rem}.vix-liveMetric span{font-size:.6rem}.vix-newHero{padding-top:100px}}
 @media(prefers-reduced-motion:reduce){.vix-bubble{transition:none}.vix-newHero *{scroll-behavior:auto}}
+
+
+/* Expand long, consented evaluations without turning the thought bubbles into walls of text. */
+.vix-bubbleExpand{appearance:none;align-self:flex-start;display:inline-flex;align-items:center;gap:6px;min-height:36px;border:0;border-bottom:1px solid currentColor;padding:3px 0;background:transparent;color:inherit;font:inherit;font-size:.75rem;font-weight:850;cursor:pointer}
+.vix-bubbleExpand svg{transition:transform .2s ease}
+.vix-bubbleExpand[aria-expanded="true"] svg{transform:rotate(180deg)}
+.vix-bubbleExpand:focus-visible{outline:2px solid currentColor;outline-offset:4px}
+@media(prefers-reduced-motion:reduce){.vix-bubbleExpand svg{transition:none}}
