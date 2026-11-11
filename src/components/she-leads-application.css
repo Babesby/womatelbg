@@ -148,7 +148,22 @@
  .sla-mastActions{flex-direction:column;align-items:flex-start}
 }
 
-/* Keep application tracker eyebrow horizontally aligned with its icon. */
-.sla-statusLabel{display:inline-flex;align-items:center;gap:9px;max-width:100%;color:var(--forest)}
-.sla-statusLabel svg{width:19px;height:19px;flex:0 0 auto;margin:0}
-.sla-statusLabel span{font-size:.7rem;letter-spacing:.12em;font-weight:900;line-height:1.3;color:#5d756c}
+/* Accessible, responsive application tracker heading. */
+.sla-statusWrap{min-width:0}
+.sla-statusIntro{min-width:0}
+.sla-statusLabel{display:inline-flex;align-items:center;gap:10px;max-width:100%;vertical-align:middle;color:var(--ink)}
+.sla-statusLabel .sla-statusIcon{width:32px;height:32px;flex:0 0 32px;display:inline-flex;align-items:center;justify-content:center;border-radius:10px;background:#eaf3ed;color:var(--forest)}
+.sla-statusLabel .sla-statusIcon svg{display:block;width:18px;height:18px;margin:0}
+.sla-statusLabel>span:last-child{display:inline-block;font-size:.88rem;font-weight:750;line-height:1.3;letter-spacing:0;text-transform:none;color:#36594f;white-space:normal;overflow-wrap:normal}
+.sla-statusIntro h2{font-size:clamp(1.65rem,3.5vw,2.55rem);line-height:1.14;letter-spacing:-.04em;margin:16px 0 9px;overflow-wrap:normal}
+.sla-statusIntro p{font-size:.96rem;line-height:1.55;max-width:650px;margin:0;color:#5b756b}
+@media(max-width:720px){
+ .sla-statusWrap{padding:22px 18px;border-radius:20px}
+ .sla-statusLabel{gap:9px}
+ .sla-statusLabel .sla-statusIcon{width:30px;height:30px;flex-basis:30px;border-radius:9px}
+ .sla-statusLabel>span:last-child{font-size:.83rem}
+ .sla-statusIntro h2{font-size:clamp(1.7rem,7vw,2.1rem);margin:14px 0 9px}
+ .sla-statusIntro p{font-size:.89rem}
+ .sla-statusForm{margin-top:22px;gap:14px}
+}
+@media(max-width:360px){.sla-statusWrap{padding:20px 15px}.sla-statusIntro h2{font-size:1.65rem}}
