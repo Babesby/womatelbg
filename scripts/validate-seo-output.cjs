@@ -51,7 +51,7 @@ if(!childUrls['sitemap-publications.xml'].includes('https://www.womate.org/publi
 const allProfilesIndex=path.join(dist,'talent-profiles.html');
 if(!fs.existsSync(allProfilesIndex))fail('complete public Talent Discovery index is missing');
 const allProfilesHtml=fs.readFileSync(allProfilesIndex,'utf8');
-const allProfilesLinks=[...allProfilesHtml.matchAll(/<a\\s+href="(\\/talent\\/[^"]+)"/g)].map(m=>m[1]);
+const allProfilesLinks=[...allProfilesHtml.matchAll(/<a\s+href="(\/talent\/[^"]+)"/g)].map(m=>m[1]);
 if(allProfilesLinks.length!==manifest.talent_profiles||new Set(allProfilesLinks).size!==manifest.talent_profiles)fail('all-profiles index must link exactly once to every public Talent profile');
 if(!allProfilesHtml.includes('<link rel="canonical" href="https://www.womate.org/talent-profiles.html">'))fail('all-profile index missing canonical');
 if(!childUrls['sitemap-static.xml'].includes('https://www.womate.org/talent-profiles.html'))fail('all-profile index missing from static sitemap');
