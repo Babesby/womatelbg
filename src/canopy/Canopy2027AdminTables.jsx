@@ -54,7 +54,7 @@ export function AdminList({title,description,rows=[],kind,cohortKey,busy,onAcces
       <td>{badge(status)}</td>
       <td className="c27-rowAction"><button type="button" aria-expanded={open} aria-label={(open?'Close':'Open')+' controls for '+(row.name||'learner')} onClick={()=>setExpanded(open?'':rowKey(row))}>{open?'Close':'Review'} <ChevronDown size={16} className={open?'rotated':''}/></button></td>
      </tr>
-     {open&&<tr className="c27-expandedRow"><td colSpan={kind==='reviews'||kind==='certificates'?6:4}>
+     {open&&<tr className="c27-expandedRow"><td colSpan={kind==='certificates'?6:kind==='reviews'?5:4}>
       <div className="c27-expanded" role="region" aria-label={'Manage '+row.name}>
        {kind==='access'&&<><p className="c27-detailTitle">Learner access · {row.country||'Country not specified'}</p><p>Changes apply only to the selected 2027 cohort. Withdrawn records are retained.</p><div className="c27-inlineActions">{['active','paused','withdrawn'].map(s=><button type="button" key={s} disabled={busy||row.status===s} className={s==='withdrawn'?'c27-danger':''} onClick={()=>onAccess(row,s)}>{s==='active'?'Activate':s==='paused'?'Pause':'Withdraw'}</button>)}</div></>}
        {kind==='reviews'&&<><p className="c27-detailTitle">Module {String(row.module_id||'').padStart(2,'0')} · Attempt {row.attempt||1}</p><div className="c27-submissionText">{row.response||'No written response'}</div>{row.evidence_url&&/^https:\/\/[^\s]+$/i.test(row.evidence_url)&&<a href={row.evidence_url} target="_blank" rel="noopener noreferrer" className="c27-evidenceLink">View attached evidence <ArrowUpRight size={15}/></a>}{row.feedback&&<p className="c27-oldFeedback"><strong>Recorded feedback:</strong> {row.feedback}</p>}
@@ -71,5 +71,33 @@ export function AdminList({title,description,rows=[],kind,cohortKey,busy,onAcces
    })}</tbody>
   </table></div>}
   {shown<filtered.length&&<div className="c27-pagination"><span>Showing {visible.length} of {filtered.length} matching records</span><button type="button" onClick={()=>setShown(v=>Math.min(v+25,filtered.length))}>Show 25 more <ChevronDown size={16}/></button></div>}
+ </section>;
+}
+
+export function AdminResourceList({title,description,rows=[],kind='missions',busy=false,onRefresh,loading=false}){
+ const [query,setQuery]=useState('');
+ const [status,setStatus]=useState('all');
+ const [limit,setLimit]=useState(30);
+ const options=[...new Set(rows.map(r=>String(kind==='funding'?(r.archived?'archived':r.published?'published':'draft'):(r.status||'not recorded')).toLowerCase()))].sort();
+ const filtered=rows.filter(r=>{
+  const words=[r.title,r.name,r.group_name,r.status,r.summary,r.description,r.country].map(clean).join(' ');
+  const state=kind==='funding'?(r.archived?'archived':r.published?'published':'draft'):String(r.status||'not recorded').toLowerCase();
+  return (!query||words.includes(clean(query)))&&(status==='all'||state===status);
+ });
+ return <section className="c27-list" aria-label={title}>
+  <div className="c27-listHead"><div><h2>{title}</h2><p>{description}</p></div><span className="c27-total">{filtered.length} of {rows.length}</span></div>
+  <div className="c27-filterBar"><label className="c27-search"><Search size={17}/><span className="sr-only">Search {title}</span><input type="search" value={query} onChange={e=>{setQuery(e.target.value);setLimit(30)}} placeholder={kind==='funding'?'Search funding opportunities':'Search mission groups'}/></label><label className="c27-control"><span>Status</span><select value={status} onChange={e=>{setStatus(e.target.value);setLimit(30)}}><option value="all">All statuses</option>{options.map(s=><option value={s} key={s}>{label(s)}</option>)}</select></label><button type="button" className="c27-refresh" disabled={busy||loading} onClick={onRefresh}>{loading?'Refreshing…':'Refresh records'}</button></div>
+  {rows.length===0?<Empty title={'No '+(kind==='funding'?'funding calls':'mission groups')+' yet'} description="Only records linked to this selected cohort will appear here."/>:filtered.length===0?<Empty title="No matching records" description="Try another keyword or status filter."/>:<div className="c27-listTableWrap"><table className="c27-listTable"><thead><tr><th>{kind==='funding'?'Opportunity':'Mission group'}</th><th>Status</th><th>{kind==='funding'?'Applications':'Cohort'}</th></tr></thead><tbody>{filtered.slice(0,limit).map((r,i)=><tr key={r.id||i}><td><strong>{r.title||r.name||r.group_name||'Untitled'}</strong>{r.summary&&<small>{String(r.summary).slice(0,170)}</small>}</td><td>{badge(kind==='funding'?(r.archived?'archived':r.published?'published':'draft'):(r.status||'not recorded'))}</td><td>{kind==='funding'?Number(r.application_count||0):(r.cohort_key||'Selected cohort')}</td></tr>)}</tbody></table></div>}
+  {limit<filtered.length&&<div className="c27-pagination"><span>Showing {limit} of {filtered.length}</span><button onClick={()=>setLimit(x=>x+30)}>Show more <ChevronDown size={15}/></button></div>}
+ </section>;
+}
+export function AdminMailList({rows=[],busy=false}){
+ const [query,setQuery]=useState(''),[status,setStatus]=useState('all'),[limit,setLimit]=useState(25);
+ const filtered=rows.filter(r=>(status==='all'||r.status===status)&&(!query||clean(r.recipient_email).includes(clean(query))||clean(r.template_key).includes(clean(query))));
+ return <section className="c27-list" aria-label="Recent admissions emails">
+  <div className="c27-listHead"><div><h2>Admissions delivery ledger</h2><p>Messages and retry outcomes are scoped to the selected cohort.</p></div><span className="c27-total">{filtered.length} of {rows.length}</span></div>
+  <div className="c27-filterBar"><label className="c27-search"><Search size={17}/><span className="sr-only">Search recipient or message template</span><input type="search" placeholder="Search recipient or template" value={query} onChange={e=>{setQuery(e.target.value);setLimit(25)}}/></label><label className="c27-control"><span>Delivery status</span><select value={status} onChange={e=>{setStatus(e.target.value);setLimit(25)}}>{['all','pending','sent','failed','retrying'].map(s=><option value={s} key={s}>{s==='all'?'All statuses':label(s)}</option>)}</select></label></div>
+  {rows.length===0?<Empty title="No delivery records" description="Messages queued or delivered for this cohort will appear here."/>:filtered.length===0?<Empty title="No matching messages" description="Change the search or status."/>:<div className="c27-listTableWrap"><table className="c27-listTable"><thead><tr><th>Recipient</th><th>Message</th><th>Status</th><th>Attempts</th></tr></thead><tbody>{filtered.slice(0,limit).map(r=><tr key={r.id}><td>{r.recipient_email}</td><td>{label(r.template_key)}</td><td>{badge(r.status)}</td><td>{Number(r.attempts||0)}{r.last_error&&<small title={r.last_error}>Delivery error recorded</small>}</td></tr>)}</tbody></table></div>}
+  {limit<filtered.length&&<div className="c27-pagination"><span>Showing {limit} of {filtered.length}</span><button type="button" onClick={()=>setLimit(n=>n+25)}>Show more <ChevronDown size={16}/></button></div>}
  </section>;
 }
