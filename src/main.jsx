@@ -14,7 +14,7 @@ import WomateLearningPages from './learning/WomateLearningPages.jsx';
 import SheLeads2027Interest from "./components/SheLeads2027Interest.jsx";
 import SheLeadsAsia from './components/SheLeadsAsia.jsx';
 import SheLeadsApplication from './components/SheLeadsApplication.jsx';
-import {VoicesProofStrip,VoicesShowcase,VoicesDrawer,VoicesImpactPage} from './components/VoicesImpact.jsx';
+import {VoicesShowcase,VoicesDrawer,VoicesImpactPage} from './components/VoicesImpact.jsx';
 // WOMATE_SELECTED_ROUTE_GATE
 const __WOMATE_SELECTED_ROUTE__ = window.location.pathname.replace(/\/$/,'') === '/selected';
 
@@ -218,7 +218,6 @@ const testimonials=[
 function Voices(){const cards=[...testimonials,...testimonials];return <section className="voices voicesLive"><div className="voicesHead"><div><span className="voicesKicker">WORDS OF TRANSFORMATION</span><h3>Leadership sounds different when women are given room to own it.</h3></div><div className="voicesMeta"><strong>06</strong><span>voices from the<br/>WOMATE network</span></div></div><div className="voiceViewport"><div className="voiceTrack">{cards.map(([q,n,r,img],i)=><article className="voiceCard" key={i}><div className="voiceCardTop"><img src={img} alt={n+' · WOMATE She Leads alumna'} loading="lazy"/><Quote size={24}/></div><p>{q}</p><div className="voicePerson"><strong>{n}</strong><span>{r}</span></div></article>)}</div></div><div className="voiceHint"><span/> Hover to pause · alumni voices across Africa</div></section>}
 
 function Home(){const[reportOpen,setReportOpen]=useState(false);return <><Hero p={pages['/']} onExplore={()=>setReportOpen(true)}/><main id="content">
-<VoicesProofStrip/>
 <LiveImpactStats/>
 <section className="manifesto"><div className="manifestoMark">W</div><div><h3>We don't believe in token inclusion. We believe in full leadership.</h3></div><div><p className="lead">WOMATE is an organization that equips African women with technology, training and community support to move from climate participation to climate leadership.</p><div className="pulseLine"><span/>Community · Storytelling · Capacity building · Advocacy</div></div></section>
 <section className="programGrid">{programs.map((p,i)=><Link to={p[2]} className={'program p'+i} key={p[0]}><img className="programArt" src={p[4]} alt="" aria-hidden="true" loading="lazy"/><div className="programShade"/><div className="programTop"><div className="ico">{p[3]}</div><span>0{i+1}</span></div><div className="programCopy"><h4>{p[0]}</h4><p>{p[1]}</p><ArrowUpRight className="go"/></div></Link>)}</section>
