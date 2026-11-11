@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - womate-release-nov11
+      - cohort3-admin-polish-nov11
   workflow_dispatch:
 jobs:
   build:
