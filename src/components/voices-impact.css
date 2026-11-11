@@ -65,3 +65,66 @@
 .vix-card-featured .vix-profilePhoto{background:#0e4d4a;color:#c6ff52}
 .vix-showcase-head h2{max-width:1000px;text-wrap:balance}
 @media(max-width:600px){.vix-profilePhoto{width:38px;height:38px;flex-basis:38px}}
+
+
+/* 11 Nov 2026: tighter editorial showcase and reliable, discreet body-portal drawer. */
+.shePage>.vix-showcase{position:relative;z-index:1;margin:0 0 -20px;border-radius:0 0 34px 34px}
+.shePage>.vix-showcase+.sheFellows{padding-top:clamp(60px,8vw,105px);margin-top:0;position:relative}
+.vix-showcase{padding:clamp(56px,6vw,85px) clamp(22px,5vw,82px) clamp(38px,4vw,58px);background:radial-gradient(ellipse at 90% 9%,#145348 0,transparent 40%),#073b39}
+.vix-showcase-head{margin-bottom:23px;gap:26px}
+.vix-showcase-head h2{font-size:clamp(2.45rem,4.7vw,5rem);letter-spacing:-.055em;line-height:1.05;margin:0 0 12px}
+.vix-showcase-head p{font-size:clamp(.91rem,1.15vw,1rem);line-height:1.55}
+.vix-showcase-index{max-width:180px;flex-basis:180px}
+.vix-showcase-index strong{font-size:.94rem}
+.vix-chips{gap:8px;margin-bottom:20px}
+.vix-chips button{min-height:38px;padding:8px 14px;font-size:.73rem}
+.vix-cards{grid-template-columns:minmax(0,1.4fr) minmax(0,.85fr);gap:15px;align-items:stretch}
+.vix-card{padding:22px;border-radius:18px;box-shadow:0 9px 25px rgba(0,20,17,.07);gap:16px}
+.vix-card:hover{transform:translateY(-2px);box-shadow:0 13px 28px rgba(0,20,17,.1)}
+.vix-card-featured{padding:clamp(25px,3vw,42px);min-height:275px;border-radius:22px}
+.vix-card-featured blockquote{font-size:clamp(1.75rem,2.6vw,2.8rem);line-height:1.18}
+.vix-card-person{padding-top:12px}
+.vix-stack{display:flex;min-width:0;gap:0}
+.vix-stack .vix-card{flex:1;min-width:0;gap:14px;padding:23px}
+.vix-stack .vix-card blockquote{font-size:clamp(1.1rem,1.4vw,1.45rem);line-height:1.35}
+.vix-showcase-footer{margin:20px auto 0;gap:15px}
+.vix-controls{gap:11px}
+.vix-controls button{width:40px;height:40px}
+.vix-showcase-links{gap:20px}
+.vix-showcase-links .vix-pill{min-height:43px;padding:11px 17px;font-size:.79rem}
+.vix-showcase-links .vix-textlink{font-size:.78rem}
+.vix-drawer-shell{position:static;z-index:auto}
+.vix-drawer-tab{z-index:2147483000;top:47%;right:0;transform:translateY(-50%);padding:10px 12px;min-height:43px;gap:7px;border-radius:11px 0 0 11px;font-size:.77rem;line-height:1.2;box-shadow:0 6px 20px rgba(0,30,24,.15);touch-action:manipulation;isolation:isolate;pointer-events:auto}
+.vix-drawer-tab:hover{background:#d6ff83}
+.vix-drawer-overlay{z-index:2147483001;isolation:isolate}
+.vix-drawer-scrim{z-index:0}
+.vix-drawer{z-index:1;width:min(390px,100vw);padding:24px 22px;box-shadow:-12px 0 38px rgba(0,0,0,.17)}
+.vix-drawer h2{font-size:clamp(1.9rem,3vw,2.5rem);margin:18px 0 8px}
+.vix-drawer-stats{padding:14px 0;margin:16px 0}
+.vix-drawer .vix-card{padding:15px;border-radius:13px;gap:12px}
+.vix-drawer .vix-card blockquote{font-size:1rem;line-height:1.42}
+.vix-drawer-quotes{gap:10px}
+.vix-drawer-actions{gap:9px;margin:18px 0}
+.vix-drawer-actions a{padding:13px 14px}
+@media(max-width:900px){
+ .vix-cards{grid-template-columns:minmax(0,1fr)}
+ .vix-card-featured{min-height:260px}
+ .vix-stack{display:block}
+ .vix-stack .vix-card{min-height:0}
+ .vix-drawer-shell{display:none}
+}
+@media(max-width:600px){
+ .shePage>.vix-showcase{border-radius:0 0 22px 22px;margin-bottom:-12px}
+ .shePage>.vix-showcase+.sheFellows{padding-top:52px}
+ .vix-showcase{padding:48px 16px 36px}
+ .vix-showcase-head h2{font-size:clamp(2.2rem,9vw,3.5rem);margin-bottom:10px}
+ .vix-showcase-head{margin-bottom:20px}
+ .vix-chips{margin-bottom:15px}
+ .vix-card-featured{min-height:0;padding:23px 21px}
+ .vix-card-featured blockquote{font-size:clamp(1.58rem,6.6vw,2.2rem)}
+ .vix-stack .vix-card{padding:19px}
+ .vix-showcase-footer{margin-top:15px}
+ .vix-showcase-links{gap:11px;align-items:center}
+ .vix-showcase-links .vix-pill{width:auto;min-height:43px}
+}
+@media(prefers-reduced-motion:reduce){.vix-card,.vix-drawer-tab{transition:none!important}.vix-card:hover{transform:none}}
