@@ -355,7 +355,13 @@ async function main(){
     ]
    }
   };
-  writeRoute('/talent/'+p.slug,pageHtml(template,{canonical,title,description,body:talentBody(p,authored),type:'profile',image:publicPhoto(p.avatar_path),schema}));
+  // Inline only the same fields already visible through the PUBLIC directory API.
+  // This lets the React profile render its unique name, country, and focus on
+  // the very first paint instead of replacing crawler-visible HTML with a spinner.
+  const publicInitial={slug:p.slug,full_name:p.full_name,country:p.country,headline:p.headline,avatar_path:p.avatar_path,badge:p.badge,climate_interests:p.climate_interests,mission_name:p.mission_name,mission_completed:Boolean(p.mission_completed),all_modules_completed:Boolean(p.all_modules_completed),final_team_completed:Boolean(p.final_team_completed),spotlight_count:Number(p.spotlight_count)||0,collaboration_open:Boolean(p.collaboration_open)};
+  let profileHtml=pageHtml(template,{canonical,title,description,body:talentBody(p,authored),type:'profile',image:publicPhoto(p.avatar_path),schema});
+  profileHtml=insertHead(profileHtml,'<script id="womate-public-profile-data" type="application/json">'+schemaJson(publicInitial)+'</script>');
+  writeRoute('/talent/'+p.slug,profileHtml);
   const talentMapItem={url:canonical,lastmod:p.talent_updated_at||null};
   talentSitemap.push(talentMapItem);
   sitemap.push(talentMapItem);
