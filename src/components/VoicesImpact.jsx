@@ -90,8 +90,8 @@ function BubbleAvatar({voice,large=false}){
  return <span className="vix-initial" aria-hidden="true">{voice.name.charAt(0).toUpperCase()}</span>;
 }
 function VoiceBubble({voice,i,onRead}){
- const excerpt=voice.quote.length>150?voice.quote.slice(0,150).replace(/\s+\S*$/,'').trim()+'…':voice.quote;
- const hasMore=voice.quote.length>150;
+ const excerpt=voice.quote.length>112?voice.quote.slice(0,112).replace(/\s+\S*$/,'').trim()+'…':voice.quote;
+ const hasMore=voice.quote.length>112;
  return <article className={'vix-bubble vix-bubbleArtwork vix-bubbleArtwork-'+(i%7)}>
   <BubbleArtwork index={i}/>
   <div className="vix-bubbleInner">
