@@ -1351,3 +1351,25 @@ body.reportOpen{overflow:hidden}.impactReportLaunch{max-width:1260px;margin:26px
     padding-top:18px;
   }
 }
+
+
+/* Compact native-accordion mobile navigation */
+@media(max-width:960px){
+ .mobileNavAccordion{display:block;overflow-y:auto;overscroll-behavior:contain;max-height:calc(100dvh - 72px);padding-bottom:max(26px,env(safe-area-inset-bottom));background:#f9fcfa}
+ .mobileNavAccordion .mobileNavTop{padding:1px 0 15px}
+ .mobileNavAccordion .mobileNavTop>span{text-transform:none;font-size:.75rem;letter-spacing:.05em}
+ .mobileNavAccordion .mobileNavFeatured{display:flex!important;align-items:center!important;justify-content:flex-start!important;gap:10px;padding:15px 16px!important;margin:15px 0 9px!important;background:#eaf4ed!important;border-radius:13px!important;border:1px solid #d9eadc!important;color:#073b39!important;font-size:.94rem!important;font-weight:800!important}
+ .mobileNavAccordion .mobileNavFeatured svg:last-child{margin-left:auto}
+ .mobileNavAccordion .mobileNavFold{border-bottom:1px solid #dde9e2;margin:0}
+ .mobileNavAccordion .mobileNavFold>summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;min-height:62px;padding:17px 2px;color:#0e4d4a;font-size:1rem;font-weight:780;letter-spacing:-.015em}
+ .mobileNavAccordion .mobileNavFold>summary::-webkit-details-marker{display:none}
+ .mobileNavAccordion .mobileNavFold>summary svg{flex:0 0 auto;color:#6b9485;transition:transform .2s ease}
+ .mobileNavAccordion .mobileNavFold[open]>summary svg{transform:rotate(180deg)}
+ .mobileNavAccordion .mobileNavFold>summary:focus-visible{outline:2px solid #0e4d4a;outline-offset:3px;border-radius:5px}
+ .mobileNavAccordion .mobileNavFold .mobileNavGroup{padding:0 0 13px 13px;margin:0;border:0;display:grid;gap:0}
+ .mobileNavAccordion .mobileNavGroup a{padding:12px 8px 12px 12px!important;font-size:.9rem!important;line-height:1.35!important;font-weight:630!important;min-height:43px;border-left:2px solid #d9e6dd!important}
+ .mobileNavAccordion .mobileNavGroup a:hover,.mobileNavAccordion .mobileNavGroup a:focus-visible{background:#edf5ef!important;color:#073b39!important;border-radius:0 8px 8px 0}
+ .mobileNavAccordion .mobileDonate{margin-top:20px!important}
+}
+@media(max-width:420px){.mobileNavAccordion .mobileNavFold>summary{min-height:57px;font-size:.96rem}.mobileNavAccordion .mobileNavFeatured{font-size:.89rem!important}.mobileNavAccordion .mobileNavGroup a{font-size:.88rem!important}}
+@media(prefers-reduced-motion:reduce){.mobileNavAccordion .mobileNavFold>summary svg{transition:none}}
