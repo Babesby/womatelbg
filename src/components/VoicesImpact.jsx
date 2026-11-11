@@ -1,9 +1,9 @@
 import React,{useEffect,useRef,useState} from 'react';
 import {createPortal} from 'react-dom';
 import {evaluationVoices} from './evaluationVoices2026.js';
-import {BubbleArtwork} from './BubbleArtwork.jsx';
 import {ArrowUpRight,ChevronLeft,ChevronRight,ChevronDown,Quote,ShieldCheck,X} from 'lucide-react';
 import './voices-impact.css';
+import './voices-original-bubbles.css';
 
 // Source: WOMATE She Leads Africa Cohort 2 (2026) programme evaluation.
 // One explicitly labelled test row excluded; only "Yes" consent responses used.
@@ -89,15 +89,29 @@ function BubbleAvatar({voice,large=false}){
  if(linked?.avatarPath&&!broken)return <a className={'vix-profilePhoto'+(large?' vix-profilePhotoLarge':'')} href={'/talent/'+linked.profileSlug} aria-label={'View '+voice.name+' public Talent Discovery profile'}><img loading="lazy" alt="" src={'https://bwnwhsvssgponrzvwlpt.supabase.co/storage/v1/object/public/canopy-profile-images/'+linked.avatarPath} onError={()=>setBroken(true)}/><span aria-hidden="true">{voice.name.charAt(0).toUpperCase()}</span></a>;
  return <span className="vix-initial" aria-hidden="true">{voice.name.charAt(0).toUpperCase()}</span>;
 }
+const originalBubbles=[
+ {src:'/assets/voices/bubble-white.webp',dark:false},
+ {src:'/assets/voices/bubble-mint.webp',dark:false},
+ {src:'/assets/voices/bubble-sage.webp',dark:false},
+ {src:'/assets/voices/bubble-emerald.webp',dark:true},
+ {src:'/assets/voices/bubble-lime.webp',dark:false},
+ {src:'/assets/voices/bubble-forest.webp',dark:true},
+ {src:'/assets/voices/bubble-dark.webp',dark:true},
+];
 function VoiceBubble({voice,i,onRead}){
- const excerpt=voice.quote.length>112?voice.quote.slice(0,112).replace(/\s+\S*$/,'').trim()+'…':voice.quote;
- const hasMore=voice.quote.length>112;
- return <article className={'vix-bubble vix-bubbleArtwork vix-bubbleArtwork-'+(i%7)}>
-  <BubbleArtwork index={i}/>
-  <div className="vix-bubbleInner">
-   <span className="vix-bubbleCountry">{countryMap[voice.country]||voice.country}</span>
-   <blockquote>“{excerpt}”</blockquote>
-   <div className="vix-bubbleFooter"><div className="vix-bubblePerson"><BubbleAvatar voice={voice}/><div><strong>{voice.name}</strong><span>She Leads Africa</span></div></div>{hasMore&&<button className="vix-bubbleRead" type="button" aria-label={'Read full reflection from '+voice.name} onClick={()=>onRead(voice)}>Read more <ArrowUpRight size={14}/></button>}</div>
+ const bubble=originalBubbles[i%originalBubbles.length];
+ const excerpt=voice.quote.length>128?voice.quote.slice(0,128).replace(/\s+\S*$/,'').trim()+'…':voice.quote;
+ return <article className={'vix-originalBubble '+(bubble.dark?'vix-originalBubble-dark':'vix-originalBubble-light')}>
+  <div className="vix-originalBubble-stage">
+   <img className="vix-originalBubble-art" src={bubble.src} alt="" loading="lazy" decoding="async" width="900" height="600"/>
+   <blockquote className="vix-originalBubble-quote">“{excerpt}”</blockquote>
+  </div>
+  <div className="vix-originalBubble-meta">
+   <div className="vix-originalBubble-person">
+    <BubbleAvatar voice={voice}/>
+    <div className="vix-originalBubble-name"><strong>{voice.name}</strong><span>She Leads Africa</span></div>
+   </div>
+   <button className="vix-originalBubble-more" type="button" aria-label={'Read full reflection from '+voice.name} onClick={()=>onRead(voice)}>Read more <ArrowUpRight size={15} aria-hidden="true"/></button>
   </div>
  </article>;
 }
