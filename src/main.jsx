@@ -1358,7 +1358,7 @@ useEffect(()=>{
 
   const nextPath=(url.pathname.replace(/\/$/,'')||'/');
   // /selected has its own standalone boot path and must perform a real document navigation.
-  if(nextPath==='/selected')return;
+  if(nextPath==='/selected'||nextPath==='/talent-profiles.html')return;
 
   e.preventDefault();
 
