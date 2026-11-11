@@ -98,5 +98,12 @@
       "src": "/.*",
       "dest": "/index.html"
     }
-  ]
+  ],
+  "git": {
+    "deploymentEnabled": {
+      "main": true,
+      "womate-work": false,
+      "womate-work/**": false
+    }
+  }
 }
