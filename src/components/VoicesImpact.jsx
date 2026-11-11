@@ -90,7 +90,7 @@ function BubbleAvatar({voice,large=false}){
  return <span className="vix-initial" aria-hidden="true">{voice.name.charAt(0).toUpperCase()}</span>;
 }
 function VoiceBubble({voice,i,onRead}){
- const excerpt=voice.quote.length>150?voice.quote.slice(0,150).replace(/\\s+\\S*$/,'').trim()+'…':voice.quote;
+ const excerpt=voice.quote.length>150?voice.quote.slice(0,150).replace(/\s+\S*$/,'').trim()+'…':voice.quote;
  const hasMore=voice.quote.length>150;
  return <article className={'vix-bubble vix-bubbleArtwork vix-bubbleArtwork-'+(i%7)}>
   <BubbleArtwork index={i}/>
@@ -119,7 +119,7 @@ export function VoicesImpactPage(){
  const [shown,setShown]=useState(18);
  const [country,setCountry]=useState('All countries');
  const [activeVoice,setActiveVoice]=useState(null);
- const readButton=useRef(null);
+
  const countries=['All countries',...new Set(evaluationVoices.map(v=>countryMap[v.country]||v.country))].sort((a,b)=>a==='All countries'?-1:b==='All countries'?1:a.localeCompare(b));
  const filtered=evaluationVoices.filter(v=>country==='All countries'||(countryMap[v.country]||v.country)===country);
  const visible=filtered.slice(0,shown);
