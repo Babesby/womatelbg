@@ -56,6 +56,17 @@ if(allProfilesLinks.length!==manifest.talent_profiles||new Set(allProfilesLinks)
 if(!allProfilesHtml.includes('<link rel="canonical" href="https://www.womate.org/talent-profiles.html">'))fail('all-profile index missing canonical');
 if(!childUrls['sitemap-static.xml'].includes('https://www.womate.org/talent-profiles.html'))fail('all-profile index missing from static sitemap');
 
+// Verify that the new public Voices page is actually indexable in raw HTML.
+const voicesPath=path.join(dist,'voices-impact/index.html');
+if(!fs.existsSync(voicesPath))fail('Voices & Impact prerendered HTML is missing');
+const voicesHtml=fs.readFileSync(voicesPath,'utf8');
+if(!voicesHtml.includes('<link rel="canonical" href="https://www.womate.org/voices-impact">'))fail('Voices page missing canonical');
+if(!voicesHtml.includes('name="robots" content="index,follow'))fail('Voices page missing index/follow robots');
+if(!voicesHtml.includes('Reflections &amp; Experiences.'))fail('Voices page missing rendered heading');
+const voiceCount=(voicesHtml.match(/<article class="voice">/g)||[]).length;
+if(voiceCount<50)fail('Voices page must prerender at least 50 distinct participant reflections');
+if(!childUrls['sitemap-static.xml'].includes('https://www.womate.org/voices-impact'))fail('Voices page missing from static sitemap');
+
 const talentFiles=htmlFiles(path.join(dist,'talent'));
 if(talentFiles.length!==manifest.talent_profiles)fail('generated Talent profile file count does not match source count');
 
@@ -71,6 +82,7 @@ for(const file of [...talentFiles,...publicationFiles]){
  if(canonicalSeen.has(canon[0]))fail('duplicate canonical across generated pages: '+canon[0]);
  canonicalSeen.add(canon[0]);
  if(!html.includes('name="robots" content="index,follow'))fail(path.relative(dist,file)+' is missing index/follow robots metadata');
+ if(file.includes(path.sep+'talent'+path.sep)&&!html.includes('id="womate-public-profile-data"'))fail(path.relative(dist,file)+' is missing instant public profile payload');
  if(!/<h1[ >]/i.test(html))fail(path.relative(dist,file)+' is missing an H1');
  if(!/<script[^>]+application\/ld\+json/i.test(html))fail(path.relative(dist,file)+' is missing structured data');
 }
