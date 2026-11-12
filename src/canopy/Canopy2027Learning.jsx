@@ -5,6 +5,7 @@ import {getCanopy2027LessonActivity,getCanopy2027LessonSources} from './canopyCu
 import {getCanopy2027Curriculum} from './canopyCurricula2027';
 import {canopyPost2026Runtime} from './canopyCohortRuntime2027';
 import {getCohortWorkspace,completeCohortLesson,submitCohortAssignment} from './canopyLearningApi';
+import {primeCanopyFeedbackAudio,playCanopyCorrectSound,playCanopyErrorSound} from './canopyFeedbackAudio';
 import './Canopy2027Learning.css';
 
 const go=path=>{const target=String(path||'/canopy/classroom');const current=window.location.pathname+window.location.search+window.location.hash;if(current!==target)window.history.pushState({},'',target);window.dispatchEvent(new CustomEvent('womate:navigate',{detail:{path:target}}));window.scrollTo({top:0,left:0,behavior:'auto'})};
@@ -57,7 +58,7 @@ function Lesson({cohort,module,lessonId,data,reload,tester,session}){
 function Quiz({module}){
  const [answers,setAnswers]=useState({}),[result,setResult]=useState(null);
  const questions=module.lessons.map(l=>l.check);
- const submit=e=>{e.preventDefault();let score=0;questions.forEach((q,i)=>{if(Number(answers[i])===q.answer)score++});setResult({score,total:questions.length})};
+ const submit=e=>{e.preventDefault();primeCanopyFeedbackAudio();let score=0;questions.forEach((q,i)=>{if(Number(answers[i])===q.answer)score++});setResult({score,total:questions.length});if(score===questions.length)playCanopyCorrectSound();else playCanopyErrorSound()};
  return <main className="canopyQuiz"><button className="canopyBack" onClick={()=>go(`/canopy/course/she-leads/${module.id}/${module.lessons.at(-1).id}`)}><ArrowLeft/> Back to module</button><section><span className="canopyEyebrow">MODULE {module.id} · KNOWLEDGE CHECK</span><h1>{module.title}</h1><p>Check your understanding. You can review the module and try again.</p><form onSubmit={submit}>{questions.map((q,i)=><fieldset key={i}><legend>{i+1}. {q.question}</legend>{q.options.map((o,j)=><label key={o}><input type="radio" name={`q${i}`} value={j} checked={String(answers[i])===String(j)} onChange={e=>setAnswers({...answers,[i]:e.target.value})}/><span>{o}</span></label>)}</fieldset>)}<button className="canopyPrimary" disabled={Object.keys(answers).length!==questions.length}>Check answers</button></form>{result&&<div className="canopyQuizResult"><strong>{result.score}/{result.total}</strong><div><h3>{result.score===result.total?'Strong work.':'Keep building the foundation.'}</h3><p>{result.score===result.total?'You answered every question correctly.':'Review any concepts you missed, then try again when ready.'}</p><button className="canopyTextBtn" onClick={()=>go('/canopy/assignments')}>Go to assignments <ArrowRight/></button></div></div>}</section></main>;
 }
 
