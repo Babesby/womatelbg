@@ -23,11 +23,13 @@ check(card.includes('verifySelectedLearner'),'Selection image requires backend c
 check(card.includes('downloadCanvas')&&card.includes('shareCanvas'),'Existing full-resolution download/share preserved');
 check(scratch.includes('/selected'),'Scratch reveal leads to 2026-compatible card generator');
 check(learning.includes('cohortResultCelebrationGif'),'Cohort 2 result celebration integration retained');
+check(learning.includes("sub.status==='needs_revision'"),'2027 revision state matches backend');
 check(learning.includes('playCanopyCorrectSound')&&learning.includes('playCanopyErrorSound'),'Cohort 2 learning audio feedback integration retained');
 check(runtime.includes('speakerGraphics:Object.freeze({})'),'Missing speaker assets remain unfilled, not invented');
 const help=read('src/canopy/AskCanopyWidget.jsx');
 const helpSource=read('src/canopy/canopyHelp2027.js');
 check(help.includes('matchCanopy2027HelpQuestion'),'Ask Canopy routes 2027 to cohort-specific answers');
 check(help.includes('matchCanopyHelpQuestion(text)'),'Cohort 2 help answers remain intact');
-for(const key of programmeKeys)check(helpSource.includes(key),'2027 Help recognises '+key);
+check(helpSource.includes('getCanopy2027Curriculum(cohortKey)'),'2027 Help derives actual region-specific curriculum');
+check(helpSource.includes('canopyPost2026Runtime(cohortKey)'),'2027 Help derives actual region-specific schedule');
 if(process.exitCode)process.exit(process.exitCode);
