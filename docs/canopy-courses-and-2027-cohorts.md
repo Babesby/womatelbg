@@ -3,7 +3,7 @@
 ## Separation of programmes
 - She Leads Climate Mentorship Cohort 2 (2026): unchanged existing production classroom, assignments, certificate logic and membership data.
 - She Leads Africa Cohort 3: `she-leads-climate-c3-2027`, free, mid-September 2027 applications, October 2027 sessions, five teaching weeks.
-- She Leads Asia Cohort 1: `she-leads-asia-c1-2027`, free, applications from mid-March through April 2027, five teaching weeks at a later confirmed date.
+- She Leads Asia Cohort 1: `she-leads-asia-c1-2027`, free, configured applications 1 January–15 February 2027, cohort orientation from 1 March, five teaching weeks beginning 8 March and graduation target 12 April 2027. Admissions remain closed until deliberately activated.
 - Short WOMATE Courses: separate catalogue, 16 lessons and four assessments each in the first two proposed specialist courses. Published publicly as Coming Soon; payment/enrolment disabled.
 - Approved Expert Masterclasses: separate private instructor drafts, manual instructor and course reviews, public listing only after approval. Payment/enrolment remain disabled.
 
@@ -36,7 +36,7 @@ Curriculum is original WOMATE-authored teaching text; the following sources are 
 Tester routes /canopy/test/cohort-preview and /canopy/test/cohort-workspace preview all weeks without date restrictions. Read-only: no learner assignments, attendance, certificate issuance or other changes. Learners require a real active 2027 cohort membership for submissions and progress; instructors must be manually approved before drafting expert courses. Draft courses are not listed publicly. RLS protects the data tables and authenticated RPCs check roles and owners.
 
 ## Administrative controls
-Admin cohort selector powers 2027-specific Operations, Access, Review assignments, Attendance, Certificates and Reports. Other mature Cohort 2 operational modules remain isolated until their adapters are migrated; do not represent them as fully ported. A future admissions workflow is needed before applicants can be placed into these cohorts. Course certificate issuance is manually approved, no automatic PDF generated. CDKN partnership remains proposed and is not represented as signed.
+Admin cohort selector powers 2027-specific Operations, Access, Review assignments, Attendance, Certificates and Reports. Other mature Cohort 2 operational modules remain isolated until their adapters are migrated; do not represent them as fully ported. Admissions and email/scratch-card workflows now exist but require separate official-cohort testing, monitoring and acceptance verification before general release. Course certificate issuance is manually approved, no automatic PDF generated. CDKN partnership remains proposed and is not represented as signed.
 
 ## Production acceptance checklist
 1. Sign in as an admin; select Cohort 2, C3, Asia C1 and verify no cross-cohort learner leakage.
@@ -48,4 +48,4 @@ Admin cohort selector powers 2027-specific Operations, Access, Review assignment
 7. Perform accessibility checks (keyboard focus, screen reader labels, mobile, slow internet, high contrast) and regional content review.
 8. Confirm external partners, official programme launch dates and financial rules before opening enrolment.
 
-No registration, short-course payments, expert payouts, teaching-session scheduling, automated final certificate PDFs or applicant selection are enabled by this build.
+The specialist course payment and expert payout flows, full confirmed live-session schedule, and automated certificate PDFs remain out of scope. The cohort admissions implementation is configured but admissions are presently closed. Selection must be verified end to end before real batches.

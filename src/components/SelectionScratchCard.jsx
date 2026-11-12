@@ -33,6 +33,7 @@ export default function SelectionScratchCard(){
  const down=e=>{painting.current=true;e.currentTarget.setPointerCapture(e.pointerId);scratch(e)};
  async function decide(accept){
   if(!offer||busy)return;setBusy(true);setStatus('');setError('');
+  if(offer.preview){setBusy(false);if(accept)setFinished(true);else setStatus('Preview declined. No real admission was affected.');return;}
   try{const r=await acceptCohortOffer(offer.reference,offer.email,offer.code,accept);
    if(!r?.ok)throw Error(r?.message||'Your response could not be saved');
    if(accept){localStorage.setItem('womate_admission_reference',offer.reference);localStorage.setItem('womate_admission_email',offer.email);setFinished(true)}
@@ -46,7 +47,7 @@ export default function SelectionScratchCard(){
   <h1 id="wsc-title">Your selection card.</h1><p className="wsc-intro">A new chapter in climate leadership starts here.</p>
   {busy&&!offer&&<p role="status">Verifying your invitation…</p>}
   {error&&<p className="wsc-error" role="alert">{error}</p>}
-  {offer&&<><p>Dear {offer.name?.split(' ')[0]||'participant'}, congratulations on your selection.</p>
+  {offer&&<><p>Dear {offer.name?.split(' ')[0]||'participant'}, {offer.preview?'congratulations on your selection.':'congratulations on your selection.'}</p>
    <div className="wsc-card"><span>YOUR PERSONAL OFFER CODE</span><div className="wsc-reveal"><strong aria-label={revealed?'Your offer code':'Offer code concealed'}>{revealed?offer.code:'••••••••••••'}</strong>{!revealed&&<canvas ref={canvas} className="wsc-canvas" aria-label="Scratch to reveal your offer code" onPointerDown={down} onPointerMove={e=>{if(painting.current)scratch(e)}} onPointerUp={()=>painting.current=false} onPointerCancel={()=>painting.current=false}/>}</div>
    {!revealed?<button type="button" className="wsc-textButton" onClick={()=>setRevealed(true)}>Reveal without scratching</button>:<small role="status">Code revealed. Keep it private.</small>}
    </div>
@@ -57,7 +58,7 @@ export default function SelectionScratchCard(){
     <p>Optional: <a href={CHANNEL} target="_blank" rel="noopener noreferrer">Follow the WOMATE WhatsApp channel <ExternalLink size={13}/></a></p>
    </div>
    {!finished&&<div className="wsc-actions"><button type="button" disabled={busy||!revealed||!requirements.youtube||!requirements.group} onClick={()=>decide(true)} className="wsc-primary">Accept my offer <ArrowRight size={17}/></button><button type="button" disabled={busy||!revealed} className="wsc-decline" onClick={()=>decide(false)}>Decline offer</button></div>}
-   {finished&&<div className="wsc-success"><CheckCircle2/><h2>Offer accepted.</h2><p>Continue to Canopy with the same application email to complete onboarding.</p><a href="/canopy/signup" className="wsc-primary">Continue to Canopy <ArrowRight size={16}/></a></div>}
+   {finished&&<div className="wsc-success"><CheckCircle2/><h2>Offer accepted.</h2><p>Continue to Canopy with the same application email to complete onboarding.</p>{!offer.preview&&<a href="/canopy/signup" className="wsc-primary">Continue to Canopy <ArrowRight size={16}/></a>}</div>}
    {status&&<p role="status">{status}</p>}
   </>}
   </div><footer>WOMATE · Women in Climate · <a href="https://www.womate.org">womate.org</a></footer>

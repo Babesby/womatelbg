@@ -44,34 +44,54 @@ function emailHtml(heading,body,ctaLabel,ctaUrl,decisionNote,selectedAsia=false,
   return '<!doctype html><html><body style="margin:0;background:#f5f8f6;font-family:Arial,Helvetica,sans-serif;color:#073B39"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f5f8f6;padding:30px 14px"><tr><td align="center"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:640px;background:#fff;border:1px solid #dce8e1;border-radius:22px;overflow:hidden">'+topBanner+'<tr><td style="background:#073B39;padding:24px 28px;color:#fff"><div style="font-size:11px;font-weight:800;letter-spacing:.12em;color:#C6FF52">'+(selectedAsia?'WOMATE · SHE LEADS ASIA · COHORT 1 · 2027':'WOMATE · SHE LEADS CLIMATE MENTORSHIP')+'</div></td></tr><tr><td style="padding:34px 28px">'+hello+'<h1 style="font-size:30px;line-height:1.08;margin:0 0 16px;color:#073B39">'+esc(heading)+'</h1><div style="font-size:15px;line-height:1.7;color:#38584e">'+esc(body).replace(/\r?\n/g,"<br>")+'</div>'+note+cta+'<p style="margin:30px 0 0;padding-top:20px;border-top:1px solid #e0e9e4;font-size:12px;line-height:1.55;color:#6a7e77">WOMATE · Driving inclusive climate action with technology<br><a href="https://www.womate.org" style="color:#073B39">womate.org</a> · womatead@gmail.com</p></td></tr></table></td></tr></table></body></html>';
 }
 
+// RFC 2047 subjects and base64 MIME bodies prevent broken UTF-8 characters.
+function mimeBase64(value){
+ const bytes=new TextEncoder().encode(String(value||""));let data="";
+ for(const byte of bytes)data+=String.fromCharCode(byte);
+ return btoa(data);
+}
+function mimeLines(value){return mimeBase64(value).match(/.{1,76}/g)?.join("\r\n")||""}
+function mimeSubject(value){
+ const clean=String(value||"").replace(/[\r\n]+/g," ").trim();
+ if(/^[\x20-\x7e]*$/.test(clean))return clean;
+ const encoder=new TextEncoder(),words=[];let part="";
+ for(const char of clean){
+  if(part&&encoder.encode(part+char).length>42){words.push("=?UTF-8?B?"+mimeBase64(part)+"?=");part=""}
+  part+=char;
+ }
+ if(part)words.push("=?UTF-8?B?"+mimeBase64(part)+"?=");
+ return words.join(" ");
+}
 async function sendGmail(accessToken,to,subject,html){
-  const text=html.replace(/<[^>]+>/g," ").replace(/\s+/g," ").trim();
-  const boundary="womate_"+crypto.randomUUID().replaceAll("-","");
-  const raw=[
-    "From: "+WOMATE_GMAIL_NAME+" <"+WOMATE_GMAIL_FROM+">",
-    "To: "+to,
-    "Subject: "+subject,
-    "MIME-Version: 1.0",
-    'Content-Type: multipart/alternative; boundary="'+boundary+'"',
-    "",
-    "--"+boundary,
-    'Content-Type: text/plain; charset="UTF-8"',
-    "Content-Transfer-Encoding: 8bit",
-    "",
-    text,
-    "",
-    "--"+boundary,
-    'Content-Type: text/html; charset="UTF-8"',
-    "Content-Transfer-Encoding: 8bit",
-    "",
-    html,
-    "",
-    "--"+boundary+"--"
-  ].join("\r\n");
-  const r=await fetch("https://gmail.googleapis.com/gmail/v1/users/me/messages/send",{method:"POST",headers:{Authorization:"Bearer "+accessToken,"Content-Type":"application/json"},body:JSON.stringify({raw:b64url(raw)})});
-  const data=await r.json();
-  if(!r.ok)throw new Error((data.error&&data.error.message)||"Gmail send failed");
-  return data;
+ const text=html.replace(/<br\s*\/?>/gi,"\n").replace(/<\/p>/gi,"\n\n")
+   .replace(/<[^>]+>/g," ").replace(/&amp;/g,"&").replace(/&lt;/g,"<")
+   .replace(/&gt;/g,">").replace(/&quot;/g,'"').replace(/&#39;/g,"'").trim();
+ const boundary="womate_"+crypto.randomUUID().replaceAll("-","");
+ const raw=[
+  "From: "+mimeSubject(WOMATE_GMAIL_NAME)+" <"+WOMATE_GMAIL_FROM+">",
+  "To: "+String(to).replace(/[\r\n]/g,""),
+  "Subject: "+mimeSubject(subject),
+  "MIME-Version: 1.0",
+  'Content-Type: multipart/alternative; boundary="'+boundary+'"',
+  "",
+  "--"+boundary,
+  'Content-Type: text/plain; charset="UTF-8"',
+  "Content-Transfer-Encoding: base64",
+  "",
+  mimeLines(text),
+  "",
+  "--"+boundary,
+  'Content-Type: text/html; charset="UTF-8"',
+  "Content-Transfer-Encoding: base64",
+  "",
+  mimeLines(html),
+  "",
+  "--"+boundary+"--"
+ ].join("\r\n");
+ const r=await fetch("https://gmail.googleapis.com/gmail/v1/users/me/messages/send",{method:"POST",headers:{Authorization:"Bearer "+accessToken,"Content-Type":"application/json"},body:JSON.stringify({raw:b64url(raw)})});
+ const data=await r.json();
+ if(!r.ok)throw new Error((data.error&&data.error.message)||"Gmail send failed");
+ return data;
 }
 
 Deno.serve(async function(req){
@@ -128,14 +148,15 @@ Deno.serve(async function(req){
       const expiryTime=new Date(offerTime.getTime()+7*24*60*60*1000);
       if(row.template_key==="selected")p.offer_deadline=expiryTime.toUTCString();
       const selectedAsia=row.template_key==="selected"&&row.cohort_key==="she-leads-asia-c1-2027";
+      const testPreview=selectedAsia&&p.test_preview===true&&p.participant_view!==true;
       if(selectedAsia&&!p.scratch_path)throw new Error("Missing secure Asia selection scratch link; delivery held");
-      const subject=selectedAsia?"Congratulations — Your WOMATE She Leads Asia selection":apply(tpl.subject_template,p);
-      const heading=selectedAsia?"Congratulations. You have been selected.":apply(tpl.heading,p);
+      const subject=testPreview?"[TEST PREVIEW — NOT AN ADMISSION] WOMATE She Leads Asia selection":selectedAsia?"Congratulations — Your WOMATE She Leads Asia selection":apply(tpl.subject_template,p);
+      const heading=testPreview?"Your selection experience — preview":selectedAsia?"Congratulations. You have been selected.":apply(tpl.heading,p);
       const bodyText=selectedAsia?[
-        "We are delighted to offer you a place in She Leads Asia · Cohort 1, 2027.",
+        testPreview?"TEST PREVIEW ONLY — This message demonstrates the selection and scratch-card experience. It is not an admissions decision or a reserved place.":"We are delighted to offer you a place in She Leads Asia · Cohort 1, 2027.",
         "",
         "YOUR SELECTION — ACTION REQUIRED",
-        "Open your private selection card to reveal your personal code, then accept your offer by "+p.offer_deadline+". Please keep the link and code private.",
+        testPreview?"Open your private scratch card to see how a selected applicant reveals their code. The acceptance action is a demonstration only. No admission or enrolment will result.":"Open your private selection card to reveal your personal code, then accept your offer by "+p.offer_deadline+". Please keep the link and code private.",
         "",
         "MANDATORY NEXT STEPS",
         "1. Subscribe to the official WOMATE YouTube channel: https://www.youtube.com/@womategh",
@@ -152,7 +173,7 @@ Deno.serve(async function(req){
         "With warm congratulations,",
         "The WOMATE Team"
       ].join("\n"):apply(tpl.body_template,p);
-      const ctaLabel=selectedAsia?"Open my secure selection card":apply(tpl.cta_label||"",p);
+      const ctaLabel=testPreview?"Open test scratch card":selectedAsia?"Open my secure selection card":apply(tpl.cta_label||"",p);
       const ctaUrl=selectedAsia?p.scratch_path:apply(tpl.cta_path||"",p);
       const html=emailHtml(heading,bodyText,ctaLabel,ctaUrl,String(p.decision_note||""),selectedAsia,row.recipient_name);
       const msg=await sendGmail(accessToken,row.recipient_email,subject,html);

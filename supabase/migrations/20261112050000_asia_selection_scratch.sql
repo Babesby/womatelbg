@@ -59,7 +59,8 @@ begin
  end if;
  return jsonb_build_object('ok',true,'reference',a.application_reference,'email',a.email,
   'name',a.full_name,'cohort','She Leads Asia · Cohort 1, 2027',
-  'code',v_code,'expires_at',a.offer_expires_at);
+  'code',v_code,'expires_at',a.offer_expires_at,
+  'preview',a.reviewer_note_private='WOMATE_EMAIL_FLOW_TEST');
 end $$;
 revoke all on function public.womate_reveal_selection_scratch(text) from public;
 grant execute on function public.womate_reveal_selection_scratch(text) to anon,authenticated;

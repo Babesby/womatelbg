@@ -195,6 +195,21 @@ const manager=canManageCanopy(viewer);
  const items=manager?managerItems:(tester?(testerRuntime?learnerItems:[...learnerItems,['/canopy/test/cohort-preview','Explore 2027 cohorts',Globe2],['/canopy/test/mission-closed','Explore past missions',ShieldCheck]]):staffItems);
  return <aside className={'canopySidebar '+(open?'open':'')}>
   <div className="canopySideTop"><Brand compact/><button className="canopySideClose" onClick={()=>setOpen(false)}><X/></button></div>
+  {!tester&&!manager&&!isAnyCanopyStaff(viewer)&&viewer?.cohorts?.filter(c=>Number(c.cohort_year)>=2027&&['active','pending'].includes(c.membership_status)).length>1&&
+    <div className="canopyTesterCohortContext">
+      <label htmlFor="canopyLearnerCohortSelect">My cohort</label>
+      <select id="canopyLearnerCohortSelect" value={runtimeCohort?.cohort_key||''}
+        onChange={e=>{
+          const allowed=(viewer.cohorts||[]).some(c=>c.cohort_key===e.target.value&&Number(c.cohort_year)>=2027&&['active','pending'].includes(c.membership_status));
+          if(!allowed)return;
+          try{sessionStorage.setItem('canopy_learner_cohort_key_'+viewer.user.id,e.target.value)}catch{}
+          window.location.assign('/canopy/classroom');
+        }}>
+        {viewer.cohorts.filter(c=>Number(c.cohort_year)>=2027&&['active','pending'].includes(c.membership_status))
+          .map(c=><option value={c.cohort_key} key={c.cohort_key}>{c.region||c.display_name} · {c.cohort_year} · {c.membership_status}</option>)}
+      </select>
+      <small>Progress and assignments stay separate for each cohort.</small>
+    </div>}
   {tester&&<div className="canopyTesterCohortContext"><label htmlFor="canopyTesterCohortSelect">Tester cohort</label><select id="canopyTesterCohortSelect" value={testerCohort} onChange={e=>{const value=setCanopyTesterCohort(e.target.value);go('/canopy/classroom');setOpen(false)}}><option value="2026">She Leads Climate Mentorship · Cohort 2 · 2026</option><option value="she-leads-climate-c3-2027">She Leads Climate Mentorship · Cohort 3 · 2027</option><option value="she-leads-asia-c1-2027">She Leads Climate Mentorship · Cohort 1 · 2027 · Asia</option></select><small>This switches your full tester workspace. Tester access remains unrestricted.</small></div>}
   <nav aria-label={manager?'WOMATE admin navigation':'Canopy navigation'}>{items.map(([p,n,I])=><React.Fragment key={p}>{manager&&p==='/canopy/manage'&&<div className="canopySidebarSectionTitle">PROGRAMME OPERATIONS</div>}{manager&&p==='/canopy/manage/talent'&&<div className="canopySidebarSectionTitle">TALENT DISCOVERY</div>}{manager&&p==='/canopy/manage/courses'&&<div className="canopySidebarSectionTitle">LEARNING & GROWTH</div>}<button className={route()===p?'active':''} onClick={()=>{go(p);setOpen(false)}}><I size={18}/><span>{n}</span></button></React.Fragment>)}</nav>
   <div className="canopySideBottom"><small>{manager?'WOMATE OPERATIONS':isCanopyOperationsStaff(viewer)?'WOMATE DELIVERY TEAM':tester?(testerRuntime?'TESTER · SHE LEADS CLIMATE MENTORSHIP':'PROGRAMME EXPLORATION'):runtimeCohort?'SHE LEADS CLIMATE MENTORSHIP':CANOPY_BRAND.programme}</small><b>{manager?'All WOMATE programmes · Select your cohort above':isCanopyOperationsStaff(viewer)?teamRoleLabel(viewer.staffAccess?.role):tester?(testerRuntime?canopyTesterCohortLabel(testerCohort)+' · unrestricted':'All modules · all assignments · unrestricted'):runtimeCohort?(runtimeCohort.cohort_key==='she-leads-asia-c1-2027'?'Cohort 1 · 2027 · Asia':'Cohort 3 · 2027 · Africa'):CANOPY_BRAND.cohort}</b></div>

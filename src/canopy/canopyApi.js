@@ -205,6 +205,17 @@ export async function getViewer(session){
   try{const rows=await rest('rpc/canopy_my_cohorts',{token:fresh.access_token,method:'POST',body:{}});cohorts=Array.isArray(rows)?rows:[]}catch{}
   try{activeCohort=await rest('rpc/canopy_my_active_cohort',{token:fresh.access_token,method:'POST',body:{}})}catch{}
   try{runtimeCohort=await rest('rpc/canopy_my_runtime_cohort',{token:fresh.access_token,method:'POST',body:{}})}catch{}
+  // Cohort switching never grants membership; the server returns only this user's enrolments.
+  try{
+    const saved=sessionStorage.getItem('canopy_learner_cohort_key_'+userId);
+    const match=cohorts.find(c=>c.cohort_key===saved&&Number(c.cohort_year)>=2027&&['active','pending'].includes(c.membership_status));
+    if(match)runtimeCohort={
+      cohort_key:match.cohort_key,programme_key:match.programme_key,
+      display_name:match.display_name,cohort_year:match.cohort_year,
+      region:match.region,access_model:match.access_model,
+      status:match.cohort_status,membership_status:match.membership_status
+    };
+  }catch{}
   return {session:fresh,user:fresh.user,profile:profiles?.[0]||null,enrollments:enrollments||[],announcements:announcements||[],withdrawal,alumni,teaching,cohorts,activeCohort,runtimeCohort};
 }
 export async function getMyRuntimeCohort(session){
