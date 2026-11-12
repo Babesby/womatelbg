@@ -11,6 +11,7 @@ import PublicationsPage from './publications/PublicationsPage.jsx';
 import PublicTalentDiscovery from './talent/PublicTalentDiscovery.jsx';
 import WomateLearningPages from './learning/WomateLearningPages.jsx';
 
+import NewsletterSignupPopup from './components/NewsletterSignupPopup.jsx';
 import SheLeads2027Interest from "./components/SheLeads2027Interest.jsx";
 import SheLeadsAsia from './components/SheLeadsAsia.jsx';
 import SheLeadsApplication from './components/SheLeadsApplication.jsx';
@@ -1415,6 +1416,7 @@ return <>
 {publicTalent?<PublicTalentDiscovery/>:publicLearning?<WomateLearningPages key={path} path={path}/>:publicAdmissions?<SheLeadsApplication cohortKey={path.startsWith('/she-leads/asia')?'she-leads-asia-c1-2027':'she-leads-climate-c3-2027'}/>:p.type==='voices'?<VoicesImpactPage/>:p.type==='home'?<Home/>:p.type==='she'?<SheLeads/>:p.type==='asia'?<SheLeadsAsia HeroVisual={HeroVisual}/>:p.type==='wok'?<WokAction/>:p.type==='research'?<ResearchPage/>:p.type==='publications'?<PublicationsPage/>:p.type==='circle'?<CirclePage/>:p.type==='minds'?<ResilientMinds/>:p.type==='honours'?<HonoursPage/>:p.type==='leadership'?<LeadershipPage/>:p.type==='volunteer'?<WomateerPage/>:p.type==='merch'?<MerchandisePage/>:p.type==='funding'?<FundingPage/>:p.type==='donate'?<DonationPage/>:p.type==='privacy'?<LegalPage kind="privacy"/>:p.type==='terms'?<LegalPage kind="terms"/>:<Standard p={p}/>}
 {(path==='/'||path==='/she-leads')&&<VoicesDrawer/>}
 <Footer/>
+<NewsletterSignupPopup enabled={!publicAdmissions&&!publicationDetail&&path!=='/privacy'&&path!=='/terms'}/>
 </>
 }
 
