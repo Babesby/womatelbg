@@ -46,13 +46,31 @@ export function mountSelectedDirectory(){
   section.className='selected-directory';
   section.dataset.womateSelectedDirectory='true';
   section.innerHTML=`
+    <details class="selected-directory-disclosure">
+      <summary class="selected-directory-summary">
+        <span class="selected-directory-summary-icon" aria-hidden="true">⌄</span>
+        <span class="selected-directory-summary-content">
+          <span class="selected-directory-kicker">SHE LEADS · SELECTED PARTICIPANTS</span>
+          <strong>Find your name and selection code.</strong>
+          <span>2026 Cohort 2 · 993 selected participants</span>
+        </span>
+      </summary>
+      <div class="selected-directory-expanded">
+      <div class="selected-directory-cohort-picker">
+        <label for="womate-selected-cohort">Choose a cohort</label>
+        <select id="womate-selected-cohort">
+          <option value="2026">Africa · Cohort 2 · 2026 (993 selected)</option>
+          <option value="africa2027">Africa · Cohort 3 · 2027</option>
+          <option value="asia2027">Asia · Cohort 1 · 2027</option>
+        </select>
+      </div>
     <div class="selected-directory-head">
       <div>
-        <div class="selected-directory-kicker">SHE LEADS · COHORT 2 · 2026</div>
+        <div class="selected-directory-kicker" data-directory-kicker>SHE LEADS · COHORT 2 · 2026</div>
         <h2>Find your name and selection code.</h2>
         <p>Filter by country or search your name. Only selected participant names, countries and selection codes are shown here.</p>
       </div>
-      <div class="selected-directory-stat"><strong data-directory-count>—</strong><span>selected participants</span></div>
+      <div class="selected-directory-stat"><strong data-directory-count>993</strong><span>selected participants · 2026</span></div>
     </div>
     <div class="selected-directory-tools">
       <label class="selected-directory-search">
@@ -62,15 +80,24 @@ export function mountSelectedDirectory(){
       <div class="selected-directory-country-label">Filter by country</div>
       <div class="selected-directory-countries" role="list" aria-label="Filter selected participants by country"></div>
     </div>
-    <div class="selected-directory-status" aria-live="polite">Loading selected participants…</div>
+    <div class="selected-directory-status" aria-live="polite">Expand the archive to browse Cohort 2 selections.</div>
     <div class="selected-directory-grid"></div>
     <button type="button" class="selected-directory-more" hidden>Show more</button>
+    </div>
+    </details>
   `;
 
   const form=host.querySelector('form');
   const anchor=form?.closest('section')||form?.parentElement;
   if(anchor&&anchor.parentElement===host)host.insertBefore(section,anchor);else host.prepend(section);
 
+  const disclosure=section.querySelector('.selected-directory-disclosure');
+  const selector=section.querySelector('#womate-selected-cohort');
+  const tools=section.querySelector('.selected-directory-tools');
+  const stat=section.querySelector('.selected-directory-stat');
+  const kicker=section.querySelector('[data-directory-kicker]');
+  let directoryLoaded=false;
+  let directoryLoading=false;
   const status=section.querySelector('.selected-directory-status');
   const grid=section.querySelector('.selected-directory-grid');
   const countries=section.querySelector('.selected-directory-countries');
@@ -155,16 +182,44 @@ export function mountSelectedDirectory(){
   search.addEventListener('input',()=>{limit=PAGE_SIZE;renderRows();});
   more.addEventListener('click',()=>{limit+=PAGE_SIZE;renderRows();});
 
-  loadDirectory().then(data=>{
-    rows=data.filter(r=>r&&r.fullName&&r.selectionCode);
-    safeText(totalEl,rows.length.toLocaleString());
-    renderCountries();
-    renderRows();
-  }).catch(err=>{
-    status.textContent='We could not load the selected-participant directory. Please refresh the page or contact WOMATE.';
-    status.classList.add('is-error');
-    console.error('[WOMATE selected directory]',err);
-  });
+  const load2026=()=>{
+    if(directoryLoaded||directoryLoading)return;
+    directoryLoading=true;
+    status.textContent='Loading 2026 selected participants…';
+    status.classList.remove('is-error');
+    loadDirectory().then(data=>{
+      rows=data.filter(r=>r&&r.fullName&&r.selectionCode);
+      directoryLoaded=true;
+      safeText(totalEl,rows.length.toLocaleString());
+      if(selector.value==='2026'){
+        renderCountries();
+        renderRows();
+      }
+    }).catch(err=>{
+      status.textContent='We could not load the 2026 selected-participant directory. Close and reopen to retry.';
+      status.classList.add('is-error');
+      console.error('[WOMATE selected directory]',err);
+    }).finally(()=>{directoryLoading=false});
+  };
+  const switchCohort=()=>{
+    const selected=selector.value;
+    const isArchive=selected==='2026';
+    tools.hidden=!isArchive;
+    stat.hidden=!isArchive;
+    grid.hidden=!isArchive;
+    more.hidden=!isArchive||rows.length<=limit;
+    status.classList.remove('is-error');
+    if(isArchive){
+      kicker.textContent='SHE LEADS · COHORT 2 · 2026';
+      if(directoryLoaded){renderCountries();renderRows()}else{load2026()}
+    }else{
+      kicker.textContent=selected==='asia2027'?'SHE LEADS · ASIA · COHORT 1 · 2027':'SHE LEADS · AFRICA · COHORT 3 · 2027';
+      status.textContent='For the 2027 cohorts, your selection code is private and is sent in your official admission email. Enter that code in the verification form to create your card. The public 2026 archive is preserved here.';
+      more.hidden=true;
+    }
+  };
+  selector.addEventListener('change',switchCohort);
+  disclosure.addEventListener('toggle',()=>{if(disclosure.open)switchCohort()});
   return true;
 }
 

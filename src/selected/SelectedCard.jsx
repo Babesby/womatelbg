@@ -73,6 +73,7 @@ export default function SelectedCard(){
         );
 
       setVerified(result);
+      window.dispatchEvent(new CustomEvent('womate:selected-verified',{detail:{verified:true,programmeSlug:result.programmeSlug,cohortLabel:result.cohortLabel}}));
     }catch(err){
       setError(
         err?.message||
@@ -179,6 +180,7 @@ export default function SelectedCard(){
   }
 
   function reset(){
+    window.dispatchEvent(new CustomEvent('womate:selected-verified',{detail:{verified:false}}));
     setVerified(null);
     setPhoto(null);
     setCode('');

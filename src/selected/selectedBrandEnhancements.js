@@ -1,13 +1,60 @@
 import './selectedBrandEnhancements.css';
 
-const TAGS='#WOMATE #SheLeads #SheLeads2026 #WomenInClimate #ClimateLeadership #WomenLeadingClimateAction #AfricanWomenInClimate #ClimateAction #InclusiveClimateAction';
-function valByLabel(label){const els=[...document.querySelectorAll('input')]; const x=els.find(el=>{const p=el.closest('label,div');return p&&p.textContent.toLowerCase().includes(label.toLowerCase())});return x?.value?.trim()||''}
-function learnerName(){return valByLabel('full name')||valByLabel('name')||''}
-function caption(){const n=learnerName();return `${n?`${n} — `:""}I’m excited to share that I have been selected for the She Leads Climate Mentorship Programme — Cohort 2 by WOMATE.\n\nOver the coming weeks, I’ll be strengthening my climate knowledge, leadership and capacity to turn learning into meaningful action.\n\nI’m looking forward to learning, connecting and contributing alongside an incredible community of emerging women climate leaders across Africa.\n\nDriving inclusive climate action with technology.`;}
-function copy(t,b){navigator.clipboard?.writeText(t).then(()=>{const old=b.textContent;b.textContent='Copied';setTimeout(()=>b.textContent=old,1600)});}
-function mount(){if(document.querySelector('.selected-share-kit'))return; const host=document.querySelector('main')||document.body; const box=document.createElement('section');box.className='selected-share-kit';box.innerHTML=`<div class="selected-share-eyebrow">READY TO SHARE</div><h2>Suggested caption</h2><p class="selected-share-note">Make it yours before you post.</p><div class="selected-caption-text"></div><div class="selected-share-actions"><button type="button" class="selected-copy-caption">Copy caption</button></div><h3>Suggested hashtags</h3><div class="selected-hashtags"></div><div class="selected-share-actions"><button type="button" class="selected-copy-tags">Copy hashtags</button></div></section>`;host.appendChild(box);const ct=box.querySelector('.selected-caption-text'),ht=box.querySelector('.selected-hashtags');ct.textContent=caption();ht.textContent=TAGS;box.querySelector('.selected-copy-caption').onclick=e=>copy(caption(),e.currentTarget);box.querySelector('.selected-copy-tags').onclick=e=>copy(TAGS,e.currentTarget);document.addEventListener('input',()=>ct.textContent=caption());}
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(mount,250));else setTimeout(mount,250);
+// Captions reflect the verified cohort, never the unverified user input.
+const SHARE={
+ 'she-leads-2026':{
+   programme:'She Leads Climate Mentorship Programme — Cohort 2, 2026',
+   community:'an inspiring community of emerging women climate leaders across Africa',
+   hashtags:'#WOMATE #SheLeads #SheLeads2026 #WomenInClimate #ClimateLeadership #WomenLeadingClimateAction #AfricanWomenInClimate #ClimateAction #InclusiveClimateAction'
+ },
+ 'she-leads-climate-c3-2027':{
+   programme:'She Leads Climate Mentorship Programme — Africa Cohort 3, 2027',
+   community:'a growing community of emerging women climate leaders across Africa',
+   hashtags:'#WOMATE #SheLeads #SheLeads2027 #SheLeadsAfrica #WomenInClimate #ClimateLeadership #AfricanWomenInClimate #ClimateAction #WomenLeadingClimateAction'
+ },
+ 'she-leads-asia-c1-2027':{
+   programme:'She Leads Climate Mentorship Programme — Asia Cohort 1, 2027',
+   community:'a community of emerging women climate leaders across Asia',
+   hashtags:'#WOMATE #SheLeads #SheLeads2027 #SheLeadsAsia #WomenInClimate #ClimateLeadership #AsianWomenInClimate #ClimateAction #WomenLeadingClimateAction'
+ }
+};
+let currentSelection=null;
+function selectedShare(){return SHARE[currentSelection?.programmeSlug]||null}
+function caption(){
+ const cohort=selectedShare();
+ if(!cohort)return "Your WOMATE selection is worth celebrating. Verify your personal selection code above to see a suggested caption tailored to your cohort.";
+ return `I’m excited to share that I have been selected for the ${cohort.programme} by WOMATE.
 
+Over the coming weeks, I’ll be strengthening my understanding of climate issues, leadership skills and ability to turn learning into practical action.
+
+I’m looking forward to learning, connecting and contributing alongside ${cohort.community}.
+
+This is the beginning of a journey, and I intend to make the opportunity count.`;
+}
+function hashtags(){
+ return selectedShare()?.hashtags||'#WOMATE #SheLeads #SheLeads2027 #WomenInClimate #ClimateLeadership #ClimateAction';
+}
+function copy(value,button){
+ if(!navigator.clipboard?.writeText)return;
+ navigator.clipboard.writeText(value).then(()=>{const old=button.textContent;button.textContent='Copied';setTimeout(()=>button.textContent=old,1600)}).catch(()=>{button.textContent='Select and copy the text above';});
+}
+function mount(){
+ if(document.querySelector('.selected-share-kit'))return;
+ const host=document.querySelector('main')||document.body;
+ const box=document.createElement('section');box.className='selected-share-kit';
+ box.innerHTML=`<div class="selected-share-eyebrow">READY TO SHARE</div><h2>Suggested caption</h2><p class="selected-share-note">Make it yours before you post.</p><div class="selected-caption-text"></div><div class="selected-share-actions"><button type="button" class="selected-copy-caption">Copy caption</button></div><h3>Suggested hashtags</h3><div class="selected-hashtags"></div><div class="selected-share-actions"><button type="button" class="selected-copy-tags">Copy hashtags</button></div></section>`;
+ host.appendChild(box);
+ const ct=box.querySelector('.selected-caption-text'),ht=box.querySelector('.selected-hashtags');
+ const update=()=>{ct.textContent=caption();ht.textContent=hashtags()};
+ update();
+ box.querySelector('.selected-copy-caption').onclick=e=>copy(caption(),e.currentTarget);
+ box.querySelector('.selected-copy-tags').onclick=e=>copy(hashtags(),e.currentTarget);
+ window.addEventListener('womate:selected-verified',event=>{
+   currentSelection=event.detail?.verified?event.detail:null;
+   update();
+ });
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(mount,250));else setTimeout(mount,250);
 
 // WOMATE_CARD_BRAND_OVERLAY_V2
 // Replaces the generic top-right motif on the generated 1080x1080 card
