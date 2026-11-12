@@ -5,7 +5,7 @@ export default function CourseCompletionSurvey({course,viewer}){
  const [done,setDone]=useState(()=>{try{return localStorage.getItem(keyFor(course))==='submitted'}catch{return false}});
  const [rating,setRating]=useState(0),[recommend,setRecommend]=useState(''),[comment,setComment]=useState(''),[busy,setBusy]=useState(false),[error,setError]=useState('');
  async function submit(e){e.preventDefault();if(!rating||!recommend||busy)return;setBusy(true);setError('');
-  try{const response=await fetch('/api/engagement',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+(viewer.session?.access_token||'')},body:JSON.stringify({event:'course_feedback',course_id:course.id,course:course.title,rating,recommend,comment:comment.trim()})});const result=await response.json().catch(()=>({}));if(!response.ok||!result.ok)throw new Error(result.error||'Could not submit feedback');try{localStorage.setItem(keyFor(course),'submitted')}catch{}setDone(true)}
+  try{const response=await fetch('/api/engagement',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+(viewer.session?.access_token||'')},body:JSON.stringify({event:'course_feedback',course_id:course.id,course_slug:course.slug,course:course.title,rating,recommend,comment:comment.trim()})});const result=await response.json().catch(()=>({}));if(!response.ok||!result.ok)throw new Error(result.error||'Could not submit feedback');try{localStorage.setItem(keyFor(course),'submitted')}catch{}setDone(true)}
   catch(err){setError(err.message)}finally{setBusy(false)}
  }
  return <section style={{marginTop:30,padding:'clamp(22px,4vw,34px)',background:'#eef7f1',border:'1px solid #d3e5d9',borderRadius:18,color:'#073b39'}} aria-labelledby="course-survey-title">

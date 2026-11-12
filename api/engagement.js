@@ -63,6 +63,16 @@ module.exports=async function handler(req,res){
    if(!userRes.ok)return response(res,401,{ok:false,error:'Session expired. Sign in again.'});
    const user=await userRes.json();
    if(!user?.id)return response(res,401,{ok:false,error:'Invalid session'});
+   // Verify completion against Canopy's authenticated course-read RPC rather than
+   // trusting a browser flag or a visitor-supplied course title.
+   const slug=clean(body.course_slug);
+   if(!/^[a-z0-9][a-z0-9-]{0,150}$/.test(slug))return response(res,400,{ok:false,error:'Invalid course'});
+   const read=await fetch(url+'/rest/v1/rpc/womate_course_read',{method:'POST',headers:{apikey:anon,Authorization:auth,'Content-Type':'application/json'},body:JSON.stringify({p_slug:slug})});
+   if(!read.ok)return response(res,403,{ok:false,error:'Course completion could not be verified'});
+   const workspace=await read.json();
+   const lessons=workspace.lessons||[],progress=workspace.progress||[],assessments=workspace.assessments||[],submissions=workspace.submissions||[];
+   if(workspace.locked||workspace.course?.preview||workspace.course?.title!==course||!lessons.length||progress.length<lessons.length||!assessments.every(a=>submissions.some(s=>s.assessment_id===a.id&&s.status==='approved')))
+     return response(res,403,{ok:false,error:'Course completion is not yet verified'});
    await eventSheet(access);
    const prior=await sheets(access,'/values/'+encodeURIComponent("'Campaign Events'!A2:D"));
    // One review per authenticated email and course. Check stored submissions before appending.
