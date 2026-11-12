@@ -4,3 +4,24 @@
 .selected-directory-status{margin:18px 0;color:#58706d;font-size:13px}.selected-directory-status.is-error{color:#b42318}.selected-directory-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.selected-directory-card{display:flex;flex-direction:column;min-width:0;padding:18px;border:1px solid rgba(14,77,74,.11);border-radius:20px;background:#fff;box-shadow:0 10px 30px rgba(8,63,62,.04)}.selected-directory-card-top{display:flex;align-items:center;gap:8px;color:#66807c;font-size:11px;font-weight:750;text-transform:uppercase;letter-spacing:.06em}.selected-directory-card-flag{font-size:19px}.selected-directory-card h3{margin:12px 0 16px;color:#083F3E;font-size:18px;line-height:1.15;letter-spacing:-.02em}.selected-directory-code{margin-top:auto;padding:12px 13px;border-radius:14px;background:#F4F8F4}.selected-directory-code span{display:block;color:#6c817e;font-size:9px;font-weight:850;text-transform:uppercase;letter-spacing:.11em}.selected-directory-code strong{display:block;margin-top:4px;color:#0E4D4A;font-size:17px;letter-spacing:.12em}.selected-directory-actions{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:10px}.selected-directory-actions button,.selected-directory-more{border:0;border-radius:13px;background:#C6FF52;color:#083F3E;padding:11px 14px;font:inherit;font-size:12px;font-weight:850;cursor:pointer}.selected-directory-actions button.is-secondary{background:#edf3ef}.selected-directory-actions button:hover,.selected-directory-more:hover{transform:translateY(-1px)}.selected-directory-more{display:block;margin:22px auto 0;padding:13px 24px;background:#0E4D4A;color:#fff}.selected-directory-more[hidden]{display:none}.selected-directory-empty{grid-column:1/-1;padding:30px;border:1px dashed rgba(14,77,74,.2);border-radius:18px;text-align:center;color:#58706d}
 @media(max-width:900px){.selected-directory-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.selected-directory-head{grid-template-columns:1fr}.selected-directory-stat{width:max-content}}
 @media(max-width:580px){.selected-directory{width:calc(100% - 18px);padding:22px 16px;border-radius:26px}.selected-directory-grid{grid-template-columns:1fr}.selected-directory h2{font-size:36px}.selected-directory-stat{min-width:0}.selected-directory-card{padding:16px}}
+
+/* Collapsed cohort archive: tidy by default, accessible when expanded. */
+.selected-directory{padding:clamp(12px,2vw,20px);margin:clamp(20px,3vw,34px) auto}
+.selected-directory-disclosure{min-width:0}
+.selected-directory-summary{list-style:none;display:flex;align-items:center;gap:17px;cursor:pointer;padding:clamp(14px,2vw,20px);border-radius:20px;outline-offset:4px}
+.selected-directory-summary::-webkit-details-marker{display:none}
+.selected-directory-summary:focus-visible{outline:3px solid #0e4d4a}
+.selected-directory-summary:hover{background:rgba(198,255,82,.12)}
+.selected-directory-summary-content{display:grid;gap:7px;min-width:0;color:#083f3e}
+.selected-directory-summary-content strong{font:700 clamp(20px,2.4vw,30px)/1.16 Georgia,serif;letter-spacing:-.025em}
+.selected-directory-summary-content>span:last-child{font-size:12px;color:#5a7069}
+.selected-directory-summary-icon{order:2;margin-left:auto;width:38px;height:38px;display:grid;place-items:center;flex:0 0 38px;border:1px solid rgba(14,77,74,.18);border-radius:50%;background:#fff;color:#0e4d4a;font-size:26px;line-height:1;transition:transform .2s ease}
+.selected-directory-disclosure[open] .selected-directory-summary-icon{transform:rotate(180deg)}
+.selected-directory-expanded{padding:0 clamp(14px,2vw,20px) clamp(16px,2vw,22px)}
+.selected-directory-cohort-picker{display:grid;gap:9px;margin:20px 0 28px;max-width:520px}
+.selected-directory-cohort-picker label{font-size:11px;font-weight:850;letter-spacing:.12em;text-transform:uppercase;color:#0e4d4a}
+.selected-directory-cohort-picker select{height:51px;min-width:0;width:100%;border:1px solid rgba(14,77,74,.22);border-radius:13px;background:#fff;color:#073b39;font:600 14px/1.3 inherit;padding:0 15px;cursor:pointer}
+.selected-directory-cohort-picker select:focus-visible{outline:3px solid #c6ff52;outline-offset:2px}
+.selected-directory-tools[hidden],.selected-directory-stat[hidden],.selected-directory-grid[hidden],.selected-directory-more[hidden]{display:none!important}
+@media(max-width:580px){.selected-directory-summary{padding:12px 10px;gap:10px}.selected-directory-summary-content strong{font-size:22px}.selected-directory-summary-icon{width:34px;height:34px;flex-basis:34px}.selected-directory-expanded{padding:0 9px 14px}}
+@media(prefers-reduced-motion:reduce){.selected-directory-summary-icon{transition:none}}
