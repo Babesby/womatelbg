@@ -52,6 +52,26 @@ export default function CanopySelectionCodes({session,cohort=null}){
   const[generated,setGenerated]=useState(null);
   const[busy,setBusy]=useState('');
   const[msg,setMsg]=useState('');
+  const[directoryState,setDirectoryState]=useState(null);
+  const[directoryBusy,setDirectoryBusy]=useState(false);
+  const is2027Directory=['she-leads-climate-c3-2027','she-leads-asia-c1-2027'].includes(cohort?.cohort_key);
+
+  const loadDirectoryState=async()=>{
+    if(!is2027Directory){setDirectoryState(null);return}
+    try{setDirectoryState(await rpc(session,'womate_2027_admin_directory_state',{p_cohort:cohort.cohort_key}))}
+    catch(e){setMsg('Directory status: '+e.message)}
+  };
+  const publishDirectory=async publish=>{
+    if(!is2027Directory)return;
+    if(publish&&!window.confirm('Publish the '+cohort.display_name+' selected-participant directory? Only accepted participants who explicitly opted in will be listed. Personal selection codes will stay private.'))return;
+    setDirectoryBusy(true);setMsg('');
+    try{
+      await rpc(session,'womate_2027_admin_publish_selected_directory',{p_cohort:cohort.cohort_key,p_publish:publish});
+      await loadDirectoryState();
+      setMsg(publish?'The selected-participant showcase is now published. Only consented, accepted participants are visible.':'This cohort’s public selected-participant showcase is now hidden.');
+    }catch(e){setMsg(e.message)}finally{setDirectoryBusy(false)}
+  };
+
 
   const load=async()=>{
     try{
@@ -73,6 +93,7 @@ export default function CanopySelectionCodes({session,cohort=null}){
       cohort_label:isLegacy?'Cohort 2 · 2026':(cohort?.display_name||'')
     }));
     load();
+    loadDirectoryState();
   },[cohort?.cohort_key]);
   const acceptedLabels=new Set([
     cohort?.display_name,
@@ -203,6 +224,26 @@ export default function CanopySelectionCodes({session,cohort=null}){
         <p className="canopyFormMsg" role="status">
           {msg}
         </p>
+      )}
+
+      {is2027Directory&&(
+        <section className="canopy2027-directory-admin" style={{background:'#f7fbf6',border:'1px solid #c8dfca',borderRadius:18,padding:'24px',marginBottom:'24px'}}>
+          <span className="canopyEyebrow">PUBLIC SELECTED-PARTICIPANT SHOWCASE · 2027</span>
+          <h2 style={{margin:'10px 0'}}>Publish selected participants</h2>
+          <p>The showcase reads verified selections directly from WOMATE’s admissions database. A learner’s name and country are visible only after they accept their offer, explicitly choose to be listed, and you publish this cohort. Private selection codes, emails and phone numbers are never published.</p>
+          <div style={{display:'flex',gap:20,flexWrap:'wrap',margin:'16px 0',fontSize:13}}>
+            <span><b>{directoryState?.selected_notified??'—'}</b> selected and notified</span>
+            <span><b>{directoryState?.opted_in??'—'}</b> opted in</span>
+            <span><b>{directoryState?.accepted_opted_in??'—'}</b> eligible to display</span>
+          </div>
+          <p><strong>Status: {directoryState?.published?'Published':'Not published'}</strong></p>
+          <div style={{display:'flex',gap:10,flexWrap:'wrap'}}>
+            <button type="button" className="canopyPrimary" disabled={directoryBusy||directoryState?.published===true} onClick={()=>publishDirectory(true)}>Publish approved showcase</button>
+            <button type="button" className="canopySecondary" disabled={directoryBusy||!directoryState?.published} onClick={()=>publishDirectory(false)}>Unpublish cohort showcase</button>
+            <button type="button" className="canopySecondary" disabled={directoryBusy} onClick={loadDirectoryState}>Refresh status</button>
+          </div>
+          <p style={{fontSize:12,marginTop:14,color:'#537465'}}>Publication is manual and separate for Africa and Asia. Historical 2026 records are unchanged.</p>
+        </section>
       )}
 
       {generated&&(

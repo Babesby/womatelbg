@@ -47,3 +47,18 @@ export async function verifySelectedLearner(email,code){
   return data;
 }
 
+
+export async function updateSelected2027ListingConsent(email,code,optIn){
+  const result=await rpc('womate_2027_set_public_selection_consent',{
+    p_email:String(email||'').trim().toLowerCase(),
+    p_code:String(code||'').trim().toUpperCase(),
+    p_opt_in:Boolean(optIn)
+  });
+  if(result!==true)throw new Error('Could not update your selection-directory preference. Recheck your email and private selection code.');
+  return true;
+}
+
+export const getSelected2027ListingConsent=(email,code)=>rpc('womate_2027_public_selection_consent_status',{
+  p_email:String(email||'').trim().toLowerCase(),
+  p_code:String(code||'').trim().toUpperCase()
+});
