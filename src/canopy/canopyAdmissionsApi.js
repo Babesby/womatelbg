@@ -64,3 +64,5 @@ export const getAdmissionsAnalytics=(cohortKey,session)=>rpc('womate_admin_admis
 export const getAdmissionsEmailQueue=(cohortKey,session)=>rpc('womate_admin_email_queue_summary',{p_cohort:cohortKey},session);
 export const getAdmissionsMailStatus=(session)=>rpc('womate_admin_mail_status',{},session);
 export const setAdmissionsMailEnabled=(enabled,session)=>rpc('womate_admin_set_mail_enabled',{p_enabled:Boolean(enabled)},session);
+
+export const revealSelectionScratch=token=>rpc('womate_reveal_selection_scratch',{p_token:token});

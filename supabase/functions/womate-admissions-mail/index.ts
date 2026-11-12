@@ -36,10 +36,12 @@ async function gmailAccessToken(){
   return data.access_token;
 }
 
-function emailHtml(heading,body,ctaLabel,ctaUrl,decisionNote){
+function emailHtml(heading,body,ctaLabel,ctaUrl,decisionNote,selectedAsia=false,recipientName=''){
   const note=decisionNote?'<div style="margin:22px 0;padding:16px 18px;border-radius:14px;background:#f2f7f4;color:#2f5147;line-height:1.55"><strong>WOMATE note</strong><br>'+esc(decisionNote)+'</div>':"";
   const cta=ctaLabel&&ctaUrl?'<p style="margin:26px 0 0"><a href="'+esc(ctaUrl)+'" style="display:inline-block;background:#073B39;color:#fff;text-decoration:none;font-weight:700;padding:12px 18px;border-radius:999px">'+esc(ctaLabel)+'</a></p>':"";
-  return '<!doctype html><html><body style="margin:0;background:#f5f8f6;font-family:Arial,Helvetica,sans-serif;color:#073B39"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f5f8f6;padding:30px 14px"><tr><td align="center"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:640px;background:#fff;border:1px solid #dce8e1;border-radius:22px;overflow:hidden"><tr><td style="background:#073B39;padding:24px 28px;color:#fff"><div style="font-size:11px;font-weight:800;letter-spacing:.12em;color:#C6FF52">WOMATE · SHE LEADS CLIMATE MENTORSHIP</div></td></tr><tr><td style="padding:34px 28px"><h1 style="font-size:30px;line-height:1.08;margin:0 0 16px;color:#073B39">'+esc(heading)+'</h1><div style="font-size:15px;line-height:1.7;color:#38584e">'+esc(body).replace(/\\r?\\n/g,"<br>")+'</div>'+note+cta+'<p style="margin:30px 0 0;padding-top:20px;border-top:1px solid #e0e9e4;font-size:12px;line-height:1.55;color:#6a7e77">WOMATE · Driving inclusive climate action with technology<br><a href="https://www.womate.org" style="color:#073B39">womate.org</a> · womatead@gmail.com</p></td></tr></table></td></tr></table></body></html>';
+  const topBanner=selectedAsia?'<tr><td><img src="https://www.womate.org/assets/asia/selected-congratulations.avif" alt="Congratulations! You have been selected" width="640" style="width:100%;max-width:640px;height:auto;display:block;border:0"/></td></tr>':'';
+  const hello=selectedAsia?'<p style="margin:0 0 18px;font-size:16px;color:#073B39;font-weight:700">Dear '+esc(recipientName?.split(' ')[0]||'participant')+',</p>':'';
+  return '<!doctype html><html><body style="margin:0;background:#f5f8f6;font-family:Arial,Helvetica,sans-serif;color:#073B39"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f5f8f6;padding:30px 14px"><tr><td align="center"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:640px;background:#fff;border:1px solid #dce8e1;border-radius:22px;overflow:hidden">'+topBanner+'<tr><td style="background:#073B39;padding:24px 28px;color:#fff"><div style="font-size:11px;font-weight:800;letter-spacing:.12em;color:#C6FF52">WOMATE · SHE LEADS CLIMATE MENTORSHIP</div></td></tr><tr><td style="padding:34px 28px">'+hello+'<h1 style="font-size:30px;line-height:1.08;margin:0 0 16px;color:#073B39">'+esc(heading)+'</h1><div style="font-size:15px;line-height:1.7;color:#38584e">'+esc(body).replace(/\r?\n/g,"<br>")+'</div>'+note+cta+'<p style="margin:30px 0 0;padding-top:20px;border-top:1px solid #e0e9e4;font-size:12px;line-height:1.55;color:#6a7e77">WOMATE · Driving inclusive climate action with technology<br><a href="https://www.womate.org" style="color:#073B39">womate.org</a> · womatead@gmail.com</p></td></tr></table></td></tr></table></body></html>';
 }
 
 async function sendGmail(accessToken,to,subject,html){
@@ -125,12 +127,34 @@ Deno.serve(async function(req){
       const offerTime=new Date();
       const expiryTime=new Date(offerTime.getTime()+7*24*60*60*1000);
       if(row.template_key==="selected")p.offer_deadline=expiryTime.toUTCString();
-      const subject=apply(tpl.subject_template,p);
-      const heading=apply(tpl.heading,p);
-      const bodyText=apply(tpl.body_template,p);
-      const ctaLabel=apply(tpl.cta_label||"",p);
-      const ctaUrl=apply(tpl.cta_path||"",p);
-      const html=emailHtml(heading,bodyText,ctaLabel,ctaUrl,String(p.decision_note||""));
+      const selectedAsia=row.template_key==="selected"&&row.cohort_key==="she-leads-asia-c1-2027";
+      if(selectedAsia&&!p.scratch_path)throw new Error("Missing secure Asia selection scratch link; delivery held");
+      const subject=selectedAsia?"Congratulations — Your WOMATE She Leads Asia selection":apply(tpl.subject_template,p);
+      const heading=selectedAsia?"Congratulations. You have been selected.":apply(tpl.heading,p);
+      const bodyText=selectedAsia?[
+        "We are delighted to offer you a place in She Leads Asia · Cohort 1, 2027.",
+        "",
+        "YOUR SELECTION — ACTION REQUIRED",
+        "Open your private selection card to reveal your personal code, then accept your offer by "+p.offer_deadline+". Please keep the link and code private.",
+        "",
+        "MANDATORY NEXT STEPS",
+        "1. Subscribe to the official WOMATE YouTube channel: https://www.youtube.com/@womategh",
+        "2. Join the official Asia Cohort WhatsApp group: https://chat.whatsapp.com/Kl9MuJX2TrVEzKoCSx8DOU",
+        "",
+        "OPTIONAL",
+        "Follow the WOMATE WhatsApp channel: https://whatsapp.com/channel/0029Vb8vqDA0rGiKGUnnDA3A",
+        "",
+        "YOUR JOURNEY",
+        "Five climate-learning modules, live sessions, assignments and community learning begin 8 March 2027. After accepting your offer, sign in to Canopy with your application email and complete onboarding.",
+        "",
+        "We look forward to the leadership and ideas you will bring.",
+        "",
+        "With warm congratulations,",
+        "The WOMATE Team"
+      ].join("\n"):apply(tpl.body_template,p);
+      const ctaLabel=selectedAsia?"Open my secure selection card":apply(tpl.cta_label||"",p);
+      const ctaUrl=selectedAsia?p.scratch_path:apply(tpl.cta_path||"",p);
+      const html=emailHtml(heading,bodyText,ctaLabel,ctaUrl,String(p.decision_note||""),selectedAsia,row.recipient_name);
       const msg=await sendGmail(accessToken,row.recipient_email,subject,html);
       gmailAccepted=true;
       // Atomic DB finalization updates the real deadline, selection-card

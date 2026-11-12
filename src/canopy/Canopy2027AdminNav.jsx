@@ -13,8 +13,13 @@ const allLinks=sections.flatMap(s=>s.links.map(([path,label])=>({path,label,grou
 export default function Canopy2027AdminNav({path,onNavigate,cohort}){
  const active=allLinks.find(x=>x.path===path)||allLinks[0];
  return <nav className="c27-adminNav" aria-label="2027 cohort operations navigation">
-   <div className="c27-adminNavHeading"><div><strong>2027 cohort workspace</strong><span>{cohort?.display_name||'Selected programme'} · One management hub</span></div><span className="c27-adminNavCurrent">Viewing: {active.label}</span></div>
-   <label className="c27-adminMobileSelect"><span>Choose management area</span><select value={active.path} onChange={e=>onNavigate(e.target.value)}>{sections.map(s=><optgroup key={s.name} label={s.name}>{s.links.map(([url,label])=><option key={url} value={url}>{label}</option>)}</optgroup>)}</select></label>
-   <div className="c27-adminNavGroups">{sections.map(s=><section className={'c27-adminNavGroup'+(s.links.some(([url])=>url===active.path)?' is-current':'')} key={s.name} aria-label={s.name}><div className="c27-adminNavLabel"><s.Icon size={16} aria-hidden="true"/><span>{s.name}</span></div><div className="c27-adminNavLinks">{s.links.map(([url,label])=><button key={url} type="button" aria-current={active.path===url?'page':undefined} className={active.path===url?'is-active':''} onClick={()=>onNavigate(url)}>{label}<ArrowUpRight size={13} aria-hidden="true"/></button>)}</div></section>)}</div>
+  <div className="c27-adminNavHeading"><div><strong>Manage Cohort 2027</strong><span>{cohort?.display_name||'Selected cohort'}</span></div><span className="c27-adminNavCurrent">{active.label}</span></div>
+  <label className="c27-adminMobileSelect"><span>Management area</span><select value={active.path} onChange={e=>onNavigate(e.target.value)}>{sections.map(s=><optgroup key={s.name} label={s.name}>{s.links.map(([url,label])=><option key={url} value={url}>{label}</option>)}</optgroup>)}</select></label>
+  <div className="c27-adminNavGroups">
+   {sections.map(s=><div className="c27-adminNavGroup" key={s.name}>
+    <span className="c27-adminNavLabel"><s.Icon size={15} aria-hidden="true"/>{s.name}</span>
+    <div className="c27-adminNavLinks">{s.links.map(([url,label])=><button type="button" key={url} aria-current={active.path===url?'page':undefined} className={active.path===url?'is-active':''} onClick={()=>onNavigate(url)}>{label}</button>)}</div>
+   </div>)}
+  </div>
  </nav>;
 }

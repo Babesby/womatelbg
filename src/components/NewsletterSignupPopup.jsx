@@ -13,12 +13,12 @@ export default function NewsletterSignupPopup({enabled=true}){
  useEffect(()=>{
   if(!enabled||shown.current||window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches&&document.visibilityState==='hidden')return;
   const state=read(),now=Date.now();
-  if(state.converted||state.impressions>=2||state.closedAt&&now-state.closedAt<MILLIS_DAY)return;
+  if(state.converted||state.impressions>=2||(state.lastImpressionAt||state.closedAt)&&now-(state.lastImpressionAt||state.closedAt)<MILLIS_DAY)return;
   // Only show to first-time visitors, not people who have previously browsed WOMATE.
   const seen=localStorage.getItem('womate_visited');
   if(!seen)localStorage.setItem('womate_visited',String(now));
   if(seen&&state.impressions===undefined)return;
-  const timer=window.setTimeout(()=>{if(document.visibilityState!=='visible')return;const next=read();if(next.converted||next.impressions>=2||next.closedAt&&Date.now()-next.closedAt<MILLIS_DAY)return;shown.current=true;write({...next,impressions:(next.impressions||0)+1});setOpen(true)},10000);
+  const timer=window.setTimeout(()=>{if(document.visibilityState!=='visible')return;const next=read();if(next.converted||next.impressions>=2||(next.lastImpressionAt||next.closedAt)&&Date.now()-(next.lastImpressionAt||next.closedAt)<MILLIS_DAY)return;shown.current=true;write({...next,impressions:(next.impressions||0)+1,lastImpressionAt:Date.now()});setOpen(true)},10000);
   return()=>window.clearTimeout(timer);
  },[enabled]);
  useEffect(()=>{if(!open)return;const onKey=e=>{if(e.key==='Escape')close()};window.addEventListener('keydown',onKey);return()=>window.removeEventListener('keydown',onKey)},[open,done]);

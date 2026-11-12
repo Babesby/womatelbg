@@ -69,7 +69,8 @@ export function VoicesDrawer(){
  </div>,document.body);
 }
 
-const countryMap={Ghanaian:'Ghana',Malawian:'Malawi',Kenyan:'Kenya',Ugandan:'Uganda',Zambian:'Zambia',Rwandan:'Rwanda',Nigerian:'Nigeria',Tanzanian:'Tanzania',Zimbabwean:'Zimbabwe',Gambian:'The Gambia',Beninese:'Benin',Moroccan:'Morocco',Somali:'Somalia'};
+const countryMap={ghana:'Ghana',ghanaian:'Ghana',malawi:'Malawi',malawian:'Malawi',kenya:'Kenya',kenyan:'Kenya',uganda:'Uganda',ugandan:'Uganda',zambia:'Zambia',zambian:'Zambia',rwanda:'Rwanda',rwandan:'Rwanda',nigeria:'Nigeria',nigerian:'Nigeria',tanzania:'Tanzania',tanzanian:'Tanzania',zimbabwe:'Zimbabwe',zimbabwean:'Zimbabwe',gambia:'The Gambia',gambian:'The Gambia','the gambia':'The Gambia',benin:'Benin',beninese:'Benin',morocco:'Morocco',moroccan:'Morocco',somalia:'Somalia',somali:'Somalia',ethiopia:'Ethiopia',ethiopian:'Ethiopia','south africa':'South Africa','south african':'South Africa'};
+const canonicalCountry=value=>{const key=String(value||'').trim().replace(/\s+/g,' ').toLowerCase();return countryMap[key]||(key?key.replace(/\b\w/g,c=>c.toUpperCase()):'Not specified')};
 const avatarByName=new Map(participantVoices.filter(v=>v.avatarPath).map(v=>[v.name.toLowerCase(),v]));
 function AnimatedStatistic({value,label,format}){
  const [display,setDisplay]=useState(format==='rating'?'0.00/5':format==='percent'?'0%':'0');
@@ -95,7 +96,7 @@ function VoiceBubble({voice,i,onRead}){
  return <article className={'vix-bubble vix-bubbleArtwork vix-bubbleArtwork-'+(i%7)}>
   <BubbleArtwork index={i}/>
   <div className="vix-bubbleInner">
-   <span className="vix-bubbleCountry">{countryMap[voice.country]||voice.country}</span>
+   <span className="vix-bubbleCountry">{canonicalCountry(voice.country)}</span>
    <blockquote>“{excerpt}”</blockquote>
    <div className="vix-bubbleFooter"><div className="vix-bubblePerson"><BubbleAvatar voice={voice}/><div><strong>{voice.name}</strong><span>She Leads Africa</span></div></div>{hasMore&&<button className="vix-bubbleRead" type="button" aria-label={'Read full reflection from '+voice.name} onClick={()=>onRead(voice)}>Read more <ArrowUpRight size={14}/></button>}</div>
   </div>
@@ -113,17 +114,20 @@ function ReflectionModal({voice,onClose}){
   return()=>{document.body.style.overflow=old;document.removeEventListener('keydown',onKey)};
  },[voice,onClose]);
  if(!voice)return null;
- return createPortal(<div className="vix-reflectionOverlay" role="presentation"><button className="vix-reflectionScrim" type="button" onClick={onClose} aria-label="Close reflection"/><section className="vix-reflectionModal" role="dialog" aria-modal="true" aria-labelledby="vix-reflectionTitle"><button type="button" className="vix-reflectionClose" ref={closeButton} aria-label="Close reflection" onClick={onClose}><X size={21}/></button><div className="vix-reflectionHeader"><BubbleAvatar voice={voice} large/><div><h2 id="vix-reflectionTitle">{voice.name}</h2><p>{countryMap[voice.country]||voice.country} · She Leads Africa Cohort 2</p></div></div><span className="vix-reflectionQuote" aria-hidden="true">“</span><blockquote>{voice.quote}</blockquote><a className="vix-reflectionAction" href="/she-leads">Explore She Leads <ArrowUpRight size={17}/></a></section></div>,document.body);
+ return createPortal(<div className="vix-reflectionOverlay" role="presentation"><button className="vix-reflectionScrim" type="button" onClick={onClose} aria-label="Close reflection"/><section className="vix-reflectionModal" role="dialog" aria-modal="true" aria-labelledby="vix-reflectionTitle"><button type="button" className="vix-reflectionClose" ref={closeButton} aria-label="Close reflection" onClick={onClose}><X size={21}/></button><div className="vix-reflectionHeader"><BubbleAvatar voice={voice} large/><div><h2 id="vix-reflectionTitle">{voice.name}</h2><p>{canonicalCountry(voice.country)} · She Leads Africa Cohort 2</p></div></div><span className="vix-reflectionQuote" aria-hidden="true">“</span><blockquote>{voice.quote}</blockquote><a className="vix-reflectionAction" href="/she-leads">Explore She Leads <ArrowUpRight size={17}/></a></section></div>,document.body);
 }
 export function VoicesImpactPage(){
  const [shown,setShown]=useState(18);
  const [country,setCountry]=useState('All countries');
  const [activeVoice,setActiveVoice]=useState(null);
-
- const countries=['All countries',...new Set(evaluationVoices.map(v=>countryMap[v.country]||v.country))].sort((a,b)=>a==='All countries'?-1:b==='All countries'?1:a.localeCompare(b));
- const filtered=evaluationVoices.filter(v=>country==='All countries'||(countryMap[v.country]||v.country)===country);
- const visible=filtered.slice(0,shown);
+ const [rotation,setRotation]=useState(()=>Math.floor(Date.now()/86400000)*37);
+ const countries=['All countries',...new Set(evaluationVoices.map(v=>canonicalCountry(v.country)))].sort((a,b)=>a==='All countries'?-1:b==='All countries'?1:a.localeCompare(b));
+ const filtered=evaluationVoices.filter(v=>country==='All countries'||canonicalCountry(v.country)===country);
+ const first=filtered.length?((rotation%filtered.length)+filtered.length)%filtered.length:0;
+ const ordered=filtered.slice(first).concat(filtered.slice(0,first));
+ const visible=ordered.slice(0,shown);
  const updateCountry=e=>{setCountry(e.target.value);setShown(18)};
+ const showOthers=()=>{setRotation(v=>v+18);setShown(18)};
  return <main className="vix-page vix-reimagined" id="content">
   <header className="vix-newHero"><div className="vix-newHero-copy"><h1>Reflections <em>&amp; Experiences.</em></h1><p>Personal reflections from women who joined the She Leads programme.</p><a href="/she-leads" className="vix-hero-link">Discover She Leads <ArrowUpRight size={18}/></a></div><div className="vix-heroMark" aria-hidden="true"><span>“</span></div></header>
   <section className="vix-numbers" aria-label="She Leads Africa Cohort 2 programme evaluation">
@@ -132,8 +136,8 @@ export function VoicesImpactPage(){
    <AnimatedStatistic value={208} label="Evaluation responses"/>
   </section>
   <section className="vix-bubbleLibrary" aria-labelledby="vix-library-title">
-    <div className="vix-bubbleLibrary-head"><div><h2 id="vix-library-title">In their own words.</h2><p>{filtered.length} participant reflections</p></div><label className="vix-countryFilter"><span>Browse by country</span><select value={country} onChange={updateCountry}>{countries.map(x=><option key={x} value={x}>{x}</option>)}</select></label></div>
-    <div className="vix-bubbleGrid">{visible.map((voice,i)=><VoiceBubble key={voice.name+'-'+i} voice={voice} i={i} onRead={setActiveVoice}/>)}</div>
+    <div className="vix-bubbleLibrary-head"><div><h2 id="vix-library-title">In their own words.</h2><p>{filtered.length} participant reflections · Different voices featured daily</p></div><label className="vix-countryFilter"><span>Browse by country</span><select value={country} onChange={updateCountry}>{countries.map(x=><option key={x} value={x}>{x}</option>)}</select></label></div>
+    <div className="vix-rotationTools"><button type="button" className="vix-more" disabled={!filtered.length} onClick={showOthers}>Discover other reflections <ChevronRight size={17}/></button></div><div className="vix-bubbleGrid">{visible.map((voice,i)=><VoiceBubble key={voice.name+'-'+canonicalCountry(voice.country)} voice={voice} i={i} onRead={setActiveVoice}/>)}</div>
     {shown<filtered.length&&<div className="vix-loadRow"><button type="button" className="vix-more" onClick={()=>setShown(n=>Math.min(n+18,filtered.length))}>Show more voices <ChevronDown size={19}/></button><span>Showing {Math.min(shown,filtered.length)} of {filtered.length}</span></div>}
     <div className="vix-libraryEnd"><p>Curious about the next chapter?</p><a href="/she-leads/apply" className="vix-pill">Explore application dates <ArrowUpRight size={17}/></a></div>
   </section>

@@ -259,3 +259,5 @@
 @media(min-width:1650px){.vix-bubbleGrid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:760px){.vix-bubbleGrid{grid-template-columns:1fr;gap:11px}.vix-bubbleArtwork,.vix-bubbleArtwork:nth-child(n){width:min(100%,540px);aspect-ratio:1.55}.vix-bubbleArtwork .vix-bubbleInner{padding:18% 20% 19%}.vix-bubbleArtwork blockquote{font-size:clamp(1rem,3.6vw,1.3rem);max-height:88px}.vix-bubbleArtwork .vix-bubbleCountry{font-size:.67rem}}
 @media(max-width:375px){.vix-bubbleArtwork .vix-bubbleInner{padding:18% 19% 18%}.vix-bubbleArtwork blockquote{font-size:.9rem;-webkit-line-clamp:3}.vix-bubbleArtwork .vix-bubblePerson strong{font-size:.69rem}}
+
+.vix-rotationTools{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 22px}.vix-rotationTools .vix-more{display:inline-flex;align-items:center;gap:8px;margin:0;padding:11px 17px;font-size:.81rem}

@@ -12,6 +12,7 @@ import PublicTalentDiscovery from './talent/PublicTalentDiscovery.jsx';
 import WomateLearningPages from './learning/WomateLearningPages.jsx';
 
 import NewsletterSignupPopup from './components/NewsletterSignupPopup.jsx';
+import SelectionScratchCard from './components/SelectionScratchCard.jsx';
 import SheLeads2027Interest from "./components/SheLeads2027Interest.jsx";
 import SheLeadsAsia from './components/SheLeadsAsia.jsx';
 import SheLeadsApplication from './components/SheLeadsApplication.jsx';
@@ -1404,6 +1405,7 @@ useEffect(()=>{
 },[path]);
 
 let p=path.startsWith('/publications/')?pages['/publications']:(pages[path]||pages['/']);
+if(path==='/she-leads/selection-card')return <SelectionScratchCard/>;
 if(path==='/verify')return <React.Suspense fallback={<div role='status'>Opening WOMATE verification…</div>}><VerifyCertificate/></React.Suspense>;
 if(path==='/canopy'||path.startsWith('/canopy/'))return <React.Suspense fallback={<main role='status' aria-live='polite' style={{minHeight:'65vh',display:'grid',placeItems:'center',color:'#0E4D4A'}}>Loading Canopy...</main>}><CanopyApp path={path}/></React.Suspense>;
 const publicTalent=path==='/talent'||path==='/talent-discovery'||path.startsWith('/talent/');

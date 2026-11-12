@@ -22,6 +22,6 @@ Course-completion feedback: a learner must finish all course lessons and have ev
 ## Limitations to verify before release
 - Google Sheets check-then-append is not an atomic unique constraint. Rare simultaneous submissions can still race. For strict guaranteed concurrency deduplication, use a database unique index and transactional persistence as the primary write layer.
 - The service needs Google Sheets credentials and editor sharing; ChatGPT's Google Drive connection is not available to Vercel automatically.
-- The popup currently references the repository's existing `/assets/hero/circle.png` illustration. Replace this with the approved uploaded WOMATE globe asset before the final visual signoff.
+- Uploaded WOMATE globe is included at `/assets/newsletter/womate-community-globe.avif`.
 - Event tracking currently records **successful submissions**, not anonymous popup impressions. Impressions and dismissals are stored in each visitor's browser for frequency capping.
 - Verify responsive design, focus order, build compilation, form privacy/audit checks, and submission behavior in a nonproduction test environment before merging.
