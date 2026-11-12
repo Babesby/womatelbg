@@ -836,3 +836,6 @@ export const getAdminGraduatePlacements=session=>graduateRpc('womate_admin_gradu
 export const reviewAdminGraduatePlacement=(session,userId,status,note,partner)=>graduateRpc('womate_admin_review_graduate_placement',{
  p_user:userId,p_state:status,p_notes:note||'',p_partner:partner||null
 },session);
+
+// Read-only eligibility check shared by Cohort 2 and both certified 2027 cohorts.
+export const getGraduateEligibility=session=>graduateRpc('womate_my_graduate_eligibility',{},session);

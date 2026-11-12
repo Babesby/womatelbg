@@ -70,4 +70,10 @@ check(scratchGeneral.includes('she-leads-climate-c3-2027'),'Africa receives priv
 check(mail.includes('CREATE MY OFFICIAL SELECTION IMAGE'),'Selection email encourages card generation and social sharing');
 check(mail.includes('Climate realities, risk & evidence'),'Africa-specific selection email curriculum');
 
+const alumni=read('src/canopy/CanopyAlumniCheckin.jsx');
+const alumniMigration=read('supabase/migrations/20261112114500_2027_alumni_checkins.sql');
+check(alumni.includes('getGraduateEligibility'),'Alumni form checks graduate eligibility');
+check(alumni.includes('tester||!eligible'),'Tester cannot write alumni check-ins');
+check(app.includes("'/canopy/alumni-checkin','Alumni check-ins'"),'2027 sidebar exposes gated alumni check-ins');
+check(alumniMigration.includes('womate_is_verified_graduate'),'2027 graduates receive the original quarterly alumni form');
 if(process.exitCode)process.exit(process.exitCode);

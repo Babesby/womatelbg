@@ -46,7 +46,7 @@ export default function Canopy2027AdminWorkspace({viewer,cohort,view='overview',
  const certificateReady=x=>x.lessons>=requirements.lessons&&x.approved_assignments>=requirements.approved_assignments&&x.attendance>=requirements.attendance&&Boolean(x.selection_code);
  const updateField=(kind,id,value)=>({note:setNotes,score:setScores,module:setModule,url:setUrls})[kind]?.(s=>({...s,[id]:value}));
  const onAccess=(row,status)=>{if(status==='withdrawn'&&!window.confirm('Withdraw '+row.name+' from this cohort? The cohort record will be retained.'))return;act(()=>setAdminCohortMembership(viewer.session,{userId:row.user_id,cohortKey:key,status}))};
- const onReview=(row,decision)=>act(()=>reviewCohortAssignment(row.id,decision,Number(scores[row.id]??80),notes[row.id],viewer.session));
+ const onReview=(row,decision)=>{const score=scores[row.id];const note=String(notes[row.id]||'').trim();if(!Number.isInteger(score)||score<0||score>100||note.length<20){setError('Enter an explicit score from 0–100 and at least 20 characters of specific reviewer remarks.');return;}act(()=>reviewCohortAssignment(row.id,decision,score,note,viewer.session));};
  const onAttendance=(row,attended)=>act(()=>setCohortAttendance(key,row.user_id,module[row.user_id]||'01',attended,viewer.session));
  const onApprove=row=>act(()=>approveCohortCertificate(key,row.user_id,true,notes[row.user_id],viewer.session));
  const onIssue=row=>{if(!window.confirm('Issue a certificate to '+row.name+' using this Drive link?'))return;act(()=>issueCohortCertificate(key,row.user_id,urls[row.user_id],viewer.session))};
