@@ -2,6 +2,10 @@ import React,{useEffect,useMemo,useState} from 'react';
 import {ArrowLeft,ArrowRight,Award,BookOpen,Check,CheckCircle2,ClipboardCheck,ExternalLink,FileText,Globe2,GraduationCap,Leaf,Lock,ShieldCheck,Sparkles} from 'lucide-react';
 import {CanopyLessonActivity} from './CanopyExperience';
 import Canopy2027Graduation from './Canopy2027Graduation';
+import Canopy2027Mission from './Canopy2027Mission';
+import {Canopy2027Help} from './Canopy2027Support';
+import {Canopy2027ScheduleLearner} from './Canopy2027Schedule';
+import Canopy2027Portfolio from './Canopy2027Portfolio';
 import {getCanopy2027LessonActivity,getCanopy2027LessonSources} from './canopyCurriculumSources2027';
 import {getCanopy2027Curriculum} from './canopyCurricula2027';
 import {canopyPost2026Runtime} from './canopyCohortRuntime2027';
@@ -27,9 +31,25 @@ function Home({cohort,modules,data,done,tester}){
  const current=[...modules].filter(m=>open.has(m.id)).at(-1)||null;
  const next=current?.lessons.find(l=>!done.has(l.id))||current?.lessons[0]||null;
  const submission=current?(data.submissions||[]).filter(s=>s.module_id===current.id).sort((a,b)=>b.attempt-a.attempt)[0]:null;
+ const session=current?data.schedule?.live_sessions?.[current.id]:null;
+ const speakerAt=current?data.schedule?.speaker_unlock_dates?.[current.id]:null;
+ const due=current?data.schedule?.assignment_due_dates?.[current.id]:null;
+ const [clock,setClock]=useState(Date.now());
+ useEffect(()=>{const id=window.setInterval(()=>setClock(Date.now()),60000);return()=>window.clearInterval(id)},[]);
+ const until=session?.starts_at?Math.max(0,Date.parse(session.starts_at)-clock):0;
+ const countdown=until>0?Math.floor(until/86400000)+'d '+String(Math.floor(until%86400000/3600000)).padStart(2,'0')+'h '+String(Math.floor(until%3600000/60000)).padStart(2,'0')+'m':null;
+ const fmtDate=date=>date?new Date(date).toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit',timeZone:'UTC'})+' GMT':'To be announced';
  return <main className="canopyDashboard cx-dashboard">
   <section className="canopyWelcome cx-welcome"><div><span className="canopyEyebrow">MY CANOPY</span><h1>Welcome back.</h1><p>Continue where you left off.</p></div><div className="canopyProgressRing" style={{'--p':`${pct*3.6}deg`}}><div><strong>{pct}%</strong><span>complete</span></div></div></section>
-  {current?<section className="cx-week"><header><span>THIS WEEK</span><strong>Module {current.id}</strong></header><div className="cx-week-list"><div className="cx-week-row"><small>LEARN</small><strong>{next?next.title:'Module complete'}</strong><button className="cx-text-action" onClick={()=>go(next?`/canopy/course/she-leads/${current.id}/${next.id}`:'/canopy/course/she-leads')}>{next?'Continue':'Open course'} <ArrowRight size={14}/></button></div><div className="cx-week-row"><small>ASSIGNMENT</small><strong>{submission?'Submitted':'Open with this module'}</strong><button className="cx-text-action" onClick={()=>go('/canopy/assignments')}>Open <ArrowRight size={14}/></button></div><div className="cx-week-row"><small>LIVE SESSION</small><strong>Module {current.id}</strong><button className="cx-text-action" onClick={()=>go('/canopy/notifications')}>Details <ArrowRight size={14}/></button></div></div></section>:<section className="canopyLockedState"><Lock/><div><h2>Your first module is coming up.</h2><p>Canopy releases learning week by week so everyone moves through the programme together.</p></div></section>}
+  {current?<section className="cx-week"><header><span>THIS WEEK</span><strong>Module {current.id}</strong></header><div className="cx-week-list"><div className="cx-week-row"><small>LEARN</small><strong>{next?next.title:'Module complete'}</strong><button className="cx-text-action" onClick={()=>go(next?`/canopy/course/she-leads/${current.id}/${next.id}`:'/canopy/course/she-leads')}>{next?'Continue':'Open course'} <ArrowRight size={14}/></button></div><div className="cx-week-row"><small>ASSIGNMENT</small><strong>{submission?'Submitted':'Open with this module'}</strong><button className="cx-text-action" onClick={()=>go('/canopy/assignments')}>Open <ArrowRight size={14}/></button></div><div className="cx-week-row"><small>LIVE SESSION</small><strong>{session?fmtDate(session.starts_at):'Speaker & time to be announced'}{session?.speaker_name?' · '+session.speaker_name:''}</strong><button className="cx-text-action" onClick={()=>go('/canopy/schedule')}>Details <ArrowRight size={14}/></button></div></div>
+  {session&&<section className="cx-live c27-liveSession" aria-label="Confirmed weekly live session">
+    {session.poster&&<img className="cx-live-poster" src={session.poster} alt={'Module '+current.id+' session with '+session.speaker_name} loading="lazy"/>}
+    <div className="cx-live-body"><div className="cx-live-pulse" aria-hidden="true"><span/></div><div className="cx-live-copy"><small>{countdown?'NEXT LIVE SESSION':'LIVE SESSION / REPLAY'}</small><h3>Module {current.id} · {current.title}</h3><p>{fmtDate(session.starts_at)} · {session.speaker_name}{session.speaker_role?' · '+session.speaker_role:''}</p></div>
+    {countdown&&<div className="cx-countdown" aria-label={'Session begins in '+countdown}><strong>{countdown}</strong></div>}
+    {session.url&&<a className="cx-link" href={session.url} target="_blank" rel="noopener noreferrer">{countdown?'View scheduled session':'Open live session / replay'} <ExternalLink size={14}/></a>}</div>
+   </section>}
+   {speakerAt&&<p className="c27-weekInfo">Speaker challenge opens {fmtDate(speakerAt)}{due?' · Assignment due '+fmtDate(due):''}</p>}
+  </section>:<section className="canopyLockedState"><Lock/><div><h2>Your first module is coming up.</h2><p>Canopy releases learning week by week so everyone moves through the programme together.</p></div></section>}
   <section className="canopyDashStrip"><div className="canopyDashProgress"><small>YOUR PROGRESS</small><strong>{completed} of {total} lessons complete</strong><div className="canopyLine"><span style={{width:`${pct}%`}}/></div></div><div className="canopyDashActions"><button className="canopyPrimary" disabled={!current} onClick={()=>current&&go(next?`/canopy/course/she-leads/${current.id}/${next.id}`:'/canopy/course/she-leads')}>{next?'Continue learning':'Open course'} <ArrowRight size={15}/></button></div></section>
   <Journey modules={modules} done={done}/>
  </main>;
@@ -157,6 +177,9 @@ function Impact({modules,data,done}){
  return <main className="canopyProgressPage"><div className="canopyPageHead"><span className="canopyEyebrow">MY CANOPY</span><h1>Impact profile</h1><p>Your evidence grows as your WOMATE work is reviewed.</p></div><Journey modules={modules} done={done}/><section className="canopyProgressModules">{modules.map(m=>{const n=m.lessons.filter(l=>done.has(l.id)).length;const sub=(data.submissions||[]).filter(s=>s.module_id===m.id).sort((a,b)=>b.attempt-a.attempt)[0];return <article key={m.id}><span>{m.id}</span><div><h3>{m.title}</h3><div className="canopyLine"><span style={{width:`${Math.round(n/m.lessons.length*100)}%`}}/></div><small>{n}/{m.lessons.length} lessons · {sub?.status==='approved'?'reviewed evidence approved':sub?'assignment '+String(sub.status).replaceAll('_',' '):'evidence pending'}</small></div><strong>{sub?.status==='approved'?<CheckCircle2/>:''}</strong></article>})}</section></main>;
 }
 
+function Resources2027({cohortKey,modules}){
+ return <main className="canopyResources"><div className="canopyPageHead"><span className="canopyEyebrow">WOMATE · 2027 REGIONAL RESOURCES</span><h1>Learning resources.</h1><p>Regional reading and sources selected for your own modules.</p></div>{modules.map(m=><section key={m.id} className="c27-resourceSection"><h2>Module {m.id} · {m.title}</h2><div className="c27-resourcesGrid">{getCanopy2027LessonSources(cohortKey,m.id).map((r,i)=><article key={i}><small>{r.type||'Learning resource'}</small><h3>{r.title}</h3><p>{r.note||r.author||''}</p><a href={r.url} rel="noopener noreferrer" target="_blank">Open resource <ExternalLink size={14}/></a></article>)}</div></section>)}</main>;
+}
 function LockedArea({title,copy,icon:Icon=Lock}){
  return <main className="canopyCoursePage"><section className="canopyCourseHero"><div><span className="canopyEyebrow">SHE LEADS CLIMATE MENTORSHIP</span><h1>{title}</h1></div></section><section className="canopyLockedState"><Icon/><div><h2>{title}</h2><p>{copy}</p></div></section></main>;
 }
@@ -182,10 +205,13 @@ export default function Canopy2027Learning({viewer,cohortKey,section='overview',
    return match[2]==='quiz'?<Quiz module={module}/>:<Lesson cohort={cohort} module={module} lessonId={match[2]} data={data} reload={load} tester={tester} session={viewer?.session}/>;
  }
  if(section==='course')return <Course cohort={cohort} modules={modules} data={data} done={done} tester={tester}/>;
+ if(section==='resources')return <Resources2027 cohortKey={cohortKey} modules={modules}/>;
+ if(section==='schedule')return <Canopy2027ScheduleLearner cohortKey={cohortKey} schedule={data.schedule||{}}/>;
  if(section==='assignments')return <Assignments cohort={cohort} modules={modules} data={data} reload={load} tester={tester} session={viewer?.session}/>;
  if(section==='progress')return <Progress modules={modules} data={data} done={done}/>;
- if(section==='portfolio')return <Impact modules={modules} data={data} done={done}/>;
- if(section==='missions')return <LockedArea title="Missions" copy="Your cohort Mission space will open when WOMATE publishes the Mission cycle. You will be notified in Canopy." icon={Globe2}/>;
+ if(section==='portfolio')return <Canopy2027Portfolio viewer={viewer} cohort={cohort} modules={modules} data={data} done={done} tester={tester}/>;
+ if(section==='missions')return <Canopy2027Mission viewer={viewer} cohortKey={cohortKey} tester={tester}/>;
+ if(section==='help')return <Canopy2027Help viewer={viewer} cohortKey={cohortKey} tester={tester}/>;
  if(section==='graduation')return <Canopy2027Graduation viewer={viewer} cohortKey={cohortKey} tester={tester} data={data}/>;
  if(section==='certificate')return <Certificate data={data}/>;
  return <Home cohort={cohort} modules={modules} data={data} done={done} tester={tester}/>;
