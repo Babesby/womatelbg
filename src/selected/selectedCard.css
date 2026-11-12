@@ -411,3 +411,13 @@ body{
     radial-gradient(circle at 78% 65%, rgba(14,77,74,.055) 0 1px, transparent 1.5px);
   background-size:28px 28px,34px 34px;
 }
+
+/* Region-specific 2027 edition details; 2026 selection UX remains unchanged. */
+.selected2027Edition{display:grid;gap:8px;margin-top:24px;padding:18px;border:1px solid #c3d8c7;border-radius:16px;background:#ecf4ea}
+.selected2027Edition span{font-size:11px;letter-spacing:.16em;font-weight:850;color:#245e4c}
+.selected2027Edition strong{font:700 21px/1.25 Georgia,'Times New Roman',serif;color:#073b39}
+.selected2027Edition p{margin:0;font-size:13px;line-height:1.6;color:#49695b}
+.selectedAsia2027 .selected2027Edition{background:#eaf6f2;border-color:#a8d6c9}
+.selectedAfrica2027 .selectedCanvasWrap{box-shadow:0 24px 68px rgba(7,59,57,.18)}
+.selectedAsia2027 .selectedCanvasWrap{box-shadow:0 24px 68px rgba(8,81,78,.17)}
+@media(max-width:560px){.selected2027Edition{padding:16px}.selected2027Edition strong{font-size:19px}}

@@ -17,4 +17,5 @@ jobs:
       # package-lock is not currently synchronized with package.json.
       - run: npm install --no-save --package-lock=false --ignore-scripts --no-audit --no-fund
       # UI compile only. No Vercel deployment or production SEO prerender.
+      - run: node scripts/verify-2027-card-parity.cjs
       - run: npm run prebuild && npx vite build
