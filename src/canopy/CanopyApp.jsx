@@ -40,7 +40,7 @@ import CanopyGraduatePlacementAdmin from './CanopyGraduatePlacementAdmin';
 import Canopy2027AdminNav from './Canopy2027AdminNav';
 import {CanopyAdminCohortBar,CanopyAdminCohortEmpty,CanopyAdminCohortSafeHold,LEGACY_CANOPY_COHORT} from './CanopyAdminCohortContext';
 import {isPost2026RuntimeCohort,canopyPost2026Runtime} from './canopyCohortRuntime2027';
-import{ArrowLeft,ArrowRight,BookOpen,Check,ChevronRight,ClipboardCheck,Clock,FileText,GraduationCap,Leaf,Lock,LogOut,Menu,PlayCircle,Sparkles,UserRound,X,BookMarked,UsersRound,PenLine,TrendingUp,Eye,EyeOff,MessageSquare,ShieldAlert,Award,BarChart3,Bell,Moon,Sun,Globe2,Mail,ShieldCheck,BriefcaseBusiness,Handshake,Heart,Volume2,Square,Camera,Trash2} from 'lucide-react';
+import{ArrowLeft,ArrowRight,BookOpen,Check,ChevronRight,ClipboardCheck,Clock,FileText,GraduationCap,Leaf,Lock,LogOut,Menu,PlayCircle,Sparkles,UserRound,X,BookMarked,UsersRound,PenLine,TrendingUp,Eye,EyeOff,MessageSquare,ShieldAlert,Award,BarChart3,Bell,Moon,Sun,Globe2,Mail,ShieldCheck,BriefcaseBusiness,Handshake,Heart,Volume2,Square,Camera,Trash2,CalendarDays} from 'lucide-react';
 import'./canopy.css';
 import{CANOPY_BRAND,modules,resources}from'./canopyData';
 import{climateDebateAssignment}from'./canopyClimateDebate';
@@ -976,7 +976,7 @@ function CanopyTesterAdminPreview({viewer,cohortKey}){
  return <><nav className="c27-testerAdminTabs" aria-label="2027 administrator previews">{tabs.map(([id,label])=><button type="button" key={id} className={id===view?'active':''} onClick={()=>setView(id)}>{label}</button>)}</nav><Canopy2027AdminWorkspace viewer={viewer} cohort={{cohort_key:runtime.cohortKey,display_name:runtime.fullName,region:runtime.region,status:'planning'}} view={view} tester/></>;
 }
 export default function CanopyApp({path:appPath}){
- const hasBooted=useRef(false);const loadSeq=useRef(0);const lastHiddenAt=useRef(0);const path=appPath||route();const[loading,setLoading]=useState(true);const[viewer,setViewer]=useState(null);const[progress,setProgress]=useState([]);const[submissions,setSubmissions]=useState([]);const[snapshot,setSnapshot]=useState(null);const[staffDashboard,setStaffDashboard]=useState(null);const[adminCohorts,setAdminCohorts]=useState([]);const[adminCohortKey,setAdminCohortKey]=useState(()=>localStorage.getItem('canopy_admin_cohort_key')||LEGACY_CANOPY_COHORT);
+ const hasBooted=useRef(false);const loadSeq=useRef(0);const lastHiddenAt=useRef(0);const path=appPath||route();const[loading,setLoading]=useState(true);const[viewer,setViewer]=useState(null);const[progress,setProgress]=useState([]);const[submissions,setSubmissions]=useState([]);const[snapshot,setSnapshot]=useState(null);const[staffDashboard,setStaffDashboard]=useState(null);const[adminCohorts,setAdminCohorts]=useState([]);const[adminCohortKey,setAdminCohortKey]=useState(()=>{try{return localStorage.getItem('canopy_admin_cohort_key')||LEGACY_CANOPY_COHORT}catch{return LEGACY_CANOPY_COHORT}});
  useEffect(()=>{applyCanopyTheme(getCanopyTheme(),{persist:false});try{sessionStorage.removeItem('womate_canopy_tester_cohort')}catch{}},[]);
  const load=async()=>{const seq=++loadSeq.current;const isCurrent=()=>seq===loadSeq.current;const session=getStoredSession();if(!session){if(!isCurrent())return;setViewer(null);setProgress([]);setSubmissions([]);setSnapshot(null);setStaffDashboard(null);setLoading(false);return}try{
    const pending=sessionStorage.getItem('canopy_team_access_code_pending');

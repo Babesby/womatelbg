@@ -1328,6 +1328,28 @@ const deepRepairStyles=`
 @media(max-width:850px){.donateHero,.donateStatement,.donateModel,.donateFinal{grid-template-columns:1fr}.donateImpactGrid{grid-template-columns:1fr}.donateImpactGrid article:nth-child(odd){border-right:0}.donateImpactGrid article:nth-child(even){padding-left:0}.donateModelRail article{grid-template-columns:80px 1fr}.donateModelRail p{grid-column:2}}
 `;
 function DeepRepairStyles(){return <style>{deepRepairStyles}</style>}
+class CanopyRuntimeBoundary extends React.Component {
+ constructor(props){super(props);this.state={error:null};}
+ static getDerivedStateFromError(error){return {error};}
+ componentDidCatch(error,info){console.error('WOMATE Canopy rendering failed:',error,info);}
+ componentDidUpdate(previousProps){
+  if(previousProps.path!==this.props.path&&this.state.error)this.setState({error:null});
+ }
+ render(){
+  if(!this.state.error)return this.props.children;
+  return <main role="alert" style={{minHeight:'70vh',display:'grid',placeItems:'center',padding:'32px 20px',background:'#f8fbf8',color:'#073b39'}}>
+   <section style={{maxWidth:520,width:'100%',padding:32,borderRadius:20,background:'#fff',boxShadow:'0 12px 48px #073b3914'}}>
+    <h1 style={{fontSize:28,margin:'0 0 12px'}}>Canopy couldn't finish opening.</h1>
+    <p style={{lineHeight:1.6}}>Your account and learning records are safe. Refresh the page to reload the learning workspace, or return to sign in.</p>
+    <p style={{fontSize:13,opacity:.8,overflowWrap:'anywhere'}}>Error: {String(this.state.error?.message||'Unexpected loading error')}</p>
+    <div style={{display:'flex',flexWrap:'wrap',gap:12,marginTop:20}}>
+     <button type="button" onClick={()=>window.location.reload()} style={{padding:'12px 18px',background:'#073b39',color:'#fff',border:'none',borderRadius:10,cursor:'pointer'}}>Reload Canopy</button>
+     <a href="/canopy/login" style={{padding:'12px 18px',color:'#073b39'}}>Go to sign in</a>
+    </div>
+   </section>
+  </main>;
+ }
+}
 function App(){
 const normalizePath=()=>window.location.pathname.replace(/\/$/,'')||'/';
 const[path,setPath]=useState(normalizePath);
@@ -1407,7 +1429,7 @@ useEffect(()=>{
 let p=path.startsWith('/publications/')?pages['/publications']:(pages[path]||pages['/']);
 if(path==='/she-leads/selection-card')return <SelectionScratchCard/>;
 if(path==='/verify')return <React.Suspense fallback={<div role='status'>Opening WOMATE verification…</div>}><VerifyCertificate/></React.Suspense>;
-if(path==='/canopy'||path.startsWith('/canopy/'))return <React.Suspense fallback={<main role='status' aria-live='polite' style={{minHeight:'65vh',display:'grid',placeItems:'center',color:'#0E4D4A'}}>Loading Canopy...</main>}><CanopyApp path={path}/></React.Suspense>;
+if(path==='/canopy'||path.startsWith('/canopy/'))return <CanopyRuntimeBoundary path={path}><React.Suspense fallback={<main role='status' aria-live='polite' style={{minHeight:'65vh',display:'grid',placeItems:'center',color:'#0E4D4A'}}>Loading Canopy...</main>}><CanopyApp path={path}/></React.Suspense></CanopyRuntimeBoundary>;
 const publicTalent=path==='/talent'||path==='/talent-discovery'||path.startsWith('/talent/');
 const publicLearning=path==='/courses'||path.startsWith('/courses/');
 const publicAdmissions=path==='/she-leads/asia/apply'||path==='/she-leads/asia/application'||path==='/she-leads/apply'||path==='/she-leads/application';
