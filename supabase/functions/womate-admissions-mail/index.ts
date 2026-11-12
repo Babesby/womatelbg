@@ -128,7 +128,7 @@ Deno.serve(async function(req){
       const expiryTime=new Date(offerTime.getTime()+7*24*60*60*1000);
       if(row.template_key==="selected")p.offer_deadline=expiryTime.toUTCString();
       const selectedAsia=row.template_key==="selected"&&row.cohort_key==="she-leads-asia-c1-2027";
-      const testPreview=selectedAsia&&p.test_preview===true;
+      const testPreview=selectedAsia&&p.test_preview===true&&p.participant_view!==true;
       if(selectedAsia&&!p.scratch_path)throw new Error("Missing secure Asia selection scratch link; delivery held");
       const subject=testPreview?"[TEST PREVIEW — NOT AN ADMISSION] WOMATE She Leads Asia selection":selectedAsia?"Congratulations — Your WOMATE She Leads Asia selection":apply(tpl.subject_template,p);
       const heading=testPreview?"Your selection experience — preview":selectedAsia?"Congratulations. You have been selected.":apply(tpl.heading,p);
