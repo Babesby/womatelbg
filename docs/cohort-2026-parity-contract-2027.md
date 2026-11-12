@@ -87,9 +87,16 @@ These are **initial parity corrections only**, not completion of this contract.
 - 2027 Ask Canopy response source is `canopyHelp2027.js`, based on `canopyCurricula2027.js` and `canopyCohortRuntime2027.js`. Existing 2026 match logic is unchanged.
 
 ## Explicitly NOT completed yet
-- Complete three-part persisted 2027 assignment and draft/resubmission pipeline, reflecting 2026 behavior.
+- Three-part persisted 2027 assignment/draft pipeline is **staged but requires database migration, speaker/deadline configuration, review UX and real-user tests**. It is not live.
 - Complete 2027 admin operational parity (warnings, complaints, scores, certificates, graduation audit and other 2026 operations).
 - 2027 graduation animated/feedback/certificate flow parity and speaker-specific content.
 - End-to-end 2027 role tests for Abena (Africa + Asia), Canopy Tester and admin; production database activation.
 
 These must be implemented and verified before anyone claims full architecture parity. Do not mark the overall 2027 rollout complete because the selection cards or isolated UX components are finished.
+
+## Staged Cohort 2-style assignment integration (do not deploy separately)
+- New draft records are keyed by cohort + actual learner + module and RLS-protected; saves do **not** consume attempts.
+- The 2027 v2 submission RPC accepts paragraph, practical HTTPS evidence and speaker HTTPS evidence, with a three-attempt maximum and published speaker/deadline gates.
+- The 2027 workspace RPC exposes both the published timing fields and separate speaker evidence; the admin workspace includes speaker evidence for review.
+- The historic 2027 review implementation incorrectly referenced nonexistent `reviewer_id`; staged SQL updates it to `reviewed_by`.
+- This is an architectural staging step, **not parity completion**. The practical and speaker assignments still require approved 2027-specific briefs, live session metadata and end-to-end review/feedback checks. Apply the migration before any frontend release using these RPCs.

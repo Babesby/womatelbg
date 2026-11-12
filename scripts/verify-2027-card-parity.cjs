@@ -26,6 +26,17 @@ check(learning.includes('cohortResultCelebrationGif'),'Cohort 2 result celebrati
 check(learning.includes("sub.status==='needs_revision'"),'2027 revision state matches backend');
 check(learning.includes('playCanopyCorrectSound')&&learning.includes('playCanopyErrorSound'),'Cohort 2 learning audio feedback integration retained');
 check(runtime.includes('speakerGraphics:Object.freeze({})'),'Missing speaker assets remain unfilled, not invented');
+const assignmentApi=read('src/canopy/canopyLearningApi.js');
+const stagedSql=read('supabase/migrations/20261112093000_cohort_2027_assignments_parity.sql');
+check(assignmentApi.includes('submitCohortAssignmentV2'),'2027 uses cohort-scoped three-part submission API');
+check(assignmentApi.includes('saveCohortAssignmentDraft'),'2027 has persisted draft API');
+check(learning.includes('Part 03 · Speaker challenge')&&learning.includes('Part 02 · Practical evidence link'),'2027 exposes all three Cohort 2 assignment parts');
+check(stagedSql.includes('enable row level security'),'2027 drafts have RLS');
+check(stagedSql.includes('primary key (cohort_key,user_id,module_id)'),'Africa and Asia draft records isolated');
+check(stagedSql.includes("attempts>=3"),'2027 final-submission attempts match Cohort 2');
+check(stagedSql.includes('speaker_unlock_dates')&&stagedSql.includes('assignment_due_dates'),'Speaker and submission deadlines require actual published values');
+check(stagedSql.includes('reviewed_by=auth.uid()'),'2027 reviewer writes correct audit field');
+
 const help=read('src/canopy/AskCanopyWidget.jsx');
 const helpSource=read('src/canopy/canopyHelp2027.js');
 check(help.includes('matchCanopy2027HelpQuestion'),'Ask Canopy routes 2027 to cohort-specific answers');

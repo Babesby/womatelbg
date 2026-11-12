@@ -4,7 +4,7 @@ import {CanopyLessonActivity} from './CanopyExperience';
 import {getCanopy2027LessonActivity,getCanopy2027LessonSources} from './canopyCurriculumSources2027';
 import {getCanopy2027Curriculum} from './canopyCurricula2027';
 import {canopyPost2026Runtime} from './canopyCohortRuntime2027';
-import {getCohortWorkspace,completeCohortLesson,submitCohortAssignment} from './canopyLearningApi';
+import {getCohortWorkspace,completeCohortLesson,getCohortAssignmentDrafts,saveCohortAssignmentDraft,submitCohortAssignmentV2} from './canopyLearningApi';
 import {primeCanopyFeedbackAudio,playCanopyCorrectSound,playCanopyErrorSound} from './canopyFeedbackAudio';
 import './Canopy2027Learning.css';
 
@@ -75,17 +75,75 @@ const cohortResultCelebrationGif=id=>C2_CELEBRATION_GIFS[((Number(id)||1)-1)%C2_
 function Assignments({cohort,modules,data,reload,tester,session}){
  const [drafts,setDrafts]=useState({}),[busy,setBusy]=useState(''),[message,setMessage]=useState('');
  const open=new Set(tester?modules.map(m=>m.id):(data.open_modules||[])),releases=data?.schedule?.module_release_dates||{};
+ const speakerDates=data?.schedule?.speaker_unlock_dates||{},dueDates=data?.schedule?.assignment_due_dates||{};
+ useEffect(()=>{
+  setDrafts(Object.fromEntries((data.drafts||[]).map(d=>[d.module_id,{paragraph_response:d.paragraph_response||'',evidence_url:d.evidence_url||'',speaker_url:d.speaker_url||''}])));
+ },[cohort.cohortKey,data.drafts]);
  const latest=id=>(data.submissions||[]).filter(s=>s.module_id===id).sort((a,b)=>b.attempt-a.attempt)[0];
- const send=async m=>{const response=String(drafts[m.id]||'').trim();if(response.length<120)return;setBusy(m.id);setMessage('');try{await submitCohortAssignment(cohort.cohortKey,m.id,response,'',session);await reload();setMessage('Assignment submitted successfully.')}catch(e){setMessage(e.message)}finally{setBusy('')}};
- return <section className="ca-page"><div className="ca-head"><span className="ca-kicker">ASSIGNMENTS</span><h1>Weekly work.</h1><p>Each assignment opens with its module. Complete the current work carefully and build on WOMATE feedback before the next module opens.</p></div><div className="ca-stack">{modules.map(m=>{const unlocked=open.has(m.id),sub=latest(m.id);if(!unlocked&&!tester)return <article className="ca-card" key={m.id}><div className="ca-card-head"><div><small>MODULE {m.id}</small><h2>{m.assignment.title}</h2></div><div className="ca-dates"><span>Opens {fmt(releases[m.id])}</span><strong>Locked</strong></div></div><p className="ca-locked">This assignment opens with Module {Number(m.id)}.</p></article>;return <article className="ca-card" key={m.id}><div className="ca-card-head"><div><small>MODULE {m.id}</small><h2>{m.assignment.title}</h2></div><div className="ca-dates"><span>Week {Number(m.id)}</span>{sub&&<strong>Attempt {sub.attempt}</strong>}</div></div><div className="ca-threefold"><div><b>01</b><h3>Applied response</h3><p>{m.assignment.prompt}</p></div><div><b>02</b><h3>Use evidence</h3><p>Ground your response in credible information and your own local context.</p></div><div><b>03</b><h3>Reflect & act</h3><p>Show what you learned, who is affected and what responsible action follows.</p></div></div>{(sub?.status==='approved'||sub?.status==='completed')&&sub.score!=null&&<section className="ca-archive-row ca-result-card" aria-label={'Module '+m.id+' reviewed result'}>
- <div className="ca-archive-title ca-result-title"><small>MODULE {m.id}</small><h2>{m.title}</h2><span className="ca-result-ready">Your result is ready</span></div>
- <div className="ca-archive-score ca-result-score"><span>FINAL SCORE</span><strong>{sub.score}/100</strong></div>
- <div className="ca-archive-remark ca-result-remark"><span>REMARKS</span><p>{sub.feedback||sub.score_band||'Your assignment has been reviewed and completed by WOMATE.'}</p></div>
- <div className="ca-archive-celebration ca-result-gif" aria-label="Celebration">
-  <iframe loading="lazy" title={'Celebrating your Module '+m.id+' result'} src={cohortResultCelebrationGif(m.id)} allow="fullscreen"/>
- </div>
-</section>}
-{sub&&sub.status!=='approved'&&sub.status!=='completed'&&<div className="ca-status"><div><span>Status</span><strong>{String(sub.status||'submitted').replaceAll('_',' ')}</strong></div>{sub.score!=null&&<div><span>Score</span><strong>{sub.score}/100</strong></div>}{sub.feedback&&<div className="ca-feedback"><span>Feedback</span><strong>{sub.feedback}</strong></div>}</div>}{!sub||sub.status==='needs_revision'||sub.status==='revision_required'?<div className="ca-form"><label>Paragraph answer<textarea rows="8" value={drafts[m.id]||''} onChange={e=>setDrafts(x=>({...x,[m.id]:e.target.value}))} placeholder="Write your response here…"/></label><div className="ca-assignment-form-actions"><button type="button" disabled={busy===m.id||String(drafts[m.id]||'').trim().length<120} onClick={()=>send(m)}>{busy===m.id?'Submitting…':sub?'Submit revision':'Submit final assignment'}</button></div></div>:(sub?.status==='approved'||sub?.status==='completed')?null:<p className="ca-locked">Submitted. WOMATE will notify you if a revision is required.</p>}</article>})}</div>{message&&<div className="ca-toast" role="status">{message}</div>}</section>;
+ const draftOf=id=>drafts[id]||{paragraph_response:'',evidence_url:'',speaker_url:''};
+ const change=(id,field,value)=>setDrafts(old=>({...old,[id]:{...(old[id]||{}),[field]:value}}));
+ const wordCount=id=>String(draftOf(id).paragraph_response||'').trim().split(/\s+/).filter(Boolean).length;
+ const validUrl=x=>{try{const url=new URL(String(x||''));return url.protocol==='https:'}catch{return false}};
+ const save=async m=>{
+  if(tester)return;setBusy('save-'+m.id);setMessage('');
+  try{await saveCohortAssignmentDraft(cohort.cohortKey,m.id,draftOf(m.id),session);setMessage('Progress saved. Your draft does not use a submission attempt.')}
+  catch(e){setMessage('Could not save: '+(e?.message||'Please retry.'))}finally{setBusy('')}
+ };
+ const send=async m=>{
+  if(tester)return;const d=draftOf(m.id);setMessage('');
+  if(wordCount(m.id)<80){setMessage('Write at least 80 words in Part 01.');return}
+  if(!validUrl(d.evidence_url)||!validUrl(d.speaker_url)){setMessage('Add valid HTTPS links for Parts 02 and 03.');return}
+  if(!speakerDates[m.id]||!dueDates[m.id]){setMessage('WOMATE has not yet published this week’s speaker challenge and submission deadline. You can save your progress.');return}
+  setBusy('send-'+m.id);
+  try{await submitCohortAssignmentV2(cohort.cohortKey,m.id,d,session);await reload();setMessage('Assignment submitted to WOMATE for review.')}
+  catch(e){setMessage(e?.message||'Submission could not be saved. Please retry.')}finally{setBusy('')}
+ };
+ return <section className="ca-page">
+  <div className="ca-head"><span className="ca-kicker">ASSIGNMENTS</span><h1>Weekly work.</h1><p>Complete the same three-part assignment journey as Cohort 2: paragraph response, practical evidence and speaker challenge. The task itself is specific to your {cohort.region} module.</p></div>
+  <div className="ca-stack">{modules.map(m=>{
+   const unlocked=open.has(m.id),sub=latest(m.id),d=draftOf(m.id);
+   if(!unlocked&&!tester)return <article className="ca-card" key={m.id}><div className="ca-card-head"><div><small>MODULE {m.id}</small><h2>{m.assignment.title}</h2></div><div className="ca-dates"><span>Opens {fmt(releases[m.id])}</span><strong>Locked</strong></div></div><p className="ca-locked">This assignment opens with Module {Number(m.id)}.</p></article>;
+   const approved=sub?.status==='approved'||sub?.status==='completed';
+   const revision=sub?.status==='needs_revision'||sub?.status==='revision_required';
+   const canWrite=!tester&&(!sub||revision),speakerScheduled=Boolean(speakerDates[m.id]&&dueDates[m.id]);
+   const ready=canWrite&&wordCount(m.id)>=80&&validUrl(d.evidence_url)&&validUrl(d.speaker_url)&&speakerScheduled;
+   return <article className="ca-card" key={m.id}>
+    <div className="ca-card-head"><div><small>MODULE {m.id}</small><h2>{m.assignment.title}</h2></div><div className="ca-dates"><span>Week {Number(m.id)}</span>{sub&&<strong>Attempt {sub.attempt} of 3</strong>}</div></div>
+    <div className="ca-threefold">
+     <div><b>01</b><h3>Paragraph response</h3><p>{m.assignment.prompt}</p></div>
+     <div><b>02</b><h3>Practical challenge</h3><p>Complete your module-specific applied task. Keep evidence of your work and share it using a viewable HTTPS file or project link.</p></div>
+     <div><b>03</b><h3>Speaker challenge</h3><p>Follow the challenge set by the approved speaker for this module. Share a viewable link to the required work after WOMATE publishes the instructions.</p></div>
+    </div>
+    {sub&&!approved&&<div className="ca-status"><div><span>Status</span><strong>{String(sub.status||'submitted').replaceAll('_',' ')}</strong></div>{sub.score!=null&&<div><span>Score</span><strong>{sub.score}/100</strong></div>}{sub.feedback&&<div className="ca-feedback"><span>Reviewer remarks</span><strong>{sub.feedback}</strong></div>}</div>}
+    {approved&&sub.score!=null&&<section className="ca-archive-row ca-result-card" aria-label={'Module '+m.id+' reviewed result'}>
+     <div className="ca-archive-title ca-result-title"><small>MODULE {m.id}</small><h2>{m.title}</h2><span className="ca-result-ready">Your result is ready</span></div>
+     <div className="ca-archive-score ca-result-score"><span>FINAL SCORE</span><strong>{sub.score}/100</strong></div>
+     <div className="ca-archive-remark ca-result-remark"><span>REMARKS</span><p>{sub.feedback||sub.score_band||'Your assignment has been reviewed and completed by WOMATE.'}</p></div>
+     <div className="ca-archive-celebration ca-result-gif" aria-label="Celebration"><iframe loading="lazy" title={'Celebrating your Module '+m.id+' result'} src={cohortResultCelebrationGif(m.id)} allow="fullscreen"/></div>
+    </section>}
+    {canWrite||tester?<div className="ca-form c27-assignmentForm">
+     <label>Part 01 · Paragraph response <span>{wordCount(m.id)} words</span>
+       <textarea rows="8" value={d.paragraph_response||''} disabled={tester} onChange={e=>change(m.id,'paragraph_response',e.target.value)} placeholder="Write your response to this week's approved module prompt…"/>
+     </label>
+     <label>Part 02 · Practical evidence link
+       <input type="url" value={d.evidence_url||''} disabled={tester} onChange={e=>change(m.id,'evidence_url',e.target.value)} placeholder="https://drive.google.com/…"/>
+     </label>
+     <label>Part 03 · Speaker challenge link
+       <input type="url" value={d.speaker_url||''} disabled={tester} onChange={e=>change(m.id,'speaker_url',e.target.value)} placeholder="https://…"/>
+     </label>
+     {!speakerScheduled&&<p className="ca-feedback ca-awaiting-review">Speaker challenge instructions and final-submission timing are awaiting WOMATE confirmation. You may save Parts 01 and 02 as a draft.</p>}
+     {speakerDates[m.id]&&<p className="ca-assignment-progress-note">Speaker challenge opens {new Date(speakerDates[m.id]).toLocaleString('en-GB',{timeZone:'UTC'})} GMT.</p>}
+     {dueDates[m.id]&&<p className="ca-assignment-progress-note">Due {new Date(dueDates[m.id]).toLocaleString('en-GB',{timeZone:'UTC'})} GMT.</p>}
+     <div className="ca-assignment-form-actions">
+       <button type="button" disabled={tester||Boolean(busy)} onClick={()=>save(m)}>{busy==='save-'+m.id?'Saving…':'Save Progress'}</button>
+       <button type="button" disabled={!ready||Boolean(busy)} onClick={()=>send(m)}>{busy==='send-'+m.id?'Submitting…':revision?'Submit revision':'Submit final assignment'}</button>
+     </div>
+     {tester&&<p className="ca-locked">Canopy Tester can explore every task but cannot save drafts or submit assignments.</p>}
+    </div>:!approved?<p className="ca-locked">Submitted. WOMATE will notify you when feedback or a revision request is ready.</p>:null}
+   </article>;
+  })}</div>
+  {message&&<div className="ca-toast" role="status">{message}</div>}
+ </section>;
 }
 
 function Progress({modules,data,done}){
@@ -110,7 +168,7 @@ function Certificate({data}){
 export default function Canopy2027Learning({viewer,cohortKey,section='overview',path='/canopy/classroom',tester=false}){
  const cohort=getCanopy2027Curriculum(cohortKey),modules=cohort?.modules||[];
  const [data,setData]=useState({lessons:[],submissions:[],attendance:[],open_modules:[],schedule:{}}),[error,setError]=useState('');
- const load=async()=>{if(tester){setData(d=>({...d,programme_open:true,open_modules:modules.map(m=>m.id)}));return}try{setData(await getCohortWorkspace(cohortKey,viewer.session));setError('')}catch(e){setError(e.message)}};
+ const load=async()=>{if(tester){setData(d=>({...d,programme_open:true,open_modules:modules.map(m=>m.id)}));return}try{const [workspace,drafts]=await Promise.all([getCohortWorkspace(cohortKey,viewer.session),getCohortAssignmentDrafts(cohortKey,viewer.session)]);setData({...workspace,drafts});setError('')}catch(e){setError(e.message)}};
  useEffect(()=>{load()},[cohortKey,viewer?.session?.access_token,tester]);
  const done=useMemo(()=>new Set(data.lessons||[]),[data.lessons]);
  if(!cohort)return null;
