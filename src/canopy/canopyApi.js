@@ -190,11 +190,19 @@ export async function getViewer(session){
   const fresh=await refreshSession(session||getStoredSession());
   if(!fresh?.access_token)return null;
   const userId=fresh.user?.id;
-  const [profiles,enrollments,announcements]=await Promise.all([
+  // Profile and role remain required for authentication; secondary records
+  // must not prevent administrators from opening Canopy.
+  const [profileResult,enrollmentResult,announcementResult]=await Promise.allSettled([
     rest(`canopy_profiles?select=*&user_id=eq.${userId}&limit=1`,{token:fresh.access_token}),
     rest(`canopy_enrollments?select=*&user_id=eq.${userId}&order=created_at.desc`,{token:fresh.access_token}),
     rest(`canopy_announcements?select=*&published=eq.true&order=published_at.desc&limit=8`,{token:fresh.access_token})
   ]);
+  if(profileResult.status==='rejected')throw profileResult.reason;
+  const profiles=profileResult.value;
+  const enrollments=enrollmentResult.status==='fulfilled'?enrollmentResult.value:[];
+  const announcements=announcementResult.status==='fulfilled'?announcementResult.value:[];
+  if(enrollmentResult.status==='rejected')console.warn('Canopy enrolments unavailable:',enrollmentResult.reason);
+  if(announcementResult.status==='rejected')console.warn('Canopy announcements unavailable:',announcementResult.reason);
   let withdrawal=null;
   try{withdrawal=await rest('rpc/canopy_get_own_withdrawal_status',{token:fresh.access_token,method:'POST',body:{}})}catch{}
   let alumni={eligible:false};
