@@ -101,7 +101,7 @@
   ],
   "git": {
     "deploymentEnabled": {
-      "main": true,
+      "main": false,
       "womate-work": false,
       "womate-work/**": false
     }
