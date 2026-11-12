@@ -1,0 +1,20 @@
+name: Verify WOMATE development UI
+on:
+  push:
+    branches: [womate-work]
+  workflow_dispatch:
+jobs:
+  ui-build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      # package-lock is not currently synchronized with package.json.
+      - run: npm install --no-save --package-lock=false --ignore-scripts --no-audit --no-fund
+      # UI compile only. No Vercel deployment or production SEO prerender.
+      - run: npm run prebuild && npx vite build
