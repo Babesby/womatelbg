@@ -213,7 +213,7 @@ export default function SelectedCard(){
 
         <section className="selectedIntro">
           <span>
-            SHE LEADS · COHORT 2
+            {verified?.cohortLabel?`SHE LEADS · ${verified.cohortLabel.toUpperCase()}`:'SHE LEADS · OFFICIAL SELECTION'}
           </span>
 
           <h1>

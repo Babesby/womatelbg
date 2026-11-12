@@ -50,6 +50,7 @@ export default function SelectionScratchCard(){
   {offer&&<><p>Dear {offer.name?.split(' ')[0]||'participant'}, {offer.preview?'congratulations on your selection.':'congratulations on your selection.'}</p>
    <div className="wsc-card"><span>YOUR PERSONAL OFFER CODE</span><div className="wsc-reveal"><strong aria-label={revealed?'Your offer code':'Offer code concealed'}>{revealed?offer.code:'••••••••••••'}</strong>{!revealed&&<canvas ref={canvas} className="wsc-canvas" aria-label="Scratch to reveal your offer code" onPointerDown={down} onPointerMove={e=>{if(painting.current)scratch(e)}} onPointerUp={()=>painting.current=false} onPointerCancel={()=>painting.current=false}/>}</div>
    {!revealed?<button type="button" className="wsc-textButton" onClick={()=>setRevealed(true)}>Reveal without scratching</button>:<small role="status">Code revealed. Keep it private.</small>}
+   {revealed&&!offer.preview&&<p className="wsc-selectionCardAction"><a href="/selected" className="wsc-primary">Create my “I’m Selected” card <ArrowRight size={16}/></a><small>Use your application email and the code revealed above. Upload your photo, then download or share your official selection image—the same process used by Cohort 2.</small></p>}
    </div>
    <div className="wsc-expiry"><LockKeyhole size={17}/> Accept before <strong>{expiry(offer.expires_at)}</strong></div>
    <div className="wsc-requirements"><h2>Before you continue</h2>
