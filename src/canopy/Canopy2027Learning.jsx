@@ -1,6 +1,7 @@
 import React,{useEffect,useMemo,useState} from 'react';
 import {ArrowLeft,ArrowRight,Award,BookOpen,Check,CheckCircle2,ClipboardCheck,ExternalLink,FileText,Globe2,GraduationCap,Leaf,Lock,ShieldCheck,Sparkles} from 'lucide-react';
 import {CanopyLessonActivity} from './CanopyExperience';
+import Canopy2027Graduation from './Canopy2027Graduation';
 import {getCanopy2027LessonActivity,getCanopy2027LessonSources} from './canopyCurriculumSources2027';
 import {getCanopy2027Curriculum} from './canopyCurricula2027';
 import {canopyPost2026Runtime} from './canopyCohortRuntime2027';
@@ -185,7 +186,7 @@ export default function Canopy2027Learning({viewer,cohortKey,section='overview',
  if(section==='progress')return <Progress modules={modules} data={data} done={done}/>;
  if(section==='portfolio')return <Impact modules={modules} data={data} done={done}/>;
  if(section==='missions')return <LockedArea title="Missions" copy="Your cohort Mission space will open when WOMATE publishes the Mission cycle. You will be notified in Canopy." icon={Globe2}/>;
- if(section==='graduation')return <LockedArea title="Graduation" copy="Continue through the full programme. WOMATE will publish graduation information here when the cohort closes." icon={Sparkles}/>;
+ if(section==='graduation')return <Canopy2027Graduation viewer={viewer} cohortKey={cohortKey} tester={tester} data={data}/>;
  if(section==='certificate')return <Certificate data={data}/>;
  return <Home cohort={cohort} modules={modules} data={data} done={done} tester={tester}/>;
 }

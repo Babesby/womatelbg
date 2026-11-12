@@ -41,7 +41,7 @@ function emailHtml(heading,body,ctaLabel,ctaUrl,decisionNote,selectedAsia=false,
   const cta=ctaLabel&&ctaUrl?'<p style="margin:26px 0 0"><a href="'+esc(ctaUrl)+'" style="display:inline-block;background:#073B39;color:#fff;text-decoration:none;font-weight:700;padding:12px 18px;border-radius:999px">'+esc(ctaLabel)+'</a></p>':"";
   const topBanner=selectedAsia?'<tr><td><img src="https://www.womate.org/assets/asia/selected-congratulations.avif" alt="Congratulations! You have been selected" width="640" style="width:100%;max-width:640px;height:auto;display:block;border:0"/></td></tr>':'';
   const hello=selectedAsia?'<p style="margin:0 0 18px;font-size:16px;color:#073B39;font-weight:700">Dear '+esc(recipientName?.split(' ')[0]||'participant')+',</p>':'';
-  return '<!doctype html><html><body style="margin:0;background:#f5f8f6;font-family:Arial,Helvetica,sans-serif;color:#073B39"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f5f8f6;padding:30px 14px"><tr><td align="center"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:640px;background:#fff;border:1px solid #dce8e1;border-radius:22px;overflow:hidden">'+topBanner+'<tr><td style="background:#073B39;padding:24px 28px;color:#fff"><div style="font-size:11px;font-weight:800;letter-spacing:.12em;color:#C6FF52">'+(selectedAsia?'WOMATE · SHE LEADS ASIA · COHORT 1 · 2027':'WOMATE · SHE LEADS CLIMATE MENTORSHIP')+'</div></td></tr><tr><td style="padding:34px 28px">'+hello+'<h1 style="font-size:30px;line-height:1.08;margin:0 0 16px;color:#073B39">'+esc(heading)+'</h1><div style="font-size:15px;line-height:1.7;color:#38584e">'+esc(body).replace(/\r?\n/g,"<br>")+'</div>'+note+cta+'<p style="margin:30px 0 0;padding-top:20px;border-top:1px solid #e0e9e4;font-size:12px;line-height:1.55;color:#6a7e77">WOMATE · Driving inclusive climate action with technology<br><a href="https://www.womate.org" style="color:#073B39">womate.org</a> · womatead@gmail.com</p></td></tr></table></td></tr></table></body></html>';
+  return '<!doctype html><html><body style="margin:0;background:#f5f8f6;font-family:Arial,Helvetica,sans-serif;color:#073B39"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f5f8f6;padding:30px 14px"><tr><td align="center"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:640px;background:#fff;border:1px solid #dce8e1;border-radius:22px;overflow:hidden">'+topBanner+'<tr><td style="background:#073B39;padding:24px 28px;color:#fff"><div style="font-size:11px;font-weight:800;letter-spacing:.12em;color:#C6FF52">'+(selectedAsia?'WOMATE · SHE LEADS ${region.toUpperCase()} · COHORT ${ordinal} · 2027':'WOMATE · SHE LEADS CLIMATE MENTORSHIP')+'</div></td></tr><tr><td style="padding:34px 28px">'+hello+'<h1 style="font-size:30px;line-height:1.08;margin:0 0 16px;color:#073B39">'+esc(heading)+'</h1><div style="font-size:15px;line-height:1.7;color:#38584e">'+esc(body).replace(/\r?\n/g,"<br>")+'</div>'+note+cta+'<p style="margin:30px 0 0;padding-top:20px;border-top:1px solid #e0e9e4;font-size:12px;line-height:1.55;color:#6a7e77">WOMATE · Driving inclusive climate action with technology<br><a href="https://www.womate.org" style="color:#073B39">womate.org</a> · womatead@gmail.com</p></td></tr></table></td></tr></table></body></html>';
 }
 
 // RFC 2047 subjects and base64 MIME bodies prevent broken UTF-8 characters.
@@ -62,7 +62,7 @@ function mimeSubject(value){
  if(part)words.push("=?UTF-8?B?"+mimeBase64(part)+"?=");
  return words.join(" ");
 }
-function asiaSelectionEmail(row,p,deadline,isPreview){
+function selection2027Email(row,p,deadline,isPreview){
  const safe=s=>esc(s);
  const link=(label,url,tone="lime")=>{
   const bg=tone==="lime"?"#C6FF52":"#0E4D4A";
@@ -71,18 +71,20 @@ function asiaSelectionEmail(row,p,deadline,isPreview){
  };
  const section=(step,heading,desc,button,secondary="")=>`<tr><td style="padding:0 0 17px"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-bottom:1px solid #e2eae5"><tr><td style="padding:17px 0 20px"><div style="color:#4a755f;font-size:10px;font-weight:700;letter-spacing:1.5px">${step}</div><h3 style="font-size:18px;line-height:1.35;color:#073B39;margin:8px 0 8px;font-weight:700">${heading}</h3><p style="font-size:14px;line-height:1.75;color:#415c52;margin:0">${desc}</p>${button}${secondary?`<p style="font-size:12px;line-height:1.5;color:#6b8077;margin:9px 0 0">${secondary}</p>`:""}</td></tr></table></td></tr>`;
  const firstName=String(row.recipient_name||"participant").trim().split(/\s+/)[0];
+ const isAsia=row.cohort_key==="she-leads-asia-c1-2027";
+ const region=isAsia?"Asia":"Africa",ordinal=isAsia?"1":"3",start=isAsia?"8 March 2027":"11 October 2027";
  const displayDeadline=new Intl.DateTimeFormat("en-GB",{day:"numeric",month:"long",year:"numeric",hour:"numeric",minute:"2-digit",timeZone:"UTC",timeZoneName:"short"}).format(deadline);
  const youtube="https://www.youtube.com/@womategh";
  const group="https://chat.whatsapp.com/Kl9MuJX2TrVEzKoCSx8DOU";
  const channel="https://whatsapp.com/channel/0029Vb8vqDA0rGiKGUnnDA3A";
  const scratch=p.scratch_path;
- const preheader="Your place in She Leads Asia Cohort 1, 2027. Please accept your offer and prepare for the journey.";
- const intro=`Following the review of applications for the <strong>She Leads Climate Mentorship Programme 2027 — Asia Cohort 1</strong>, we are delighted to officially welcome you as a <strong>selected participant</strong>.`;
+ const preheader="Your place in She Leads "+region+" Cohort "+ordinal+", 2027. Accept your offer and celebrate your selection.";
+ const intro=`Following the review of applications for the <strong>She Leads Climate Mentorship Programme 2027 — ${region} Cohort ${ordinal}</strong>, we are delighted to officially welcome you as a <strong>selected participant</strong>.`;
  const previewNote=isPreview?`<tr><td style="background:#eef4e5;padding:14px 34px;color:#315d46;font-size:12px;font-weight:700">PREVIEW ONLY — THIS IS NOT AN OFFICIAL ADMISSION OR RESERVED SEAT.</td></tr>`:"";
  // Keep these five labels identical to CANOPY_2027_CURRICULA['she-leads-asia-c1-2027'].modules.
- const modules=["Climate risk across Asian communities","Gender-responsive resilience & adaptation","Regional climate solutions & responsible innovation","Governance, finance & public influence","Cross-regional leadership & professional pathways"];
+ const modules=isAsia?["Climate risk across Asian communities","Gender-responsive resilience & adaptation","Regional climate solutions & responsible innovation","Governance, finance & public influence","Cross-regional leadership & professional pathways"]:["Climate realities, risk & evidence","Gender, justice & inclusive adaptation","Climate governance, policy & public voice","Community action, innovation & delivery","Leadership, collaboration & professional pathways"];
  const moduleRows=modules.map((title,i)=>`<tr><td style="padding:10px 0;border-bottom:1px solid #e5eee8"><span style="display:inline-block;min-width:36px;color:#5e8665;font-size:12px;font-weight:800">${String(i+1).padStart(2,"0")}</span><span style="color:#153f34;font-weight:700;font-size:14px">${title}</span></td></tr>`).join("");
- return `<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><title>WOMATE She Leads Asia Selection</title></head><body style="margin:0;padding:0;background:#f2f6f2;color:#123d32;font-family:Arial,Helvetica,sans-serif">
+ return `<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><title>WOMATE She Leads ${region} Selection</title></head><body style="margin:0;padding:0;background:#f2f6f2;color:#123d32;font-family:Arial,Helvetica,sans-serif">
  <div style="display:none;font-size:1px;color:#f2f6f2;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden">${preheader}</div>
  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f2f6f2"><tr><td align="center" style="padding:30px 12px">
  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="width:100%;max-width:640px;background:#fff;border:1px solid #e1e9e4">
@@ -96,8 +98,8 @@ function asiaSelectionEmail(row,p,deadline,isPreview){
  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin:24px 0;background:#f1f8e8;border-left:4px solid #a6dc55"><tr><td style="padding:20px 22px"><div style="font-size:10px;font-weight:800;color:#31704b;letter-spacing:1.4px">AT WOMATE</div><p style="color:#073B39;font:700 18px/1.5 Georgia,'Times New Roman',serif;margin:9px 0 12px">We do not see women simply as beneficiaries of climate programmes. We see women as climate actors, leaders, innovators and changemakers.</p><p style="font-size:14px;line-height:1.6;color:#385d46;font-weight:700;margin:0">And now, you are part of that community.</p></td></tr></table>
  </td></tr>
  <tr><td style="padding:16px 34px 30px">
- <div style="font-size:11px;letter-spacing:1.6px;color:#4a795c;font-weight:800">YOUR SHE LEADS JOURNEY</div><h2 style="font:700 25px/1.25 Georgia,'Times New Roman',serif;color:#073B39;margin:10px 0 13px">Welcome to Asia Cohort 1.</h2>
- <p style="font-size:14px;line-height:1.8;color:#425e52;margin:0 0 13px">Beginning <strong>8 March 2027</strong>, your five-week mentorship experience combines weekly live sessions, Canopy lessons, practical assignments, expert insights and a community of emerging climate leaders.</p>
+ <div style="font-size:11px;letter-spacing:1.6px;color:#4a795c;font-weight:800">YOUR SHE LEADS JOURNEY</div><h2 style="font:700 25px/1.25 Georgia,'Times New Roman',serif;color:#073B39;margin:10px 0 13px">Welcome to ${region} Cohort ${ordinal}.</h2>
+ <p style="font-size:14px;line-height:1.8;color:#425e52;margin:0 0 13px">Beginning <strong>${start}</strong>, your five-week mentorship experience combines weekly live sessions, Canopy lessons, practical assignments, expert insights and a community of emerging climate leaders.</p>
  <table role="presentation" cellspacing="0" cellpadding="0" width="100%" style="margin:16px 0 21px">${moduleRows}</table>
  <p style="font-size:14px;line-height:1.8;color:#425e52;margin:0">Completing this journey takes more than attending sessions. Work through each module, engage actively, and submit your assignments within the published timelines.</p>
  </td></tr>
@@ -106,10 +108,11 @@ function asiaSelectionEmail(row,p,deadline,isPreview){
  <h2 style="font:700 27px/1.25 Georgia,'Times New Roman',serif;color:#073B39;margin:9px 0 11px">Your onboarding starts here.</h2>
  <p style="font-size:14px;line-height:1.75;color:#415c52;margin:0 0 12px">Your place is offered for a limited time. Confirm it first, then complete the following connections so you are ready for the first week.</p>
  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:17px 0 24px;background:#073B39;border-radius:10px"><tr><td style="padding:19px 21px;color:#fff"><div style="color:#C6FF52;font-size:10px;font-weight:800;letter-spacing:1.5px">ACCEPT YOUR OFFER BY</div><div style="font-size:18px;font-weight:800;line-height:1.4;margin-top:6px">${safe(displayDeadline)}</div><p style="font-size:12px;line-height:1.6;color:#d0e6dc;margin:9px 0 0">This seven-day deadline is personal to your selection email.</p></td></tr></table>
- ${section("STEP 01 · MAKE IT OFFICIAL","Reveal your selection card and accept your offer.","Open your secure personal card, scratch to reveal your unique selection code, and confirm acceptance before your deadline.",link("REVEAL MY SELECTION CARD",scratch),"Keep this private link and the code it reveals to yourself.")}
- ${section("STEP 02 · MANDATORY","Subscribe to WOMATE on YouTube.","Our weekly She Leads sessions and learning broadcasts take place on our official YouTube channel. Subscribe before the programme begins.",link("SUBSCRIBE TO WOMATE",youtube,"teal"))}
- ${section("STEP 03 · MANDATORY","Join the official Asia cohort group.","The Asia cohort WhatsApp group is required for session reminders, programme announcements and community connection.",link("JOIN ASIA COHORT GROUP",group,"teal"))}
- ${section("STEP 04 · AFTER ACCEPTANCE","Enter your Canopy learning space.","Once you accept your offer, sign in with the same email address used in your application, finish onboarding and confirm access to your learning space.",link("ENTER WOMATE CANOPY","https://www.womate.org/canopy","teal"))}
+ ${section("STEP 01 · ACCEPT YOUR PLACE","Reveal your selection code and accept your offer.","Open your secure personal card, scratch to reveal the code associated with your admission, and confirm your acceptance before the deadline.",link("REVEAL & ACCEPT MY OFFER",scratch),"Keep your secure selection link and offer code private.")}
+ ${section("STEP 02 · CELEBRATE YOUR SELECTION","Create and share your official ‘I Have Been Selected’ image.","Use your application email and the same selection code at the WOMATE selection studio. Upload your photograph, adjust your portrait, download the official ${region} Cohort ${ordinal} graphic, and celebrate on LinkedIn, Instagram, Facebook or your preferred platform.",link("CREATE MY OFFICIAL SELECTION IMAGE","https://www.womate.org/selected","teal"),"Sharing your image is encouraged, not mandatory. Do not post your private selection code or scratch link.")}
+ ${section("STEP 03 · MANDATORY","Subscribe to WOMATE on YouTube.","Our weekly She Leads sessions and learning broadcasts take place on our official YouTube channel. Subscribe before the programme begins.",link("SUBSCRIBE TO WOMATE",youtube,"teal"))}
+ ${isAsia?section("STEP 04 · MANDATORY","Join the official Asia cohort group.","The WhatsApp group is required for session reminders, programme announcements and community connection.",link("JOIN ASIA COHORT GROUP",group,"teal")):section("STEP 04 · COMMUNICATIONS","Watch for your official Africa cohort group invitation.","WOMATE will provide the approved Africa Cohort 3 group invitation separately. Do not join an unverified group or use the Asia cohort link.","")}
+ ${section("STEP 05 · AFTER ACCEPTANCE","Enter your Canopy learning space.","Once you accept your offer, sign in with the same application email, finish onboarding and confirm access to your own cohort's learning space.",link("ENTER WOMATE CANOPY","https://www.womate.org/canopy","teal"))}
  <div style="padding:13px 17px;border-radius:8px;background:#eaf2e8"><p style="font-size:12px;color:#496859;margin:0 0 5px"><strong>OPTIONAL COMMUNITY CHANNEL</strong></p><p style="font-size:13px;line-height:1.6;color:#496859;margin:0">You may also <a href="${channel}" style="color:#0E4D4A;font-weight:700;text-decoration:underline">follow WOMATE’s WhatsApp channel</a> for wider news and opportunities. This is not a condition of your selection.</p></div>
  </td></tr>
  <tr><td style="padding:32px 34px">
@@ -209,11 +212,13 @@ Deno.serve(async function(req){
       const expiryTime=new Date(offerTime.getTime()+7*24*60*60*1000);
       if(row.template_key==="selected")p.offer_deadline=expiryTime.toUTCString();
       const selectedAsia=row.template_key==="selected"&&row.cohort_key==="she-leads-asia-c1-2027";
-      const testPreview=selectedAsia&&p.test_preview===true&&p.participant_view!==true;
-      if(selectedAsia&&!p.scratch_path)throw new Error("Missing secure Asia selection scratch link; delivery held");
-      const subject=testPreview?"[TEST PREVIEW — NOT AN ADMISSION] WOMATE She Leads Asia selection":selectedAsia?"Congratulations — Your WOMATE She Leads Asia selection":apply(tpl.subject_template,p);
-      const heading=testPreview?"Your selection experience — preview":selectedAsia?"Congratulations. You have been selected.":apply(tpl.heading,p);
-      const bodyText=selectedAsia?[
+      const selectedAfrica=row.template_key==="selected"&&row.cohort_key==="she-leads-climate-c3-2027";
+      const selected2027=selectedAsia||selectedAfrica;
+      const testPreview=selected2027&&p.test_preview===true&&p.participant_view!==true;
+      if(selected2027&&!p.scratch_path)throw new Error("Missing secure 2027 selection scratch link; delivery held");
+      const subject=testPreview?"[TEST PREVIEW — NOT AN ADMISSION] WOMATE selection":selected2027?"Congratulations — Your WOMATE She Leads "+(selectedAsia?"Asia":"Africa")+" selection":apply(tpl.subject_template,p);
+      const heading=testPreview?"Your selection experience — preview":selected2027?"Congratulations. You have been selected.":apply(tpl.heading,p);
+      const bodyText=selected2027?[
         testPreview?"TEST PREVIEW ONLY — This message demonstrates the selection and scratch-card experience. It is not an admissions decision or a reserved place.":"We are delighted to offer you a place in She Leads Asia · Cohort 1, 2027.",
         "",
         "YOUR SELECTION — ACTION REQUIRED",
@@ -234,9 +239,9 @@ Deno.serve(async function(req){
         "With warm congratulations,",
         "The WOMATE Team"
       ].join("\n"):apply(tpl.body_template,p);
-      const ctaLabel=testPreview?"Open test scratch card":selectedAsia?"Open my secure selection card":apply(tpl.cta_label||"",p);
-      const ctaUrl=selectedAsia?p.scratch_path:apply(tpl.cta_path||"",p);
-      const html=selectedAsia?asiaSelectionEmail(row,p,expiryTime,testPreview):emailHtml(heading,bodyText,ctaLabel,ctaUrl,String(p.decision_note||""),false,row.recipient_name);
+      const ctaLabel=testPreview?"Open test scratch card":selected2027?"Open my secure selection card":apply(tpl.cta_label||"",p);
+      const ctaUrl=selected2027?p.scratch_path:apply(tpl.cta_path||"",p);
+      const html=selected2027?selection2027Email(row,p,expiryTime,testPreview):emailHtml(heading,bodyText,ctaLabel,ctaUrl,String(p.decision_note||""),false,row.recipient_name);
       const msg=await sendGmail(accessToken,row.recipient_email,subject,html);
       gmailAccepted=true;
       // Atomic DB finalization updates the real deadline, selection-card

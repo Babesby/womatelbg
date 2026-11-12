@@ -43,4 +43,31 @@ check(help.includes('matchCanopy2027HelpQuestion'),'Ask Canopy routes 2027 to co
 check(help.includes('matchCanopyHelpQuestion(text)'),'Cohort 2 help answers remain intact');
 check(helpSource.includes('getCanopy2027Curriculum(cohortKey)'),'2027 Help derives actual region-specific curriculum');
 check(helpSource.includes('canopyPost2026Runtime(cohortKey)'),'2027 Help derives actual region-specific schedule');
+
+const app=read('src/canopy/CanopyApp.jsx'),graduate=read('src/canopy/CanopyGraduateOpportunities.jsx');
+const gradAdmin=read('src/canopy/CanopyGraduatePlacementAdmin.jsx');
+const cohortGraduation=read('src/canopy/Canopy2027Graduation.jsx');
+const cohortAdmin=read('src/canopy/Canopy2027AdminWorkspace.jsx');
+const graduateSchema=read('supabase/migrations/20261112110000_graduate_placements.sql');
+const graduationSchema=read('supabase/migrations/20261112111000_2027_graduation_parity.sql');
+const criteria=read('supabase/migrations/20261112112000_2027_certificate_thresholds.sql');
+const scratchGeneral=read('supabase/migrations/20261112113000_both_2027_selection_scratch.sql');
+const mail=read('supabase/functions/womate-admissions-mail/index.ts');
+check(app.includes('GraduateOpportunitiesNotice'),'Graduate-only notice is mounted');
+check(app.includes('path===\'/canopy/graduate-opportunities\''),'Graduate applications route exists');
+check(app.includes('path===\'/canopy/manage/graduate-placements\''),'Graduate admin review route exists');
+check(app.includes('path===\'/canopy/test/admin-workspace\''),'Read-only 2027 admin tester route exists');
+check(app.includes('path===\'/canopy/manage/graduation-2027\''),'2027 graduation admin route exists');
+check(graduate.includes('applyGraduatePlacement')&&graduate.includes('consent_share'),'Graduate form requires explicit partner-sharing consent');
+check(gradAdmin.includes('getAdminGraduatePlacements')&&gradAdmin.includes('consented'),'Manual consented-profile curation exists');
+check(graduateSchema.includes('enable row level security')&&graduateSchema.includes('private.womate_is_verified_graduate'),'Graduate eligibility enforced on server');
+check(graduateSchema.includes('on conflict(fingerprint) do nothing'),'Graduate notification is deduplicated');
+check(cohortGraduation.includes('PortraitStudio')&&cohortGraduation.includes('GraduationDanceWelcome'),'2026 graduation portrait and dance are reused');
+check(cohortAdmin.includes('Canopy2027GraduationAdmin'),'2027 admin graduation moderation is routed');
+check(graduationSchema.includes('certificate_required_lessons')&&graduationSchema.includes('canopy_27_graduation_view'),'2027 graduation uses configured requirements');
+check(criteria.includes('certificate_required_live_attendance'),'2027 certificate issuance respects configured attendance');
+check(scratchGeneral.includes('she-leads-climate-c3-2027'),'Africa receives private scratch links');
+check(mail.includes('CREATE MY OFFICIAL SELECTION IMAGE'),'Selection email encourages card generation and social sharing');
+check(mail.includes('Climate realities, risk & evidence'),'Africa-specific selection email curriculum');
+
 if(process.exitCode)process.exit(process.exitCode);

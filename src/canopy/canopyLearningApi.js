@@ -44,3 +44,8 @@ export const saveExpertAssessment=(course,module,title,instructions,s)=>rpc('wom
 
 export const getCohortMissionGroups=(cohort,s)=>rpc('canopy_admin_cohort_mission_groups',{p_cohort_key:cohort},s);
 export const getCohortFundingCalls=(cohort,s)=>rpc('canopy_admin_cohort_funding_calls',{p_cohort_key:cohort},s);
+
+export const get2027Graduation=(cohort,s)=>rpc('canopy_27_graduation_view',{p_cohort:cohort},s);
+export const save2027GraduationReflection=(cohort,name,note,s)=>rpc('canopy_27_graduation_reflect',{p_cohort:cohort,p_name:name,p_reflection:note},s);
+export const get2027AdminGraduationReflections=(cohort,s)=>rpc('canopy_27_admin_graduation_reflections',{p_cohort:cohort},s);
+export const moderate2027GraduationReflection=(cohort,user,state,s)=>rpc('canopy_27_admin_moderate_graduation_reflection',{p_cohort:cohort,p_user:user,p_state:state},s);
