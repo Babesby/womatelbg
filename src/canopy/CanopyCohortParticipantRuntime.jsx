@@ -89,7 +89,7 @@ export default function CanopyCohortParticipantRuntime({viewer,cohortKey,path='/
   </main>;
 }
 
-export function CanopyTesterRuntimeRouter(){
+export function CanopyTesterRuntimeRouter({viewer}){
   const params=new URLSearchParams(window.location.search);
   const cohortKey=params.get('cohort');
   const view=params.get('view')||'overview';
@@ -97,7 +97,8 @@ export function CanopyTesterRuntimeRouter(){
   if(!runtime)return <main className="canopyDashboard canopyCohortRuntime"><section className="canopyRuntimePlaceholder" role="status"><ShieldCheck/><span className="canopyEyebrow">CANOPY TESTER</span><h2>Choose a cohort to preview.</h2><p>No preview cohort is assumed automatically. Select the exact cohort you want to inspect.</p><button type="button" className="canopySecondary" onClick={()=>go('/canopy/test/cohort-preview')}>Choose cohort</button></section></main>;
   const fakePath={
     overview:'/canopy/classroom',course:'/canopy/course/she-leads',assignments:'/canopy/assignments',
-    schedule:'/canopy/schedule',progress:'/canopy/progress',certificate:'/canopy/certificate'
+    schedule:'/canopy/schedule',progress:'/canopy/progress',certificate:'/canopy/certificate',
+    portfolio:'/canopy/portfolio',missions:'/canopy/opportunities',resources:'/canopy/resources',help:'/canopy/help',graduation:'/canopy/graduation'
   }[view]||'/canopy/classroom';
-  return <CanopyCohortParticipantRuntime cohortKey={runtime.cohortKey} path={fakePath} tester viewer={null}/>;
+  return <CanopyCohortParticipantRuntime cohortKey={runtime.cohortKey} path={fakePath} tester viewer={viewer}/>;
 }
