@@ -49,3 +49,21 @@ export const get2027Graduation=(cohort,s)=>rpc('canopy_27_graduation_view',{p_co
 export const save2027GraduationReflection=(cohort,name,note,s)=>rpc('canopy_27_graduation_reflect',{p_cohort:cohort,p_name:name,p_reflection:note},s);
 export const get2027AdminGraduationReflections=(cohort,s)=>rpc('canopy_27_admin_graduation_reflections',{p_cohort:cohort},s);
 export const moderate2027GraduationReflection=(cohort,user,state,s)=>rpc('canopy_27_admin_moderate_graduation_reflection',{p_cohort:cohort,p_user:user,p_state:state},s);
+
+export const get2027Mission=(cohort,s)=>rpc('canopy_27_mission_view',{p_cohort:cohort},s);
+export const respond2027Mission=(cohort,accept,s)=>rpc('canopy_27_mission_respond',{p_cohort:cohort,p_accept:accept},s);
+export const message2027Mission=(cohort,body,s)=>rpc('canopy_27_mission_message',{p_cohort:cohort,p_message:body},s);
+export const edit2027Mission=(cohort,name,choice,brief,s)=>rpc('canopy_27_mission_update',{p_cohort:cohort,p_name:name,p_choice:choice,p_brief:brief},s);
+export const submit2027MissionReport=(cohort,summary,proof,s)=>rpc('canopy_27_mission_submit_report',{p_cohort:cohort,p_summary:summary,p_proof:proof},s);
+export const submit2027MissionTeam=(cohort,folder,s)=>rpc('canopy_27_mission_submit_team',{p_cohort:cohort,p_folder:folder},s);
+export const publish2027Mission=(cohort,deadline,s)=>rpc('canopy_27_mission_publish',{p_cohort:cohort,p_deadline:deadline},s);
+export const form2027MissionTeams=(cohort,s)=>rpc('canopy_27_mission_form_teams',{p_cohort:cohort},s);
+
+export const get2027Support=(cohort,s)=>rpc('canopy_27_support_view',{p_cohort:cohort},s);
+export const submit2027Complaint=(cohort,subject,message,s)=>rpc('canopy_27_submit_complaint',{p_cohort:cohort,p_subject:subject,p_message:message},s);
+export const send2027SupportAction=(cohort,user,kind,subject,message,s)=>rpc('canopy_27_admin_send_action',{p_cohort:cohort,p_user:user,p_kind:kind,p_subject:subject,p_message:message},s);
+export const reply2027Complaint=(cohort,id,reply,resolved,s)=>rpc('canopy_27_admin_reply_complaint',{p_cohort:cohort,p_id:id,p_reply:reply,p_resolved:resolved},s);
+export const get2027Inactivity=(cohort,days,s)=>rpc('canopy_27_admin_inactivity',{p_cohort:cohort,p_days:days},s);
+
+export const get2027ModuleSchedule=(cohort,s)=>rpc('canopy_27_module_schedule',{p_cohort:cohort},s);
+export const publish2027ModuleSchedule=(cohort,module,data,s)=>rpc('canopy_27_admin_publish_module_schedule',{p_cohort:cohort,p_module:module,p_live:data.live,p_speaker_unlock:data.unlock,p_due:data.due,p_speaker_name:data.speaker,p_speaker_role:data.role||'',p_live_url:data.url,p_poster:data.poster||null,p_grace:data.grace||null},s);
