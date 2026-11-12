@@ -134,7 +134,7 @@ function drawSubject(ctx,subject,settings,w,h){
  ctx.drawImage(subject,x,y,dw,dh);
 }
 
-function drawImageCard(canvas,frame,subject,cap,person,capSettings,name,withCap=true,background='deep-green'){
+function drawImageCard(canvas,frame,subject,cap,person,capSettings,name,withCap=true,background='deep-green',cohortLabel='COHORT 2 · CLASS OF 2026'){
  if(!canvas||!frame||!subject)return;
  const ctx=canvas.getContext('2d');if(!ctx)return;
  const {width:w,height:h}=SIZE;
@@ -182,7 +182,7 @@ function drawImageCard(canvas,frame,subject,cap,person,capSettings,name,withCap=
  let f=64;ctx.font=`800 ${f}px Arial,sans-serif`;
  while(f>35&&ctx.measureText(full).width>w-140){f-=2;ctx.font=`800 ${f}px Arial,sans-serif`;}
  ctx.fillText(full.slice(0,100),70,h-155);
- ctx.fillStyle='#e8eedb';ctx.font='400 31px Arial,sans-serif';ctx.fillText('COHORT 2  ·  CLASS OF 2026',70,h-90);
+ ctx.fillStyle='#e8eedb';ctx.font='400 31px Arial,sans-serif';ctx.fillText(String(cohortLabel).toUpperCase(),70,h-90);
  ctx.fillStyle='#c6ff52';ctx.fillRect(70,h-60,w-140,6);
 }
 
@@ -220,7 +220,7 @@ function GradVideo(){
  </section>;
 }
 
-function PortraitStudio({graduateName}){
+export function PortraitStudio({graduateName,cohortLabel='COHORT 2 · CLASS OF 2026'}){
  const canvasRef=useRef(null),stageRef=useRef(null),fileRef=useRef(null),objectUrlRef=useRef(null),dragRef=useRef(null);
  const sourcePhotoRef=useRef(null),subjectRef=useRef(null),capRef=useRef(null),frameRef=useRef(null);
  const [photoLoaded,setPhotoLoaded]=useState(false),[capLoaded,setCapLoaded]=useState(false),[frameLoaded,setFrameLoaded]=useState(false),[processing,setProcessing]=useState(false);
@@ -244,7 +244,7 @@ function PortraitStudio({graduateName}){
   frameImg.src=ASSET+'portrait-frame-v6.webp';
   return()=>{mounted=false;capImg.onload=null;capImg.onerror=null;frameImg.onload=null;frameImg.onerror=null;};
  },[]);
- useEffect(()=>{drawImageCard(canvasRef.current,frameRef.current,subjectRef.current,capRef.current,person,cap,graduateName,withCap,background);},[photoLoaded,capLoaded,frameLoaded,person,cap,graduateName,photoVersion,background,withCap]);
+ useEffect(()=>{drawImageCard(canvasRef.current,frameRef.current,subjectRef.current,capRef.current,person,cap,graduateName,withCap,background,cohortLabel);},[photoLoaded,capLoaded,frameLoaded,person,cap,graduateName,photoVersion,background,withCap,cohortLabel]);
  const selectFile=()=>{
   if(processing||!fileRef.current)return;
   fileRef.current.value='';
@@ -345,12 +345,12 @@ function PortraitStudio({graduateName}){
   if(!frameRef.current||(withCap&&!capRef.current)){setNotice('The portrait decoration is still loading. Please try again.');return;}
   setExporting(true);setNotice('');
   const temp=document.createElement('canvas');
-  drawImageCard(temp,frameRef.current,subjectRef.current,capRef.current,person,cap,graduateName,withCap,background);
+  drawImageCard(temp,frameRef.current,subjectRef.current,capRef.current,person,cap,graduateName,withCap,background,cohortLabel);
   try{
    const blob=await new Promise(resolve=>temp.toBlob(resolve,'image/png'));
    if(!blob)throw new Error('Unable to export portrait');
    const url=URL.createObjectURL(blob);
-   const anchor=document.createElement('a');anchor.href=url;anchor.download='WOMATE-Cohort-2-Graduate.png';document.body.appendChild(anchor);anchor.click();anchor.remove();
+   const anchor=document.createElement('a');anchor.href=url;anchor.download='WOMATE-'+String(cohortLabel).replace(/[^a-z0-9]+/gi,'-')+'-Graduate.png';document.body.appendChild(anchor);anchor.click();anchor.remove();
    setTimeout(()=>URL.revokeObjectURL(url),1000);
    setNotice('Your graduation portrait has been saved!');
   }catch{
@@ -423,11 +423,11 @@ function PortraitStudio({graduateName}){
 }
 
 const DANCE_VIDEO='BbOao2XdIMk';
-function GraduationDanceWelcome({onClose,tester=false}){
+export function GraduationDanceWelcome({onClose,tester=false,cohortLabel='COHORT 2'}){
  useEffect(()=>{const key=e=>{if(e.key==='Escape')onClose()};window.addEventListener('keydown',key);return()=>window.removeEventListener('keydown',key)},[onClose]);
  return <div className="cgrad-dance-overlay" role="presentation" onMouseDown={e=>{if(e.target===e.currentTarget)onClose()}}>
   <section className="cgrad-dance-dialog" role="dialog" aria-modal="true" aria-labelledby="cgrad-dance-title">
-   <div className="cgrad-dance-head"><div><span>{tester?'TESTER PREVIEW · REPLAY AVAILABLE':'SHE LEADS CLIMATE · COHORT 2'}</span><h2 id="cgrad-dance-title">You made it. 💃🏽💃🏽🥳</h2><p>A moment to celebrate everything you have achieved.</p></div><button type="button" onClick={onClose} aria-label="Close celebration video"><X size={20}/></button></div>
+   <div className="cgrad-dance-head"><div><span>{tester?'TESTER PREVIEW · REPLAY AVAILABLE':'SHE LEADS CLIMATE · '+cohortLabel}</span><h2 id="cgrad-dance-title">You made it. 💃🏽💃🏽🥳</h2><p>A moment to celebrate everything you have achieved.</p></div><button type="button" onClick={onClose} aria-label="Close celebration video"><X size={20}/></button></div>
    <div className="cgrad-dance-video"><iframe title="WOMATE graduation celebration dance" src={`https://www.youtube.com/embed/${DANCE_VIDEO}?autoplay=1&mute=0&playsinline=1&rel=0`} allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowFullScreen referrerPolicy="strict-origin-when-cross-origin"/></div>
    <div className="cgrad-dance-actions"><button type="button" onClick={onClose}>Continue to graduation <Check size={16}/></button></div>
   </section>

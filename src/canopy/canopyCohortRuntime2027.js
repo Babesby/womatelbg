@@ -25,6 +25,7 @@ export const CANOPY_POST_2026_RUNTIMES=Object.freeze({
     programmeOpenDate:'2027-10-04',
     moduleReleaseDates:{'01':'2027-10-11','02':'2027-10-18','03':'2027-10-25','04':'2027-11-01','05':'2027-11-08'},
     graduationDate:'2027-11-15',
+    speakerGraphics:Object.freeze({}), // Add approved weekly speaker graphics once supplied
     admissions:{opens:'2027-09-10',closes:'2027-09-20',decision:'2027-09-26',acceptanceDaysAfterEmail:7,onboardingDeadline:'2027-10-10',seatCapacity:1000}
   }),
   'she-leads-asia-c1-2027':Object.freeze({
@@ -50,6 +51,7 @@ export const CANOPY_POST_2026_RUNTIMES=Object.freeze({
     programmeOpenDate:'2027-03-01',
     moduleReleaseDates:{'01':'2027-03-08','02':'2027-03-15','03':'2027-03-22','04':'2027-03-29','05':'2027-04-05'},
     graduationDate:'2027-04-12',
+    speakerGraphics:Object.freeze({}), // Add approved weekly speaker graphics once supplied
     timezoneAware:true,
     admissions:{opens:'2027-01-01',closes:'2027-02-15',decision:'2027-02-22',acceptanceDaysAfterEmail:7,onboardingDeadline:'2027-03-07',seatCapacity:1000},
     languageSupport:'planned_evaluation'

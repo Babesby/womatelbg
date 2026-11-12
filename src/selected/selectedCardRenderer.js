@@ -105,16 +105,54 @@ async function drawLogo(ctx){
   }
 }
 
+
+const SELECTED_2027_VARIANTS={
+ 'she-leads-climate-c3-2027':{region:'AFRICA',edition:'COHORT 03 · 2027',deep:'#073B39',mid:'#126154',accent:'#C6FF52',paper:'#F7F8F0',motto:'ROOTED IN ACTION. READY TO LEAD.',art:'rings'},
+ 'she-leads-asia-c1-2027':{region:'ASIA',edition:'COHORT 01 · 2027',deep:'#103C3E',mid:'#19766F',accent:'#C6FF52',paper:'#F4FAF4',motto:'CONNECTED BY PURPOSE. LEADING CHANGE.',art:'routes'}
+};
+async function renderSelected2027(canvas,props,v){
+ const ctx=canvas.getContext('2d');canvas.width=1080;canvas.height=1080;
+ const g=ctx.createLinearGradient(0,0,1080,400);g.addColorStop(0,v.deep);g.addColorStop(1,v.mid);
+ ctx.fillStyle=v.paper;ctx.fillRect(0,0,1080,1080);ctx.fillStyle=g;ctx.fillRect(0,0,1080,345);
+ ctx.save();ctx.strokeStyle='rgba(198,255,82,.17)';ctx.lineWidth=1.5;
+ if(v.art==='rings'){for(let i=0;i<8;i++){ctx.beginPath();ctx.arc(1030,150,90+i*33,0,Math.PI*2);ctx.stroke()}}
+ else for(let i=0;i<9;i++){ctx.beginPath();ctx.moveTo(520+i*34,-30);ctx.bezierCurveTo(400+i*40,130,970-i*17,200,800+i*25,350);ctx.stroke()}
+ ctx.restore();
+ ctx.fillStyle=v.accent;ctx.font='800 19px Arial, sans-serif';ctx.fillText('WOMATE  /  SHE LEADS',66,72);
+ ctx.fillStyle='#fff';ctx.font='700 73px Georgia, serif';ctx.fillText('I HAVE BEEN',66,165);ctx.fillText('SELECTED.',66,250);
+ ctx.fillStyle=v.accent;ctx.font='700 22px Arial, sans-serif';ctx.fillText(v.region+' · '+v.edition,68,310);
+ ctx.fillRect(66,377,78,5);ctx.fillStyle=v.deep;ctx.font='800 17px Arial, sans-serif';ctx.fillText('OFFICIALLY SELECTED',66,420);
+ const px=66,py=456,pw=389,ph=405;ctx.save();roundedRect(ctx,px,py,pw,ph,25);ctx.clip();
+ if(props.photo)drawCover(ctx,props.photo,px,py,pw,ph,props.zoom,props.offsetX,props.offsetY);
+ else{ctx.fillStyle='#DDE9DF';ctx.fillRect(px,py,pw,ph);ctx.fillStyle='#B0C9BD';ctx.beginPath();ctx.arc(260,600,76,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.ellipse(260,830,165,135,0,0,Math.PI*2);ctx.fill()}ctx.restore();
+ ctx.strokeStyle='rgba(10,70,60,.18)';ctx.lineWidth=2;roundedRect(ctx,px,py,pw,ph,25);ctx.stroke();
+ ctx.fillStyle=v.deep;ctx.font='800 17px Arial, sans-serif';ctx.fillText('SELECTED PARTICIPANT',494,492);
+ const name=String(props.fullName||'PARTICIPANT').trim().toUpperCase();const size=fitText(ctx,name,500,57,29);
+ ctx.font='700 '+size+'px Arial, sans-serif';const lines=wrapText(ctx,name,505).slice(0,3);lines.forEach((line,i)=>ctx.fillText(line,494,555+i*(size+9)));
+ const y=555+(lines.length-1)*(size+9);
+ ctx.fillStyle=v.deep;ctx.font='400 23px Arial, sans-serif';
+ const programme=String(props.programmeName||'She Leads Climate Mentorship Programme');
+ wrapText(ctx,programme,500).slice(0,3).forEach((line,i)=>ctx.fillText(line,494,y+57+i*32));
+ ctx.fillStyle=v.mid;ctx.font='800 20px Arial, sans-serif';wrapText(ctx,String(props.cohortLabel||v.edition).toUpperCase(),500).slice(0,2).forEach((line,i)=>ctx.fillText(line,494,Math.min(790,y+178)+i*29));
+ ctx.fillStyle=v.deep;ctx.font='800 17px Arial, sans-serif';ctx.fillText(v.motto,66,908);
+ ctx.fillStyle=v.deep;ctx.fillRect(0,939,1080,141);ctx.fillStyle=v.accent;ctx.fillRect(66,969,56,4);
+ ctx.fillStyle='#fff';ctx.font='800 37px Arial, sans-serif';ctx.fillText('WOMATE',66,1020);ctx.font='400 16px Arial, sans-serif';ctx.fillText('WOMEN IN CLIMATE',66,1047);
+ ctx.textAlign='right';ctx.fillStyle=v.accent;ctx.font='700 20px Arial, sans-serif';ctx.fillText('womate.org',1012,1020);ctx.textAlign='left';
+}
+
 export async function renderSelectedCard(canvas,{
   fullName,
   programmeName,
   cohortLabel,
+  programmeSlug,
   photo,
   zoom=1,
   offsetX=0,
   offsetY=0
 }){
   if(!canvas) return;
+  const variant=SELECTED_2027_VARIANTS[String(programmeSlug||'')];
+  if(variant)return renderSelected2027(canvas,{fullName,programmeName,cohortLabel,photo,zoom,offsetX,offsetY},variant);
 
   const ctx=canvas.getContext('2d');
 

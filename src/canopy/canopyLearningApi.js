@@ -26,6 +26,9 @@ export const adminReviewAssessment=(id,decision,score,feedback,s)=>rpc('womate_c
 export const getCohortWorkspace=(cohort,s)=>rpc('canopy_27_my_workspace',{p_cohort:cohort},s);
 export const completeCohortLesson=(cohort,id,s)=>rpc('canopy_27_complete_lesson',{p_cohort:cohort,p_lesson:id},s);
 export const submitCohortAssignment=(cohort,module,response,evidence,s)=>rpc('canopy_27_submit_assignment',{p_cohort:cohort,p_module:module,p_response:response,p_evidence:evidence||null},s);
+export const getCohortAssignmentDrafts=(cohort,s)=>rpc('canopy_27_get_assignment_drafts',{p_cohort:cohort},s);
+export const saveCohortAssignmentDraft=(cohort,module,draft,s)=>rpc('canopy_27_save_assignment_draft',{p_cohort:cohort,p_module:module,p_paragraph:draft.paragraph_response||'',p_evidence:draft.evidence_url||'',p_speaker:draft.speaker_url||''},s);
+export const submitCohortAssignmentV2=(cohort,module,draft,s)=>rpc('canopy_27_submit_assignment_v2',{p_cohort:cohort,p_module:module,p_response:draft.paragraph_response||'',p_evidence:draft.evidence_url||'',p_speaker:draft.speaker_url||''},s);
 export const getCohortAdminWorkspace=(cohort,s)=>rpc('canopy_27_admin_workspace',{p_cohort:cohort},s);
 export const reviewCohortAssignment=(id,decision,score,feedback,s)=>rpc('canopy_27_admin_review_assignment',{p_id:id,p_decision:decision,p_score:Number(score),p_feedback:feedback},s);
 export const approveCohortCertificate=(cohort,user,approve,note,s)=>rpc('canopy_27_admin_approve_certificate',{p_cohort:cohort,p_user:user,p_approve:approve,p_note:note},s);
@@ -41,3 +44,8 @@ export const saveExpertAssessment=(course,module,title,instructions,s)=>rpc('wom
 
 export const getCohortMissionGroups=(cohort,s)=>rpc('canopy_admin_cohort_mission_groups',{p_cohort_key:cohort},s);
 export const getCohortFundingCalls=(cohort,s)=>rpc('canopy_admin_cohort_funding_calls',{p_cohort_key:cohort},s);
+
+export const get2027Graduation=(cohort,s)=>rpc('canopy_27_graduation_view',{p_cohort:cohort},s);
+export const save2027GraduationReflection=(cohort,name,note,s)=>rpc('canopy_27_graduation_reflect',{p_cohort:cohort,p_name:name,p_reflection:note},s);
+export const get2027AdminGraduationReflections=(cohort,s)=>rpc('canopy_27_admin_graduation_reflections',{p_cohort:cohort},s);
+export const moderate2027GraduationReflection=(cohort,user,state,s)=>rpc('canopy_27_admin_moderate_graduation_reflection',{p_cohort:cohort,p_user:user,p_state:state},s);

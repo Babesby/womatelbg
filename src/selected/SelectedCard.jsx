@@ -137,7 +137,7 @@ export default function SelectedCard(){
     'Learner';
 
   const filename=
-    `WOMATE_Selected_${safeName
+    `WOMATE_Selected_${verified?.programmeSlug?.includes('2027')?(verified.programmeSlug.includes('asia')?'Asia_2027_':'Africa_2027_'):''}${safeName
       .replace(/[^a-z0-9]+/gi,'_')
       .replace(/^_|_$/g,'')}.png`;
 
@@ -190,7 +190,7 @@ export default function SelectedCard(){
   }
 
   return (
-    <div className="selectedPage">
+    <div className={'selectedPage'+(verified?.programmeSlug==='she-leads-climate-c3-2027'?' selectedAfrica2027':verified?.programmeSlug==='she-leads-asia-c1-2027'?' selectedAsia2027':'')}>
 
       <header className="selectedTop">
         <a
@@ -213,7 +213,7 @@ export default function SelectedCard(){
 
         <section className="selectedIntro">
           <span>
-            SHE LEADS · COHORT 2
+            {verified?.cohortLabel?`SHE LEADS · ${verified.cohortLabel.toUpperCase()}`:'SHE LEADS · OFFICIAL SELECTION'}
           </span>
 
           <h1>
@@ -349,6 +349,13 @@ export default function SelectedCard(){
                   {verified.cohortLabel}
                 </b>
               </p>
+              {['she-leads-climate-c3-2027','she-leads-asia-c1-2027'].includes(verified.programmeSlug)&&
+                <div className="selected2027Edition">
+                  <span>{verified.programmeSlug==='she-leads-asia-c1-2027'?'ASIA EDITION':'AFRICA EDITION'}</span>
+                  <strong>{verified.programmeSlug==='she-leads-asia-c1-2027'?'Connected by purpose. Leading change.':'Rooted in action. Ready to lead.'}</strong>
+                  <p>Personalise your official 2027 card with your photograph. Your selection code is verified; the card can be saved as a full-resolution PNG.</p>
+                </div>
+              }
 
               <label className="selectedUpload">
                 <span>

@@ -2,14 +2,16 @@ import React,{useEffect,useRef,useState} from 'react';
 import {ArrowRight,ChevronDown,Send} from 'lucide-react';
 import {CANOPY_HELP_COPY,CANOPY_HELP_QUICK_TOPICS} from './canopyHelpData';
 import {matchCanopyHelpQuestion} from './canopyHelpMatcher';
+import {matchCanopy2027HelpQuestion} from './canopyHelp2027';
 
 const firstMessage={role:'assistant',title:'Canopy Help',text:CANOPY_HELP_COPY.welcome};
 
-export default function AskCanopyWidget({path=window.location.pathname}){
+export default function AskCanopyWidget({path=window.location.pathname,cohortKey=null}){
   const[open,setOpen]=useState(false);
   const[question,setQuestion]=useState('');
   const[messages,setMessages]=useState([firstMessage]);
   const transcriptRef=useRef(null);
+  useEffect(()=>{setMessages([firstMessage])},[cohortKey]);
 
   useEffect(()=>{if(open)transcriptRef.current?.scrollTo({top:transcriptRef.current.scrollHeight,behavior:'smooth'})},[messages,open]);
 
@@ -55,7 +57,7 @@ export default function AskCanopyWidget({path=window.location.pathname}){
   function ask(raw){
     const text=String(raw||'').trim();
     if(!text)return;
-    const result=matchCanopyHelpQuestion(text);
+    const result=['she-leads-climate-c3-2027','she-leads-asia-c1-2027'].includes(cohortKey)?matchCanopy2027HelpQuestion(text,cohortKey):matchCanopyHelpQuestion(text);
     setMessages(current=>[...current.slice(-7),{role:'user',text},{role:'assistant',title:result.title,text:result.answer,route:result.route,actionLabel:result.actionLabel}]);
     setQuestion('');
   }

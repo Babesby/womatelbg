@@ -205,6 +205,17 @@ export async function getViewer(session){
   try{const rows=await rest('rpc/canopy_my_cohorts',{token:fresh.access_token,method:'POST',body:{}});cohorts=Array.isArray(rows)?rows:[]}catch{}
   try{activeCohort=await rest('rpc/canopy_my_active_cohort',{token:fresh.access_token,method:'POST',body:{}})}catch{}
   try{runtimeCohort=await rest('rpc/canopy_my_runtime_cohort',{token:fresh.access_token,method:'POST',body:{}})}catch{}
+  // Cohort switching never grants membership; the server returns only this user's enrolments.
+  try{
+    const saved=sessionStorage.getItem('canopy_learner_cohort_key_'+userId);
+    const match=cohorts.find(c=>c.cohort_key===saved&&Number(c.cohort_year)>=2027&&['active','pending'].includes(c.membership_status));
+    if(match)runtimeCohort={
+      cohort_key:match.cohort_key,programme_key:match.programme_key,
+      display_name:match.display_name,cohort_year:match.cohort_year,
+      region:match.region,access_model:match.access_model,
+      status:match.cohort_status,membership_status:match.membership_status
+    };
+  }catch{}
   return {session:fresh,user:fresh.user,profile:profiles?.[0]||null,enrollments:enrollments||[],announcements:announcements||[],withdrawal,alumni,teaching,cohorts,activeCohort,runtimeCohort};
 }
 export async function getMyRuntimeCohort(session){
@@ -806,3 +817,22 @@ export async function getAdminProgrammeEvidenceReport(session,cohortKey){
  const s=await refreshSession(session||getStoredSession());if(!s?.access_token)throw new Error('Sign in again.');
  return rest('rpc/womate_admin_programme_evidence_report',{token:s.access_token,method:'POST',body:{p_cohort_key:cohortKey}});
 }
+
+const graduateRpc=async(name,body,session)=>{
+ const fresh=await refreshSession(session||getStoredSession());
+ if(!fresh?.access_token)throw new Error('Sign in to Canopy first.');
+ return rest('rpc/'+name,{token:fresh.access_token,method:'POST',body});
+};
+export const getGraduatePlacementOpportunity=session=>graduateRpc('womate_my_graduate_placement_opportunity',{},session);
+export const applyGraduatePlacement=(session,details)=>graduateRpc('womate_apply_graduate_placement',{
+ p_name:details.full_name,p_country:details.country,p_skills:details.skills,
+ p_areas:details.work_areas,p_types:details.placement_types,
+ p_experience:details.experience,p_motivation:details.motivation,
+ p_hours:Number(details.available_hours),p_availability:details.availability,
+ p_portfolio:details.portfolio_url||null,p_cv:details.cv_url||null,
+ p_remote:Boolean(details.remote_only),p_consent:Boolean(details.consent_share)
+},session);
+export const getAdminGraduatePlacements=session=>graduateRpc('womate_admin_graduate_placements',{},session);
+export const reviewAdminGraduatePlacement=(session,userId,status,note,partner)=>graduateRpc('womate_admin_review_graduate_placement',{
+ p_user:userId,p_state:status,p_notes:note||'',p_partner:partner||null
+},session);
