@@ -79,7 +79,8 @@ function asiaSelectionEmail(row,p,deadline,isPreview){
  const preheader="Your place in She Leads Asia Cohort 1, 2027. Please accept your offer and prepare for the journey.";
  const intro=`Following the review of applications for the <strong>She Leads Climate Mentorship Programme 2027 — Asia Cohort 1</strong>, we are delighted to officially welcome you as a <strong>selected participant</strong>.`;
  const previewNote=isPreview?`<tr><td style="background:#eef4e5;padding:14px 34px;color:#315d46;font-size:12px;font-weight:700">PREVIEW ONLY — THIS IS NOT AN OFFICIAL ADMISSION OR RESERVED SEAT.</td></tr>`:"";
- const modules=["Understanding Climate Change","Gender & Climate Justice","Climate Governance & Policy","Climate Advocacy & Digital Innovation","Leadership & Professional Pathways"];
+ // Keep these five labels identical to CANOPY_2027_CURRICULA['she-leads-asia-c1-2027'].modules.
+ const modules=["Climate risk across Asian communities","Gender-responsive resilience & adaptation","Regional climate solutions & responsible innovation","Governance, finance & public influence","Cross-regional leadership & professional pathways"];
  const moduleRows=modules.map((title,i)=>`<tr><td style="padding:10px 0;border-bottom:1px solid #e5eee8"><span style="display:inline-block;min-width:36px;color:#5e8665;font-size:12px;font-weight:800">${String(i+1).padStart(2,"0")}</span><span style="color:#153f34;font-weight:700;font-size:14px">${title}</span></td></tr>`).join("");
  return `<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><title>WOMATE She Leads Asia Selection</title></head><body style="margin:0;padding:0;background:#f2f6f2;color:#123d32;font-family:Arial,Helvetica,sans-serif">
  <div style="display:none;font-size:1px;color:#f2f6f2;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden">${preheader}</div>
