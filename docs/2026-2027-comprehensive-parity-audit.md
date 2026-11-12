@@ -39,7 +39,7 @@ Status: **Shared** = same global component/route, must test scoping. **Implement
 | Graduation wall/reflections | Implemented in 2027 migration | Approvals and moderation must be tested |
 | Graduation eligibility | Fixed in staged migration | Use 20 lessons + 5 approved assignments + 5 sessions + code + manual approval, not old 10/3/3 |
 | Certificate issuance + registry | Partial | Cohort-scoped issuance RPC and eligibility fix staged; verify authenticated download |
-| Post-graduation check-ins | Shared but not yet cohort-aware | Generalise 2026-specific status gates to 2027 |
+| Post-graduation check-ins | Implemented for verified 2026 and 2027 graduates | Reuses 2026 quarterly form with expanded verified graduate RLS; role acceptance test still required |
 | Graduate opportunity announcement and application | Implemented | Test graduate-only gate, one-time notification, consent, admin curation |
 | Selection-code image maker, photo & sharing | Implemented | Africa and Asia regional cards; 2026 original preserved |
 | Offer acceptance + scratch reveal | Implemented | Africa cohort trigger extension staged, e2e expiry and identity checks |
@@ -89,3 +89,12 @@ Status: **Shared** = same global component/route, must test scoping. **Implement
 
 ## Important policy
 BTS Ghana is the first host arrangement reported by WOMATE. **Do not claim any other organisation has agreed to host graduates.** Never disclose profiles without explicit consent, human curation, host verification and suitable project terms. Remote placements should specify duration, supervision, compensation or reimbursement, expected deliverables and safeguards.
+
+## Latest release audit hardening
+- Manual reviewer scores: no implicit 80/100 defaults; reviewers enter 0–100 deliberately and provide meaningful remarks.
+- Practical and speaker evidence: separately visible to reviewers.
+- Attendance copy: graduation requires the cohort-configured attendance count, not the outdated three-session statement.
+- Original quarterly alumni check-in: server gate extended to future certified 2027 graduates; tester gets preview only with submission disabled.
+- Admissions metadata: fixed descriptions to match configured Africa/Asia 2027 application and module dates without opening applications.
+
+**QA limits:** passing GitHub compilation and SQL rolled-back role tests do not prove all Cohort 2 interactions or photograph-related browser flows work across every device. Explicitly test with Abena, Canopy Tester and the authorised administrator. Speaker graphics, actual speaker challenge unlock dates and host confirmation remain unavailable until supplied/approved.
