@@ -25,4 +25,9 @@ check(scratch.includes('/selected'),'Scratch reveal leads to 2026-compatible car
 check(learning.includes('cohortResultCelebrationGif'),'Cohort 2 result celebration integration retained');
 check(learning.includes('playCanopyCorrectSound')&&learning.includes('playCanopyErrorSound'),'Cohort 2 learning audio feedback integration retained');
 check(runtime.includes('speakerGraphics:Object.freeze({})'),'Missing speaker assets remain unfilled, not invented');
+const help=read('src/canopy/AskCanopyWidget.jsx');
+const helpSource=read('src/canopy/canopyHelp2027.js');
+check(help.includes('matchCanopy2027HelpQuestion'),'Ask Canopy routes 2027 to cohort-specific answers');
+check(help.includes('matchCanopyHelpQuestion(text)'),'Cohort 2 help answers remain intact');
+for(const key of programmeKeys)check(helpSource.includes(key),'2027 Help recognises '+key);
 if(process.exitCode)process.exit(process.exitCode);

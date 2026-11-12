@@ -25,6 +25,7 @@
 | `CanopyApp.jsx`: `ManagerOperations`, reviews, certificates, reports | Exact 2026 operational sidebar and work areas; assessment queue, rubric, 0–100 reviews, score remarks, attendance, certificate approvals, exceptions, warnings, reminders, complaints, reports, graduates |
 | `CanopySelectionCodes.jsx` and `src/selected/*` | Verify selection email and code; generate “I Have Been Selected” personalised photo image; zoom, crop, download, sharing; correct 2027 cohort identity |
 | `CanopyHelp.jsx`, `CanopyAlumniCheckin.jsx`, `CanopyProgrammeReport.jsx`, `CanopyTeamAccess.jsx` | Help, completion follow-up, team permissions, oversight and reports |
+| `AskCanopyWidget.jsx`, `canopyHelpData.js`, `canopyHelpMatcher.js` | Identical learner-facing Ask Canopy interface; verified replies must use the current cohort's programme dates, module names, assignment and graduation rules rather than leaking Cohort 2 (2026) details |
 | Live 2026 communications and management RPCs | Replicate queueing/delivery, reviewer decisions, auditing, permissions and errors with cohort-scoped 2027 tables/RPCs; no copying historical learner data |
 
 ## Cohort timeline inputs (the established configured 2027 dates)
@@ -77,3 +78,18 @@ These are **initial parity corrections only**, not completion of this contract.
 **Administrator:** same 2026 navigation and review depth; manage cohorts distinctly, grade and release feedback, attendance, warnings, complaints, reminders, graduate/certificate decisions.
 **Regression:** Cohort 2 screens, scores, access and data must remain unchanged. Backend RLS must reject cross-cohort access. Build UI with Vite and perform test of key routes with screenshots.
 **Release:** one Vercel production deployment only once the full 2026 parity checklist passes and user approves.
+
+## 2027 card design deliverables (development)
+- Africa C3: WOMATE deep green and lime, rooted concentric editorial line texture, Africa C3/2027 lockup, full-resolution 1080×1080 PNG.
+- Asia C1: WOMATE teal and lime, connected-route fine-line texture, Asia C1/2027 lockup, full-resolution 1080×1080 PNG.
+- Both reuse the 2026 Supabase-verified code, personal photo, reposition/zoom, local-only browser rendering, download and share operations. Never generate or publish a verified graphic from an unverified name.
+- The original 2026 card renderer is the fallback only for 2026 invites; 2027 uses programmeSlug returned by WOMATE's selection-code verification RPC.
+- 2027 Ask Canopy response source is `canopyHelp2027.js`, based on `canopyCurricula2027.js` and `canopyCohortRuntime2027.js`. Existing 2026 match logic is unchanged.
+
+## Explicitly NOT completed yet
+- Complete three-part persisted 2027 assignment and draft/resubmission pipeline, reflecting 2026 behavior.
+- Complete 2027 admin operational parity (warnings, complaints, scores, certificates, graduation audit and other 2026 operations).
+- 2027 graduation animated/feedback/certificate flow parity and speaker-specific content.
+- End-to-end 2027 role tests for Abena (Africa + Asia), Canopy Tester and admin; production database activation.
+
+These must be implemented and verified before anyone claims full architecture parity. Do not mark the overall 2027 rollout complete because the selection cards or isolated UX components are finished.

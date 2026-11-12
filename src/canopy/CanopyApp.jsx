@@ -959,7 +959,8 @@ function CanopyLearningGuide({path,viewer}){
  const publicHelpRoute=!viewer&&['/canopy','/canopy/','/canopy/login','/canopy/signup'].includes(path);
  const learnerArea=Boolean(viewer)&&!manager&&path.startsWith('/canopy/');
  if((!publicHelpRoute&&!learnerArea)||knowledgeCheck)return null;
- return <Suspense fallback={null}><AskCanopyWidget path={path}/></Suspense>;
+ const cohortKey=viewer?(isCanopyTester(viewer)?getCanopyTesterCohort():viewer?.runtimeCohort?.cohort_key):null;
+ return <Suspense fallback={null}><AskCanopyWidget path={path} cohortKey={cohortKey}/></Suspense>;
 }
 
 export default function CanopyApp({path:appPath}){
