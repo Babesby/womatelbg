@@ -20,6 +20,18 @@ async function loadDirectory(){
   return Array.isArray(data)?data:[];
 }
 
+async function load2027Directory(cohortKey){
+  if(!URL||!KEY)throw new Error('Selection directory is not configured.');
+  const response=await fetch(`${URL}/rest/v1/rpc/womate_2027_public_selected_directory`,{
+    method:'POST',
+    headers:{apikey:KEY,Authorization:`Bearer ${KEY}`,'Content-Type':'application/json'},
+    body:JSON.stringify({p_cohort:cohortKey})
+  });
+  const data=await response.json().catch(()=>null);
+  if(!response.ok)throw new Error(data?.message||'Could not load this cohort’s public directory.');
+  return data;
+}
+
 function findCodeInput(){
   return [...document.querySelectorAll('input')].find(el=>{
     const bits=[el.name,el.id,el.placeholder,el.getAttribute('aria-label'),el.closest('label')?.textContent,el.parentElement?.textContent]
@@ -51,7 +63,7 @@ export function mountSelectedDirectory(){
         <span class="selected-directory-summary-icon" aria-hidden="true">⌄</span>
         <span class="selected-directory-summary-content">
           <span class="selected-directory-kicker">SHE LEADS · SELECTED PARTICIPANTS</span>
-          <strong>Find your name and selection code.</strong>
+          <strong>Meet the selected participants.</strong>
           <span>2026 Cohort 2 · 993 selected participants</span>
         </span>
       </summary>
@@ -67,10 +79,10 @@ export function mountSelectedDirectory(){
     <div class="selected-directory-head">
       <div>
         <div class="selected-directory-kicker" data-directory-kicker>SHE LEADS · COHORT 2 · 2026</div>
-        <h2>Find your name and selection code.</h2>
-        <p>Filter by country or search your name. Only selected participant names, countries and selection codes are shown here.</p>
+        <h2 data-directory-heading>Find your name and selection code.</h2>
+        <p data-directory-description>Search the 2026 archive by country, name or historical code. Newer cohorts feature only participants who choose to be publicly recognised.</p>
       </div>
-      <div class="selected-directory-stat"><strong data-directory-count>993</strong><span>selected participants · 2026</span></div>
+      <div class="selected-directory-stat"><strong data-directory-count>993</strong><span data-directory-stat-label>selected participants · 2026</span></div>
     </div>
     <div class="selected-directory-tools">
       <label class="selected-directory-search">
@@ -96,6 +108,9 @@ export function mountSelectedDirectory(){
   const tools=section.querySelector('.selected-directory-tools');
   const stat=section.querySelector('.selected-directory-stat');
   const kicker=section.querySelector('[data-directory-kicker]');
+  const heading=section.querySelector('[data-directory-heading]');
+  const description=section.querySelector('[data-directory-description]');
+  const statLabel=section.querySelector('[data-directory-stat-label]');
   let directoryLoaded=false;
   let directoryLoading=false;
   const status=section.querySelector('.selected-directory-status');
@@ -106,14 +121,17 @@ export function mountSelectedDirectory(){
   const totalEl=section.querySelector('[data-directory-count]');
 
   let rows=[];
+  let legacyRows=[];
+  let edition='2026';
+  let pendingRequest=0;
   let activeCountry='ALL';
   let limit=PAGE_SIZE;
 
   const renderCountries=()=>{
     const counts=new Map();
-    for(const row of rows){const code=row.countryCode||'AF';counts.set(code,(counts.get(code)||0)+1)}
+    for(const row of rows){const code=edition==='2026'?(row.countryCode||'AF'):(row.countryName||'Other');counts.set(code,(counts.get(code)||0)+1)}
     const options=[['ALL','All countries',rows.length],...Array.from(counts.entries())
-      .map(([code,count])=>[code,rows.find(r=>(r.countryCode||'AF')===code)?.countryName||'Other',count])
+      .map(([code,count])=>[code,rows.find(r=>(edition==='2026'?(r.countryCode||'AF'):r.countryName)===code)?.countryName||'Other',count])
       .sort((a,b)=>a[1].localeCompare(b[1]))];
     countries.innerHTML='';
     for(const [code,name,count] of options){
@@ -121,7 +139,7 @@ export function mountSelectedDirectory(){
       b.type='button';
       b.className='selected-country-chip'+(code===activeCountry?' is-active':'');
       b.dataset.country=code;
-      const icon=document.createElement('span');icon.className='selected-country-flag';icon.textContent=code==='ALL'?'🌍':flag(code);
+      const icon=document.createElement('span');icon.className='selected-country-flag';icon.textContent=code==='ALL'?'🌍':edition==='2026'?flag(code):'🌱';
       const label=document.createElement('span');label.textContent=name;
       const n=document.createElement('small');n.textContent=count;
       b.append(icon,label,n);
@@ -133,7 +151,7 @@ export function mountSelectedDirectory(){
   const filteredRows=()=>{
     const q=search.value.trim().toLowerCase();
     return rows.filter(row=>{
-      const countryOk=activeCountry==='ALL'||(row.countryCode||'AF')===activeCountry;
+      const countryOk=activeCountry==='ALL'||(edition==='2026'?(row.countryCode||'AF'):row.countryName)===activeCountry;
       const searchOk=!q||String(row.fullName||'').toLowerCase().includes(q)||String(row.selectionCode||'').toLowerCase().includes(q);
       return countryOk&&searchOk;
     });
@@ -161,19 +179,25 @@ export function mountSelectedDirectory(){
     for(const row of visible){
       const card=document.createElement('article');card.className='selected-directory-card';
       const top=document.createElement('div');top.className='selected-directory-card-top';
-      const f=document.createElement('span');f.className='selected-directory-card-flag';f.textContent=flag(row.countryCode);
+      const f=document.createElement('span');f.className='selected-directory-card-flag';f.textContent=edition==='2026'?flag(row.countryCode):'🌱';
       const country=document.createElement('span');country.className='selected-directory-card-country';safeText(country,row.countryName||'Other');
       top.append(f,country);
       const name=document.createElement('h3');safeText(name,row.fullName);
       const codeWrap=document.createElement('div');codeWrap.className='selected-directory-code';
       const label=document.createElement('span');label.textContent='Selection code';
       const code=document.createElement('strong');safeText(code,row.selectionCode);
-      codeWrap.append(label,code);
-      const actions=document.createElement('div');actions.className='selected-directory-actions';
-      const use=document.createElement('button');use.type='button';use.textContent='Use code';use.onclick=()=>useCode(row.selectionCode);
-      const copy=document.createElement('button');copy.type='button';copy.className='is-secondary';copy.textContent='Copy';copy.onclick=async()=>{await navigator.clipboard?.writeText(row.selectionCode);const old=copy.textContent;copy.textContent='Copied';setTimeout(()=>copy.textContent=old,1200)};
-      actions.append(use,copy);
-      card.append(top,name,codeWrap,actions);
+      if(edition==='2026'){
+        codeWrap.append(label,code);
+        const actions=document.createElement('div');actions.className='selected-directory-actions';
+        const use=document.createElement('button');use.type='button';use.textContent='Use code';use.onclick=()=>useCode(row.selectionCode);
+        const copy=document.createElement('button');copy.type='button';copy.className='is-secondary';copy.textContent='Copy';copy.onclick=async()=>{await navigator.clipboard?.writeText(row.selectionCode);const old=copy.textContent;copy.textContent='Copied';setTimeout(()=>copy.textContent=old,1200)};
+        actions.append(use,copy);
+        card.append(top,name,codeWrap,actions);
+      }else{
+        const note=document.createElement('p');note.className='selected-directory-private-note';
+        note.textContent='Selected participant · Private verification code not displayed';
+        card.append(top,name,note);
+      }
       grid.appendChild(card);
     }
     more.hidden=filtered.length<=limit;
@@ -188,9 +212,10 @@ export function mountSelectedDirectory(){
     status.textContent='Loading 2026 selected participants…';
     status.classList.remove('is-error');
     loadDirectory().then(data=>{
-      rows=data.filter(r=>r&&r.fullName&&r.selectionCode);
+      legacyRows=data.filter(r=>r&&r.fullName&&r.selectionCode);
+      if(edition==='2026')rows=legacyRows;
       directoryLoaded=true;
-      safeText(totalEl,rows.length.toLocaleString());
+      if(edition==='2026')safeText(totalEl,legacyRows.length.toLocaleString());
       if(selector.value==='2026'){
         renderCountries();
         renderRows();
@@ -201,25 +226,54 @@ export function mountSelectedDirectory(){
       console.error('[WOMATE selected directory]',err);
     }).finally(()=>{directoryLoading=false});
   };
-  const switchCohort=()=>{
-    const selected=selector.value;
-    const isArchive=selected==='2026';
-    tools.hidden=!isArchive;
-    stat.hidden=!isArchive;
-    grid.hidden=!isArchive;
-    more.hidden=!isArchive||rows.length<=limit;
+  const switchCohort=async()=>{
+    const choice=selector.value;
+    edition=choice;
+    const thisRequest=++pendingRequest;
+    const isArchive=choice==='2026';
+    const cohortKey=choice==='asia2027'?'she-leads-asia-c1-2027':'she-leads-climate-c3-2027';
+    activeCountry='ALL';search.value='';limit=PAGE_SIZE;
+    tools.hidden=false;stat.hidden=false;grid.hidden=false;more.hidden=true;
     status.classList.remove('is-error');
     if(isArchive){
       kicker.textContent='SHE LEADS · COHORT 2 · 2026';
-      if(directoryLoaded){renderCountries();renderRows()}else{load2026()}
-    }else{
-      kicker.textContent=selected==='asia2027'?'SHE LEADS · ASIA · COHORT 1 · 2027':'SHE LEADS · AFRICA · COHORT 3 · 2027';
-      status.textContent='For the 2027 cohorts, your selection code is private and is sent in your official admission email. Enter that code in the verification form to create your card. The public 2026 archive is preserved here.';
-      more.hidden=true;
+      heading.textContent='Find your name and selection code.';
+      description.textContent='Search the historical 2026 selected-participant archive by country, name or code.';
+      statLabel.textContent='selected participants · 2026';
+      search.placeholder='Type your name or selection code';
+      rows=legacyRows;
+      if(directoryLoaded){renderCountries();renderRows()}else{grid.replaceChildren();countries.replaceChildren();load2026()}
+      return;
+    }
+    kicker.textContent=choice==='asia2027'?'SHE LEADS · ASIA · COHORT 1 · 2027':'SHE LEADS · AFRICA · COHORT 3 · 2027';
+    heading.textContent='Meet the selected participants.';
+    description.textContent='Names and countries are drawn from official WOMATE admissions records, displayed only after the participant opts in and WOMATE publishes the cohort. Selection codes stay private.';
+    statLabel.textContent='participants choosing to be featured';
+    search.placeholder='Search a participant’s name';
+    rows=[];grid.replaceChildren();countries.replaceChildren();
+    status.textContent='Checking the official cohort directory…';
+    try{
+      const data=await load2027Directory(cohortKey);
+      if(pendingRequest!==thisRequest||selector.value!==choice)return;
+      if(!data?.published){
+        stat.hidden=true;tools.hidden=true;grid.hidden=true;
+        status.textContent='This cohort’s selected-participant showcase has not been published by WOMATE yet. Selected participants can still verify their private code and create their official image above.';
+        return;
+      }
+      rows=Array.isArray(data.rows)?data.rows.filter(x=>x.fullName&&x.countryName):[];
+      safeText(totalEl,rows.length.toLocaleString());
+      renderCountries();renderRows();
+      if(!rows.length)status.textContent='The cohort showcase is open. No participants have opted to appear yet.';
+    }catch(err){
+      if(pendingRequest!==thisRequest)return;
+      status.textContent='We could not load this cohort’s selected-participant directory. Please retry.';
+      status.classList.add('is-error');
+      console.error('[WOMATE selected directory]',err);
     }
   };
   selector.addEventListener('change',switchCohort);
   disclosure.addEventListener('toggle',()=>{if(disclosure.open)switchCohort()});
+  window.addEventListener('womate:selected-directory-refresh',()=>{if(disclosure.open&&edition!=='2026')switchCohort()});
   return true;
 }
 

@@ -6,6 +6,8 @@
 
 import {
   verifySelectedLearner,
+  updateSelected2027ListingConsent,
+  getSelected2027ListingConsent,
   selectedCardConfigured
 } from './selectedCardApi';
 
@@ -25,6 +27,9 @@ export default function SelectedCard(){
   const [busy,setBusy]=useState(false);
   const [error,setError]=useState('');
   const [notice,setNotice]=useState('');
+  const [listingBusy,setListingBusy]=useState(false);
+  const [listingConsent,setListingConsent]=useState(false);
+  const [listingNotice,setListingNotice]=useState('');
 
   const [photo,setPhoto]=useState(null);
   const [zoom,setZoom]=useState(1);
@@ -73,6 +78,11 @@ export default function SelectedCard(){
         );
 
       setVerified(result);
+      setListingConsent(false);
+      setListingNotice('');
+      if(['she-leads-climate-c3-2027','she-leads-asia-c1-2027'].includes(result.programmeSlug)){
+        getSelected2027ListingConsent(email,code).then(value=>setListingConsent(value===true)).catch(()=>{});
+      }
       window.dispatchEvent(new CustomEvent('womate:selected-verified',{detail:{verified:true,programmeSlug:result.programmeSlug,cohortLabel:result.cohortLabel}}));
     }catch(err){
       setError(
@@ -182,6 +192,8 @@ export default function SelectedCard(){
   function reset(){
     window.dispatchEvent(new CustomEvent('womate:selected-verified',{detail:{verified:false}}));
     setVerified(null);
+    setListingConsent(false);
+    setListingNotice('');
     setPhoto(null);
     setCode('');
     setError('');
@@ -358,6 +370,37 @@ export default function SelectedCard(){
                   <p>Personalise your official 2027 card with your photograph. Your selection code is verified; the card can be saved as a full-resolution PNG.</p>
                 </div>
               }
+
+              {['she-leads-climate-c3-2027','she-leads-asia-c1-2027'].includes(verified.programmeSlug)&&(
+                <div className="selected2027Listing">
+                  <span className="selected2027ListingKicker">OPTIONAL · SELECTED PARTICIPANTS</span>
+                  <h3>Celebrate your selection on WOMATE.</h3>
+                  <p>Choose whether WOMATE may display your <strong>name, country and cohort</strong> in the official 2027 selected-participants directory after you accept your offer and WOMATE publishes the results. Your email, phone number and selection code will never appear there.</p>
+                  <label className="selected2027ListingChoice">
+                    <input
+                      type="checkbox"
+                      checked={listingConsent}
+                      disabled={listingBusy}
+                      onChange={async e=>{
+                        const desired=e.target.checked;
+                        setListingBusy(true);
+                        setListingNotice('');
+                        try{
+                          await updateSelected2027ListingConsent(email,code,desired);
+                          setListingConsent(desired);
+                          setListingNotice(desired?'Your permission has been saved. Your name will only appear after your offer is accepted and WOMATE publishes this cohort.':'Your directory permission has been withdrawn.');
+                          window.dispatchEvent(new CustomEvent('womate:selected-directory-refresh'));
+                        }catch(err){
+                          setListingNotice(err?.message||'Could not save your directory preference.');
+                        }finally{setListingBusy(false)}
+                      }}
+                    />
+                    <span>{listingBusy?'Saving your preference…':'I consent to showing my name, country and cohort publicly on WOMATE.'}</span>
+                  </label>
+                  {listingNotice&&<p role="status" className="selected2027ListingNotice">{listingNotice}</p>}
+                  <p className="selected2027ListingFoot">Optional. Your selection and certificate eligibility do not depend on this choice. Uncheck to withdraw consent.</p>
+                </div>
+              )}
 
               <label className="selectedUpload">
                 <span>
