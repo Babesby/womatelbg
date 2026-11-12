@@ -128,14 +128,15 @@ Deno.serve(async function(req){
       const expiryTime=new Date(offerTime.getTime()+7*24*60*60*1000);
       if(row.template_key==="selected")p.offer_deadline=expiryTime.toUTCString();
       const selectedAsia=row.template_key==="selected"&&row.cohort_key==="she-leads-asia-c1-2027";
+      const testPreview=selectedAsia&&p.test_preview===true;
       if(selectedAsia&&!p.scratch_path)throw new Error("Missing secure Asia selection scratch link; delivery held");
-      const subject=selectedAsia?"Congratulations — Your WOMATE She Leads Asia selection":apply(tpl.subject_template,p);
-      const heading=selectedAsia?"Congratulations. You have been selected.":apply(tpl.heading,p);
+      const subject=testPreview?"[TEST PREVIEW — NOT AN ADMISSION] WOMATE She Leads Asia selection":selectedAsia?"Congratulations — Your WOMATE She Leads Asia selection":apply(tpl.subject_template,p);
+      const heading=testPreview?"Your selection experience — preview":selectedAsia?"Congratulations. You have been selected.":apply(tpl.heading,p);
       const bodyText=selectedAsia?[
-        "We are delighted to offer you a place in She Leads Asia · Cohort 1, 2027.",
+        testPreview?"TEST PREVIEW ONLY — This message demonstrates the selection and scratch-card experience. It is not an admissions decision or a reserved place.":"We are delighted to offer you a place in She Leads Asia · Cohort 1, 2027.",
         "",
         "YOUR SELECTION — ACTION REQUIRED",
-        "Open your private selection card to reveal your personal code, then accept your offer by "+p.offer_deadline+". Please keep the link and code private.",
+        testPreview?"Open your private scratch card to see how a selected applicant reveals their code. The acceptance action is a demonstration only. No admission or enrolment will result.":"Open your private selection card to reveal your personal code, then accept your offer by "+p.offer_deadline+". Please keep the link and code private.",
         "",
         "MANDATORY NEXT STEPS",
         "1. Subscribe to the official WOMATE YouTube channel: https://www.youtube.com/@womategh",
@@ -152,7 +153,7 @@ Deno.serve(async function(req){
         "With warm congratulations,",
         "The WOMATE Team"
       ].join("\n"):apply(tpl.body_template,p);
-      const ctaLabel=selectedAsia?"Open my secure selection card":apply(tpl.cta_label||"",p);
+      const ctaLabel=testPreview?"Open test scratch card":selectedAsia?"Open my secure selection card":apply(tpl.cta_label||"",p);
       const ctaUrl=selectedAsia?p.scratch_path:apply(tpl.cta_path||"",p);
       const html=emailHtml(heading,bodyText,ctaLabel,ctaUrl,String(p.decision_note||""),selectedAsia,row.recipient_name);
       const msg=await sendGmail(accessToken,row.recipient_email,subject,html);
