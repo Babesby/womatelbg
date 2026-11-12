@@ -1,5 +1,5 @@
 import React,{useEffect,useRef,useState} from 'react';
-import {X,ArrowRight,CheckCircle2} from 'lucide-react';
+import {X,ArrowRight} from 'lucide-react';
 import './NewsletterSignupPopup.css';
 
 const KEY='womate_newsletter_v1';
@@ -39,16 +39,16 @@ export default function NewsletterSignupPopup({enabled=true}){
    <button className="wn-close" type="button" onClick={close} aria-label="Close newsletter signup"><X size={21}/></button>
    <div className="wn-copy">
     <img className="wn-logo" src="/assets/img/logo.svg" alt="WOMATE"/>
-    {done?<><div className="wn-done-icon"><CheckCircle2 size={34}/></div><h2 id="wn-title">You're in!</h2><p>Welcome to the WOMATE circle. Look out for stories, opportunities and climate leadership news.</p><button type="button" className="wn-success-cta" onClick={close}>Explore WOMATE <ArrowRight size={17}/></button></>:<>
-     <span className="wn-eyebrow">THE WOMATE NEWSLETTER</span><h2 id="wn-title">Join the circle.</h2><p>Ideas, opportunities and stories from women shaping our climate future. Straight to your inbox.</p>
+    {done?<><h2 id="wn-title">You're in!</h2><p>Welcome to WOMATE. Your next story starts here.</p><button type="button" className="wn-success-cta" onClick={close}>Explore WOMATE <ArrowRight size={17}/></button></>:<>
+     <span className="wn-eyebrow">THE WOMATE NEWSLETTER</span><h2 id="wn-title">Join the circle.</h2><p>Ideas, opportunities and stories from women shaping our climate future.</p>
      <form onSubmit={submit}><label htmlFor="wn-name">First name</label><input id="wn-name" value={name} onChange={e=>setName(e.target.value)} maxLength={70} autoComplete="given-name" required placeholder="Your first name"/>
       <label htmlFor="wn-email">Email address</label><input id="wn-email" type="email" value={email} onChange={e=>setEmail(e.target.value)} maxLength={254} autoComplete="email" required placeholder="you@example.com"/>
       <label className="wn-consent"><input type="checkbox" checked={consent} onChange={e=>setConsent(e.target.checked)}/><span>Yes, send me WOMATE newsletters. I can unsubscribe anytime. <a href="/privacy" target="_blank" rel="noopener noreferrer">Privacy policy</a>.</span></label>
       {error&&<p role="alert" className="wn-error">{error}</p>}
       <button className="wn-submit" type="submit" disabled={!consent||busy}>{busy?'Subscribing…':'Subscribe'} <ArrowRight size={18}/></button>
-     </form><small className="wn-foot">No spam. Just meaningful updates.</small></>}
+     </form></>}
    </div>
-   <div className="wn-art" aria-hidden="true"><div className="wn-orbit"></div><img src="/assets/newsletter/womate-community-globe.avif" alt="" onError={e=>{e.currentTarget.onerror=null;e.currentTarget.src="/assets/hero/circle.png"}}/></div>
+   <div className="wn-art" aria-hidden="true"><span className="wn-art-line">A community shaping what comes next.</span><div className="wn-art-image"><img src="/assets/newsletter/womate-featured-five.avif" alt=""/></div></div>
   </section>
  </div>;
 }
