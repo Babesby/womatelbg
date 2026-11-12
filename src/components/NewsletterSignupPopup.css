@@ -1,13 +1,13 @@
 /* WOMATE editorial newsletter — quiet grain, crisp hierarchy, no globe. */
 .wn-backdrop{position:fixed;inset:0;z-index:7000;display:grid;place-items:center;padding:18px;background:rgba(4,32,31,.55);backdrop-filter:blur(5px)}
-.wn-modal{position:relative;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);width:min(100%,810px);min-height:440px;overflow:hidden;border:1px solid rgba(255,255,255,.12);border-radius:20px;color:#fff;background:#0e4d4a;box-shadow:0 26px 75px rgba(0,26,25,.3)}
+.wn-modal{position:relative;display:grid;grid-template-columns:minmax(0,1fr);width:min(100%,500px);min-height:0;overflow:hidden;border:1px solid rgba(255,255,255,.12);border-radius:20px;color:#fff;background:#0e4d4a;box-shadow:0 26px 75px rgba(0,26,25,.3)}
 .wn-modal::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.18;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 170 170' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.76' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' opacity='.11' filter='url(%23n)'/%3E%3C/svg%3E");mix-blend-mode:screen}
 .wn-close{position:absolute;z-index:4;top:16px;right:16px;width:34px;height:34px;display:grid;place-items:center;cursor:pointer;border-radius:50%;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.08);color:#fff}
-.wn-copy{position:relative;z-index:2;display:flex;flex-direction:column;justify-content:center;min-width:0;padding:clamp(28px,5vw,48px)}
+.wn-copy{position:relative;z-index:2;display:flex;flex-direction:column;justify-content:center;min-width:0;padding:clamp(30px,5vw,44px)}
 .wn-logo{width:104px;height:32px;object-fit:contain;object-position:left;filter:brightness(0) invert(1);margin-bottom:24px}
 .wn-eyebrow{font-size:10px;letter-spacing:.16em;font-weight:800;color:#c6ff52}
 .wn-copy h2{font-size:clamp(32px,4vw,44px);letter-spacing:-.055em;font-weight:760;line-height:1.06;margin:10px 0 12px}
-.wn-copy p{max-width:345px;font-size:13px;line-height:1.65;color:rgba(255,255,255,.83);margin:0 0 20px}
+.wn-copy p{max-width:395px;font-size:13px;line-height:1.65;color:rgba(255,255,255,.83);margin:0 0 20px}
 .wn-copy form{display:grid;gap:8px}
 .wn-copy form>label:not(.wn-consent){font-size:11px;font-weight:700;color:rgba(255,255,255,.86)}
 .wn-copy input:not([type=checkbox]){box-sizing:border-box;width:100%;min-height:44px;padding:11px 13px;font:inherit;font-size:13px;color:#fff;background:rgba(255,255,255,.095);border:1px solid rgba(255,255,255,.23);border-radius:8px}
@@ -24,5 +24,5 @@
 .wn-art-line{position:relative;z-index:2;display:block;max-width:190px;margin:0 auto 12px;text-align:center;color:#d2e9dd;font-size:11px;line-height:1.5;letter-spacing:.012em}
 .wn-art-image{position:relative;z-index:2;width:100%;max-width:305px;display:flex;align-items:flex-end;justify-content:center}
 .wn-art-image img{display:block;width:100%;max-height:365px;object-fit:contain;object-position:center bottom;filter:drop-shadow(0 15px 22px rgba(0,27,23,.18))}
-@media(max-width:640px){.wn-backdrop{padding:10px;align-items:center}.wn-modal{width:min(100%,395px);display:flex;flex-direction:column;min-height:0;max-height:calc(100dvh - 20px);overflow-y:auto;border-radius:18px}.wn-copy{padding:26px 24px 12px}.wn-logo{height:28px;margin-bottom:16px}.wn-copy h2{font-size:32px}.wn-copy p{margin-bottom:14px}.wn-art{min-height:175px;max-height:198px;padding:0 20px;background:none}.wn-art::before{inset:6px 25px 0;border-radius:140px 140px 0 0}.wn-art-line{display:none}.wn-art-image{max-width:195px}.wn-art-image img{max-height:195px}}
+@media(max-width:640px){.wn-backdrop{padding:10px;align-items:center}.wn-modal{width:min(100%,395px);display:flex;flex-direction:column;min-height:0;max-height:calc(100dvh - 20px);overflow-y:auto;border-radius:18px}.wn-copy{padding:26px 24px 12px}.wn-logo{height:28px;margin-bottom:16px}.wn-copy h2{font-size:32px}.wn-copy p{margin-bottom:14px}}
 @media(prefers-reduced-motion:reduce){.wn-backdrop{backdrop-filter:none}}

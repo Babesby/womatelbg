@@ -48,7 +48,7 @@ export default function NewsletterSignupPopup({enabled=true}){
       <button className="wn-submit" type="submit" disabled={!consent||busy}>{busy?'Subscribing…':'Subscribe'} <ArrowRight size={18}/></button>
      </form></>}
    </div>
-   <div className="wn-art" aria-hidden="true"><span className="wn-art-line">A community shaping what comes next.</span><div className="wn-art-image"><img src="/assets/newsletter/womate-featured-five.avif" alt=""/></div></div>
+   
   </section>
  </div>;
 }

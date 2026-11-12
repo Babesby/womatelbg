@@ -1,0 +1,7 @@
+# Asia Cohort 1 scratch-card release — NOT DEPLOYED
+Before release, apply Supabase migration `supabase/migrations/20261112050000_asia_selection_scratch.sql`, then deploy the WOMATE admissions-mail Edge Function and site together in a controlled release. The official sender remains womatead@gmail.com. Do not use an unrelated connected personal Gmail account.
+The banner asset is a compressed still of the supplied celebration artwork at `public/assets/asia/selected-congratulations.avif`.
+Only officially selected, unexpired Asia applicants with a sent selected email may retrieve their server-issued code through a private 256-bit token; token is sent as a URL fragment. Database acceptance still enforces status, code and expiry. No example code is valid.
+YouTube subscription and the official Asia WhatsApp group are mandatory; WhatsApp channel optional. Checkboxes are self-attestations, not independent membership verification.
+Voices country synonyms are normalized and daily deterministic rotation changes who appears first. User can request a new set; voices do not move automatically while reading.
+No live database migration, production email, Supabase function deployment, website deployment, or browser end-to-end test was executed by this commit. Test a controlled selected application before sending real offers.
