@@ -152,7 +152,7 @@ begin
  'certificate_approved',coalesce((select eligibility_approved from public.canopy_2027_certificate_reviews where cohort_key=p_cohort and user_id=v_user),false),
  'certificate',coalesce((select jsonb_build_object('title',title,'drive_url',drive_url,'issued_at',issued_at) from public.canopy_certificates where cohort_key=p_cohort and user_id=v_user order by issued_at desc limit 1),'null'::jsonb));
 end
-$function$
+$function$;
 
 CREATE OR REPLACE FUNCTION public.canopy_27_admin_workspace(p_cohort text)
  RETURNS jsonb
@@ -178,7 +178,7 @@ begin
  'certificate_url',(select drive_url from public.canopy_certificates c where c.cohort_key=m.cohort_key and c.user_id=m.user_id order by issued_at desc limit 1)) order by p.full_name)
  from public.canopy_cohort_memberships m join public.canopy_profiles p on p.user_id=m.user_id where m.cohort_key=p_cohort),'[]'::jsonb));
 end
-$function$
+$function$;
 
 CREATE OR REPLACE FUNCTION public.canopy_27_admin_review_assignment(p_id uuid, p_decision text, p_score integer, p_feedback text)
  RETURNS text
@@ -199,5 +199,5 @@ begin
  '/canopy/assignments','cohort27-review:'||rec.id::text)
  on conflict(fingerprint) do update set body=excluded.body,read_at=null,created_at=now();
  return p_decision;
-end $function$
+end $function$;
 

@@ -32,7 +32,7 @@ begin
  on conflict(fingerprint) do update set body=excluded.body,read_at=null,created_at=now();
  return v_id;
 end
-$function$
+$function$;
 
 CREATE OR REPLACE FUNCTION public.canopy_27_admin_workspace(p_cohort text)
  RETURNS jsonb
@@ -62,5 +62,5 @@ begin
  'certificate_url',(select drive_url from public.canopy_certificates c where c.cohort_key=m.cohort_key and c.user_id=m.user_id order by issued_at desc limit 1)) order by p.full_name)
  from public.canopy_cohort_memberships m join public.canopy_profiles p on p.user_id=m.user_id where m.cohort_key=p_cohort),'[]'::jsonb));
 end
-$function$
+$function$;
 
