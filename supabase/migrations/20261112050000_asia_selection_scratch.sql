@@ -16,9 +16,9 @@ declare token text;
 begin
  if new.template_key='selected' and new.cohort_key='she-leads-asia-c1-2027'
     and new.application_id is not null then
-   token:=encode(gen_random_bytes(32),'hex');
+   token:=encode(extensions.gen_random_bytes(32),'hex');
    insert into private.womate_selection_scratch_links(queue_id,application_id,token_digest)
-     values(new.id,new.application_id,encode(digest(token,'sha256'),'hex'))
+     values(new.id,new.application_id,encode(extensions.digest(token,'sha256'),'hex'))
      on conflict(queue_id) do update set token_digest=excluded.token_digest,application_id=excluded.application_id;
    update public.womate_admissions_email_queue set
      payload=coalesce(payload,'{}'::jsonb)||jsonb_build_object(
@@ -43,7 +43,7 @@ begin
  select a0.* into a from private.womate_selection_scratch_links l
  join public.womate_cohort_applications a0 on a0.id=l.application_id
  join public.womate_admissions_email_queue q0 on q0.id=l.queue_id
- where l.token_digest=encode(digest(p_token,'sha256'),'hex')
+ where l.token_digest=encode(extensions.digest(p_token,'sha256'),'hex')
  and q0.status='sent' and q0.template_key='selected' and q0.cohort_key='she-leads-asia-c1-2027'
  limit 1;
  if not found or a.status<>'selected' or a.cohort_key<>'she-leads-asia-c1-2027'
