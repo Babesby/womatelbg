@@ -154,3 +154,75 @@ html[data-canopy-theme="dark"] .ct-ownPublicLink{background:linear-gradient(115d
 html[data-canopy-theme="dark"] .ct-countryExplorer{background:#17352e;border-color:rgba(255,255,255,.1)}
 html[data-canopy-theme="dark"] .ct-countryList button,html[data-canopy-theme="dark"] .ct-countryHeading>button{background:#1f4036;border-color:rgba(255,255,255,.15);color:#e9f8ef}
 html[data-canopy-theme="dark"] .ct-directoryResultHead strong{color:#eff6f0}
+
+/* Dedicated Canopy collaboration workspace */
+.ct-collabShortcut{display:flex;justify-content:space-between;align-items:center;gap:20px;margin-top:20px;padding:22px 26px;border:1px solid var(--canopy-line);border-radius:18px;background:var(--canopy-surface,#fff)}
+.ct-collabShortcut small{color:#6b897b;font-size:10px;letter-spacing:.14em;font-weight:900}
+.ct-collabShortcut h2{margin:5px 0;font-size:20px;letter-spacing:-.03em}
+.ct-collabShortcut p{margin:0;color:var(--canopy-muted);font-size:13px;line-height:1.5}
+.ct-collabShortcut button{min-height:43px;border:0;border-radius:11px;background:var(--canopy);color:#fff;padding:10px 16px;font-weight:850;cursor:pointer;white-space:nowrap}
+.ct-chatWorkspace{display:grid;gap:20px;padding:clamp(16px,2.6vw,36px);max-width:1600px;margin:0 auto;min-width:0;color:var(--canopy-ink)}
+.ct-chatWorkspaceTop{display:flex;justify-content:space-between;align-items:end;gap:20px}
+.ct-chatWorkspaceTop>div{display:grid;gap:5px}
+.ct-chatWorkspaceTop span{color:#738d81;font-size:10px;font-weight:900;letter-spacing:.14em}
+.ct-chatWorkspaceTop h1{margin:2px 0;font-size:clamp(25px,3.4vw,36px);letter-spacing:-.045em}
+.ct-chatWorkspaceTop p{margin:0;color:var(--canopy-muted);font-size:13px}
+.ct-chatBack{justify-self:start;padding:0 0 9px;background:none;border:0;color:var(--canopy);font-weight:850;font-size:12px;cursor:pointer}
+.ct-chatRefresh{min-height:41px;padding:0 16px;border:1px solid var(--canopy-line);border-radius:11px;background:#fff;color:var(--canopy);font-size:12px;font-weight:850;cursor:pointer}
+.ct-chatLayout{display:grid;grid-template-columns:minmax(220px,280px) minmax(0,1fr) minmax(220px,265px);min-height:min(780px,calc(100dvh - 175px));height:calc(100dvh - 175px);max-height:920px;overflow:hidden;border:1px solid #dce8e0;border-radius:22px;background:#fff;box-shadow:0 12px 40px rgba(9,54,42,.07)}
+.ct-chatInbox{display:flex;flex-direction:column;min-width:0;overflow-y:auto;border-right:1px solid #e0e9e1;background:#f7faf8}
+.ct-chatInboxHead{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:21px 18px;border-bottom:1px solid #e1ebe4}
+.ct-chatInboxHead strong{font-size:15px;letter-spacing:-.02em}
+.ct-chatInboxHead span{border-radius:7px;background:#e4f0e6;padding:4px 8px;font-size:11px;font-weight:850}
+.ct-chatInboxItem{display:flex;gap:10px;text-align:left;padding:15px 13px;width:100%;min-width:0;background:transparent;border:0;border-bottom:1px solid #e5eee7;cursor:pointer;color:#274e40;align-items:flex-start}
+.ct-chatInboxItem:hover,.ct-chatInboxItem.active{background:#e9f4ec}
+.ct-chatInboxItem.active{box-shadow:inset 3px 0 #0e4d4a}
+.ct-chatInitial,.ct-chatPersonAvatar{flex:0 0 38px;width:38px;height:38px;border-radius:12px;background:#0e4d4a;color:#c6ff52;display:grid;place-items:center;font-size:16px;font-weight:900}
+.ct-chatInboxText{display:grid;gap:3px;min-width:0;flex:1}
+.ct-chatInboxText strong{font-size:12px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.ct-chatInboxText small{font-size:10px;color:#617b6e;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.ct-chatInboxText em{font-size:11px;font-style:normal;color:#678375;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.ct-chatMiniStatus{font-size:9px;font-weight:900;text-transform:capitalize;color:#507f60}
+.ct-chatMiniStatus.pending{color:#a07029}
+.ct-chatConversation{display:flex;flex-direction:column;min-width:0;min-height:0;background-color:#eaf1ed;background-image:radial-gradient(circle at 12% 22%,rgba(255,255,255,.55) 0,transparent 37%),radial-gradient(circle at 84% 77%,rgba(196,225,209,.35) 0,transparent 40%)}
+.ct-chatPerson{display:flex;gap:12px;align-items:center;min-height:77px;padding:13px 20px;border-bottom:1px solid #d5e4da;background:#fff}
+.ct-chatPerson h2{margin:0;font-size:16px;letter-spacing:-.02em}
+.ct-chatPerson p{margin:5px 0 0;color:#698275;font-size:11px}
+.ct-chatState{text-transform:capitalize;font-weight:800}
+.ct-chatMessageScroll{display:flex;flex-direction:column;gap:15px;flex:1;min-height:0;padding:25px clamp(18px,3vw,40px);overflow-y:auto;scrollbar-width:thin}
+.ct-chatBubble{align-self:flex-start;max-width:min(78%,560px);padding:13px 16px;border-radius:4px 16px 16px 16px;background:#fff;box-shadow:0 3px 11px rgba(23,59,43,.06);overflow-wrap:anywhere;line-height:1.55}
+.ct-chatBubble.participant{align-self:flex-end;border-radius:16px 4px 16px 16px;background:#d8f3dc}
+.ct-chatBubble.system{align-self:center;max-width:88%;border-radius:14px;background:#f7f5e9;text-align:center;color:#616752}
+.ct-chatBubble small{display:block;font-size:10px;font-weight:850;color:#315d4e}
+.ct-chatBubble p{margin:5px 0;white-space:pre-wrap;font-size:13px;color:#1e4036}
+.ct-chatBubble time{display:block;text-align:right;font-size:10px;color:#789083}
+.ct-chatIntroMessage{max-width:460px;align-self:center;margin:auto;text-align:center;padding:23px 26px;border:1px solid #d9e5dc;border-radius:16px;background:rgba(255,255,255,.85)}
+.ct-chatIntroMessage span{font-size:10px;font-weight:900;letter-spacing:.12em;color:#438064}
+.ct-chatIntroMessage p{white-space:pre-wrap;line-height:1.6}
+.ct-chatIntroMessage small{color:#647c70;font-size:12px}
+.ct-chatComposerBar{display:flex;align-items:end;gap:10px;padding:15px 20px;background:#fff;border-top:1px solid #d8e5db}
+.ct-chatComposerBar textarea{flex:1;min-width:0;min-height:49px;max-height:160px;resize:vertical;padding:13px 15px;border:1px solid #dce8df;border-radius:13px;background:#f9fbf9;font:inherit;font-size:13px;box-sizing:border-box}
+.ct-chatComposerBar button{min-height:47px;border:0;border-radius:11px;background:#0e4d4a;color:#fff;padding:0 18px;font-size:12px;font-weight:850;cursor:pointer}
+.ct-chatComposerBar button:disabled{opacity:.5;cursor:not-allowed}
+.ct-chatComposerDisabled{padding:16px;background:#fff;text-align:center;color:#6e8378;font-size:12px}
+.ct-chatDetails{min-width:0;overflow-y:auto;padding:22px 17px;background:#fff;border-left:1px solid #e1ebe4}
+.ct-chatDetailsHead span{font-size:10px;font-weight:900;letter-spacing:.12em;color:#779081}
+.ct-chatDetailsHead h2{margin:7px 0 20px;font-size:17px;letter-spacing:-.03em}
+.ct-chatRequestSummary{padding:0 0 20px;border-bottom:1px solid #e6eee8;min-width:0}
+.ct-chatRequestSummary strong{font-size:13px}
+.ct-chatRequestSummary p{margin:6px 0 12px;color:#708579;font-size:11px;overflow-wrap:anywhere}
+.ct-chatRequestSummary>span{display:block;padding:12px;background:#f5f8f5;border-radius:11px;font-size:12px;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere}
+.ct-chatActionList{display:grid;gap:8px;margin:17px 0}
+.ct-chatActionList button{min-height:40px;border:0;border-radius:10px;background:#0e4d4a;color:#fff;font-weight:850;font-size:12px;cursor:pointer}
+.ct-chatActionList .ghost{background:#edf4ef;color:#0e4d4a}
+.ct-chatActionList .ct-chatClose{background:#fff4ee;color:#995a46}
+.ct-chatDetails .cc-safetyControls{border-top:1px solid #e1ebe4;padding-top:15px}
+.ct-chatDetails .cc-safetyForm{padding:11px}
+.ct-chatEmpty,.ct-chatNotice{padding:18px;color:#738579;font-size:13px}
+.ct-chatEmptyState{margin:auto;text-align:center;padding:30px;color:#668274}
+.ct-chatEmptyState h2{font-size:20px}
+.ct-chatEmptyState svg{color:#0e4d4a}
+@media(max-width:1170px){.ct-chatLayout{grid-template-columns:230px minmax(0,1fr)}.ct-chatDetails{grid-column:1/-1;border-left:0;border-top:1px solid #e2e9e4;display:block;max-height:260px}.ct-chatLayout{height:auto;min-height:650px;max-height:none;overflow:visible}.ct-chatConversation{min-height:650px}.ct-chatInbox{max-height:650px}.ct-chatDetails .cc-progressRow{grid-template-columns:1fr auto;align-items:end}}
+@media(max-width:720px){.ct-chatWorkspace{padding:12px}.ct-chatLayout{display:flex;flex-direction:column;border-radius:16px;min-height:0}.ct-chatInbox{max-height:165px;flex-direction:row;overflow:auto;border-right:0;border-bottom:1px solid #dce8e0}.ct-chatInboxHead{flex:0 0 auto;padding:12px}.ct-chatInboxItem{flex:0 0 190px;padding:12px;border-bottom:0;border-right:1px solid #e1ebe4}.ct-chatMiniStatus{display:none}.ct-chatConversation{min-height:520px;height:calc(100dvh - 280px);max-height:700px}.ct-chatDetails{max-height:none;padding:18px}.ct-chatWorkspaceTop{align-items:flex-start}.ct-chatWorkspaceTop p{max-width:280px}.ct-chatMessageScroll{padding:18px 12px}.ct-chatBubble{max-width:88%}.ct-chatComposerBar{padding:12px}.ct-chatComposerBar button{padding:0 12px}.ct-collabShortcut{flex-direction:column;align-items:stretch}.ct-collabShortcut button{white-space:normal}}
+html[data-canopy-theme="dark"] .ct-chatLayout,html[data-canopy-theme="dark"] .ct-chatInbox,html[data-canopy-theme="dark"] .ct-chatDetails,html[data-canopy-theme="dark"] .ct-chatPerson,html[data-canopy-theme="dark"] .ct-chatComposerBar{background:#102b25;color:#eef8f4;border-color:rgba(255,255,255,.1)}
+html[data-canopy-theme="dark"] .ct-chatConversation{background-color:#17352e}
