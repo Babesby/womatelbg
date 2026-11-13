@@ -4703,7 +4703,7 @@ html[data-canopy-theme="dark"] .cx-impact-record-skill span{color:#d7e7e1}
 
 /* Compact, accessible learner/graduate navigation groups. */
 .canopySidebar nav .canopyNavGroup{border-top:1px solid #e8f0ec;margin-top:7px;padding-top:7px;min-width:0}
-.canopySidebar nav .canopyNavGroup summary{list-style:none;display:flex;align-items:center;gap:12px;min-height:46px;padding:0 13px;border-radius:12px;color:#244f45;font-weight:850;cursor:pointer;user-select:none}
+.canopySidebar nav .canopyNavGroup summary{font-size:13.3333px;list-style:none;display:flex;align-items:center;gap:12px;min-height:46px;padding:0 13px;border-radius:12px;color:#244f45;font-weight:850;cursor:pointer;user-select:none}
 .canopySidebar nav .canopyNavGroup summary::-webkit-details-marker{display:none}
 .canopySidebar nav .canopyNavGroup summary:hover{background:#f3f7f4}
 .canopySidebar nav .canopyNavGroup summary:focus-visible{outline:2px solid #2a8871;outline-offset:2px}
@@ -4711,7 +4711,7 @@ html[data-canopy-theme="dark"] .cx-impact-record-skill span{color:#d7e7e1}
 .canopySidebar nav .canopyNavChevron{margin-left:auto;transition:transform .18s ease}
 .canopySidebar nav .canopyNavGroup[open] .canopyNavChevron{transform:rotate(90deg)}
 .canopySidebar nav .canopyNavGroupItems{display:grid;gap:3px;padding:4px 0 9px 13px}
-.canopySidebar nav .canopyNavGroupItems button{min-height:43px;font-size:13px;padding-left:12px;white-space:normal;overflow-wrap:anywhere}
+.canopySidebar nav .canopyNavGroupItems button{min-height:43px;font-size:revert;padding-left:12px;white-space:normal;overflow-wrap:anywhere}
 @media(max-width:800px){
  .canopySidebar nav .canopyNavGroup summary{min-height:48px}
  .canopySidebar nav .canopyNavGroupItems button{min-height:46px}

@@ -221,9 +221,9 @@ const manager=canManageCanopy(viewer);
      {items.filter(([p])=>p==='/canopy/classroom'||p==='/canopy/notifications').map(([p,n,I])=><button key={p} className={route()===p?'active':''} onClick={()=>{go(p);setOpen(false)}}><I size={18}/><span>{n}</span></button>)}
      {[
        ['Learning',BookOpen,['/canopy/course/she-leads','/canopy/courses','/canopy/expert-studio','/canopy/assignments','/canopy/progress','/canopy/resources']],
-       ['Community & opportunities',UsersRound,['/canopy/portfolio','/canopy/opportunities','/canopy/opportunity-board','/canopy/funding','/canopy/talent','/canopy/canvas']],
+       ['Community & opportunities',UsersRound,['/canopy/portfolio','/canopy/opportunities','/canopy/opportunity-board','/canopy/funding','/canopy/talent']],
        ['Graduation & alumni',GraduationCap,['/canopy/graduation','/canopy/certificate','/canopy/graduate-opportunities','/canopy/alumni-checkin']],
-       ['Support & extras',ShieldCheck,['/canopy/help','/canopy/test/cohort-preview','/canopy/test/admin-workspace','/canopy/test/graduate-opportunities','/canopy/test/celebration-2026','/canopy/test/feedback-2026','/canopy/test/mission-closed']]
+       ['Support & extras',ShieldCheck,['/canopy/help','/canopy/canvas','/canopy/test/cohort-preview','/canopy/test/admin-workspace','/canopy/test/graduate-opportunities','/canopy/test/celebration-2026','/canopy/test/feedback-2026','/canopy/test/mission-closed']]
      ].map(([label,Icon,paths])=>{
        const children=items.filter(([p])=>paths.includes(p));
        return children.length?<details className="canopyNavGroup" key={label} defaultOpen={children.some(([p])=>route()===p)}>
