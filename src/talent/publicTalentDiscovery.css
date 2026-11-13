@@ -1379,3 +1379,47 @@
 .pt-allProfiles a{display:inline-flex;align-items:center;gap:8px;min-height:44px;white-space:normal;text-decoration:none;background:#073b39;color:#fff;padding:12px 17px;border-radius:999px;font-size:.83rem;font-weight:750}
 .pt-allProfiles a:hover{background:#0e4d4a}
 @media(max-width:600px){.pt-allProfiles{margin:20px 15px;padding:20px 16px}.pt-allProfiles a{width:100%;justify-content:center}}
+
+/* Private collaboration workspace — refined message flow and trust centre */
+.pt-page:has(.pt-conversation){max-width:1060px}
+.pt-conversation{padding:clamp(24px,4vw,42px);border-color:#d7e5dd;border-radius:24px;box-shadow:0 20px 55px rgba(7,59,57,.055)}
+.pt-conversation>.pt-kicker{display:block;color:#567a6c;margin-bottom:10px}
+.pt-conversation h2{margin:0 0 13px;font-size:clamp(29px,4vw,42px);letter-spacing:-.045em;line-height:1.13;color:#073b39}
+.pt-conversation .pt-status{padding:14px 17px;border-left:3px solid #91b5a1;border-radius:0 12px 12px 0;background:#f2f7f3;color:#3e6256;font-size:14px}
+.pt-conversation .pt-status--accepted{border-left-color:#3d9b71}
+.pt-conversation .pt-status--declined,.pt-conversation .pt-status--closed{border-left-color:#b2a8a1}
+.pt-conversation .pt-messages{margin-top:22px;gap:13px;max-height:500px;padding:4px 0 8px}
+.pt-conversation .pt-message{max-width:min(80%,670px);padding:14px 17px;border-radius:16px;box-sizing:border-box;line-height:1.6;overflow-wrap:anywhere}
+.pt-conversation .pt-message:not(.visitor){background:#f0f6f2;color:#204f43}
+.pt-conversation .pt-message.visitor{background:#0e4d4a;color:#fff}
+.pt-conversation .pt-message.system{max-width:100%;background:#faf5e6;color:#655a39;border-radius:12px}
+.pt-conversation .pt-message small{margin-top:8px;font-size:11px}
+.pt-conversation .pt-chatComposer{grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:12px;padding-top:18px;border-top:1px solid #e1ebe5}
+.pt-conversation .pt-chatComposer textarea{min-height:76px;max-height:220px}
+.pt-conversation .pt-chatComposer button{min-height:46px}
+.pt-trustPanel{margin-top:26px;padding:clamp(20px,3.6vw,30px);background:#f6f9f6;border:1px solid #e0e9e1;border-radius:23px}
+.pt-trustIntro{margin-bottom:18px}
+.pt-trustIntro .pt-kicker{color:#567c69}
+.pt-trustIntro h2{margin:7px 0 5px;font-size:clamp(22px,3vw,29px);letter-spacing:-.035em;color:#073b39}
+.pt-trustIntro p{margin:0;color:#637a6b;line-height:1.55;font-size:13px}
+.pt-trustGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.pt-trustGrid .pt-assuranceCard{display:flex;flex-direction:column;min-width:0;margin:0;padding:23px;border:1px solid #dce6de;border-radius:18px;box-shadow:0 7px 23px rgba(7,59,57,.025)}
+.pt-trustGrid .pt-assuranceCard--safety{grid-column:1/-1;background:linear-gradient(105deg,#fff,#f7faf7)}
+.pt-assuranceCard .pt-kicker{font-size:10px;color:#537666}
+.pt-assuranceCard h2{font-size:clamp(19px,2.1vw,23px);line-height:1.18;letter-spacing:-.03em;margin:9px 0}
+.pt-assuranceCard p{font-size:13px;line-height:1.7;color:#536f62;margin:0 0 17px}
+.pt-assuranceCard .pt-button{align-self:flex-start;margin-top:auto;min-height:42px;font-size:12px}
+.pt-assuranceCard label{display:grid;gap:6px;font-size:12px;font-weight:800}
+.pt-assuranceCard label input,.pt-assuranceCard label select,.pt-assuranceCard label textarea{width:100%;box-sizing:border-box;padding:11px 12px;border:1px solid #d9e4df;border-radius:11px;background:#fff;font:inherit}
+.pt-assuranceCard label textarea{resize:vertical}
+.pt-assuranceCard [role="status"]{margin-top:12px;overflow-wrap:anywhere}
+.pt-verificationStates{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:2px 0 18px}
+.pt-verificationStates>div{display:grid;gap:5px;padding:11px 12px;border-radius:12px;background:#f2f7f3;min-width:0}
+.pt-verificationStates span{font-size:10px;color:#6b8174;font-weight:800}
+.pt-verificationStates strong{color:#536b5b;font-size:12px;font-weight:850;text-transform:capitalize;overflow-wrap:anywhere}
+.pt-verificationStates strong.verified{color:#18784f}
+.pt-privateLink{padding:18px;border-style:solid;gap:10px;border-color:#d5e5d9;background:#fbfdfa}
+.pt-privateLink .pt-button{justify-self:start}
+.pt-privateLink code{padding:12px;border-radius:10px;line-height:1.5}
+@media(max-width:760px){.pt-trustGrid{grid-template-columns:1fr}.pt-trustGrid .pt-assuranceCard--safety{grid-column:auto}.pt-conversation .pt-chatComposer{grid-template-columns:1fr}}
+@media(max-width:620px){.pt-conversation{padding:20px 17px}.pt-conversation .pt-message{max-width:93%}.pt-trustPanel{padding:15px;border-radius:17px}.pt-trustGrid .pt-assuranceCard{padding:19px}.pt-verificationStates{grid-template-columns:1fr}.pt-assuranceCard .pt-button{width:100%}}

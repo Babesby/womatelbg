@@ -8,18 +8,18 @@ export function CollaborationControls({session,channel,requestId,status}){
  const submitReport=async()=>{if(description.trim().length<10){setNotice('Please describe the concern in at least 10 characters.');return}
  setBusy(true);try{await reportCollaborationSafety(session,channel,requestId,reason,description);setNotice('Safety report submitted to WOMATE for review.');setReportOpen(false);setDescription('')}catch(e){setNotice(e.message)}finally{setBusy(false)}};
  const save=async()=>{setBusy(true);try{await recordCollaborationMilestone(session,channel,requestId,milestone);setNotice('Collaboration milestone saved. This does not create a fee.')}catch(e){setNotice(e.message)}finally{setBusy(false)}};
- return <div style={{marginTop:12,padding:12,border:'1px solid #d6e6dc',borderRadius:12}}>
-  {status==='accepted'&&<div style={{display:'flex',gap:8,alignItems:'center',flexWrap:'wrap'}}>
-    <label>Progress <select aria-label="Collaboration progress" value={milestone} onChange={e=>setMilestone(e.target.value)}><option value="discussion">Discussion</option><option value="proposal">Proposal shared</option><option value="agreed">Agreement reached</option><option value="completed">Completed</option><option value="cancelled">Cancelled</option></select></label>
+ return <div className="cc-safetyControls">
+  {status==='accepted'&&<div className="cc-progressRow">
+    <label>Collaboration progress<select aria-label="Collaboration progress" value={milestone} onChange={e=>setMilestone(e.target.value)}><option value="discussion">Discussion</option><option value="proposal">Proposal shared</option><option value="agreed">Agreement reached</option><option value="completed">Completed</option><option value="cancelled">Cancelled</option></select></label>
     <button type="button" disabled={busy} onClick={save}>Save progress</button>
    </div>}
-  <button type="button" className="ghost" onClick={()=>setReportOpen(v=>!v)} aria-expanded={reportOpen}>{reportOpen?'Close safety report':'Report a safety concern'}</button>
-  {reportOpen&&<div style={{display:'grid',gap:8,marginTop:8}}>
-   <label>Concern <select value={reason} onChange={e=>setReason(e.target.value)}><option value="scam">Suspected scam</option><option value="harassment">Harassment</option><option value="impersonation">Impersonation</option><option value="payment_pressure">Payment pressure</option><option value="other">Other concern</option></select></label>
-   <label>Describe the concern (do not paste private messages unless needed)<textarea value={description} maxLength={1500} rows={3} onChange={e=>setDescription(e.target.value)}/></label>
+  <div className="cc-safetyRow"><span>Something doesn't feel right?</span><button type="button" className="ghost" onClick={()=>setReportOpen(v=>!v)} aria-expanded={reportOpen}>{reportOpen?'Close report':'Report a safety concern'}</button></div>
+  {reportOpen&&<div className="cc-safetyForm">
+   <label>Type of concern<select value={reason} onChange={e=>setReason(e.target.value)}><option value="scam">Suspected scam</option><option value="harassment">Harassment</option><option value="impersonation">Impersonation</option><option value="payment_pressure">Payment pressure</option><option value="other">Other concern</option></select></label>
+   <label>What happened?<textarea value={description} maxLength={1500} rows={3} onChange={e=>setDescription(e.target.value)} placeholder="Share only the details WOMATE needs to review this concern."/></label>
    <button type="button" disabled={busy||description.trim().length<10} onClick={submitReport}>Send confidential report</button>
   </div>}
-  {notice&&<p role="status">{notice}</p>}
+  {notice&&<p className="cc-safetyNotice" role="status">{notice}</p>}
  </div>
 }
 export default function CanopyCollaborationOversight({session}){
