@@ -246,13 +246,25 @@ function LearnerShell({viewer,progress,children,onReload,adminCohort=null}){
  const initials=String(name||'C').split(/\s+/).filter(Boolean).slice(0,2).map(x=>x[0]).join('').toUpperCase();
  useEffect(()=>{
   let live=true;
-  const run=async()=>{try{const n=await getUnreadNotificationCount(viewer?.session);if(live)setUnread(Number(n)||0)}catch{}};
+  let loading=false;
+  async function run(){
+   if(!live||loading||document.visibilityState!=='visible')return;
+   loading=true;
+   try{
+    const count=await getUnreadNotificationCount(viewer?.session);
+    if(live)setUnread(Number(count)||0);
+   }catch{}finally{loading=false;}
+  }
   run();
   const timer=window.setInterval(run,60000);
-  const onFocus=()=>run();
-  const onVisibility=()=>{if(document.visibilityState==='visible')run()};
-  window.addEventListener('focus',onFocus);document.addEventListener('visibilitychange',onVisibility);
-  return()=>{live=false;window.clearInterval(timer);window.removeEventListener('focus',onFocus);document.removeEventListener('visibilitychange',onVisibility)};
+  window.addEventListener('focus',run);
+  document.addEventListener('visibilitychange',run);
+  return()=>{
+   live=false;
+   window.clearInterval(timer);
+   window.removeEventListener('focus',run);
+   document.removeEventListener('visibilitychange',run);
+  };
  },[viewer?.session?.access_token]);
  return <div className="canopyApp"><CourseNav open={open} setOpen={setOpen} viewer={viewer} adminCohort={adminCohort}/><div className="canopyMain"><header className="canopyAppTop"><button className="canopyMenu" onClick={()=>setOpen(true)} aria-label="Open navigation"><Menu/></button>{!staff&&<button type="button" className="canopyMobileProfileAvatar" onClick={()=>go('/canopy/profile')} aria-label="Open profile and settings" title="Profile & settings">{initials}</button>}<div className={staff?'canopyTopIdentity':'canopyTopIdentity canopyLearnerIdentity'}>{staff&&<span>WOMATE · CANOPY OPERATIONS</span>}{staff?<><b>{name}</b>{viewer?.staffAccess?.role&&<small className="canopyTopRole">{teamRoleLabel(viewer.staffAccess.role)}</small>}</>:<button type="button" className="canopyProfileTrigger" onClick={()=>go('/canopy/profile')} title="Open profile settings"><UserRound size={18}/><span><small>PROFILE</small><b>{name}</b></span></button>}</div><button className="canopyTopNotification" aria-label={unread?`${unread} unread notification${unread===1?'':'s'}`:'Notifications'} onClick={()=>go('/canopy/notifications')}><Bell size={18}/>{unread>0&&<span className="canopyNotificationBadge">{unread>99?'99+':unread}</span>}</button><button className="canopySignout" onClick={async()=>{await signOut();go('/canopy/login')}}><LogOut size={17}/><span>Sign out</span></button></header>{children}{!manager&&!staff&&!tester&&<GraduateOpportunitiesNotice viewer={viewer}/>}{!manager&&!staff&&!isPost2026RuntimeCohort(viewer?.runtimeCohort?.cohort_key)&&route()==='/canopy/assignments'&&<section className="canopyC2Policy" aria-label="WOMATE Participation and Assessment Policy"><h2>WOMATE Participation &amp; Assessment Policy</h2><p><strong>Assignment deadlines:</strong> Once the applicable 24-hour or 48-hour grace period has expired, individual extensions are not available. Any platform-wide correction must be approved and applied fairly to all affected learners.</p><p><strong>Mission participation:</strong> Learners must not delay their contributions because of inactive teammates. Each participant should submit an individual report explaining their work.</p><p><strong>Evidence:</strong> Every individual mission contribution must include appropriate supporting evidence. Submission alone does not guarantee approval.</p><p><strong>Assessment:</strong> WOMATE reserves the right to request revisions or reject contributions that do not meet the published requirements.</p><p><strong>Accountability:</strong> Every participant is responsible for their learning, attendance, assignments and mission activities.</p></section>}</div></div>
 }

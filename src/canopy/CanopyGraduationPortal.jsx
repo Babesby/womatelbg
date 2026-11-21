@@ -451,7 +451,10 @@ export default function CanopyGraduationPortal({viewer,tester=false}){
   // Tester sees the same persisted, moderated Supabase feed as graduates.
   // It is no longer a local, disposable mock note.
   let live=true;
+  let loading=false;
   async function load(){
+   if(!live||loading||document.visibilityState!=='visible')return;
+   loading=true;
    try{
     const [overview,items]=await Promise.all([
      getCanopyGraduationOverview(viewer.session),
@@ -459,10 +462,16 @@ export default function CanopyGraduationPortal({viewer,tester=false}){
     ]);
     if(live){setData(overview);setCerts(items||[]);setError('');}
    }catch(e){if(live)setError(e.message||'Graduation information is temporarily unavailable.');}
+   finally{loading=false;}
   }
   load();
   const timer=setInterval(load,30000);
-  return()=>{live=false;clearInterval(timer);};
+  document.addEventListener('visibilitychange',load);
+  return()=>{
+   live=false;
+   clearInterval(timer);
+   document.removeEventListener('visibilitychange',load);
+  };
  },[viewer?.session?.access_token,tester]);
  async function shareReflection(e){
   e.preventDefault();if(!reflection.trim()||reflection.trim().length<30||!unlocked)return;
